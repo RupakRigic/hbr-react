@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import AdminUserService from "../../API/Services/AdminService/AdminUserService";
-import logo from "../../images/logo/logo-full.png";
+import logo from "../../images/logo/hrb-logo.png";
 import LogoWhite from "../../images/logo/logofull-white.png";
 import bg6 from "../../images/background/bg6.jpg";
 
