@@ -59,7 +59,7 @@ const BuilderTable = () => {
     coporate_officeaddress_lng: "",
     logo: "",
   });
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   const builder = useRef();
   const [value, setValue] = React.useState("1");
@@ -213,11 +213,10 @@ const BuilderTable = () => {
     e.preventDefault();
     console.log("Form Data:", accessForm);
   };
-
   const requestSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
     }
     setSortConfig({ key, direction });
   };
@@ -227,10 +226,10 @@ const BuilderTable = () => {
     if (sortConfig.key !== "") {
       sorted.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
+          return sortConfig.direction === "asc" ? -1 : 1;
         }
         if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
+          return sortConfig.direction === "asc" ? 1 : -1;
         }
         return 0;
       });
@@ -378,23 +377,57 @@ const BuilderTable = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
-                            <th onClick={() => requestSort('name')}>
+                            <th onClick={() => requestSort("name")}>
                               <strong>Name</strong>
-                              {sortConfig.key === 'column1' && (
-                <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-              )}
+                              {sortConfig.key !== "name"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key === "name" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               <strong>Logo</strong>
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("phone")}>
                               <strong>Phone</strong>
+                              {sortConfig.key !== "phone"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key === "phone" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("company_type")}>
                               <strong>Company Type</strong>
+                              {sortConfig.key !== "company_type"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key === "company_type" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("officeaddress1")}>
+
                               <strong>Office Address</strong>
+                              {sortConfig.key !== "officeaddress1"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key === "officeaddress1" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               <strong>Action</strong>
@@ -436,7 +469,7 @@ const BuilderTable = () => {
                                   SyestemUserRole === "User" ? (
                                     ""
                                   ) : (
-                                    <div className="d-flex">
+                                    <div className="d-flex justify-content-end">
                                       <Link
                                         to={`/builderUpdate/${element.id}`}
                                         className="btn btn-primary shadow btn-xs sharp me-1"

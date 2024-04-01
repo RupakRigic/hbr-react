@@ -49,6 +49,8 @@ const ProductList = () => {
   const product = useRef();
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+
   const [ProductDetails, SetProductDetails] = useState({
     subdivision: "",
     product_code: "",
@@ -168,6 +170,62 @@ const ProductList = () => {
   const handlePriceClick = () => {
     navigate("/pricelist");
   };
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...ProductList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        // Check if aValue and bValue are null
+        if (aValue === null || bValue === null) {
+          // Handle null values by treating them as empty strings
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }
+  
+        // Convert string values to lowercase for case-insensitive sorting
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === 'string') {
+          bValue = bValue.toLowerCase();
+        }  
+        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+          console.log(444);
+          aValue = String(a.subdivision.builder.name).toLowerCase();
+          bValue = String(b.subdivision.builder.name).toLowerCase();
+        }
+        if (sortConfig.key === 'builderCode' && a.builder && b.builder) {
+          aValue = String(a.builder.builder_code).toLowerCase();
+          bValue = String(b.builder.name).toLowerCase();
+        }  
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          if (sortConfig.direction === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
+  
+  
   return (
     <>
       <MainPagetitle
@@ -276,8 +334,16 @@ const ProductList = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("builderName")}>
                               <strong>Builder name</strong>
+                              {sortConfig.key !== "builderName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               <strong>Subdivision name</strong>

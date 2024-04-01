@@ -76,6 +76,7 @@ const SubdivisionList = () => {
   });
   const [BuilderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // function prePage() {
   //   if (currentPage !== 1) {
@@ -233,6 +234,67 @@ const SubdivisionList = () => {
   const handleLandRedirect = () => {
     navigate("/landsalelist");
   };
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...BuilderList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        // Check if aValue and bValue are null
+        if (aValue === null || bValue === null) {
+          // Handle null values by treating them as empty strings
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }
+  
+        // Convert string values to lowercase for case-insensitive sorting
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === 'string') {
+          bValue = bValue.toLowerCase();
+        }
+  
+        if (sortConfig.key === 'builderName' && a.builder && b.builder) {
+          aValue = String(a.builder.name).toLowerCase();
+          bValue = String(b.builder.name).toLowerCase();
+        }
+        if (sortConfig.key === 'builderCode' && a.builder && b.builder) {
+          aValue = String(a.builder.builder_code).toLowerCase();
+          bValue = String(b.builder.name).toLowerCase();
+        }
+  
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          // Adjust the comparison logic for descending order
+          if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          // If not numbers, use string comparison
+          if (sortConfig.direction === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
+  
+  
+  
+  
   return (
     <>
       <MainPagetitle
@@ -373,89 +435,306 @@ const SubdivisionList = () => {
                             <th>
                               <strong> No.</strong>
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("status")}>
                               <strong> Status</strong>
+                              {sortConfig.key !== "status"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key === "status" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("reporting")}>
                               <strong> Reporting</strong>
+                              {sortConfig.key !== "reporting"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "reporting" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("builderName")}>
                               <strong> Builder</strong>
+                              {sortConfig.key !== "builderName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("name")}>
                               <strong> Name</strong>
+                              {sortConfig.key !== "name"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "name" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("product_type")}>
                               <strong> Product Type</strong>
+                              {sortConfig.key !== "product_type"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "product_type" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("area")}>
                               <strong> Area</strong>
+                              {sortConfig.key !== "area"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "area" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("masterplan_id")}>
                               <strong> Masterplan</strong>
+                              {sortConfig.key !== "masterplan_id"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "masterplan_id" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("zipcode")}>
                               <strong> Zipcode</strong>
+                              {sortConfig.key !== "zipcode"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "zipcode" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("totallots")}>
                               <strong> Total Lots</strong>
+                              {sortConfig.key !== "totallots"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "totallots" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("lotwidth")}>
                               <strong>Lot Width</strong>
+                              {sortConfig.key !== "lotwidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotwidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("lotsize")}>
                               <strong> Lot Size</strong>
+                              {sortConfig.key !== "lotsize"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotsize" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("zoning")}>
                               <strong> Zoning</strong>
+                              {sortConfig.key !== "zoning"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "zoning" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("age")}>
                               <strong> Age Restricted</strong>
+                              {sortConfig.key !== "age"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "age" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("single")}>
                               <strong> All Single Story</strong>
+                              {sortConfig.key !== "single"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "single" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("gated")}>
                               <strong> Gated</strong>
+                              {sortConfig.key !== "gated"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "gated" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               <strong> Location</strong>
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("juridiction")}>
                               <strong> Juridiction</strong>
+                              {sortConfig.key !== "juridiction"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "juridiction" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("lat")}>
                               <strong> Latitude</strong>
+                              {sortConfig.key !== "lat"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lat" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("lng")}>
                               <strong> Longitude</strong>
+                              {sortConfig.key !== "lng"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lng" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("gasprovider")}>
                               <strong> Gas Provider</strong>
+                              {sortConfig.key !== "gasprovider"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "gasprovider" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("hoafee")}>
                               <strong> HOA Fee</strong>
+                              {sortConfig.key !== "hoafee"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "hoafee" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("masterplanfee")}>
                               <strong> Masterplan Fee</strong>
+                              {sortConfig.key !== "masterplanfee"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "masterplanfee" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("parcel")}>
                               <strong> Parcel Group</strong>
+                              {sortConfig.key !== "parcel"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "parcel" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("phone")}>
                               <strong> Phone</strong>
+                              {sortConfig.key !== "phone"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "phone" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("website")}>
                               <strong> Website</strong>
+                              {sortConfig.key !== "website"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "website" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("dateadded")}>
                               <strong> Date Added</strong>
+                              {sortConfig.key !== "dateadded"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "dateadded" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("subdivision_code")}>
                               <strong> __pkSubID </strong>
+                              {sortConfig.key !== "subdivision_code"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "subdivision_code" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("builderCode")}>
                               <strong> _fkBuilderID </strong>
+                              {sortConfig.key !== "builderCode"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "builderCode" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               {" "}
@@ -464,8 +743,8 @@ const SubdivisionList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {BuilderList !== null && BuilderList.length > 0 ? (
-                            BuilderList.map((element, index) => (
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
