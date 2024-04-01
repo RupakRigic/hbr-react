@@ -4,8 +4,8 @@ let userData = localStorage.getItem('usertoken') ? localStorage.getItem('usertok
 
 class HTTPError extends Error { }
 const clientAuth = ky.extend({
-  prefixUrl: "http://127.0.0.1:8000/api/",
-  // prefixUrl: "https://hbrapi.rigicgspl.com/api/",
+  // prefixUrl: "http://127.0.0.1:8000/api/",
+  prefixUrl: "https://hbrapi.rigicgspl.com/api/",
   
   hooks: {
     beforeRequest: [

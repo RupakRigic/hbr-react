@@ -53,6 +53,53 @@
         _page-user-lock
 
 */
+@font-face {
+  font-family: 'arialregular';
+  src: url('../../src/font/arial-webfont.eot');
+  src: url('../../src/font/arial-webfont.eot') format('embedded-opentype'),
+       url('../../src/font/arial-webfont.woff2') format('woff2'),
+       url('../../src/font/arial-webfont.woff') format('woff'),
+       url('../../src/font/arial-webfont.ttf') format('truetype'),
+       url('../../src/font/arial-webfont.svg') format('svg');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'arialbold';
+  src: url('../../src/font/arial_bold-webfont.eot');
+  src: url('../../src/font/arial_bold-webfont.eot') format('embedded-opentype'),
+       url('../../src/font/arial_bold-webfont.woff2') format('woff2'),
+       url('../../src/font/arial_bold-webfont.woff') format('woff'),
+       url('../../src/font/arial_bold-webfont.ttf') format('truetype'),
+       url('../../src/font/arial_bold-webfont.svg') format('svg');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'georgiaregular';
+  src: url('../../src/font/georgia-webfont.eot');
+  src: url('../../src/font/georgia-webfont.eot') format('embedded-opentype'),
+       url('../../src/font/georgia-webfont.woff2') format('woff2'),
+       url('../../src/font/georgia-webfont.woff') format('woff'),
+       url('../../src/font/georgia-webfont.ttf') format('truetype'),
+       url('../../src/font/georgia-webfont.svg') format('svg');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'georgiabold';
+  src: url('../../src/font/georgia_bold-webfont.eot');
+  src: url('../../src/font/georgia_bold-webfont.eot') format('embedded-opentype'),
+       url('../../src/font/georgia_bold-webfont.woff2') format('woff2'),
+       url('../../src/font/georgia_bold-webfont.woff') format('woff'),
+       url('../../src/font/georgia_bold-webfont.ttf') format('truetype'),
+       url('../../src/font/georgia_bold-webfont.svg') format('svg');
+  font-weight: 500;
+  font-style: normal;
+}
+
+
 @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800");
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700");
@@ -75,10 +122,10 @@
 @import url(./../other/perfect-scrollbar/css/perfect-scrollbar.css);
 @import url(./../other/metismenu/css/metisMenu.min.css);
 :root {
-  --primary: #0D99FF;
-  --secondary: #2C2C2C;
-  --secondary-dark: #131313;
-  --primary-hover: #007ed9;
+  --primary: #4974B9;
+  --secondary: #B5AC9E;
+  --secondary-dark: #575757;
+  --primary-hover: #31548a;
   --primary-dark: #004373;
   --rgba-primary-1: rgba(13, 153, 255, 0.1);
   --rgba-primary-2: rgba(13, 153, 255, 0.2);
@@ -98,10 +145,14 @@
   --rgba-secondary-7: rgba(44, 44, 44, 0.7);
   --rgba-secondary-8: rgba(44, 44, 44, 0.8);
   --rgba-secondary-9: rgba(44, 44, 44, 0.9);
-  --font-family-base: poppins, sans-serif, sans-serif;
-  --font-family-title: poppins, sans-serif, sans-serif;
-  --title: #374557; }
-
+  --font-family-base: georgiaregular, sans-serif, sans-serif;
+  --font-family-title: georgiaregular, sans-serif, sans-serif;
+  --title: #DB7E2E; }
+  h1,h2,h3,h4,h5,h6{font-family: 'arialregular';}
+  .metismenu li a span{font-family: 'arialregular';}
+.table td{font-family: 'georgiaregular';}
+.table th,.MuiButtonBase-root{font-family: 'georgiabold';}
+.MuiButtonBase-root{font-family: 'georgiabold' !important;}
 .gradient_one {
   background-image: linear-gradient(to right, rgba(186, 1, 181, 0.85) 0%, rgba(103, 25, 255, 0.85) 100%); }
 
@@ -270,8 +321,8 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --bs-gray-700: #495057;
   --bs-gray-800: #343a40;
   --bs-gray-900: #212529;
-  --bs-primary: #0D99FF;
-  --bs-secondary: #2C2C2C;
+  --bs-primary: #4974B9;
+  --bs-secondary: #DB7E2E;
   --bs-success: #3AC977;
   --bs-info: #58bad7;
   --bs-warning: #FF9F00;
@@ -297,7 +348,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   --bs-body-font-size: 0.875rem;
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
-  --bs-body-color: #888888;
+  --bs-body-color: #B5AC9E;
   --bs-body-bg: #F5F5F5;
   --bs-border-width: 1px;
   --bs-border-style: solid;
@@ -15438,7 +15489,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-nav-headerbg="color_4"][data-theme-version="dark"],
 [data-nav-headerbg="color_4"] {
-  --nav-headbg: #2C2C2C;
+  --nav-headbg: #B5AC9E;
   /* .nav-control{
 				background-color:transparent;
 			} */
@@ -18764,7 +18815,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-headerbg="color_4"][data-theme-version="dark"],
 [data-headerbg="color_4"] {
-  --headerbg: #2C2C2C;
+  --headerbg: #B5AC9E;
   /* &[data-headerbg="color_8"]{
 					
 				.search-area .input-group-text,
@@ -18858,7 +18909,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     background: transparent; }
   [data-headerbg="color_4"][data-theme-version="dark"] .header-right .header-info p,
   [data-headerbg="color_4"] .header-right .header-info p {
-    color: #E1E1E1; }
+    color: #4974B9; }
   [data-headerbg="color_4"][data-theme-version="dark"] .header-right .header-info h6, [data-headerbg="color_4"][data-theme-version="dark"] .header-right .header-info .h6,
   [data-headerbg="color_4"] .header-right .header-info h6,
   [data-headerbg="color_4"] .header-right .header-info .h6 {
@@ -20726,9 +20777,14 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 [data-secondary="color_15"] {
   --secondary: #4cb32b;
   --secondary-dark: #3b8a21; }
-
+  [data-typography="georgiaregular"] {
+    font-family: 'georgiaregular', sans-serif; }
+    
 [data-typography="opensans"] {
   font-family: 'Open Sans', sans-serif; }
+  
+  [data-typography="arialregular"] {
+    font-family: 'arialregular', sans-serif; }
 
 [data-typography="poppins"] {
   font-family: 'poppins', sans-serif; }
@@ -20741,6 +20797,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-typography="helvetica"] {
   font-family: 'HelveticaNeue'; }
+
+  [data-typography="montserrat"] {
+    font-family: 'Montserrat'; }
 
 :root {
   --primary: #0D99FF;
@@ -30840,7 +30899,7 @@ table.dataTable thead .sorting_asc {
     font-size: 11px;
     padding: 0.625rem 1rem;
     font-weight: 500;
-    background-color: #F0F4F9;
+    background-color: #b5ac9e;
     border: 0;
     vertical-align: middle; }
     .active-projects thead tr th:last-child {
@@ -31506,7 +31565,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-align: center; }
 
 [data-nav-headerbg="color_4"] .nav-header .nav-control {
-  background-color: #202020; }
+  background-color: #4974B9; }
 
 [data-nav-headerbg="color_4"] .nav-header .hamburger .line {
   background: #fff; }
@@ -32435,7 +32494,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .draggable-mirror {
   padding: 0.938rem 0.938rem !important; }
-
+.logo-header img{
+  max-width: 180px;
+}
+.brand-logo img{
+  max-width: 130px;
+}
+.brand-logo img.logo-icon{
+  max-width: 40px;
+  display: none;
+}
+.menu-toggle .brand-logo img.main-logo{display: none;}
+.menu-toggle .brand-logo img.logo-icon{
+  display: block;
+}
 .logo-header {
   margin-bottom: 2rem; }
   .logo-header .logo-white {
@@ -34770,6 +34842,14 @@ div#mCSB_1 {
       [data-layout="horizontal"][data-sidebar-style="modern"][direction="rtl"] .nav-header .brand-logo {
         padding-right: 1.875rem; }
     @media (max-width: 767.98px) {
+      .brand-logo img {
+        max-width: 100px;
+    }
+    
+    
+      .nav-header{
+        width: 9rem !important;
+      }
       [direction="rtl"] .nav-header .brand-logo {
         padding-right: 0; } }
 
@@ -35328,10 +35408,10 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   padding-right: 9.375rem; }
 
 :root {
-  --primary: #0D99FF;
-  --secondary: #2C2C2C;
-  --secondary-dark: #131313;
-  --primary-hover: #007ed9;
+  --primary: #4974B9;
+  --secondary: #DB7E2E;
+  --secondary-dark: #DB7E2E;
+  --primary-hover: #2b4876;
   --primary-dark: #004373;
   --rgba-primary-1: rgba(13, 153, 255, 0.1);
   --rgba-primary-2: rgba(13, 153, 255, 0.2);
@@ -36406,8 +36486,4 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .dropdown-menu {
 width:250px;
 padding:20px 20px;
-}
-
-.table-responsive {
-  overflow-x: visible !important;
 }
