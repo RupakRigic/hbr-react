@@ -1,0 +1,20 @@
+.weekly-card h4{
+  background-color: #0d99ff;
+  color: #fff;
+  padding: 15px 30px;
+}
+.weekly-card{
+  height: 100% !important;
+}
+.weekly-card a{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.weekly-card select{
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  width: 180px;
+}
