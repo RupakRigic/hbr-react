@@ -178,7 +178,7 @@ const ProductList = () => {
     setSortConfig({ key, direction });
   };
   const sortedData = () => {
-    const sorted = [...ProductList];
+    const sorted = [...productList];
     if (sortConfig.key !== "") {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
@@ -198,15 +198,16 @@ const ProductList = () => {
         if (typeof bValue === 'string') {
           bValue = bValue.toLowerCase();
         }  
-        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
-          console.log(444);
+        if (sortConfig.key === 'builderName' && a.subdivision.builder.name && b.subdivision.builder.name) {
           aValue = String(a.subdivision.builder.name).toLowerCase();
           bValue = String(b.subdivision.builder.name).toLowerCase();
         }
-        if (sortConfig.key === 'builderCode' && a.builder && b.builder) {
-          aValue = String(a.builder.builder_code).toLowerCase();
-          bValue = String(b.builder.name).toLowerCase();
-        }  
+
+        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.name).toLowerCase();
+          bValue = String(b.subdivision.name).toLowerCase();
+        }
+
         if (typeof aValue === 'number' && typeof bValue === 'number') {
           if (sortConfig.direction === 'asc') {
             return aValue - bValue;
@@ -335,7 +336,7 @@ const ProductList = () => {
                               <strong>No.</strong>
                             </th>
                             <th onClick={() => requestSort("builderName")}>
-                              <strong>Builder name</strong>
+                              <strong>Builder Name</strong>
                               {sortConfig.key !== "builderName"
                                 ? "↑↓"
                                 : ""}
@@ -345,30 +346,80 @@ const ProductList = () => {
                                 </span>
                               )}
                             </th>
-                            <th>
-                              <strong>Subdivision name</strong>
+                            <th onClick={() => requestSort("subdivisionName")}>
+                              <strong>Subdivision Name</strong>
+
+                              {sortConfig.key !== "subdivisionName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("name")}>
                               <strong>Name</strong>
+                              {sortConfig.key !== "name"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "name" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("product_code")}>
                               <strong>Product Code</strong>
+                              {sortConfig.key !== "product_code"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "product_code" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
-                              <strong>Stories</strong>
+                            <th onClick={() => requestSort("stories")}>
+                            <strong>Stories</strong>
+                              {sortConfig.key !== "stories"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "stories" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("recentprice")}>
+
                               <strong>Recent Price</strong>
+                              {sortConfig.key !== "recentprice"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "recentprice" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("recentpricesqft")}>
                               <strong>Recent Price SQFT</strong>
+                              {sortConfig.key !== "recentpricesqft"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "recentpricesqft" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {productList !== null && productList.length > 0 ? (
-                            productList.map((element, index) => (
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
@@ -379,7 +430,7 @@ const ProductList = () => {
                               >
                                 <td>{index + 1}</td>
                                 <td>{element.subdivision.builder.name}</td>
-                                <td>{element.name}</td>
+                                <td>{element.subdivision.name}</td>
                                 <td>{element.name}</td>
                                 <td>{element.product_code}</td>
                                 <td>{element.stories}</td>

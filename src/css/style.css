@@ -36487,3 +36487,13 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 width:250px;
 padding:20px 20px;
 }
+
+.content-body .container-fluid{
+  height: 100vh;
+}
+.content-body .container-fluid .row{
+  height: 100%;
+}
+.content-body .container-fluid .row .shorting{
+  height: 100%;
+}
