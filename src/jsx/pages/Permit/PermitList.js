@@ -315,7 +315,7 @@ const PermitList = () => {
                               <td>{element.description}</td>
                               <td>{element.address1}</td>
                               <td>
-                                <div className="d-flex">
+                                <div className="d-flex justify-content-center">
                                   <Link
                                     to={`/permitupdate/${element.id}`}
                                     className="btn btn-primary shadow btn-xs sharp me-1"

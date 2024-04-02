@@ -239,7 +239,7 @@ const BuilderTable = () => {
   return (
     <>
       <MainPagetitle
-        mainTitle="Builers"
+        mainTitle="Builders"
         pageTitle="Builders"
         parentTitle="Home"
       />
@@ -251,7 +251,7 @@ const BuilderTable = () => {
                 <div className="table-responsive custom-overflow active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
-                      <h4 className="heading mb-0 ">Builder List</h4>
+                      <h4 className="heading mb-0-imp">Builder List</h4>
 
                       <div
                         class="btn-group mx-5"
@@ -275,7 +275,7 @@ const BuilderTable = () => {
                       </div>
                     </div>
 
-                    <div>
+                    <div className="mt-3">
                       {SyestemUserRole == "Data Uploader" ||
                       SyestemUserRole == "User" ? (
                         ""
@@ -469,7 +469,7 @@ const BuilderTable = () => {
                                   SyestemUserRole === "User" ? (
                                     ""
                                   ) : (
-                                    <div className="d-flex justify-content-end">
+                                    <div className="d-flex justify-content-center">
                                       <Link
                                         to={`/builderUpdate/${element.id}`}
                                         className="btn btn-primary shadow btn-xs sharp me-1"

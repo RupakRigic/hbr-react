@@ -292,7 +292,7 @@ const PriceList = () => {
                               <td>{element.baseprice}</td>
                               <td>{element.date}</td>
                               <td>
-                                <div className="d-flex justify-content-end">
+                                <div className="d-flex justify-content-center">
                                   <Link
                                     to={`/priceupdate/${element.id}`}
                                     className="btn btn-primary shadow btn-xs sharp me-1"

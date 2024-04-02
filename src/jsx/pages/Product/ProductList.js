@@ -437,7 +437,7 @@ const ProductList = () => {
                                 <td>{element.recentprice}</td>
                                 <td>{element.recentpricesqft}</td>
                                 <td>
-                                  <div className="d-flex">
+                                  <div className="d-flex justify-content-center">
                                     <Link
                                       to={`/productupdate/${element.id}`}
                                       className="btn btn-primary shadow btn-xs sharp me-1"
