@@ -251,6 +251,7 @@ const ClosingList = () => {
                           <th>No.</th>
                           <th>Builder Name</th>
                           <th>Subdivision Name</th>
+                          <th>Seller</th>
                           <th>Address</th>
                           <th>Buyer</th>
                           <th>Closing Date</th>
@@ -276,7 +277,6 @@ const ClosingList = () => {
                                 {element.subdivision &&
                                   element.subdivision?.name}
                               </td>
-                              <td>{element.sellerleagal}</td>
                               <td>{element.sellerleagal}</td>
                               <td>{element.address}</td>
                               <td>{element.buyer}</td>

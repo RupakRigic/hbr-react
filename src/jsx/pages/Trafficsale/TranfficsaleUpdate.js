@@ -15,8 +15,8 @@ const TrafficsaleUpdate = () => {
     const params = useParams();
     const navigate = useNavigate()
     const isActiveData = [
-        { value: '0', label: 'true' },
-        { value: '1', label: 'false' }
+        { value: '0', label: 'De-active' },
+        { value: '1', label: 'Active' }
 
     ]
     const GetSubdivision = async (id) => {

@@ -173,8 +173,8 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <label className="form-label">Status<span className="text-danger"></span></label>
                                     <select className="default-select form-control" onChange={handleActive} >
 
-                                        <option value="1">true</option>
-                                        <option value="0">False</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">De-active</option>
 
                                     </select>
 

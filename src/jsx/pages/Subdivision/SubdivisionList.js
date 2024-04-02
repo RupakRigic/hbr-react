@@ -756,7 +756,7 @@ const SubdivisionList = () => {
                                 <td>{index + 1}</td>
                                 <td>
                                   {element.status === 1 && "Active"}
-                                  {element.status === 0 && "De-acitve"}
+                                  {element.status === 0 && "Sold Out"}
                                   {element.status === 2 && "Future"}
                                 </td>
                                 <td>

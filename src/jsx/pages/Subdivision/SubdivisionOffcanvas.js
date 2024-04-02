@@ -361,6 +361,9 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="CC Winchester">CC Winchester</option>
                                         <option value="CC Unincorporated">CC Unincorporated</option>
                                         <option value="Henderson">Henderson</option>
+                                        <option value="Mesquite">Mesquite</option>
+                                        <option value="NLV">NLV</option>
+                                        <option value="NYE">NYE</option>
 
                                     </select>                            
                                 </div>

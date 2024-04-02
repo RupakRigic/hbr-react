@@ -554,6 +554,9 @@ const SubdivisionUpdate = () => {
                             CC Unincorporated
                           </option>
                           <option value="Henderson">Henderson</option>
+                          <option value="Mesquite">Mesquite</option>
+                                        <option value="NLV">NLV</option>
+                                        <option value="NYE">NYE</option>
                         </select>
                       </div>
                       <div className="col-xl-6 mb-3">
