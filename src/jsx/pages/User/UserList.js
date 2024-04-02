@@ -286,7 +286,7 @@ const UserList = () => {
                                 <td>NA</td>
                               )}
                               <td>
-                                <div className="d-flex">
+                                <div className="d-flex justify-content-center">
                                   <Link
                                     to={`/userupdate/${element.id}`}
                                     className="btn btn-primary shadow btn-xs sharp me-1"

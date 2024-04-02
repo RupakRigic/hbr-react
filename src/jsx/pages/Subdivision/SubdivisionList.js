@@ -1449,7 +1449,7 @@ const SubdivisionList = () => {
                                       <td>{element.lotreleased}</td>
                                       <td>{element.unsoldinventory}</td>
                                       <td>
-                                        <div className="d-flex">
+                                        <div className="d-flex justify-content-center">
                                           <Link
                                             to={`/trafficsaleupdate/${element.id}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
@@ -1544,7 +1544,7 @@ const SubdivisionList = () => {
                                       <td>{element.loanamount}</td>
                                       <td>{element.document}</td>
                                       <td>
-                                        <div className="d-flex">
+                                        <div className="d-flex justify-content-center">
                                           <Link
                                             to={`/closingsaleupdate/${element.id}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
@@ -1656,7 +1656,7 @@ const SubdivisionList = () => {
                                       <td>{element.price}</td>
                                       <td>{element.date}</td>
                                       <td>
-                                        <div className="d-flex">
+                                        <div className="d-flex justify-content-center">
                                           <Link
                                             to={`/landsaleupdate/${element.id}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"

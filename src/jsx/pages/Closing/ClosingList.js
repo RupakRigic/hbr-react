@@ -285,7 +285,7 @@ const ClosingList = () => {
                               <td>{element.loanamount}</td>
                               <td>{element.document}</td>
                               <td>
-                                <div className="d-flex">
+                                <div className="d-flex justify-content-center">
                                   <Link
                                     to={`/closingsaleupdate/${element.id}`}
                                     className="btn btn-primary shadow btn-xs sharp me-1"

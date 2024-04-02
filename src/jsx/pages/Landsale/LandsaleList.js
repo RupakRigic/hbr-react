@@ -391,7 +391,7 @@ const LandsaleList = () => {
                               <td>{element.price}</td>
                               <td>{element.date}</td>
                               <td>
-                                <div className="d-flex">
+                                <div className="d-flex justify-content-center">
                                   <Link
                                     to={`/landsaleupdate/${element.id}`}
                                     className="btn btn-primary shadow btn-xs sharp me-1"

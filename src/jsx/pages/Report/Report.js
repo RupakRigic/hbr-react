@@ -295,7 +295,7 @@ const BuilderTable = () => {
                     <div className="card-body p-0">
                       <div
                         id="employee-tbl_wrapper"
-                        className="dataTables_wrapper no-footer"
+                        className="dataTables_wrapper no-footer table-responsive active-projects style-1 ItemsCheckboxSec shorting"
                       >
                         <table
                           id="empoloyees-tblwrapper"
@@ -358,7 +358,7 @@ const BuilderTable = () => {
                                     </a>
                                   </td>
                                   <td>
-                                    <div className="d-flex">
+                                    <div className="d-flex justify-content-center">
                                       <Link
                                         onClick={() =>
                                           swal({
