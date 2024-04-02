@@ -148,11 +148,12 @@
   --font-family-base: georgiaregular, sans-serif, sans-serif;
   --font-family-title: georgiaregular, sans-serif, sans-serif;
   --title: #DB7E2E; }
+  .table td{color:#575757;}
   h1,h2,h3,h4,h5,h6{font-family: 'arialregular';}
   .metismenu li a span{font-family: 'arialregular';}
 .table td{font-family: 'georgiaregular';}
-.table th,.MuiButtonBase-root{font-family: 'georgiabold';}
-.MuiButtonBase-root{font-family: 'georgiabold' !important;}
+.table th{font-family: 'arialbold';}
+.MuiButtonBase-root{font-family: 'arialbold' !important; font-weight: 700 !important;}
 .gradient_one {
   background-image: linear-gradient(to right, rgba(186, 1, 181, 0.85) 0%, rgba(103, 25, 255, 0.85) 100%); }
 
@@ -9564,7 +9565,9 @@ label {
   text-align: left;
   position: absolute;
   top: 0;
-  background-color: var(--nav-headbg);
+  /* background-color: var(--nav-headbg); */
+  background-color: #fff;
+  box-shadow: 0 5px 10px -10px rgba(0, 0, 0, 0.6);
   transition: all .2s ease;
   z-index: 5; }
   .nav-header .logo-compact {
@@ -15489,7 +15492,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-nav-headerbg="color_4"][data-theme-version="dark"],
 [data-nav-headerbg="color_4"] {
-  --nav-headbg: #B5AC9E;
+  --nav-headbg: #fff;
   /* .nav-control{
 				background-color:transparent;
 			} */
@@ -18815,7 +18818,8 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 
 [data-headerbg="color_4"][data-theme-version="dark"],
 [data-headerbg="color_4"] {
-  --headerbg: #B5AC9E;
+  --headerbg: #fff;
+
   /* &[data-headerbg="color_8"]{
 					
 				.search-area .input-group-text,
@@ -31565,7 +31569,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-align: center; }
 
 [data-nav-headerbg="color_4"] .nav-header .nav-control {
-  background-color: #4974B9; }
+  background-color: #DB7E2E; }
 
 [data-nav-headerbg="color_4"] .nav-header .hamburger .line {
   background: #fff; }
@@ -32498,7 +32502,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-width: 180px;
 }
 .brand-logo img{
-  max-width: 130px;
+  max-width: 105px;
 }
 .brand-logo img.logo-icon{
   max-width: 40px;
@@ -36496,4 +36500,10 @@ padding:20px 20px;
 }
 .content-body .container-fluid .row .shorting{
   height: 100%;
+}
+.nav-header {
+  border-bottom: 1px solid #B5AC9E;
+}
+.header {
+  border-bottom: 1px solid #B5AC9E;
 }
