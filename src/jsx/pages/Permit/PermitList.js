@@ -20,6 +20,7 @@ const PermitList = () => {
   const [permitList, setPermitList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 15;
@@ -75,7 +76,6 @@ const PermitList = () => {
       const responseData = await response.json();
       setPermitList(responseData);
       setIsLoading(false);
-
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -217,13 +217,50 @@ const PermitList = () => {
 
     debouncedHandleSearch(`?q=${query}`);
   };
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...permitList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        // Handle undefined values for builderName and subdivisionName
+        if (sortConfig.key === 'builderName') {
+          aValue = (a.subdivision && a.subdivision.builder && a.subdivision.builder.name) || '';
+          bValue = (b.subdivision && b.subdivision.builder && b.subdivision.builder.name) || '';
+        } else if (sortConfig.key === 'subdivisionName') {
+          aValue = (a.subdivision && a.subdivision.name) || '';
+          bValue = (b.subdivision && b.subdivision.name) || '';
+        }
+  
+        // Convert string values to lowercase for case-insensitive sorting
+        aValue = typeof aValue === 'string' ? aValue.toLowerCase() : aValue;
+        bValue = typeof bValue === 'string' ? bValue.toLowerCase() : bValue;
+  
+        // Sorting logic
+        if (aValue === bValue) return 0;
+        return sortConfig.direction === 'asc' ? (aValue < bValue ? -1 : 1) : (aValue > bValue ? -1 : 1);
+      });
+    }
+    return sorted;
+  };
+  
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
-            <div className="card" style={{ overflow:"auto"}}>
+            <div className="card" style={{ overflow: "auto" }}>
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
@@ -240,7 +277,10 @@ const PermitList = () => {
                         </button>
                         <Form.Control
                           type="text"
-                          style={{ borderTopLeftRadius: '0',borderBottomLeftRadius: '0' }}
+                          style={{
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                          }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
@@ -269,90 +309,154 @@ const PermitList = () => {
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
                   >
-                                        {isLoading ? (
+                    {isLoading ? (
                       <div className="d-flex justify-content-center align-items-center mb-5">
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>No.</th>
-                          <th>Builder Name</th>
-                          <th>Subdivision Name</th>
-                          <th>Permit Number</th>
-                          <th>Owner</th>
-                          <th>Contractor</th>
-                          <th>Description</th>
-                          <th>Address</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                        {permitList !== null && permitList.length > 0 ? (
-                          permitList.map((element, index) => (
-                            <tr
-                              onClick={() => handleRowClick(element.id)}
-                              key={element.id}
-                              style={{ textAlign: "center", cursor: "pointer" }}
-                            >
-                              <td>{index + 1}</td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision.builder?.name}
-                              </td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision?.name}
-                              </td>
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong>No.</strong>
+                            </th>
+                            <th onClick={() => requestSort("builderName")}>
+                              <strong>Builder Name</strong>
+                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("subdivisionName")}>
+                              <strong>Subdivision Name</strong>
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("permitnumber")}>
+                              <strong>Permit Number</strong>
+                              {sortConfig.key !== "permitnumber" ? "↑↓" : ""}
+                              {sortConfig.key === "permitnumber" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("owner")}>
+                              <strong>Owner</strong>
+                              {sortConfig.key !== "owner" ? "↑↓" : ""}
+                              {sortConfig.key === "owner" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("contractor")}>
+                              <strong>Contractor</strong>
+                              {sortConfig.key !== "contractor" ? "↑↓" : ""}
+                              {sortConfig.key === "contractor" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>{" "}
+                            <th onClick={() => requestSort("description")}>
+                              <strong>Description</strong>
+                              {sortConfig.key !== "description" ? "↑↓" : ""}
+                              {sortConfig.key === "description" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>{" "}
+                            <th onClick={() => requestSort("address1")}>
+                              <strong>Address</strong>
+                              {sortConfig.key !== "address1" ? "↑↓" : ""}
+                              {sortConfig.key === "address1" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>{" "}
+                            <th>
+                              <strong>Action</strong>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
+                              <tr
+                                onClick={() => handleRowClick(element.id)}
+                                key={element.id}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <td>{index + 1}</td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision.builder?.name}
+                                </td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.name}
+                                </td>
 
-                              <td>{element.permitnumber}</td>
-                              <td>{element.owner}</td>
-                              <td>{element.contractor}</td>
-                              <td>{element.description}</td>
-                              <td>{element.address1}</td>
-                              <td>
-                                <div className="d-flex justify-content-center">
-                                  <Link
-                                    to={`/permitupdate/${element.id}`}
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                  >
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </Link>
-                                  <Link
-                                    onClick={() =>
-                                      swal({
-                                        title: "Are you sure?",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                      }).then((willDelete) => {
-                                        if (willDelete) {
-                                          handleDelete(element.id);
-                                        }
-                                      })
-                                    }
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </Link>
-                                </div>
+                                <td>{element.permitnumber}</td>
+                                <td>{element.owner}</td>
+                                <td>{element.contractor}</td>
+                                <td>{element.description}</td>
+                                <td>{element.address1}{" "}{element.address2}</td>
+
+                                <td>
+                                  <div className="d-flex justify-content-center">
+                                    <Link
+                                      to={`/permitupdate/${element.id}`}
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                    >
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </Link>
+                                    <Link
+                                      onClick={() =>
+                                        swal({
+                                          title: "Are you sure?",
+                                          icon: "warning",
+                                          buttons: true,
+                                          dangerMode: true,
+                                        }).then((willDelete) => {
+                                          if (willDelete) {
+                                            handleDelete(element.id);
+                                          }
+                                        })
+                                      }
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                    >
+                                      <i className="fa fa-trash"></i>
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ textAlign: "center" }}>
+                                No data found
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" style={{ textAlign: "center" }}>
-                              No data found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                             )}
+                          )}
+                        </tbody>
+                      </table>
+                    )}
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

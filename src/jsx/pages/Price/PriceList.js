@@ -32,6 +32,7 @@ const PriceList = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // function prePage() {
   //   if (currentPage !== 1) {
@@ -55,7 +56,6 @@ const PriceList = () => {
       const responseData = await response.json();
       setPriceList(responseData);
       setIsLoading(false);
-
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -169,6 +169,81 @@ const PriceList = () => {
       setSearchQuery("");
     }
   };
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...priceList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        if (aValue === null || bValue === null) {
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }
+        if (typeof aValue === "string") {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === "string") {
+          bValue = bValue.toLowerCase();
+        }
+
+        if (
+          sortConfig.key === "productName" &&
+          a.product &&
+          b.product
+        ) {
+          aValue = String(a.product.name).toLowerCase();
+          bValue = String(b.product.name).toLowerCase();
+        }
+        
+        if (
+          sortConfig.key === "productCode" &&
+          a.product &&
+          b.product
+        ) {
+          aValue = String(a.product.product_code).toLowerCase();
+          bValue = String(b.product.product_code).toLowerCase();
+        }
+        if (
+          sortConfig.key === "builderName" &&
+          a.product.subdivision.builder &&
+          b.product.subdivision.builder
+        ) {
+          aValue = String(a.product.subdivision.builder.name).toLowerCase();
+          bValue = String(b.product.subdivision.builder.name).toLowerCase();
+        }
+        if (
+          sortConfig.key === "subdivisionName" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
+          aValue = String(a.subdivision.name).toLowerCase();
+          bValue = String(b.subdivision.name).toLowerCase();
+        }
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          if (sortConfig.direction === "asc") {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          if (sortConfig.direction === "asc") {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
 
   return (
     <>
@@ -197,7 +272,10 @@ const PriceList = () => {
                         </button>
                         <Form.Control
                           type="text"
-                          style={{ borderTopLeftRadius: '0',borderBottomLeftRadius: '0' }}
+                          style={{
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                          }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
@@ -233,104 +311,145 @@ const PriceList = () => {
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
                   >
-                                      {isLoading ? (
+                    {isLoading ? (
                       <div className="d-flex justify-content-center align-items-center mb-5">
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <strong>No.</strong>
-                          </th>
-                          <th>
-                            <strong>Builder Name</strong>
-                          </th>
-                          <th>
-                            <strong>Subdivision Name</strong>
-                          </th>
-                          <th>
-                            <strong>Product Name</strong>
-                          </th>
-                          <th>
-                            <strong>Product Code</strong>
-                          </th>
-                          <th>
-                            <strong>Base Price</strong>
-                          </th>
-                          <th>
-                            <strong>Date</strong>
-                          </th>
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong>No.</strong>
+                            </th>
+                            <th onClick={() => requestSort("builderName")}>
+                              Builder Name
+                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
 
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                        {priceList !== null && priceList.length > 0 ? (
-                          priceList.map((element, index) => (
-                            <tr
-                              onClick={() => handleRowClick(element.id)}
-                              key={element.id}
-                              style={{ textAlign: "center", cursor: "pointer" }}
-                            >
-                              <td>{index + 1}</td>
-                              <td>
-                                {element.product.subdivision &&
-                                  element.product.subdivision.builder?.name}
-                              </td>
-                              <td>
-                                {element.product.subdivision &&
-                                  element.product.subdivision?.name}
-                              </td>
-                              <td>{element.product.name}</td>
+                            <th onClick={() => requestSort("subdivisionName")}>
+                              Subdivision Name
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("productName")}>
+                              <strong>Product Name
+                              {sortConfig.key !== "productName" ? "↑↓" : ""}
+                              {sortConfig.key === "productName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th onClick={() => requestSort("productCode")}>
+                              <strong>Product Code</strong>
+                              {sortConfig.key !== "productCode" ? "↑↓" : ""}
+                              {sortConfig.key === "productCode" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("baseprice")}>
+                              <strong>Base Price</strong>
+                              {sortConfig.key !== "baseprice" ? "↑↓" : ""}
+                              {sortConfig.key === "baseprice" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("date")}>
+                              <strong>Date</strong>
+                              {sortConfig.key !== "baseprice" ? "↑↓" : ""}
+                              {sortConfig.key === "baseprice" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
 
-                              <td>{element.product.product_code}</td>
-                              <td>{element.baseprice}</td>
-                              <td>{element.date}</td>
-                              <td>
-                                <div className="d-flex justify-content-center">
-                                  <Link
-                                    to={`/priceupdate/${element.id}`}
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                  >
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </Link>
-                                  <Link
-                                    onClick={() =>
-                                      swal({
-                                        title: "Are you sure?",
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
+                              <tr
+                                onClick={() => handleRowClick(element.id)}
+                                key={element.id}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <td>{index + 1}</td>
+                                <td>
+                                  {element.product.subdivision &&
+                                    element.product.subdivision.builder?.name}
+                                </td>
+                                <td>
+                                  {element.product.subdivision &&
+                                    element.product.subdivision?.name}
+                                </td>
+                                <td>{element.product.name}</td>
 
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                      }).then((willDelete) => {
-                                        if (willDelete) {
-                                          handleDelete(element.id);
-                                        }
-                                      })
-                                    }
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </Link>
-                                </div>
+                                <td>{element.product.product_code}</td>
+                                <td>{element.baseprice}</td>
+                                <td>{element.date}</td>
+                                <td>
+                                  <div className="d-flex justify-content-center">
+                                    <Link
+                                      to={`/priceupdate/${element.id}`}
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                    >
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </Link>
+                                    <Link
+                                      onClick={() =>
+                                        swal({
+                                          title: "Are you sure?",
+
+                                          icon: "warning",
+                                          buttons: true,
+                                          dangerMode: true,
+                                        }).then((willDelete) => {
+                                          if (willDelete) {
+                                            handleDelete(element.id);
+                                          }
+                                        })
+                                      }
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                    >
+                                      <i className="fa fa-trash"></i>
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ textAlign: "center" }}>
+                                No data found
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" style={{ textAlign: "center" }}>
-                              No data found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                           )}
+                          )}
+                        </tbody>
+                      </table>
+                    )}
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

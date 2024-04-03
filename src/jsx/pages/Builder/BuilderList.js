@@ -429,9 +429,17 @@ const BuilderTable = () => {
                                 </span>
                               )}
                             </th>
-                            <th>
-                              <strong>Action</strong>
-                            </th>
+                            {SyestemUserRole === "Data Uploader" ||
+                                  SyestemUserRole === "User" ? (
+                                    ""
+                                  ) : (
+                                    <th>
+                                    <strong>Action</strong>
+                                  </th>
+                                    )
+                                    }
+                                  
+               
                           </tr>
                         </thead>
                         <tbody>

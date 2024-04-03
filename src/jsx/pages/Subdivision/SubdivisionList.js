@@ -248,9 +248,7 @@ const SubdivisionList = () => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
   
-        // Check if aValue and bValue are null
         if (aValue === null || bValue === null) {
-          // Handle null values by treating them as empty strings
           aValue = aValue || "";
           bValue = bValue || "";
         }
@@ -293,8 +291,7 @@ const SubdivisionList = () => {
   };
   
   
-  
-  
+
   return (
     <>
       <MainPagetitle

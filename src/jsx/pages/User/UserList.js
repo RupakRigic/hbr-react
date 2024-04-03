@@ -35,6 +35,7 @@ const UserList = () => {
     role: "",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // function prePage() {
   //   if (currentPage !== 1) {
@@ -149,6 +150,54 @@ const UserList = () => {
       role: "",
     });
   };
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...userList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        if (sortConfig.key === 'role') {
+          aValue = a.roles.map(role => role.name).join(', ').toLowerCase();
+          bValue = b.roles.map(role => role.name).join(', ').toLowerCase();
+        } else {
+          if (aValue === null || bValue === null) {
+            aValue = aValue || "";
+            bValue = bValue || "";
+          }  
+          if (typeof aValue === 'string') {
+            aValue = aValue.toLowerCase();
+          }
+          if (typeof bValue === 'string') {
+            bValue = bValue.toLowerCase();
+          }
+        }
+          
+        if (sortConfig.key === 'builderName') {
+          aValue = (a.builder && a.builder.name) || '';
+          bValue = (b.builder && b.builder.name) || '';
+        } else if (sortConfig.key === 'subdivisionName') {
+          aValue = (a.builder && a.builder.name) || '';
+          bValue = (b.builder && b.builder.name) || '';
+        }
+  
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+        } else {
+          return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        }
+      });
+    }
+    return sorted;
+  };
+  
   return (
     <>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
@@ -247,24 +296,59 @@ const UserList = () => {
                           <th>
                             <strong>No.</strong>
                           </th>
-                          <th>
-                            <strong>Name</strong>
+                          <th onClick={() => requestSort("name")}>
+                            <strong>Name
+                            {sortConfig.key !== "name"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "name" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong>Email</strong>
+                          <th onClick={() => requestSort("email")}>
+                            <strong>Email
+                            {sortConfig.key !== "email"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "email" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong>Role</strong>
+                          <th onClick={() => requestSort("role")}>
+                            <strong>Role
+                            {sortConfig.key !== "role"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "role" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
+                          <th onClick={() => requestSort("builderName")}>
                             <strong>Builder</strong>
+                            {sortConfig.key !== "builderName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                           </th>
                           <th>Action</th>
                         </tr>
                       </thead>
                       <tbody style={{ textAlign: "center" }}>
-                        {userList !== null && userList.length > 0 ? (
-                          userList.map((element, index) => (
+                        {sortedData() !== null && sortedData().length > 0 ? (
+                          sortedData().map((element, index) => (
                             <tr
                               onClick={() => handleRowClick(element.id)}
                               key={element.id}

@@ -16,6 +16,7 @@ const TrafficsaleList = () => {
 
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
@@ -158,6 +159,57 @@ const TrafficsaleList = () => {
       status: "",
     });
   };
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...trafficsaleList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        if (aValue === null || bValue === null) {
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }  
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === 'string') {
+          bValue = bValue.toLowerCase();
+        }
+  
+        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+          aValue = String(a.subdivision.builder.name).toLowerCase();
+          bValue = String(b.subdivision.builder.name).toLowerCase();
+        }
+        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.name).toLowerCase();
+          bValue = String(b.subdivision.name).toLowerCase();
+        }
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          if (sortConfig.direction === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
   return (
     <>
       <MainPagetitle
@@ -264,22 +316,99 @@ const TrafficsaleList = () => {
                           <tr style={{ textAlign: "center" }}>
                             {" "}
                             <th>No.</th>
-                            <th>Builder Name</th>
-                            <th>Subdivision Name</th>
-                            <th>Week Ending</th>
-                            <th>Weekly Traffic</th>
-                            <th>Gross Sales</th>
-                            <th>Cancelations</th>
-                            <th>Net Sales</th>
-                            <th>Lot Released</th>
-                            <th>Unsold Inventory</th>
+                            <th onClick={() => requestSort("builderName")}>
+                              Builder Name
+                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </th>
+                            
+                              <th onClick={() => requestSort("subdivisionName")}>
+                              Subdivision Name
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </th>
+                              <th onClick={() => requestSort("weekending")}>
+                              Week Ending
+                              {sortConfig.key !== "weekending" ? "↑↓" : ""}
+                              {sortConfig.key === "weekending" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("weeklytraffic")}>
+                              Weekly Traffic
+                              {sortConfig.key !== "weeklytraffic" ? "↑↓" : ""}
+                              {sortConfig.key === "weeklytraffic" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </th>
+                              <th onClick={() => requestSort("grosssales")}>
+                              Gross Sales
+                              {sortConfig.key !== "grosssales" ? "↑↓" : ""}
+                              {sortConfig.key === "grosssales" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} 
+                             </th>
+                             <th onClick={() => requestSort("cancelations")}>
+                              Cancelations
+                            {sortConfig.key !== "cancelations" ? "↑↓" : ""}
+                              {sortConfig.key === "cancelations" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} 
+
+                            </th>
+                            <th onClick={() => requestSort("netsales")}>
+                              Net Sales
+                            {sortConfig.key !== "netsales" ? "↑↓" : ""}
+                              {sortConfig.key === "netsales" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} 
+
+                            </th>
+                            <th onClick={() => requestSort("lotreleased")}>
+                              Lot Released
+                            {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                              {sortConfig.key === "lotreleased" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} 
+
+                            </th>
+
+                            <th onClick={() => requestSort("unsoldinventory")}>
+                            Unsold Inventory
+                            {sortConfig.key !== "unsoldinventory" ? "↑↓" : ""}
+                              {sortConfig.key === "unsoldinventory" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} 
+                            </th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {trafficsaleList !== null &&
-                          trafficsaleList.length > 0 ? (
-                            trafficsaleList.map((element, index) => (
+                          {sortedData() !== null &&
+                          sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}

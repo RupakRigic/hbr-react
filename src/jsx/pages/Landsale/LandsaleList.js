@@ -34,6 +34,7 @@ const LandsaleList = () => {
   const [SubdivisionCode, setSubdivisionCode] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // const number = [...Array(npage + 1).keys()].slice(1);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [landSaleDetails, setLandSaleDetails] = useState({
     seller: "",
@@ -264,6 +265,57 @@ const LandsaleList = () => {
       setSearchQuery("");
     }
   };
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...LandsaleList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        if (aValue === null || bValue === null) {
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }  
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === 'string') {
+          bValue = bValue.toLowerCase();
+        }
+  
+        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+          aValue = String(a.subdivision.builder.name).toLowerCase();
+          bValue = String(b.subdivision.builder.name).toLowerCase();
+        }
+        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.name).toLowerCase();
+          bValue = String(b.subdivision.name).toLowerCase();
+        }
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          if (sortConfig.direction === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
+
 
 
   return (
@@ -335,29 +387,101 @@ const LandsaleList = () => {
                           <th>
                             <strong> No. </strong>
                           </th>
-                          <th>
-                            <strong>Builder Name</strong>
+                          <th onClick={() => requestSort("builderName")}>
+                            Builder Name
+                            {sortConfig.key !== "builderName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "builderName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                          <th onClick={() => requestSort("subdivisionName")}>
+                            Subdivision Name
+                          {sortConfig.key !== "subdivisionName"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                           </th>
-                          <th>
-                            <strong>Subdivision Name</strong>
+                          <th onClick={() => requestSort("seller")}>
+                            <strong>Seller
+                            {sortConfig.key !== "seller"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "seller" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+
+                            </strong>
                           </th>
-                          <th>
-                            <strong>Seller</strong>
+                          <th onClick={() => requestSort("buyer")}>
+                            <strong> Buyer
+                            {sortConfig.key !== "buyer"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "buyer" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong> Buyer</strong>
+                          <th onClick={() => requestSort("location")}>
+                            <strong> Location
+                            {sortConfig.key !== "location"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "location" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong> Location</strong>
+                          <th onClick={() => requestSort("notes")}>
+                            <strong> 
+                              Notes
+                            {sortConfig.key !== "notes"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "notes" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong> Notes</strong>
+                          <th onClick={() => requestSort("price")}>
+                            <strong> Price
+                            {sortConfig.key !== "price"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "price" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
-                          <th>
-                            <strong> Price</strong>
-                          </th>
-                          <th>
-                            <strong> date</strong>
+                          <th onClick={() => requestSort("date")}>
+                            <strong> date
+                            {sortConfig.key !== "date"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "date" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
 
                           <th>
@@ -367,8 +491,8 @@ const LandsaleList = () => {
                         </tr>
                       </thead>
                       <tbody style={{ textAlign: "center" }}>
-                        {LandsaleList !== null && LandsaleList.length > 0 ? (
-                          LandsaleList.map((element, index) => (
+                        {sortedData() !== null && sortedData().length > 0 ? (
+                          sortedData().map((element, index) => (
                             <tr
                               onClick={() => handleRowClick(element.id)}
                               key={element.id}

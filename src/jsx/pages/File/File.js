@@ -15,6 +15,7 @@ const File = () => {
   const [productList, setProductList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
@@ -95,6 +96,57 @@ const File = () => {
     }
   };
 
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedData = () => {
+    const sorted = [...productList];
+    if (sortConfig.key !== "") {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+  
+        if (aValue === null || bValue === null) {
+          aValue = aValue || "";
+          bValue = bValue || "";
+        }  
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+        }
+        if (typeof bValue === 'string') {
+          bValue = bValue.toLowerCase();
+        }
+  
+        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+          aValue = String(a.subdivision.builder.name).toLowerCase();
+          bValue = String(b.subdivision.builder.name).toLowerCase();
+        }
+        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.name).toLowerCase();
+          bValue = String(b.subdivision.name).toLowerCase();
+        }
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        } else {
+          if (sortConfig.direction === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+      });
+    }
+    return sorted;
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="File" pageTitle="File" parentTitle="Home" />
@@ -153,21 +205,31 @@ const File = () => {
                           <th>
                             <strong>No.</strong>
                           </th>
-                          <th>
-                            <strong>Title</strong>
+                          <th onClick={() => requestSort("name")}>
+                            <strong>
+                              Title
+                            {sortConfig.key !== "name"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "name" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </strong>
                           </th>
                           <th>
                             <strong>Download</strong>
                           </th>
-                          <th>
+                          <th className="d-flex justify-content-end">
                             <strong>Action</strong>
                           </th>
                         </tr>
                       </thead>
                       <tbody style={{ textAlign: "center" }}>
-                        {productList !== null &&
-                        productList.length > 0 ? (
-                            productList.map((element, index) => (
+                        {sortedData() !== null &&
+                        sortedData() .length > 0 ? (
+                          sortedData() .map((element, index) => (
                             <tr style={{ textAlign: "center" }}>
                               <td>{index + 1}</td>
                               <td>{element.name}</td>
