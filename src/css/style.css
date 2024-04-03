@@ -36513,3 +36513,13 @@ padding:20px 20px;
 .mb-0-imp{
   margin-bottom: 0 !important;
 }
+
+@media(max-width:550px){
+  .flex-column-mobile{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sm-m-0{
+    margin: 0 !important;
+  }
+}

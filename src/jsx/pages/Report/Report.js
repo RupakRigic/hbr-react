@@ -431,7 +431,7 @@ const BuilderTable = () => {
                         </div>
                         <div className="dataTables_wrapper no-footer">
                           <div className="row mb-3">
-                            <div className="d-flex align-items-center d-flex  align-items-center">
+                            <div className="d-flex align-items-center d-flex  align-items-center flex-column-mobile">
                               <div className="col-md-3">
                                 <div className="ms-4">Select Report</div>
                               </div>
@@ -467,7 +467,7 @@ const BuilderTable = () => {
                                   <option>WTSD Report Excel</option>
                                 </select>
                               </div>
-                              <div className="col-md-3 ms-4">
+                              <div className="col-md-3 ms-4 sm-m-0">
                                 <Button
                                   className="btn-sm"
                                   onClick={handleUploadClick}
@@ -530,9 +530,9 @@ const BuilderTable = () => {
                           </div>
 
                           <div className="row">
-                            <div className="col-md-7 d-flex align-items-center">
+                            <div className="col-md-7 d-flex align-items-center flex-column-mobile">
                               <div className="col-md-6">
-                                <div className="ms-4">Select Period</div>
+                                <div className="ms-4 sm-m-0">Select Period</div>
                               </div>
                               <div className="me-2 mb-2">
                                 <input
@@ -552,7 +552,7 @@ const BuilderTable = () => {
                               </div>
                             </div>
 
-                            <div className="mb-2 col-md-7 d-flex align-items-center d-flex  align-items-center">
+                            <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                               <span className="col-md-6">
                                 <div className="ms-4">Select Report</div>
                               </span>
@@ -583,7 +583,7 @@ const BuilderTable = () => {
                               </select>
                             </div>
                           </div>
-                          <div className="col-md-7 d-flex">
+                          <div className="col-md-7 d-flex justify-content-center">
                             <div className="ms-4 mb-4">
                               <a
                                 className="btn btn-primary me-2"
