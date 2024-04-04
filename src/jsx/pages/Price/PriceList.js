@@ -220,12 +220,111 @@ const PriceList = () => {
           bValue = String(b.product.subdivision.builder.name).toLowerCase();
         }
         if (
+          sortConfig.key === "sqft" &&
+          a.product.sqft &&
+          b.product.sqft        ) {
+          aValue = String(a.product.sqft).toLowerCase();
+          bValue = String(b.product.sqft).toLowerCase();
+        }
+        if (
+          sortConfig.key === "stories" &&
+          a.product.stories &&
+          b.product.stories        ) {
+          aValue = String(a.product.stories).toLowerCase();
+          bValue = String(b.product.stories).toLowerCase();
+        }
+        if (
+          sortConfig.key === "garage" &&
+          a.product.garage &&
+          b.product.garage) {
+          aValue = String(a.product.garage).toLowerCase();
+          bValue = String(b.product.garage).toLowerCase();
+        }
+        if (
+          sortConfig.key === "bathroom" &&
+          a.product.bathroom &&
+          b.product.bathroom        ) {
+          aValue = String(a.product.bathroom).toLowerCase();
+          bValue = String(b.product.bathroom).toLowerCase();
+        }
+        if (
+          sortConfig.key === "perSQFT" &&
+          a.product.recentpricesqft &&
+          b.product.recentpricesqft        ) {
+          aValue = String(a.product.recentpricesqft).toLowerCase();
+          bValue = String(b.product.recentpricesqft).toLowerCase();
+        }
+        if (
+          sortConfig.key === "productType" &&
+          a.product.subdivision.product_type &&
+          b.product.subdivision.product_type        ) {
+          aValue = String(a.product.subdivision.product_type).toLowerCase();
+          bValue = String(b.product.subdivision.product_type).toLowerCase();
+        }
+        if (
+          sortConfig.key === "area" &&
+          a.product.subdivision.area &&
+          b.product.subdivision.area        ) {
+          aValue = String(a.product.subdivision.area).toLowerCase();
+          bValue = String(b.product.subdivision.area).toLowerCase();
+        }
+        if (
+          sortConfig.key === "bedroom" &&
+          a.product.bedroom &&
+          b.product.bedroom) {
+          aValue = String(a.product.bedroom).toLowerCase();
+          bValue = String(b.product.bedroom).toLowerCase();
+        }
+
+        if (
+          sortConfig.key === "lotWidth" &&
+          a.product.subdivision.lotwidth &&
+          b.product.subdivision.lotwidth        ) {
+          aValue = String(a.product.subdivision.lotwidth).toLowerCase();
+          bValue = String(b.product.subdivision.lotwidth).toLowerCase();
+        }
+        if (
+          sortConfig.key === "lotsize" &&
+          a.product.subdivision.lotsize &&
+          b.product.subdivision.lotsize) {
+          aValue = String(a.product.subdivision.lotsize).toLowerCase();
+          bValue = String(b.product.subdivision.lotsize).toLowerCase();
+        }
+        if (
+          sortConfig.key === "zoning" &&
+          a.product.subdivision.zoning &&
+          b.product.subdivision.zoning) {
+          aValue = String(a.product.subdivision.zoning).toLowerCase();
+          bValue = String(b.product.subdivision.zoning).toLowerCase();
+        }
+        if (
+          sortConfig.key === "ageRestricted" &&
+          a.product.subdivision.age &&
+          b.product.subdivision.age) {
+          aValue = String(a.product.subdivision.age).toLowerCase();
+          bValue = String(b.product.subdivision.age).toLowerCase();
+        }
+        if (
+          sortConfig.key === "stories" &&
+          a.product.subdivision.stories &&
+          b.product.subdivision.stories) {
+          aValue = String(a.product.subdivision.stories).toLowerCase();
+          bValue = String(b.product.subdivision.stories).toLowerCase();
+        }
+        if (
+          sortConfig.key === "_fkProductID" &&
+          a.product.product_code &&
+          b.product.product_code) {
+          aValue = String(a.product.product_code).toLowerCase();
+          bValue = String(b.product.product_code).toLowerCase();
+        }
+        if (
           sortConfig.key === "subdivisionName" &&
-          a.subdivision &&
-          b.subdivision
+          a.product.subdivision &&
+          b.product.subdivision
         ) {
-          aValue = String(a.subdivision.name).toLowerCase();
-          bValue = String(b.subdivision.name).toLowerCase();
+          aValue = String(a.product.subdivision.name).toLowerCase();
+          bValue = String(b.product.subdivision.name).toLowerCase();
         }
         if (typeof aValue === "number" && typeof bValue === "number") {
           if (sortConfig.direction === "asc") {
@@ -325,6 +424,17 @@ const PriceList = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
+                            <th onClick={() => requestSort("created_at")}>
+                              <strong>
+                              Date
+                              {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                              {sortConfig.key === "created_at" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
                             <th onClick={() => requestSort("builderName")}>
                               Builder Name
                               {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -354,15 +464,57 @@ const PriceList = () => {
                               )}
                               </strong>
                             </th>
-                            <th onClick={() => requestSort("productCode")}>
-                              <strong>Product Code</strong>
-                              {sortConfig.key !== "productCode" ? "↑↓" : ""}
-                              {sortConfig.key === "productCode" && (
+                            <th onClick={() => requestSort("sqft")}>
+                              <strong>Squre Footage 
+                              {sortConfig.key !== "sqft" ? "↑↓" : ""}
+                              {sortConfig.key === "sqft" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
+                              </strong>
                             </th>
+                            <th onClick={() => requestSort("stories")}>
+                              <strong>Stories 
+                              {sortConfig.key !== "stories" ? "↑↓" : ""}
+                              {sortConfig.key === "stories" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th onClick={() => requestSort("bedroom")}>
+                              <strong>Bedrooms 
+                              {sortConfig.key !== "bedroom" ? "↑↓" : ""}
+                              {sortConfig.key === "bedroom" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th onClick={() => requestSort("bathroom")}>
+                              <strong>Bathroom 
+                              {sortConfig.key !== "bathroom" ? "↑↓" : ""}
+                              {sortConfig.key === "bathroom" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th onClick={() => requestSort("garage")}>
+                              <strong>Garage 
+                              {sortConfig.key !== "garage " ? "↑↓" : ""}
+                              {sortConfig.key === "garage " && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+    
                             <th onClick={() => requestSort("baseprice")}>
                               <strong>Base Price</strong>
                               {sortConfig.key !== "baseprice" ? "↑↓" : ""}
@@ -372,16 +524,136 @@ const PriceList = () => {
                                 </span>
                               )}
                             </th>
-                            <th onClick={() => requestSort("date")}>
-                              <strong>Date</strong>
-                              {sortConfig.key !== "baseprice" ? "↑↓" : ""}
-                              {sortConfig.key === "baseprice" && (
+                            <th onClick={() => requestSort("perSQFT")}>
+                              <strong>Price Per SQFT</strong>
+                              {sortConfig.key !== "perSQFT" ? "↑↓" : ""}
+                              {sortConfig.key === "perSQFT" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
                             </th>
-
+                            <th onClick={() => requestSort("productType")}>
+                              <strong>Product Type</strong>
+                              {sortConfig.key !== "productType" ? "↑↓" : ""}
+                              {sortConfig.key === "productType" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("area")}>
+                              <strong>Area</strong>
+                              {sortConfig.key !== "area" ? "↑↓" : ""}
+                              {sortConfig.key === "area" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th 
+                            // onClick={() => requestSort("masterplan_id")}
+                            >
+                              <strong>Master Plan</strong>
+                              {/* {sortConfig.key !== "masterplan_id" ? "↑↓" : ""}
+                              {sortConfig.key === "masterplan_id" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} */}
+                            </th>
+                              <th
+                              //  onClick={() => requestSort("zipcode")}
+                               >
+                                <strong>Zip Code</strong>
+                                {/* {sortConfig.key !== "zipcode"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "zipcode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )} */}
+                              </th>
+                            <th onClick={() => requestSort("lotWidth")}>
+                              <strong>Lot Width</strong>
+                              {sortConfig.key !== "lotWidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotWidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("lotsize")}>
+                              <strong>Lot Size</strong>
+                              {sortConfig.key !== "lotsize"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotsize" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("zoning")}>
+                              <strong>Zoning</strong>
+                              {sortConfig.key !== "zoning"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "zoning" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th 
+                            // onClick={() => requestSort("ageRestricted")}
+                            >
+                              <strong>Age Restricted</strong>
+                              {/* {sortConfig.key !== "ageRestricted"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "ageRestricted" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )} */}
+                            </th>
+                            <th onClick={() => requestSort("stories")}>
+                              <strong>All Single Story</strong>
+                              {sortConfig.key !== "stories"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "stories" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("id")}>
+                              <strong>__pkPriceID </strong>
+                              {sortConfig.key !== "id"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "id" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("_fkProductID")}>
+                              <strong>_fkProductID  </strong>
+                              {sortConfig.key !== "_fkProductID"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "_fkProductID" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -398,6 +670,11 @@ const PriceList = () => {
                               >
                                 <td>{index + 1}</td>
                                 <td>
+                                {new Date(
+                                    element.created_at
+                                  ).toLocaleString()}
+                                </td>
+                                <td>
                                   {element.product.subdivision &&
                                     element.product.subdivision.builder?.name}
                                 </td>
@@ -407,9 +684,24 @@ const PriceList = () => {
                                 </td>
                                 <td>{element.product.name}</td>
 
-                                <td>{element.product.product_code}</td>
+                                <td>{element.product.sqft}</td>
+                                <td>{element.product.stories}</td>
+                                <td>{element.product.bedroom}</td>
+                                <td>{element.product.bathroom}</td>
+                                <td>{element.product.garage}</td>
                                 <td>{element.baseprice}</td>
-                                <td>{element.date}</td>
+                                <td>{element.product.recentpricesqft}</td>
+                                <td>{element.product.subdivision.product_type}</td>
+                                <td>{element.product.subdivision.area}</td>
+                                <td>{element.product.subdivision.masterplan_id}</td>
+                                <td>{element.product.subdivision.zipcode}</td>
+                                <td>{element.product.subdivision.lotwidth}</td>
+                                <td>{element.product.subdivision.lotsize}</td>
+                                <td>{element.product.subdivision.zoning}</td>
+                                <td>{element.product.subdivision.age == 1?'Yes':'No'}</td>
+                                <td>{element.product.subdivision.single == 1?'Yes':'No'}</td>
+                                <td>{element.id}</td>
+                                <td>{element.product.product_code}</td>
                                 <td>
                                   <div className="d-flex justify-content-center">
                                     <Link

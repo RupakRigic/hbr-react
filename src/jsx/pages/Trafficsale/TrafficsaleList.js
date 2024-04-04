@@ -173,34 +173,42 @@ const TrafficsaleList = () => {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-  
+
         if (aValue === null || bValue === null) {
           aValue = aValue || "";
           bValue = bValue || "";
-        }  
-        if (typeof aValue === 'string') {
+        }
+        if (typeof aValue === "string") {
           aValue = aValue.toLowerCase();
         }
-        if (typeof bValue === 'string') {
+        if (typeof bValue === "string") {
           bValue = bValue.toLowerCase();
         }
-  
-        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+
+        if (
+          sortConfig.key === "builderName" &&
+          a.subdivision.builder &&
+          b.subdivision.builder
+        ) {
           aValue = String(a.subdivision.builder.name).toLowerCase();
           bValue = String(b.subdivision.builder.name).toLowerCase();
         }
-        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "subdivisionName" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
         }
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          if (sortConfig.direction === 'asc') {
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          if (sortConfig.direction === "asc") {
             return aValue - bValue;
           } else {
             return bValue - aValue;
           }
         } else {
-          if (sortConfig.direction === 'asc') {
+          if (sortConfig.direction === "asc") {
             return aValue.localeCompare(bValue);
           } else {
             return bValue.localeCompare(aValue);
@@ -316,7 +324,16 @@ const TrafficsaleList = () => {
                           <tr style={{ textAlign: "center" }}>
                             {" "}
                             <th>No.</th>
-                            <th onClick={() => requestSort("builderName")}>
+                            <th onClick={() => requestSort("weekending")}>
+                              Week Ending
+                              {sortConfig.key !== "weekending" ? "↑↓" : ""}
+                              {sortConfig.key === "weekending" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>          
+                                   <th onClick={() => requestSort("builderName")}>
                               Builder Name
                               {sortConfig.key !== "builderName" ? "↑↓" : ""}
                               {sortConfig.key === "builderName" && (
@@ -324,21 +341,11 @@ const TrafficsaleList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                              </th>
-                            
-                              <th onClick={() => requestSort("subdivisionName")}>
+                            </th>
+                            <th onClick={() => requestSort("subdivisionName")}>
                               Subdivision Name
                               {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
                               {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </th>
-                              <th onClick={() => requestSort("weekending")}>
-                              Week Ending
-                              {sortConfig.key !== "weekending" ? "↑↓" : ""}
-                              {sortConfig.key === "weekending" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
@@ -352,62 +359,86 @@ const TrafficsaleList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                              </th>
-                              <th onClick={() => requestSort("grosssales")}>
-                              Gross Sales
+                            </th>
+                            <th onClick={() => requestSort("grosssales")}>
+                             Weekly Gross Sales
                               {sortConfig.key !== "grosssales" ? "↑↓" : ""}
                               {sortConfig.key === "grosssales" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
-                              )} 
-                             </th>
-                             <th onClick={() => requestSort("cancelations")}>
-                              Cancelations
-                            {sortConfig.key !== "cancelations" ? "↑↓" : ""}
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("cancelations")}>
+                              Weekly Cancellations
+                              {sortConfig.key !== "cancelations" ? "↑↓" : ""}
                               {sortConfig.key === "cancelations" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
-                              )} 
-
+                              )}
                             </th>
                             <th onClick={() => requestSort("netsales")}>
-                              Net Sales
+                            Weekly Net Sales     
                             {sortConfig.key !== "netsales" ? "↑↓" : ""}
                               {sortConfig.key === "netsales" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
-                              )} 
-
+                              )}
                             </th>
                             <th onClick={() => requestSort("lotreleased")}>
-                              Lot Released
-                            {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                                Total Lots
+                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
                               {sortConfig.key === "lotreleased" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
-                              )} 
-
+                              )}
                             </th>
-
-                            <th onClick={() => requestSort("unsoldinventory")}>
-                            Unsold Inventory
-                            {sortConfig.key !== "unsoldinventory" ? "↑↓" : ""}
-                              {sortConfig.key === "unsoldinventory" && (
+                            <th onClick={() => requestSort("lotreleased")}>
+                              Weekly Lots Release For Sale
+                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                              {sortConfig.key === "lotreleased" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
-                              )} 
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("lotreleased")}>
+                            Weekly Unsold Standing Inventory
+                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                              {sortConfig.key === "lotreleased" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                              <th>
+                              Product Type{" "}
+                              </th>
+                            <th>
+                              Area {/* related field from SUBDIVISIONS table */}
+                            </th>
+                            <th>
+                              Master Plan{" "}
+                              {/* related field from SUBDIVISIONS table */}
+                            </th>
+                            <th>
+                              Zip Code{" "}
+                              {/* related field from SUBDIVISIONS table */}
+                            </th>
+                            <th>
+                              __pkRecordID {/* viewable to admin users only */}
+                            </th>
+                            <th>
+                            __fkRecordID {/* viewable to admin users only */}
                             </th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null &&
-                          sortedData().length > 0 ? (
+                          {sortedData() !== null && sortedData().length > 0 ? (
                             sortedData().map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
@@ -418,6 +449,8 @@ const TrafficsaleList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
+                                <td>{element.weekending}</td>
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision.builder?.name}
@@ -426,13 +459,20 @@ const TrafficsaleList = () => {
                                   {element.subdivision &&
                                     element.subdivision?.name}
                                 </td>
-                                <td>{element.weekending}</td>
                                 <td>{element.weeklytraffic}</td>
                                 <td>{element.grosssales}</td>
                                 <td>{element.cancelations}</td>
                                 <td>{element.netsales}</td>
+                                <td>{element.subdivision.totallots}</td>
                                 <td>{element.lotreleased}</td>
                                 <td>{element.unsoldinventory}</td>
+                                <td>{element.subdivision.product_type}</td>
+                                <td>{element.subdivision.area}</td>
+                                <td>{element.subdivision.masterplan_id}</td>
+                                <td>{element.subdivision.zipcode}</td>
+                                <td>{element.id}</td>
+                                <td>{element.subdivision.id}</td>
+
                                 <td>
                                   <div className="d-flex justify-content-center">
                                     <Link
@@ -609,15 +649,6 @@ const TrafficsaleList = () => {
                 <div>
                   <span className="fw-bold">
                     {TrafficDetails.lotreleased || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Unsold Inventory:</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.unsoldinventory || "NA"}
                   </span>
                 </div>
               </div>

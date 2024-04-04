@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import ClosingOffcanvas from "./ClosingOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import Button from "react-bootstrap/Button";
-import { Offcanvas,Form } from "react-bootstrap";
-import { debounce } from 'lodash';
+import { Offcanvas, Form } from "react-bootstrap";
+import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
+import PermitList from "../Permit/PermitList";
 
 const ClosingList = () => {
   const [Error, setError] = useState("");
@@ -28,15 +29,15 @@ const ClosingList = () => {
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [ClosingDetails, setClosingDetails] = useState({
-    "subdivision": "",
-    "sellerleagal": "",
-    "address": "",
-    "buyer":"",
-    "lender": "",
-    "closingdate": "",
-    "closingprice":"",
-    "loanamount":"",
-    "document":""
+    subdivision: "",
+    sellerleagal: "",
+    address: "",
+    buyer: "",
+    lender: "",
+    closingdate: "",
+    closingprice: "",
+    loanamount: "",
+    document: "",
   });
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -63,7 +64,6 @@ const ClosingList = () => {
       const responseData = await response.json();
       setClosingList(responseData);
       setIsLoading(false);
-
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -89,41 +89,40 @@ const ClosingList = () => {
     }
   };
 
-  const handleFileChange =  async (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
 
     if (file && file.type === "text/csv") {
-      setLoading(true)
+      setLoading(true);
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-      fileReader.onload = async() => {
+      fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-       const inputData =
-        {
-            csv:iFile
+        const inputData = {
+          csv: iFile,
         };
         try {
-            let responseData = await AdminClosingService.import(inputData).json();
-            setSelectedFile("")
-            document.getElementById("fileInput").value = null;
-            setLoading(false)
-            swal("Imported Sucessfully").then((willDelete) => {
-              if (willDelete) {
-                navigate("/closingsalelist");
-              }
-            });
-            getClosingList();
-          } catch (error) {
-            console.log(error);
-            if (error.name === "HTTPError") {
-              const errorJson =  error.response.json();
-              setSelectedFile("")
-              setError(errorJson.message);
-              document.getElementById("fileInput").value = null;
-              setLoading(false)
+          let responseData = await AdminClosingService.import(inputData).json();
+          setSelectedFile("");
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+          swal("Imported Sucessfully").then((willDelete) => {
+            if (willDelete) {
+              navigate("/closingsalelist");
             }
+          });
+          getClosingList();
+        } catch (error) {
+          console.log(error);
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
           }
+        }
       };
 
       setSelectedFileError("");
@@ -157,9 +156,11 @@ const ClosingList = () => {
     }
   };
 
-  const debouncedHandleSearch = useRef(debounce((value) => {
-    setSearchQuery(value);
-  }, 1000)).current;
+  const debouncedHandleSearch = useRef(
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 1000)
+  ).current;
 
   useEffect(() => {
     getClosingList();
@@ -191,21 +192,58 @@ const ClosingList = () => {
         if (aValue === null || bValue === null) {
           aValue = aValue || "";
           bValue = bValue || "";
-        }  
+        }
+  
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
         }
         if (typeof bValue === 'string') {
           bValue = bValue.toLowerCase();
-        }
-  
-        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+        }  
+        if (sortConfig.key === 'builderName' && a.subdivision.builder.name && b.subdivision.builder.name) {
           aValue = String(a.subdivision.builder.name).toLowerCase();
           bValue = String(b.subdivision.builder.name).toLowerCase();
         }
+
         if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
+        }
+        if (sortConfig.key === 'productType' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.product_type).toLowerCase();
+          bValue = String(b.subdivision.product_type).toLowerCase();
+        }
+        if (sortConfig.key === 'area' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.area).toLowerCase();
+          bValue = String(b.subdivision.area).toLowerCase();
+        }
+        if (sortConfig.key === 'masterPlan' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.masterplan_id).toLowerCase();
+          bValue = String(b.subdivision.masterplan_id).toLowerCase();
+        }
+        if (sortConfig.key === 'zipCode' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.zipcode).toLowerCase();
+          bValue = String(b.subdivision.zipcode).toLowerCase();
+        }
+        if (sortConfig.key === 'lotWidth' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.lotwidth).toLowerCase();
+          bValue = String(b.subdivision.lotwidth).toLowerCase();
+        }
+        if (sortConfig.key === 'lotsize' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.lotsize).toLowerCase();
+          bValue = String(b.subdivision.lotsize).toLowerCase();
+        }
+        if (sortConfig.key === 'zoning' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.zoning).toLowerCase();
+          bValue = String(b.subdivision.zoning).toLowerCase();
+        }
+        if (sortConfig.key === 'age' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.age).toLowerCase();
+          bValue = String(b.subdivision.age).toLowerCase();
+        }
+        if (sortConfig.key === 'subdivisionCode' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.subdivision_code).toLowerCase();
+          bValue = String(b.subdivision.subdivision_code).toLowerCase();
         }
         if (typeof aValue === 'number' && typeof bValue === 'number') {
           if (sortConfig.direction === 'asc') {
@@ -224,6 +262,7 @@ const ClosingList = () => {
     }
     return sorted;
   };
+  
 
   return (
     <>
@@ -235,23 +274,27 @@ const ClosingList = () => {
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
-            <div className="card" style={{overflow:"auto"}}>
+            <div className="card" style={{ overflow: "auto" }}>
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
-                  <div className="d-flex text-nowrap justify-content-between align-items-center">
-                    <h4 className="heading mb-0">Closing List</h4>
-                    <div
+                    <div className="d-flex text-nowrap justify-content-between align-items-center">
+                      <h4 className="heading mb-0">Closing List</h4>
+                      <div
                         class="btn-group mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
                         <button class="btn btn-secondary cursor-none">
                           {" "}
-                          <i class="fas fa-search"></i>        </button>
-                          <Form.Control
+                          <i class="fas fa-search"></i>{" "}
+                        </button>
+                        <Form.Control
                           type="text"
-                          style={{ borderTopLeftRadius: '0',borderBottomLeftRadius: '0' }}
+                          style={{
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                          }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
@@ -264,9 +307,7 @@ const ClosingList = () => {
                         onClick={handleUploadClick}
                         disabled={loading}
                       >
-                        
-                        {loading ? 'Loading..' : 'Import'}
-
+                        {loading ? "Loading.." : "Import"}
                       </Button>
                       <input
                         type="file"
@@ -288,173 +329,324 @@ const ClosingList = () => {
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
                   >
-                                        {isLoading ? (
+                    {isLoading ? (
                       <div className="d-flex justify-content-center align-items-center mb-5">
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>No.</th>
-                          <th onClick={() => requestSort("builderName")}>
-                            Builder Name
-                            {sortConfig.key !== "builderName"
-                                ? "↑↓"
-                                : ""}
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>No.</th>
+                            <th>Closing Type</th>
+                            <th onClick={() => requestSort("closingdate")}>
+                              Closing Date
+                              {sortConfig.key !== "closingdate" ? "↑↓" : ""}
+                              {sortConfig.key === "closingdate" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("document")}>
+                              Doc
+                            {sortConfig.key !== "document" ? "↑↓" : ""}
+                              {sortConfig.key === "document" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("builderName")}>
+                              Builder Name
+                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
                               {sortConfig.key === "builderName" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
                             </th>
-                          <th onClick={() => requestSort("subdivisionName")}>
-                            Subdivision Name
-                          {sortConfig.key !== "subdivisionName"
-                                ? "↑↓"
-                                : ""}
+                            <th onClick={() => requestSort("subdivisionName")}>
+                              Subdivision Name
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
                               {sortConfig.key === "subdivisionName" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                          </th>
-                          <th onClick={() => requestSort("sellerleagal")}>
-                            Seller
-                          {sortConfig.key !== "sellerleagal"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "sellerleagal" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th onClick={() => requestSort("address")}>
-                           Address
-                          {sortConfig.key !== "address"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "address" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th onClick={() => requestSort("buyer")}>
-                            Buyer
-                          {sortConfig.key !== "buyer"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "buyer" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th onClick={() => requestSort("closingdate")}>
-                            Closing Date
-                          {sortConfig.key !== "closingdate"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "closingdate" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th onClick={() => requestSort("closingdate")}>
-                          Closing Price
-                          {sortConfig.key !== "closingprice"
-                                ? "↑↓"
-                                : ""}
+                            </th>
+                            <th onClick={() => requestSort("closingprice")}>
+                              Closing Price
+                              {sortConfig.key !== "closingprice" ? "↑↓" : ""}
                               {sortConfig.key === "closingprice" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                          </th>
-                          <th onClick={() => requestSort("loanamount")}>
-                            Loan Amount
-                          {sortConfig.key !== "loanamount"
-                                ? "↑↓"
-                                : ""}
+                            </th>
+                            <th onClick={() => requestSort("address")}>
+                              Address
+                              {sortConfig.key !== "address" ? "↑↓" : ""}
+                              {sortConfig.key === "address" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th >
+                              Parcel Number
+                            </th>
+                            <th onClick={() => requestSort("subdivisionName")}>
+                              Sub Legal Name
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("sellerleagal")}>
+                              Seller Legal Name
+                              {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
+                              {sortConfig.key === "sellerleagal" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("buyer")}>
+                              Buyer Name
+                              {sortConfig.key !== "buyer" ? "↑↓" : ""}
+                              {sortConfig.key === "buyer" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Lender
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("loanamount")}>
+                              Loan Amount
+                              {sortConfig.key !== "loanamount" ? "↑↓" : ""}
                               {sortConfig.key === "loanamount" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
                             </th>
-                          <th onClick={() => requestSort("document")}>
-                            Document
-                          {sortConfig.key !== "document"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "document" && (
+                            <th>
+                              Type
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
                                 <span>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                          </th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                      {sortedData() !== null && sortedData().length > 0 ? (
-                          sortedData().map((element, index) => (
-                            <tr 
-                            onClick={() => handleRowClick(element.id)}
-                            key={element.id}
-                            style={{ textAlign: "center", cursor: "pointer" }}>           
-                              <td>{index + 1}</td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision.builder?.name}
-                              </td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision?.name}
-                              </td>
-                              <td>{element.sellerleagal}</td>
-                              <td>{element.address}</td>
-                              <td>{element.buyer}</td>
-                              <td>{element.closingdate}</td>
-                              <td>{element.closingprice}</td>
-                              <td>{element.loanamount}</td>
-                              <td>{element.document}</td>
-                              <td>
-                                <div className="d-flex justify-content-center">
-                                  <Link
-                                    to={`/closingsaleupdate/${element.id}`}
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                  >
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </Link>
-                                  <Link
-                                    onClick={() =>
-                                      swal({
-                                        title: "Are you sure?",
+                            </th>
+                            <th>
+                              Product Type{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Area
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Master Plan
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Zip Code{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}{" "}
+                            </th>
+                            <th>
+                              Lot Width{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}{" "}
+                            </th>
+                            <th>
+                              Lot Size{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Zoning{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}{" "}
+                            </th>
+                            <th>
+                              Age Restricted{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              All Single Story{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              Date Added{" "}
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              __pkRecordID
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>
+                              _fkSubID
+                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
+                              {sortConfig.key === "subdivisionName" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
+                              <tr
+                                onClick={() => handleRowClick(element.id)}
+                                key={element.id}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <td>{index + 1}</td>
+                                <td>NA</td>
+                                <td>{element.closingdate}</td>
+                                <td>{element.document}</td>
 
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                      }).then((willDelete) => {
-                                        if (willDelete) {
-                                          handleDelete(element.id);
-                                        }
-                                      })
-                                    }
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </Link>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision.builder?.name}
+                                </td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.name}
+                                </td>
+                                <td>{element.closingprice}</td>
+                                <td>{element.address}</td>
+                                <td>{element.parcel}</td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.name}
+                                </td>                              
+                                  <td>{element.sellerleagal}</td>
+                                <td>{element.buyer}</td>
+                                <td>{element.lender}</td>
+                                <td>{element.loanamount}</td>
+                                <td>NA</td>
+                                <td>{element.subdivision.product_type}</td>
+                                <td>{element.subdivision.area}</td>
+                                <td>{element.subdivision.masterplan_id}</td>
+                                <td>{element.subdivision.zipcode}</td>
+                                <td>{element.subdivision.lotwidth}</td>
+                                <td>{element.subdivision.lotsize}</td>
+                                <td>{element.subdivision.zoning}</td>
+                                <td>{element.subdivision.age == '1' ? 'Yes':'No'}</td>
+                                <td>{element.subdivision.single == '1' ? 'Yes':'No'}</td>
+                                <td>
+                                {new Date(
+                                    element.created_at
+                                  ).toLocaleString()}
+                                </td>
+                                <td>{element.id}</td>
+                                <td>{element.subdivision.subdivision_code}</td>
+
+                                <td>
+                                  <div className="d-flex justify-content-center">
+                                    <Link
+                                      to={`/closingsaleupdate/${element.id}`}
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                    >
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </Link>
+                                    <Link
+                                      onClick={() =>
+                                        swal({
+                                          title: "Are you sure?",
+
+                                          icon: "warning",
+                                          buttons: true,
+                                          dangerMode: true,
+                                        }).then((willDelete) => {
+                                          if (willDelete) {
+                                            handleDelete(element.id);
+                                          }
+                                        })
+                                      }
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                    >
+                                      <i className="fa fa-trash"></i>
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
                           ) : (
                             <tr>
                               <td colSpan="7" style={{ textAlign: "center" }}>
@@ -462,9 +654,9 @@ const ClosingList = () => {
                               </td>
                             </tr>
                           )}
-                      </tbody>
-                    </table>
-                          )}
+                        </tbody>
+                      </table>
+                    )}
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}
@@ -518,7 +710,7 @@ const ClosingList = () => {
         Title="Add Closing"
         parentCallback={handleCallback}
       />
-        <Offcanvas
+      <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
         className="offcanvas-end customeoff"
@@ -559,7 +751,7 @@ const ClosingList = () => {
               </div>
 
               <div className="col-xl-4 mt-4">
-                <label className="">Address  :</label>
+                <label className="">Address :</label>
                 <div>
                   <span className="fw-bold">
                     {ClosingDetails.address || "NA"}
@@ -568,7 +760,7 @@ const ClosingList = () => {
               </div>
 
               <div className="col-xl-4 mt-4">
-                <label className="">Buyer  :</label>
+                <label className="">Buyer :</label>
                 <div>
                   <span className="fw-bold">
                     {ClosingDetails.buyer || "NA"}
@@ -577,7 +769,7 @@ const ClosingList = () => {
               </div>
 
               <div className="col-xl-4 mt-4">
-                <label className="">Lender  :</label>
+                <label className="">Lender :</label>
                 <div>
                   <span className="fw-bold">
                     {ClosingDetails.lender || "NA"}
@@ -592,7 +784,7 @@ const ClosingList = () => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="col-xl-4 mt-4">
                 <label className="">Closing Price :</label>
                 <div>

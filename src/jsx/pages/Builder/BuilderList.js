@@ -377,11 +377,23 @@ const BuilderTable = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
+
+                            <th>
+                              <strong>Logo</strong>
+                            </th>
+                            <th onClick={() => requestSort("website")}>
+                              <strong>Website</strong>
+                              {sortConfig.key !== "website" ? "↑↓" : ""}
+
+                              {sortConfig.key === "website" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
                             <th onClick={() => requestSort("name")}>
-                              <strong>Name</strong>
-                              {sortConfig.key !== "name"
-                                ? "↑↓"
-                                : ""}
+                              <strong>Builder Name</strong>
+                              {sortConfig.key !== "name" ? "↑↓" : ""}
 
                               {sortConfig.key === "name" && (
                                 <span>
@@ -389,26 +401,9 @@ const BuilderTable = () => {
                                 </span>
                               )}
                             </th>
-                            <th>
-                              <strong>Logo</strong>
-                            </th>
-                            <th onClick={() => requestSort("phone")}>
-                              <strong>Phone</strong>
-                              {sortConfig.key !== "phone"
-                                ? "↑↓"
-                                : ""}
-
-                              {sortConfig.key === "phone" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
                             <th onClick={() => requestSort("company_type")}>
                               <strong>Company Type</strong>
-                              {sortConfig.key !== "company_type"
-                                ? "↑↓"
-                                : ""}
+                              {sortConfig.key !== "company_type" ? "↑↓" : ""}
 
                               {sortConfig.key === "company_type" && (
                                 <span>
@@ -416,12 +411,22 @@ const BuilderTable = () => {
                                 </span>
                               )}
                             </th>
-                            <th onClick={() => requestSort("officeaddress1")}>
+                            <th>
+                              <strong>Email</strong>
+                            </th>
+                            <th onClick={() => requestSort("phone")}>
+                              <strong>LV Office Phone</strong>
+                              {sortConfig.key !== "phone" ? "↑↓" : ""}
 
-                              <strong>Office Address</strong>
-                              {sortConfig.key !== "officeaddress1"
-                                ? "↑↓"
-                                : ""}
+                              {sortConfig.key === "phone" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("officeaddress1")}>
+                              <strong>LV Office Addres</strong>
+                              {sortConfig.key !== "officeaddress1" ? "↑↓" : ""}
 
                               {sortConfig.key === "officeaddress1" && (
                                 <span>
@@ -429,17 +434,214 @@ const BuilderTable = () => {
                                 </span>
                               )}
                             </th>
+
+                            <th onClick={() => requestSort("city")}>
+                              <strong>
+                                LV Office City
+                                {sortConfig.key !== "city" ? "↑↓" : ""}
+                                {sortConfig.key === "city" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </strong>
+                            </th>
+                            <th onClick={() => requestSort("zipcode")}>
+                              <strong>LV Office Zip</strong>
+                              {sortConfig.key !== "zipcode" ? "↑↓" : ""}
+
+                              {sortConfig.key === "zipcode" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("current_division_president")
+                              }
+                            >
+                              <strong>Current Division President</strong>
+                              {sortConfig.key !== "current_division_president"
+                                ? "↑↓"
+                                : ""}
+
+                              {sortConfig.key ===
+                                "current_division_president" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("current_land_aquisitions")
+                              }
+                            >
+                              <strong>Current Land Acquisitions
+                              {sortConfig.key !== "current_land_aquisitions"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "current_land_aquisitions" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("coporate_officeaddress_1")
+                              }
+                            >
+                              <strong>Corporate Office Address
+                              {sortConfig.key !== "coporate_officeaddress_1"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "coporate_officeaddress_1" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("coporate_officeaddress_city")
+                              }
+                            >
+                              <strong>Corporate Office City
+
+                              {sortConfig.key !== "coporate_officeaddress_city"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "coporate_officeaddress_city" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("coporate_officeaddress_2")
+                              }
+                            >
+                              <strong>Corporate Office State
+                              {sortConfig.key !== "coporate_officeaddress_2"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "coporate_officeaddress_2" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("coporate_officeaddress_zipcode")
+                              }
+                            >
+                              <strong>Corporate Office Zip
+                              {sortConfig.key !== "coporate_officeaddress_zipcode"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "coporate_officeaddress_zipcode" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("stock_market")
+                              }
+                            >
+                              <strong>Stock Market
+                              {sortConfig.key !== "stock_market"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "stock_market" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("stock_symbol")
+                              }
+                            >
+                              <strong>Stock Symbol
+                              {sortConfig.key !== "stock_symbol"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "stock_symbol" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th>
+                              <strong>Icon</strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("builder_code")
+                              }
+                            >
+                              <strong>__pkBuilderID
+                              {sortConfig.key !== "builder_code"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "builder_code" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                              </strong>
+                            </th>
+                            <th
+                              onClick={() =>
+                                requestSort("created_at")
+                              }
+                            >
+                              <strong>Date Added
+                              {sortConfig.key !== "created_at"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key ===
+                                "created_at" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+
+                              </strong>
+                            </th>
                             {SyestemUserRole === "Data Uploader" ||
-                                  SyestemUserRole === "User" ? (
-                                    ""
-                                  ) : (
-                                    <th>
-                                    <strong>Action</strong>
-                                  </th>
-                                    )
-                                    }
-                                  
-               
+                            SyestemUserRole === "User" ? (
+                              ""
+                            ) : (
+                              <th>
+                                <strong>Action</strong>
+                              </th>
+                            )}
                           </tr>
                         </thead>
                         <tbody>
@@ -454,7 +656,6 @@ const BuilderTable = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>{element.name}</td>
                                 <td>
                                   <div>
                                     <img
@@ -469,9 +670,32 @@ const BuilderTable = () => {
                                     />
                                   </div>
                                 </td>
-                                <td>{element.phone}</td>
+                                <td>{element.website}</td>
+                                <td>{element.name}</td>
                                 <td>{element.company_type}</td>
+                                <td>{element.email}</td>
+                                <td>{element.phone}</td>
                                 <td>{element.officeaddress1}</td>
+                                <td>{element.city}</td>
+                                <td>{element.zipcode}</td>
+                                <td>{element.current_division_president}</td>
+                                <td>{element.current_land_aquisitions}</td>
+                                <td>{element.coporate_officeaddress_1}</td>
+                                <td>{element.coporate_officeaddress_city}</td>
+                                <td>{element.coporate_officeaddress_2}</td>
+                                <td>
+                                  {element.coporate_officeaddress_zipcode}
+                                </td>
+                                <td>{element.stock_market}</td>
+                                <td>{element.stock_symbol}</td>
+                                <td>{element.icon}</td>
+                                <td>{element.builder_code}</td>
+                                <td>
+                                  {new Date(
+                                    element.created_at
+                                  ).toLocaleString()}
+                                </td>
+
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
                                   SyestemUserRole === "User" ? (

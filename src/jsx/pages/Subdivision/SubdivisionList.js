@@ -689,7 +689,7 @@ const SubdivisionList = () => {
                                 </span>
                               )}
                             </th>
-                            <th onClick={() => requestSort("website")}>
+                            <th>
                               <strong> Website</strong>
                               {sortConfig.key !== "website"
                                 ? "↑↓"
