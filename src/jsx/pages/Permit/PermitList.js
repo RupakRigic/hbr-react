@@ -11,6 +11,7 @@ import Modal from "react-bootstrap/Modal";
 import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
+import DateComponent from "../../components/date/DateFormat";
 
 const PermitList = () => {
   const [show, setShow] = useState(false);
@@ -357,7 +358,7 @@ const PermitList = () => {
                                 </span>
                               )}
                             </th>
-                            <th onClick={() => requestSort("address2")}>
+                            <th onClick={() => requestSort("address1")}>
                               <strong>Address Name</strong>
                               {sortConfig.key !== "address1" ? "↑↓" : ""}
                               {sortConfig.key === "address1" && (
@@ -591,7 +592,7 @@ const PermitList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>{element.date}</td>
+                                <td><DateComponent date ={element.date}/></td>
 
                                 <td>
                                   {element.subdivision &&
@@ -606,7 +607,7 @@ const PermitList = () => {
                                 <td>{element.address1}</td>
                                 <td>{element.parcel}</td>
                                 <td>{element.contractor}</td>
-                                <td>{element.address1}{" "}{element.address2}</td>
+                                <td>{element.sqft}</td>
                                 <td>{element.owner}</td>
                                 <td>{element.lotnumber}</td>
                                 <td>{element.permitnumber}</td>
@@ -654,9 +655,7 @@ const PermitList = () => {
                                 </td>
 
                                 <td>
-                                {new Date(
-                                    element.created_at
-                                  ).toLocaleString()}
+                                    <DateComponent date={element.created_at} />
                                 </td>
                                 <td>
                                   {element.permitnumber}
@@ -856,7 +855,7 @@ const PermitList = () => {
                 <div>
                   <span className="fw-bold">
                     <span className="fw-bold">
-                      {PermitDetails.date || "NA"}
+                      { <DateComponent date={PermitDetails.date}/> || "NA"}
                     </span>
                   </span>
                 </div>
@@ -866,7 +865,7 @@ const PermitList = () => {
                 <label className="">Date Added:</label>
                 <div>
                   <span className="fw-bold">
-                    {PermitDetails.dateadded || "NA"}
+                    {<DateComponent date={PermitDetails.dateadded} /> || "NA"}
                   </span>
                 </div>
               </div>

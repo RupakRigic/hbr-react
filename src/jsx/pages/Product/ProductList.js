@@ -15,12 +15,16 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import PriceComponent from "../../components/Price/PriceComponent";
+import DateComponent from "../../components/date/DateFormat";
 
 const ProductList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [productList, setProductList] = useState(null);
+  const [BuilderList, setBuilderList] = useState([]);
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;ProductDetails
   // const lastIndex = currentPage * recordsPage;
@@ -43,6 +47,7 @@ const ProductList = () => {
   // }
   const [filterQuery, setFilterQuery] = useState({
     status: "",
+    subdivision_id:""
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -165,6 +170,7 @@ const ProductList = () => {
   const HandleCancelFilter = (e) => {
     setFilterQuery({
       status: "",
+      subdivision_id:""
     });
   };
   const handlePriceClick = () => {
@@ -258,7 +264,27 @@ const ProductList = () => {
     return sorted;
   };
   
-  
+  const getbuilderlist = async () => {
+    try {
+      const response = await AdminSubdevisionService.index(searchQuery);
+      const responseData = await response.json();
+      setBuilderList(responseData);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getbuilderlist();
+    } else {
+      navigate("/");
+    }
+  }, []);
   return (
     <>
       <MainPagetitle
@@ -309,6 +335,25 @@ const ProductList = () => {
                         <Dropdown.Menu>
                           <h5 className="">Filter Options</h5>
                           <div className="border-top">
+                          <div className="mt-3">
+                              <label className="form-label">
+                                Subdivision: <span className="text-danger"></span>
+                              </label>
+                              <select
+                                className="default-select form-control"
+                                value={filterQuery.subdivision_id}
+                                name="subdivision_id"
+                                onChange={HandleFilter}
+                              >
+                                {/* <option data-display="Select">Please select</option> */}
+                                <option value="">All</option>
+                                {BuilderList.map((element) => (
+                                  <option value={element.id}>
+                                    {element.name}
+                                  </option>
+                                ))}
+                              </select>
+                           </div>
                             <div className="mt-3 mb-3">
                               <label className="form-label">
                                 Status: <span className="text-danger"></span>
@@ -663,8 +708,8 @@ const ProductList = () => {
                                 <td>{element.bedroom}</td>
                                 <td>{element.bathroom}</td>
                                 <td>{element.garage}</td>
-                                <td>{element.recentprice}</td>
-                                <td>{element.recentpricesqft}</td>
+                                <td><PriceComponent price ={element.recentprice} /></td>
+                                <td><PriceComponent price ={element.recentpricesqft} /></td>
                                 <td></td>
                                 <td>{element.subdivision.product_type}</td>
                                 <td>{element.subdivision.area}</td>
@@ -682,9 +727,7 @@ const ProductList = () => {
                                   {element.subdivision.single === 0 && "No"}
                                 </td>
                                 <td>
-                                {new Date(
-                                    element.created_at
-                                  ).toLocaleString()}
+                                  <DateComponent date={element.created_at} />
                                 </td>
                                 <td>{element.product_code}</td>
                                 <td>{element.subdivision.subdivision_code}</td>
@@ -870,7 +913,7 @@ const ProductList = () => {
                       <label className="">Price Change:</label>
                       <div>
                         <span className="fw-bold">
-                          {ProductDetails.pricechange || "NA"}
+                          { <PriceComponent price ={ProductDetails.pricechange} /> || "NA"}
                         </span>
                       </div>
                     </div>
@@ -888,7 +931,7 @@ const ProductList = () => {
                       <label className="">Recent Price:</label>
                       <div>
                         <span className="fw-bold">
-                          {ProductDetails.recentprice || "NA"}
+                          {<PriceComponent price ={ProductDetails.recentprice} />|| "NA"}
                         </span>
                       </div>
                     </div>
@@ -906,7 +949,8 @@ const ProductList = () => {
                       <label className="">Recent Price SQFT:</label>
                       <div>
                         <span className="fw-bold">
-                          {ProductDetails.recentpricesqft || "NA"}
+                          { <PriceComponent price ={ProductDetails.recentpricesqft} /> || "NA"}
+
                         </span>
                       </div>
                     </div>
@@ -944,7 +988,7 @@ const ProductList = () => {
                                 <th>
                                   <strong>Base Price</strong>
                                 </th>
-                                <th>
+                                <th className="d-flex justify-content-end">
                                   <strong>Date</strong>
                                 </th>
                               </tr>
@@ -966,8 +1010,8 @@ const ProductList = () => {
                                       <td>{index + 1}</td>
 
                                       <td>{ProductDetails.product_code}</td>
-                                      <td>{element.baseprice}</td>
-                                      <td>{element.date}</td>
+                                      <td><PriceComponent price={element.baseprice} /> </td>
+                                      <td><DateComponent date={element.date}/></td>
                                     </tr>
                                   )
                                 )

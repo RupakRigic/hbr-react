@@ -7,6 +7,6 @@ export default {
     show: (id) => clientAuth.get(`admin/weekly/show/${id}`),
     getdate:()=> clientAuth.get(`admin/weekly/getdate`),
     put: (id, userData) => clientAuth.put(`admin/weekly/update-column/${id}`, { json: userData }),
-    getstatistics: () => clientAuth.get(`admin/weekly/getstatistics`),
+    getstatistics: (startDate ,endDate) => clientAuth.get(`admin/weekly/getstatistics?from=${startDate}&to=${endDate}`),
 
 };

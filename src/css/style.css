@@ -36523,3 +36523,14 @@ padding:20px 20px;
     margin: 0 !important;
   }
 }
+
+span{
+  color: #374557 !important;
+}
+label{
+  color: #374557 !important;
+}
+.fw-bolder{
+  color: #374557 !important;
+
+}

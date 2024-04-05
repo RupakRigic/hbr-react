@@ -15,6 +15,8 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
+import DateComponent from "../../components/date/DateFormat";
+
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -35,6 +37,7 @@ const BuilderTable = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const userRole = JSON.parse(localStorage.getItem("user")).role;
   const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
   const [BuilderDetails, SetBuilderDetails] = useState({
     code: "",
     name: "",
@@ -209,9 +212,26 @@ const BuilderTable = () => {
     }));
   };
 
-  const handleAccessForm = (e) => {
+  const handleAccessForm =  async(e) => {
     e.preventDefault();
-    console.log("Form Data:", accessForm);
+
+    var userData = {
+      form:accessForm,
+      role:role,
+      table: "builders"
+    } 
+    console.log(userData);
+    try {
+      const data = await AdminBuilderService.manageAccessFields(userData).json();
+    }
+    catch (error) {
+        if (error.name === 'HTTPError') {
+            const errorJson = await error.response.json();
+
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+        }
+
+    }
   };
   const requestSort = (key) => {
     let direction = "asc";
@@ -236,6 +256,10 @@ const BuilderTable = () => {
     }
     return sorted;
   };
+  const HandleRole =(e)=>{
+    setRole(e.target.value)
+  }
+  console.log(role);
   return (
     <>
       <MainPagetitle
@@ -691,9 +715,10 @@ const BuilderTable = () => {
                                 <td>{element.icon}</td>
                                 <td>{element.builder_code}</td>
                                 <td>
-                                  {new Date(
+                                  {/* {new Date(
                                     element.created_at
-                                  ).toLocaleString()}
+                                  ).toLocaleString()} */}
+                                  <DateComponent date ={element.created_at}/>
                                 </td>
 
                                 <td>
@@ -1167,11 +1192,13 @@ const BuilderTable = () => {
             <select
               className="default-select form-control"
               name="manage_role_fields"
+              onChange={HandleRole}
+              
             >
               {/* <option data-display="Select">Please select</option> */}
-              <option value="">Admin</option>
-              <option value="1">Data Uploader</option>
-              <option value="0">User</option>
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import TrafficsaleOffcanvas from "./TrafficsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -10,10 +10,13 @@ import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import DateComponent from "../../components/date/DateFormat";
 
 const TrafficsaleList = () => {
+  const navigate = useNavigate();
   const [Error, setError] = useState("");
-
+  const [BuilderList, setBuilderList] = useState([]);
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -40,6 +43,7 @@ const TrafficsaleList = () => {
 
   const [filterQuery, setFilterQuery] = useState({
     status: "",
+    subdivision_id:""
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -157,6 +161,7 @@ const TrafficsaleList = () => {
   const HandleCancelFilter = (e) => {
     setFilterQuery({
       status: "",
+      subdivision_id:""
     });
   };
 
@@ -201,6 +206,46 @@ const TrafficsaleList = () => {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
         }
+        if (sortConfig.key === 'zipCode' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.zipcode).toLowerCase();
+          bValue = String(b.subdivision.zipcode).toLowerCase();
+        }
+        if (sortConfig.key === 'lotWidth' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.lotwidth).toLowerCase();
+          bValue = String(b.subdivision.lotwidth).toLowerCase();
+        }
+        if (sortConfig.key === 'lotsize' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.lotsize).toLowerCase();
+          bValue = String(b.subdivision.lotsize).toLowerCase();
+        }
+        if (sortConfig.key === 'zoning' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.zoning).toLowerCase();
+          bValue = String(b.subdivision.zoning).toLowerCase();
+        }
+        if (sortConfig.key === 'age' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.age).toLowerCase();
+          bValue = String(b.subdivision.age).toLowerCase();
+        }
+        if (sortConfig.key === 'stories' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.single).toLowerCase();
+          bValue = String(b.subdivision.single).toLowerCase();
+        }
+        if (sortConfig.key === 'masterPlan' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.masterplan_id).toLowerCase();
+          bValue = String(b.subdivision.masterplan_id).toLowerCase();
+        }
+        if (sortConfig.key === 'area' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.area).toLowerCase();
+          bValue = String(b.subdivision.area).toLowerCase();
+        }
+        if (sortConfig.key === 'productType' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.product_type).toLowerCase();
+          bValue = String(b.subdivision.product_type).toLowerCase();
+        }
+        if (sortConfig.key === 'subdivisionCode' && a.subdivision && b.subdivision) {
+          aValue = String(a.subdivision.subdivision_code).toLowerCase();
+          bValue = String(b.subdivision.subdivision_code).toLowerCase();
+        }
         if (typeof aValue === "number" && typeof bValue === "number") {
           if (sortConfig.direction === "asc") {
             return aValue - bValue;
@@ -218,6 +263,27 @@ const TrafficsaleList = () => {
     }
     return sorted;
   };
+  const getbuilderlist = async () => {
+    try {
+      const response = await AdminSubdevisionService.index(searchQuery);
+      const responseData = await response.json();
+      setBuilderList(responseData);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getbuilderlist();
+    } else {
+      navigate("/");
+    }
+  }, []);
   return (
     <>
       <MainPagetitle
@@ -269,6 +335,25 @@ const TrafficsaleList = () => {
                         <Dropdown.Menu>
                           <h5 className="">Filter Options</h5>
                           <div className="border-top">
+                          <div className="mt-3 ">
+                              <label className="form-label">
+                                Subdivision: <span className="text-danger"></span>
+                              </label>
+                              <select
+                                className="default-select form-control"
+                                value={filterQuery.subdivision_id}
+                                name="subdivision_id"
+                                onChange={HandleFilter}
+                              >
+                                {/* <option data-display="Select">Please select</option> */}
+                                <option value="">All</option>
+                                {BuilderList.map((element) => (
+                                  <option value={element.id}>
+                                    {element.name}
+                                  </option>
+                                ))}
+                              </select>
+                           </div>
                             <div className="mt-3 mb-3">
                               <label className="form-label">
                                 Status: <span className="text-danger"></span>
@@ -414,25 +499,129 @@ const TrafficsaleList = () => {
                                 </span>
                               )}
                             </th>
-                              <th>
+                            <th onClick={() => requestSort("productType")}>
                               Product Type{" "}
+                              {sortConfig.key !== "productType"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "productType" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                               </th>
-                            <th>
-                              Area {/* related field from SUBDIVISIONS table */}
+                              <th onClick={() => requestSort("area")}>
+                                Area 
+                              {sortConfig.key !== "lotWidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotWidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("masterPlan")}>
                               Master Plan{" "}
-                              {/* related field from SUBDIVISIONS table */}
+                              {sortConfig.key !== "lotWidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotWidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
-                            <th>
+                            <th onClick={() => requestSort("zipCode")}>
                               Zip Code{" "}
-                              {/* related field from SUBDIVISIONS table */}
+                              {sortConfig.key !== "lotWidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotWidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("lotWidth")}>
+                              <strong>Lot Width</strong>
+                              {sortConfig.key !== "lotWidth"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotWidth" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("lotsize")}>
+                              <strong>Lot Size</strong>
+                              {sortConfig.key !== "lotsize"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "lotsize" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("zoning")}>
+                              <strong>Zoning</strong>
+                              {sortConfig.key !== "zoning"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "zoning" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("age")}>
+                              <strong>Age Restricted</strong>
+                              {sortConfig.key !== "age"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "age" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("stories")}>
+                              <strong>All Single Story</strong>
+                              {sortConfig.key !== "stories"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "stories" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                              <strong>Date Added</strong>
+                              {sortConfig.key !== "created_at"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "created_at" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>
                               __pkRecordID {/* viewable to admin users only */}
                             </th>
-                            <th>
-                            __fkRecordID {/* viewable to admin users only */}
+                            <th onClick={() => requestSort("subdivisionCode")}>
+                             _fkSubID
+                            {sortConfig.key !== "created_at"
+                                ? "↑↓"
+                                : ""}
+                              {sortConfig.key === "created_at" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
                             </th>
                             <th>Action</th>
                           </tr>
@@ -449,7 +638,9 @@ const TrafficsaleList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>{element.weekending}</td>
+                                <td>
+                                <DateComponent date={element.weekending} />
+                                </td>
 
                                 <td>
                                   {element.subdivision &&
@@ -470,8 +661,32 @@ const TrafficsaleList = () => {
                                 <td>{element.subdivision.area}</td>
                                 <td>{element.subdivision.masterplan_id}</td>
                                 <td>{element.subdivision.zipcode}</td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.lotwidth}
+                                </td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.lotsize}
+                                </td>
+                                <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.zoning}
+                                </td>
+                                <td>
+                                  { element.subdivision && element.subdivision.age=== 1 && "Yes"}
+                                  {element.subdivision && element.subdivision.age === 0 && "No"}
+                                </td>
+                                <td>
+                                  { element.subdivision && element.subdivision.single === 1 && "Yes"}
+                                  { element.subdivision && element.subdivision.single === 0 && "No"}
+                                </td>
+
+                                <td>
+                                    <DateComponent date={element.created_at} />
+                                </td>
                                 <td>{element.id}</td>
-                                <td>{element.subdivision.id}</td>
+                                <td>{element.subdivision.subdivision_code}</td>
 
                                 <td>
                                   <div className="d-flex justify-content-center">
@@ -601,7 +816,7 @@ const TrafficsaleList = () => {
                 <label className="">Week Ending:</label>
                 <div>
                   <span className="fw-bold">
-                    {TrafficDetails.weekending || "NA"}
+                    {<DateComponent date ={TrafficDetails.weekending} /> || "NA"}
                   </span>
                 </div>
               </div>

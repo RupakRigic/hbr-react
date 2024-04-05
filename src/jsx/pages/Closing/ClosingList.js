@@ -10,6 +10,8 @@ import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import PermitList from "../Permit/PermitList";
+import PriceComponent from "../../components/Price/PriceComponent";
+import DateComponent from "../../components/date/DateFormat";
 
 const ClosingList = () => {
   const [Error, setError] = useState("");
@@ -577,7 +579,7 @@ const ClosingList = () => {
                               >
                                 <td>{index + 1}</td>
                                 <td>NA</td>
-                                <td>{element.closingdate}</td>
+                                <td><DateComponent date={element.closingdate} /></td>
                                 <td>{element.document}</td>
 
                                 <td>
@@ -588,7 +590,8 @@ const ClosingList = () => {
                                   {element.subdivision &&
                                     element.subdivision?.name}
                                 </td>
-                                <td>{element.closingprice}</td>
+                                <td> <PriceComponent price={element.closingprice} />
+                                </td>
                                 <td>{element.address}</td>
                                 <td>{element.parcel}</td>
                                 <td>
@@ -610,9 +613,7 @@ const ClosingList = () => {
                                 <td>{element.subdivision.age == '1' ? 'Yes':'No'}</td>
                                 <td>{element.subdivision.single == '1' ? 'Yes':'No'}</td>
                                 <td>
-                                {new Date(
-                                    element.created_at
-                                  ).toLocaleString()}
+                                  <DateComponent date={element.created_at} />
                                 </td>
                                 <td>{element.id}</td>
                                 <td>{element.subdivision.subdivision_code}</td>
@@ -780,7 +781,7 @@ const ClosingList = () => {
                 <label className="">Closing Date :</label>
                 <div>
                   <span className="fw-bold">
-                    {ClosingDetails.closingdate || "NA"}
+                    {<DateComponent date ={ClosingDetails.closingdate} /> || "NA"}
                   </span>
                 </div>
               </div>
@@ -789,7 +790,7 @@ const ClosingList = () => {
                 <label className="">Closing Price :</label>
                 <div>
                   <span className="fw-bold">
-                    {ClosingDetails.closingprice || "NA"}
+                    {<PriceComponent price={ClosingDetails.closingprice} /> || "NA"}
                   </span>
                 </div>
               </div>

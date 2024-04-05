@@ -12,11 +12,35 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import Dropdown from "react-bootstrap/Dropdown";
+import Button from "react-bootstrap/Button";
 
 function RechartJs() {
   const [currentDisplay, setCurrentDisplay] = useState(1);
   const [value, setValue] = React.useState("1");
 
+  const [filterQuery, setFilterQuery] = useState({
+    is_active: "",
+    company_type: "",
+  });
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  useEffect(() => {
+    const currentDate = new Date(); // Today's date
+    const currentYear = currentDate.getFullYear(); // Current year
+    const firstDayOfYear = new Date(currentYear, 0, 1); // First day of the current year
+    setStartDate(firstDayOfYear.toISOString().split('T')[0]); // Format as yyyy-mm-dd
+    setEndDate(currentDate.toISOString().split('T')[0]); // Format as yyyy-mm-dd
+  }, []);
+
+  const HandleFilter = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      [name]: value,
+    }));
+  };
   const [NetSaleData, setNetSaleData] = useState({
     defaultFontFamily: "Poppins",
     labels: ["0", "01-07", "01-14", "01-21"],
@@ -29,7 +53,6 @@ function RechartJs() {
         tension: 0.4,
       },
     ],
-    
   });
   const [NetSaleOption, setNetSaleOption] = useState({
     plugins: {
@@ -207,14 +230,11 @@ function RechartJs() {
         tension: 0.4,
       },
     ],
-    
   };
 
-  const getchartList = async () => {
+  const getchartList = async (startDate,endDate) => {
     try {
-      let responseData = await AdminWeeklyDataService.getstatistics().json();
-
-      // prepare NetSale data
+      let responseData = await AdminWeeklyDataService.getstatistics(startDate,endDate).json();
       const filteredNetSaleData = Object.entries(
         responseData["net_sale"]
       ).filter(([key, value]) => key !== "status");
@@ -244,7 +264,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max:  maxNetSaleValue * 2,
+            max: maxNetSaleValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -297,7 +317,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: cancelationMaxValue *2,
+            max: cancelationMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -337,7 +357,6 @@ function RechartJs() {
             tension: 0.4,
           },
         ],
-        
       });
 
       setStandingOption({
@@ -349,7 +368,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: StandingValueMaxValue *2,
+            max: StandingValueMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -400,7 +419,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: NetSaleSubWiseMaxValue *2,
+            max: NetSaleSubWiseMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -478,7 +497,6 @@ function RechartJs() {
         },
       },
     ],
-    
   };
   const BuilderRawoptions = {
     plugins: {
@@ -551,138 +569,353 @@ function RechartJs() {
       },
     },
   };
+
+  const HandleDateRange = () =>{
+    getchartList(startDate,endDate);
+
+  }
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getchartList(startDate, endDate); // Call getchartList with startDate and endDate
+    } else {
+      navigate("/");
+    }
+  }, [startDate, endDate]); 
   return (
     <>
       {/* <PageTitle motherMenu="Charts" activeMenu="ReChartJs" /> */}
 
       <Box sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    onChange={handleChange}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label="Buyer Traffic" value="1" />
-                    <Tab label="Net Sales" value="2" />
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="Buyer Traffic" value="1" />
+              <Tab label="Net Sales" value="2" />
 
-                    <Tab label="Cancellation%" value="3" />
-                    <Tab label="Standing Inventory" value="4" />
+              <Tab label="Cancellation%" value="3" />
+              <Tab label="Standing Inventory" value="4" />
 
-                    <Tab label="Net Sales Per Sub" value="5" />
-                    <Tab label="Active Subdivisions" value="6" />
-                  </TabList>
-                </Box>
-                <TabPanel value="1" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Buyer Traffic</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1
-                    data={BuyerTrafficData}
-                    options={BuyerTrafficOption}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
+              <Tab label="Net Sales Per Sub" value="5" />
+              <Tab label="Active Subdivisions" value="6" />
+            </TabList>
+          </Box>
 
-                <TabPanel value="2" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Net Sales</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1 data={NetSaleData} options={NetSaleOption} />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
+          <TabPanel value="1" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Buyer Traffic</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
 
-                <TabPanel value="3" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Cancellation%</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1
-                    data={CancellationData}
-                    options={CancellationOption}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
 
-                <TabPanel value="4" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Standing Inventory</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1 data={StandingData} options={StandingOption} />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
-                
-                <TabPanel value="5" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Net Sales per Sub</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1
-                    data={NetSaleSubWisData}
-                    options={NetSaleSubWisOption}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                   
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1
+                      data={BuyerTrafficData}
+                      options={BuyerTrafficOption}
+                    />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
 
-                <TabPanel value="6" className="p-0">
-                <Row>
-                <Col xl={12} lg={12}>
-              {" "}
-              <Card>
-                <Card.Header>
-                  <h4 className="card-title">Active Subdivisions</h4>
-                </Card.Header>
-                <Card.Body>
-                  <LineChart1
-                    data={BuyerTrafficData}
-                    options={BuyerTrafficOption}
-                  />
-                </Card.Body>
-              </Card>
-            </Col>
-                </Row>
-                </TabPanel>
-              </TabContext>
-            </Box>
+          <TabPanel value="2" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Net Sales</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
 
-        {/* {currentDisplay == 1 ? (
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                       
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1 data={NetSaleData} options={NetSaleOption} />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
+
+          <TabPanel value="3" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Cancellation%</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                        
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1
+                      data={CancellationData}
+                      options={CancellationOption}
+                    />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
+
+          <TabPanel value="4" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Standing Inventory</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                       
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1 data={StandingData} options={StandingOption} />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
+
+          <TabPanel value="5" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Net Sales per Sub</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                         
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1
+                      data={NetSaleSubWisData}
+                      options={NetSaleSubWisOption}
+                    />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
+
+          <TabPanel value="6" className="p-0">
+            <Row>
+              <Col xl={12} lg={12}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">Active Subdivisions</h4>
+                    <div className="d-flex justify-content-center me-5">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <label htmlFor="start_date">From:</label>
+                          <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                          />
+
+                          <label htmlFor="end_date">To:</label>
+                          <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                          />
+                 
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  </Card.Header>
+                  <Card.Body>
+                    <LineChart1
+                      data={BuyerTrafficData}
+                      options={BuyerTrafficOption}
+                    />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </TabPanel>
+        </TabContext>
+      </Box>
+
+      {/* {currentDisplay == 1 ? (
           <Row>
             <Col xl={12} lg={12}>
               {" "}

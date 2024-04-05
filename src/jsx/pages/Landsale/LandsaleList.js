@@ -12,6 +12,8 @@ import { Offcanvas, Form } from "react-bootstrap";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
+import PriceComponent from "../../components/Price/PriceComponent";
+import DateComponent from "../../components/date/DateFormat";
 
 const LandsaleList = () => {
   const [show, setShow] = useState(false);
@@ -512,8 +514,10 @@ const LandsaleList = () => {
                               <td>{element.buyer}</td>
                               <td>{element.location}</td>
                               <td>{element.notes}</td>
-                              <td>{element.price}</td>
-                              <td>{element.date}</td>
+                              <td>
+                              <PriceComponent price ={element.price} />
+                              </td>
+                              <td><DateComponent date={element.date} /></td>
                               <td>
                                 <div className="d-flex justify-content-center">
                                   <Link
@@ -717,7 +721,7 @@ const LandsaleList = () => {
                 <label className="">Date :</label>
                 <div>
                   <span className="fw-bold">
-                    {landSaleDetails.date || "NA"}
+                    {<DateComponent date ={landSaleDetails.date}/> || "NA"}
                   </span>
                 </div>
               </div>
@@ -734,7 +738,7 @@ const LandsaleList = () => {
                 <label className="">Price :</label>
                 <div>
                   <span className="fw-bold">
-                    {landSaleDetails.price || "NA"}
+                    {  <PriceComponent price={landSaleDetails.price} /> || "NA"}
                   </span>
                 </div>
               </div>

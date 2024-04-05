@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import AdminPriceService from "../../../API/Services/AdminService/AdminPriceService";
+import PriceComponent from "../../components/Price/PriceComponent";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import PriceOffcanvas from "./PriceOffcanvas";
@@ -9,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
+import DateComponent from "../../components/date/DateFormat";
 
 const PriceList = () => {
   const [Error, setError] = useState("");
@@ -670,9 +672,7 @@ const PriceList = () => {
                               >
                                 <td>{index + 1}</td>
                                 <td>
-                                {new Date(
-                                    element.created_at
-                                  ).toLocaleString()}
+                                  <DateComponent date={element.created_at} />
                                 </td>
                                 <td>
                                   {element.product.subdivision &&
@@ -689,8 +689,9 @@ const PriceList = () => {
                                 <td>{element.product.bedroom}</td>
                                 <td>{element.product.bathroom}</td>
                                 <td>{element.product.garage}</td>
-                                <td>{element.baseprice}</td>
-                                <td>{element.product.recentpricesqft}</td>
+                                <td><PriceComponent price={element.baseprice} /></td>
+                                <td><PriceComponent price={element.product.recentpricesqft} /></td>
+
                                 <td>{element.product.subdivision.product_type}</td>
                                 <td>{element.product.subdivision.area}</td>
                                 <td>{element.product.subdivision.masterplan_id}</td>
@@ -830,15 +831,17 @@ const PriceList = () => {
                 <label className="">Base Price:</label>
                 <div>
                   <span className="fw-bold">
-                    {PriceDetails.baseprice || "NA"}
+                    {<PriceComponent price={PriceDetails.baseprice} /> || "NA"}
+        
+
                   </span>
                 </div>
               </div>
 
               <div className="col-xl-4 mt-4">
-                <label className="">Date :</label>
+                <label className="">Date:</label>
                 <div>
-                  <span className="fw-bold">{PriceDetails.date || "NA"}</span>
+                  <span className="fw-bold">{ <DateComponent date={PriceDetails.date} /> || "NA"}</span>
                 </div>
               </div>
             </div>
