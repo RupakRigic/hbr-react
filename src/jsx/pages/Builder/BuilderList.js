@@ -16,7 +16,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
-
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -35,9 +35,18 @@ const BuilderTable = () => {
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
-  const userRole = JSON.parse(localStorage.getItem("user")).role;
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField();
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
   const [BuilderDetails, SetBuilderDetails] = useState({
     code: "",
     name: "",
@@ -198,39 +207,51 @@ const BuilderTable = () => {
     navigate("/subdivisionlist");
   };
 
-  // const handleUnchecked =(event) =>{
-  //   const isChecked = event.target.checked;
-  // }
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
 
-  const handleUnchecked = (event) => {
-    const isChecked = event.target.checked;
-
+  const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
     setAccessForm((prevAccessForm) => ({
       ...prevAccessForm,
       [name]: checked,
     }));
   };
 
-  const handleAccessForm =  async(e) => {
+  const handleAccessForm = async (e) => {
     e.preventDefault();
-
     var userData = {
-      form:accessForm,
-      role:role,
-      table: "builders"
-    } 
-    console.log(userData);
+      form: accessForm,
+      role: role,
+      table: "builders",
+    };
     try {
-      const data = await AdminBuilderService.manageAccessFields(userData).json();
-    }
-    catch (error) {
-        if (error.name === 'HTTPError') {
-            const errorJson = await error.response.json();
+      const data = await AdminBuilderService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
 
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-        }
-
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
     }
   };
   const requestSort = (key) => {
@@ -256,10 +277,11 @@ const BuilderTable = () => {
     }
     return sorted;
   };
-  const HandleRole =(e)=>{
-    setRole(e.target.value)
-  }
-  console.log(role);
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  console.log(accessRole);
   return (
     <>
       <MainPagetitle
@@ -401,263 +423,317 @@ const BuilderTable = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
+                            {checkFieldExist("logo") && (
+                              <th>
+                                <strong>Logo</strong>
+                              </th>
+                            )}
+                            {checkFieldExist("website") && (
+                              <th onClick={() => requestSort("website")}>
+                                <strong>Website</strong>
+                                {sortConfig.key !== "website" ? "↑↓" : ""}
 
-                            <th>
-                              <strong>Logo</strong>
-                            </th>
-                            <th onClick={() => requestSort("website")}>
-                              <strong>Website</strong>
-                              {sortConfig.key !== "website" ? "↑↓" : ""}
-
-                              {sortConfig.key === "website" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("name")}>
-                              <strong>Builder Name</strong>
-                              {sortConfig.key !== "name" ? "↑↓" : ""}
-
-                              {sortConfig.key === "name" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("company_type")}>
-                              <strong>Company Type</strong>
-                              {sortConfig.key !== "company_type" ? "↑↓" : ""}
-
-                              {sortConfig.key === "company_type" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              <strong>Email</strong>
-                            </th>
-                            <th onClick={() => requestSort("phone")}>
-                              <strong>LV Office Phone</strong>
-                              {sortConfig.key !== "phone" ? "↑↓" : ""}
-
-                              {sortConfig.key === "phone" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("officeaddress1")}>
-                              <strong>LV Office Addres</strong>
-                              {sortConfig.key !== "officeaddress1" ? "↑↓" : ""}
-
-                              {sortConfig.key === "officeaddress1" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-
-                            <th onClick={() => requestSort("city")}>
-                              <strong>
-                                LV Office City
-                                {sortConfig.key !== "city" ? "↑↓" : ""}
-                                {sortConfig.key === "city" && (
+                                {sortConfig.key === "website" && (
                                   <span>
                                     {sortConfig.direction === "asc" ? "↑" : "↓"}
                                   </span>
                                 )}
-                              </strong>
-                            </th>
-                            <th onClick={() => requestSort("zipcode")}>
-                              <strong>LV Office Zip</strong>
-                              {sortConfig.key !== "zipcode" ? "↑↓" : ""}
+                              </th>
+                            )}
 
-                              {sortConfig.key === "zipcode" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("current_division_president")
-                              }
-                            >
-                              <strong>Current Division President</strong>
-                              {sortConfig.key !== "current_division_president"
-                                ? "↑↓"
-                                : ""}
+                            {checkFieldExist("name") && (
+                              <th onClick={() => requestSort("name")}>
+                                <strong>Builder Name</strong>
+                                {sortConfig.key !== "name" ? "↑↓" : ""}
 
-                              {sortConfig.key ===
-                                "current_division_president" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("current_land_aquisitions")
-                              }
-                            >
-                              <strong>Current Land Acquisitions
-                              {sortConfig.key !== "current_land_aquisitions"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "current_land_aquisitions" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                                {sortConfig.key === "name" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("company_type") && (
+                              <th onClick={() => requestSort("company_type")}>
+                                <strong>Company Type</strong>
+                                {sortConfig.key !== "company_type" ? "↑↓" : ""}
 
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("coporate_officeaddress_1")
-                              }
-                            >
-                              <strong>Corporate Office Address
-                              {sortConfig.key !== "coporate_officeaddress_1"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "coporate_officeaddress_1" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                                {sortConfig.key === "company_type" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("email") && (
+                              <th>
+                                <strong>Email</strong>
+                              </th>
+                            )}
+                            {checkFieldExist("phone") && (
+                              <th onClick={() => requestSort("phone")}>
+                                <strong>LV Office Phone</strong>
+                                {sortConfig.key !== "phone" ? "↑↓" : ""}
 
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("coporate_officeaddress_city")
-                              }
-                            >
-                              <strong>Corporate Office City
+                                {sortConfig.key === "phone" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
 
-                              {sortConfig.key !== "coporate_officeaddress_city"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "coporate_officeaddress_city" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("coporate_officeaddress_2")
-                              }
-                            >
-                              <strong>Corporate Office State
-                              {sortConfig.key !== "coporate_officeaddress_2"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "coporate_officeaddress_2" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                            {checkFieldExist("officeaddress1") && (
+                              <th onClick={() => requestSort("officeaddress1")}>
+                                <strong>LV Office Address</strong>
+                                {sortConfig.key !== "officeaddress1"
+                                  ? "↑↓"
+                                  : ""}
 
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("coporate_officeaddress_zipcode")
-                              }
-                            >
-                              <strong>Corporate Office Zip
-                              {sortConfig.key !== "coporate_officeaddress_zipcode"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "coporate_officeaddress_zipcode" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("stock_market")
-                              }
-                            >
-                              <strong>Stock Market
-                              {sortConfig.key !== "stock_market"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "stock_market" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("stock_symbol")
-                              }
-                            >
-                              <strong>Stock Symbol
-                              {sortConfig.key !== "stock_symbol"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "stock_symbol" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </strong>
-                            </th>
-                            <th>
-                              <strong>Icon</strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("builder_code")
-                              }
-                            >
-                              <strong>__pkBuilderID
-                              {sortConfig.key !== "builder_code"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "builder_code" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                              </strong>
-                            </th>
-                            <th
-                              onClick={() =>
-                                requestSort("created_at")
-                              }
-                            >
-                              <strong>Date Added
-                              {sortConfig.key !== "created_at"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key ===
-                                "created_at" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                                {sortConfig.key === "officeaddress1" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
 
-                              </strong>
-                            </th>
+                            {checkFieldExist("city") && (
+                              <th onClick={() => requestSort("city")}>
+                                <strong>
+                                  LV Office City
+                                  {sortConfig.key !== "city" ? "↑↓" : ""}
+                                  {sortConfig.key === "city" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+
+                            {checkFieldExist("zipcode") && (
+                              <th onClick={() => requestSort("zipcode")}>
+                                <strong>LV Office Zip</strong>
+                                {sortConfig.key !== "zipcode" ? "↑↓" : ""}
+
+                                {sortConfig.key === "zipcode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+
+                            {checkFieldExist("current_division_president") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("current_division_president")
+                                }
+                              >
+                                <strong>Current Division President</strong>
+                                {sortConfig.key !== "current_division_president"
+                                  ? "↑↓"
+                                  : ""}
+
+                                {sortConfig.key ===
+                                  "current_division_president" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+
+                            {checkFieldExist("current_land_aquisitions") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("current_land_aquisitions")
+                                }
+                              >
+                                <strong>
+                                  Current Land Acquisitions
+                                  {sortConfig.key !== "current_land_aquisitions"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "current_land_aquisitions" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+
+                            {checkFieldExist("coporate_officeaddress_1") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("coporate_officeaddress_1")
+                                }
+                              >
+                                <strong>
+                                  Corporate Office Address
+                                  {sortConfig.key !== "coporate_officeaddress_1"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "coporate_officeaddress_1" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("coporate_officeaddress_city") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("coporate_officeaddress_city")
+                                }
+                              >
+                                <strong>
+                                  Corporate Office City
+                                  {sortConfig.key !==
+                                  "coporate_officeaddress_city"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "coporate_officeaddress_city" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+
+                            {checkFieldExist("coporate_officeaddress_2") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("coporate_officeaddress_2")
+                                }
+                              >
+                                <strong>
+                                  Corporate Office State
+                                  {sortConfig.key !== "coporate_officeaddress_2"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "coporate_officeaddress_2" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist(
+                              "coporate_officeaddress_zipcode"
+                            ) && (
+                              <th
+                                onClick={() =>
+                                  requestSort("coporate_officeaddress_zipcode")
+                                }
+                              >
+                                <strong>
+                                  Corporate Office Zip
+                                  {sortConfig.key !==
+                                  "coporate_officeaddress_zipcode"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "coporate_officeaddress_zipcode" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("stock_market") && (
+                              <th onClick={() => requestSort("stock_market")}>
+                                <strong>
+                                  Stock Market
+                                  {sortConfig.key !== "stock_market"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key === "stock_market" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("stock_symbol") && (
+                              <th onClick={() => requestSort("stock_symbol")}>
+                                <strong>
+                                  Stock Symbol
+                                  {sortConfig.key !== "stock_symbol"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key === "stock_symbol" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("icon") && (
+                              <th>
+                                <strong>Icon</strong>
+                              </th>
+                            )}
+                            {checkFieldExist("builder_code") && (
+                              <th onClick={() => requestSort("builder_code")}>
+                                <strong>
+                                  __pkBuilderID
+                                  {sortConfig.key !== "builder_code"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key === "builder_code" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("created_at") && (
+                              <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Date Added
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
                             {SyestemUserRole === "Data Uploader" ||
                             SyestemUserRole === "User" ? (
                               ""
@@ -680,46 +756,96 @@ const BuilderTable = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>
-                                  <div>
-                                    <img
-                                      src={
-                                        element.logo
-                                          ? imageUrl + element.logo
-                                          : ""
-                                      }
-                                      className="rounded-lg me-2"
-                                      width="70"
-                                      alt=""
-                                    />
-                                  </div>
-                                </td>
-                                <td>{element.website}</td>
-                                <td>{element.name}</td>
-                                <td>{element.company_type}</td>
-                                <td>{element.email}</td>
-                                <td>{element.phone}</td>
-                                <td>{element.officeaddress1}</td>
-                                <td>{element.city}</td>
-                                <td>{element.zipcode}</td>
-                                <td>{element.current_division_president}</td>
-                                <td>{element.current_land_aquisitions}</td>
-                                <td>{element.coporate_officeaddress_1}</td>
-                                <td>{element.coporate_officeaddress_city}</td>
-                                <td>{element.coporate_officeaddress_2}</td>
-                                <td>
-                                  {element.coporate_officeaddress_zipcode}
-                                </td>
-                                <td>{element.stock_market}</td>
-                                <td>{element.stock_symbol}</td>
-                                <td>{element.icon}</td>
-                                <td>{element.builder_code}</td>
-                                <td>
-                                  {/* {new Date(
-                                    element.created_at
-                                  ).toLocaleString()} */}
-                                  <DateComponent date ={element.created_at}/>
-                                </td>
+                                {checkFieldExist("logo") && (
+                                  <td>
+                                    <div>
+                                      <img
+                                        src={
+                                          element.logo
+                                            ? imageUrl + element.logo
+                                            : ""
+                                        }
+                                        className="rounded-lg me-2"
+                                        width="70"
+                                        alt=""
+                                      />
+                                    </div>
+                                  </td>
+                                )}
+                                {checkFieldExist("website") && (
+                                  <td>{element.website}</td>
+                                )}
+                                {checkFieldExist("name") && (
+                                  <td>{element.name}</td>
+                                )}
+                                {checkFieldExist("company_type") && (
+                                  <td>{element.company_type}</td>
+                                )}
+                                {checkFieldExist("phone") && (
+                                  <td>{element.phone}</td>
+                                )}
+                                {checkFieldExist("email") && (
+                                  <td>{element.email}</td>
+                                )}
+                                {checkFieldExist("officeaddress1") && (
+                                  <td>{element.officeaddress1}</td>
+                                )}
+
+                                {checkFieldExist("city") && (
+                                  <td>{element.city}</td>
+                                )}
+                                {checkFieldExist("zipcode") && (
+                                  <td>{element.zipcode}</td>
+                                )}
+                                {checkFieldExist(
+                                  "current_division_president"
+                                ) && (
+                                  <td>{element.current_division_president}</td>
+                                )}
+                                {checkFieldExist(
+                                  "current_land_aquisitions"
+                                ) && (
+                                  <td>{element.current_land_aquisitions}</td>
+                                )}
+                                {checkFieldExist(
+                                  "coporate_officeaddress_1"
+                                ) && (
+                                  <td>{element.coporate_officeaddress_1}</td>
+                                )}
+                                {checkFieldExist(
+                                  "coporate_officeaddress_city"
+                                ) && (
+                                  <td>{element.coporate_officeaddress_city}</td>
+                                )}
+                                {checkFieldExist(
+                                  "coporate_officeaddress_2"
+                                ) && (
+                                  <td>{element.coporate_officeaddress_2}</td>
+                                )}
+                                {checkFieldExist(
+                                  "coporate_officeaddress_zipcode"
+                                ) && (
+                                  <td>
+                                    {element.coporate_officeaddress_zipcode}
+                                  </td>
+                                )}
+                                {checkFieldExist("stock_market") && (
+                                  <td>{element.stock_market}</td>
+                                )}
+                                {checkFieldExist("stock_symbol") && (
+                                  <td>{element.stock_symbol}</td>
+                                )}
+                                {checkFieldExist("icon") && (
+                                  <td>{element.icon}</td>
+                                )}
+                                {checkFieldExist("builder_code") && (
+                                  <td>{element.builder_code}</td>
+                                )}
+                                {checkFieldExist("created_at") && (
+                                  <td>
+                                    <DateComponent date={element.created_at} />
+                                  </td>
+                                )}
 
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
@@ -1193,9 +1319,8 @@ const BuilderTable = () => {
               className="default-select form-control"
               name="manage_role_fields"
               onChange={HandleRole}
-              
+              value={role}
             >
-              {/* <option data-display="Select">Please select</option> */}
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
@@ -1210,19 +1335,63 @@ const BuilderTable = () => {
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            value=""
-                            defaultChecked={element.role_name.includes(
-                              accessRole
-                            )}
-                            id={`flexCheckDefault${index}`}
-                            onChange={handleUnchecked}
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
                             name={element.field_name}
                           />
                           <label
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name}
+                            {element.field_name === "builder_code"
+                              ? "__pkBuilderID"
+                              : element.field_name === "name"
+                              ? "Builder Name"
+                              : element.field_name === "builder_code"
+                              ? "Builder Code"
+                              : element.field_name === "logo"
+                              ? "Logo"
+                              : element.field_name === "phone"
+                              ? "LV Office Phone"
+                              : element.field_name === "fax"
+                              ? "Fax"
+                              : element.field_name === "officeaddress1"
+                              ? "LV Office Address"
+                              : element.field_name === "city"
+                              ? "LV Office City"
+                              : element.field_name === "zipcode"
+                              ? "LV Office Zip"
+                              : element.field_name === "company_type"
+                              ? "Company Type"
+                              : element.field_name === "is_active"
+                              ? "Status"
+                              : element.field_name === "stock_market"
+                              ? "Stock Market"
+                              : element.field_name === "current_division_president"
+                              ? "Current Division President"
+                              : element.field_name === "stock_symbol"
+                              ? "Stock Symbol"
+                              : element.field_name === "current_land_aquisitions"
+                              ? "Current Land Acquisitions"
+                              : element.field_name === "coporate_officeaddress_1"
+                              ? "Corporate Office Address"
+                              : element.field_name === "coporate_officeaddress_2"
+                              ? "Corporate Office State"
+                              : element.field_name === "coporate_officeaddress_city"
+                              ? "Corporate Office City"
+                              : element.field_name === "coporate_officeaddress_zipcode"
+                              ? "Corporate Office Zip"
+                              : element.field_name === "officeaddress2"
+                              ? "Address 2"
+                              : element.field_name === "created_at"
+                              ? "Date Added"
+                              : element.field_name}
                           </label>
                         </div>
                       </div>

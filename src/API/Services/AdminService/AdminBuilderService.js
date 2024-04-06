@@ -9,4 +9,5 @@ export default {
     show: (id) => clientAuth.get(`admin/builder/show/${id}`),
     accessField: () => clientAuth.get(`admin/builder/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/builder/manage-access-fields`,{ json: userData }),
+    getRoleFieldList:()=> clientAuth.get(`admin/builder/access-list`)
 };
