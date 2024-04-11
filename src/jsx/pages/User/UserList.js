@@ -11,6 +11,7 @@ import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 
 const UserList = () => {
   const [Error, setError] = useState("");
@@ -30,6 +31,97 @@ const UserList = () => {
     email: "",
     roles: "",
   });
+
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "users" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "users",
+    };
+    try {
+      const data = await AdminUserRoleService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminUserRoleService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState({
     role: "",
@@ -58,7 +150,6 @@ const UserList = () => {
       const responseData = await response.json();
       setUserList(responseData);
       setIsLoading(false);
-
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -163,41 +254,51 @@ const UserList = () => {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-  
-        if (sortConfig.key === 'role') {
-          aValue = a.roles.map(role => role.name).join(', ').toLowerCase();
-          bValue = b.roles.map(role => role.name).join(', ').toLowerCase();
+
+        if (sortConfig.key === "role") {
+          aValue = a.roles
+            .map((role) => role.name)
+            .join(", ")
+            .toLowerCase();
+          bValue = b.roles
+            .map((role) => role.name)
+            .join(", ")
+            .toLowerCase();
         } else {
           if (aValue === null || bValue === null) {
             aValue = aValue || "";
             bValue = bValue || "";
-          }  
-          if (typeof aValue === 'string') {
+          }
+          if (typeof aValue === "string") {
             aValue = aValue.toLowerCase();
           }
-          if (typeof bValue === 'string') {
+          if (typeof bValue === "string") {
             bValue = bValue.toLowerCase();
           }
         }
-          
-        if (sortConfig.key === 'builderName') {
-          aValue = (a.builder && a.builder.name) || '';
-          bValue = (b.builder && b.builder.name) || '';
-        } else if (sortConfig.key === 'subdivisionName') {
-          aValue = (a.builder && a.builder.name) || '';
-          bValue = (b.builder && b.builder.name) || '';
+
+        if (sortConfig.key === "builderName") {
+          aValue = (a.builder && a.builder.name) || "";
+          bValue = (b.builder && b.builder.name) || "";
+        } else if (sortConfig.key === "subdivisionName") {
+          aValue = (a.builder && a.builder.name) || "";
+          bValue = (b.builder && b.builder.name) || "";
         }
-  
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return sortConfig.direction === "asc"
+            ? aValue - bValue
+            : bValue - aValue;
         } else {
-          return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+          return sortConfig.direction === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
         }
       });
     }
     return sorted;
   };
-  
+
   return (
     <>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
@@ -221,14 +322,24 @@ const UserList = () => {
                         </button>
                         <Form.Control
                           type="text"
-                          style={{ borderTopLeftRadius: '0',borderBottomLeftRadius: '0' }}
+                          style={{
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                          }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
                       </div>
                     </div>
                     <div className="d-flex">
-                    <Dropdown>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
+                      <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
                           className="btn-sm"
@@ -253,7 +364,9 @@ const UserList = () => {
                                 {/* <option data-display="Select">Please select</option> */}
                                 <option value="">All</option>
                                 <option value="User">User</option>
-                                <option value="Data Uploader">Data Uploader</option>
+                                <option value="Data Uploader">
+                                  Data Uploader
+                                </option>
                               </select>
                             </div>
                           </div>
@@ -282,137 +395,163 @@ const UserList = () => {
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
                   >
-                                                                                                    {isLoading ? (
+                    {isLoading ? (
                       <div className="d-flex justify-content-center align-items-center mb-5">
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <strong>No.</strong>
-                          </th>
-                          <th onClick={() => requestSort("name")}>
-                            <strong>Name
-                            {sortConfig.key !== "name"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "name" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("email")}>
-                            <strong>Email
-                            {sortConfig.key !== "email"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "email" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("role")}>
-                            <strong>Role
-                            {sortConfig.key !== "role"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "role" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("builderName")}>
-                            <strong>Builder</strong>
-                            {sortConfig.key !== "builderName"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "builderName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                        {sortedData() !== null && sortedData().length > 0 ? (
-                          sortedData().map((element, index) => (
-                            <tr
-                              onClick={() => handleRowClick(element.id)}
-                              key={element.id}
-                              style={{ textAlign: "center", cursor: "pointer" }}
-                            >
-                              <td>{index + 1}</td>
-                              <td>{element.name}</td>
-                              <td>{element.email}</td>
-                              {element.roles.length > 0 ? (
-                                element.roles.map((role) => (
-                                  <td key={role.id}>{role.name}</td>
-                                ))
-                              ) : (
-                                <td>Admin</td>
-                              )}
-                              {element.builder ? (
-                                <td>{element.builder.name}</td>
-                              ) : (
-                                <td>NA</td>
-                              )}
-                              <td>
-                                <div className="d-flex justify-content-center">
-                                  <Link
-                                    to={`/userupdate/${element.id}`}
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                  >
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </Link>
-                                  {element.roles.length > 0
-                                    ? element.roles.map((role) => (
-                                        <Link
-                                          onClick={() =>
-                                            swal({
-                                              title: "Are you sure?",
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong>No.</strong>
+                            </th>
+                            {checkFieldExist("Name") && (
+                              <th onClick={() => requestSort("name")}>
+                                <strong>
+                                  Name
+                                  {sortConfig.key !== "name" ? "↑↓" : ""}
+                                  {sortConfig.key === "name" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("Email") && (
+                              <th onClick={() => requestSort("email")}>
+                                <strong>
+                                  Email
+                                  {sortConfig.key !== "email" ? "↑↓" : ""}
+                                  {sortConfig.key === "email" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("Role") && (
+                              <th onClick={() => requestSort("role")}>
+                                <strong>
+                                  Role
+                                  {sortConfig.key !== "role" ? "↑↓" : ""}
+                                  {sortConfig.key === "role" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}
+                            {checkFieldExist("Builder") && (
+                              <th onClick={() => requestSort("builderName")}>
+                                <strong>Builder</strong>
+                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                                {sortConfig.key === "builderName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Action  ") && <th>Action</th>}
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
+                              <tr
+                                onClick={() => handleRowClick(element.id)}
+                                key={element.id}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <td>{index + 1}</td>
+                                {checkFieldExist("Name") && (
+                                  <td>{element.name}</td>
+                                )}
+                                {checkFieldExist("Email") && (
+                                  <td>{element.email}</td>
+                                )}
 
-                                              icon: "warning",
-                                              buttons: true,
-                                              dangerMode: true,
-                                            }).then((willDelete) => {
-                                              if (willDelete) {
-                                                handleDelete(element.id);
-                                              }
-                                            })
-                                          }
-                                          className="btn btn-danger shadow btn-xs sharp"
-                                        >
-                                          <i className="fa fa-trash"></i>
-                                        </Link>
-                                      ))
-                                    : ""}
-                                </div>
+                                {element.roles.length > 0
+                                  ? element.roles.map((role) => (
+                                      <React.Fragment key={role.id}>
+                                        {checkFieldExist("Role") && (
+                                          <td>{role.name}</td>
+                                        )}
+                                      </React.Fragment>
+                                    ))
+                                  : checkFieldExist("Builder") && <td>Admin</td>}
+
+                                {element.builder ? (
+                                  <>
+                                    {checkFieldExist("Builder") && (
+                                      <td>{element.builder.name}</td>
+                                    )}
+                                  </>
+                                ) : (
+                                  checkFieldExist("Builder") && <td>NA</td>
+                                )}
+  {checkFieldExist("Action") && (
+                                <td>
+                                  <div className="d-flex justify-content-center">
+                                    <Link
+                                      to={`/userupdate/${element.id}`}
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                    >
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </Link>
+                                    {element.roles.length > 0
+                                      ? element.roles.map((role) => (
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        ))
+                                      : ""}
+                                  </div>
+                                </td>
+                                )}
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ textAlign: "center" }}>
+                                No data found
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" style={{ textAlign: "center" }}>
-                              No data found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                        )}
+                          )}
+                        </tbody>
+                      </table>
+                    )}
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}
@@ -523,6 +662,78 @@ const UserList = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage User Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                            {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

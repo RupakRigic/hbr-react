@@ -7,5 +7,8 @@ export default {
     store: (userData) => clientAuth.post(`admin/price/store`, { json: userData }),
     show: (id) => clientAuth.get(`admin/price/show/${id}`),
     import: (userData) => clientAuth.post(`admin/price/import`, { json: userData }),
+    accessField: () => clientAuth.get(`admin/price/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/price/manage-access-fields`,{ json: userData }),
+    export: () => clientAuth.get(`admin/price/export`),
 
 };

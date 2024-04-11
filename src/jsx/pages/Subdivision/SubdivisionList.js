@@ -16,6 +16,8 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const SubdivisionList = () => {
   const [Error, setError] = useState("");
@@ -37,6 +39,23 @@ const SubdivisionList = () => {
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
+
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "subdivisions" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
     subdivision_code: "",
@@ -274,14 +293,12 @@ const SubdivisionList = () => {
         }
 
         if (typeof aValue === "number" && typeof bValue === "number") {
-          // Adjust the comparison logic for descending order
           if (sortConfig.direction === "asc") {
             return aValue - bValue;
           } else {
             return bValue - aValue;
           }
         } else {
-          // If not numbers, use string comparison
           if (sortConfig.direction === "asc") {
             return aValue.localeCompare(bValue);
           } else {
@@ -292,6 +309,108 @@ const SubdivisionList = () => {
     }
     return sorted;
   };
+
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/subdivision/export'
+          'https://hbrapi.rigicgspl.com/api/admin/subdivision/export'
+
+          , {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'subdivision.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "subdivisions",
+    };
+    try {
+      const data = await AdminSubdevisionService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminSubdevisionService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <>
@@ -330,6 +449,14 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
+                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -452,259 +579,319 @@ const SubdivisionList = () => {
                             <th>
                               <strong> No.</strong>
                             </th>
-                            <th onClick={() => requestSort("status")}>
-                              <strong> Status</strong>
-                              {sortConfig.key !== "status" ? "↑↓" : ""}
+                            {checkFieldExist("Status") && (
+                              <th onClick={() => requestSort("status")}>
+                                <strong> Status</strong>
+                                {sortConfig.key !== "status" ? "↑↓" : ""}
 
-                              {sortConfig.key === "status" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("reporting")}>
-                              <strong> Reporting</strong>
-                              {sortConfig.key !== "reporting" ? "↑↓" : ""}
-                              {sortConfig.key === "reporting" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("builderName")}>
-                              <strong> Builder</strong>
-                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                              {sortConfig.key === "builderName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("name")}>
-                              <strong> Name</strong>
-                              {sortConfig.key !== "name" ? "↑↓" : ""}
-                              {sortConfig.key === "name" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("product_type")}>
-                              <strong> Product Type</strong>
-                              {sortConfig.key !== "product_type" ? "↑↓" : ""}
-                              {sortConfig.key === "product_type" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("area")}>
-                              <strong> Area</strong>
-                              {sortConfig.key !== "area" ? "↑↓" : ""}
-                              {sortConfig.key === "area" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("masterplan_id")}>
-                              <strong> Masterplan</strong>
-                              {sortConfig.key !== "masterplan_id" ? "↑↓" : ""}
-                              {sortConfig.key === "masterplan_id" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("zipcode")}>
-                              <strong> Zipcode</strong>
-                              {sortConfig.key !== "zipcode" ? "↑↓" : ""}
-                              {sortConfig.key === "zipcode" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("totallots")}>
-                              <strong> Total Lots</strong>
-                              {sortConfig.key !== "totallots" ? "↑↓" : ""}
-                              {sortConfig.key === "totallots" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotwidth")}>
-                              <strong>Lot Width</strong>
-                              {sortConfig.key !== "lotwidth" ? "↑↓" : ""}
-                              {sortConfig.key === "lotwidth" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotsize")}>
-                              <strong> Lot Size</strong>
-                              {sortConfig.key !== "lotsize" ? "↑↓" : ""}
-                              {sortConfig.key === "lotsize" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("zoning")}>
-                              <strong> Zoning</strong>
-                              {sortConfig.key !== "zoning" ? "↑↓" : ""}
-                              {sortConfig.key === "zoning" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("age")}>
-                              <strong> Age Restricted</strong>
-                              {sortConfig.key !== "age" ? "↑↓" : ""}
-                              {sortConfig.key === "age" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("single")}>
-                              <strong> All Single Story</strong>
-                              {sortConfig.key !== "single" ? "↑↓" : ""}
-                              {sortConfig.key === "single" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("gated")}>
-                              <strong> Gated</strong>
-                              {sortConfig.key !== "gated" ? "↑↓" : ""}
-                              {sortConfig.key === "gated" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              <strong> Location</strong>
-                            </th>
-                            <th onClick={() => requestSort("juridiction")}>
-                              <strong> Juridiction</strong>
-                              {sortConfig.key !== "juridiction" ? "↑↓" : ""}
-                              {sortConfig.key === "juridiction" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lat")}>
-                              <strong> Latitude</strong>
-                              {sortConfig.key !== "lat" ? "↑↓" : ""}
-                              {sortConfig.key === "lat" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lng")}>
-                              <strong> Longitude</strong>
-                              {sortConfig.key !== "lng" ? "↑↓" : ""}
-                              {sortConfig.key === "lng" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("gasprovider")}>
-                              <strong> Gas Provider</strong>
-                              {sortConfig.key !== "gasprovider" ? "↑↓" : ""}
-                              {sortConfig.key === "gasprovider" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("hoafee")}>
-                              <strong> HOA Fee</strong>
-                              {sortConfig.key !== "hoafee" ? "↑↓" : ""}
-                              {sortConfig.key === "hoafee" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("masterplanfee")}>
-                              <strong> Masterplan Fee</strong>
-                              {sortConfig.key !== "masterplanfee" ? "↑↓" : ""}
-                              {sortConfig.key === "masterplanfee" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("parcel")}>
-                              <strong> Parcel Group</strong>
-                              {sortConfig.key !== "parcel" ? "↑↓" : ""}
-                              {sortConfig.key === "parcel" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("phone")}>
-                              <strong> Phone</strong>
-                              {sortConfig.key !== "phone" ? "↑↓" : ""}
-                              {sortConfig.key === "phone" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              <strong> Website</strong>
-                              {sortConfig.key !== "website" ? "↑↓" : ""}
-                              {sortConfig.key === "website" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("dateadded")}>
-                              <strong> Date Added</strong>
-                              {sortConfig.key !== "dateadded" ? "↑↓" : ""}
-                              {sortConfig.key === "dateadded" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("subdivision_code")}>
-                              <strong> __pkSubID </strong>
-                              {sortConfig.key !== "subdivision_code"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "subdivision_code" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("builderCode")}>
-                              <strong> _fkBuilderID </strong>
-                              {sortConfig.key !== "builderCode" ? "↑↓" : ""}
-                              {sortConfig.key === "builderCode" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              {" "}
-                              <strong> Action </strong>
-                            </th>
+                                {sortConfig.key === "status" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Reporting") && (
+                              <th onClick={() => requestSort("reporting")}>
+                                <strong> Reporting</strong>
+                                {sortConfig.key !== "reporting" ? "↑↓" : ""}
+                                {sortConfig.key === "reporting" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Builder") && (
+                              <th onClick={() => requestSort("builderName")}>
+                                <strong> Builder</strong>
+                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                                {sortConfig.key === "builderName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Builder") && (
+                              <th onClick={() => requestSort("Name")}>
+                                <strong> Name</strong>
+                                {sortConfig.key !== "name" ? "↑↓" : ""}
+                                {sortConfig.key === "name" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Product Type") && (
+                              <th onClick={() => requestSort("product_type")}>
+                                <strong> Product Type</strong>
+                                {sortConfig.key !== "product_type" ? "↑↓" : ""}
+                                {sortConfig.key === "product_type" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Area") && (
+                              <th onClick={() => requestSort("area")}>
+                                <strong> Area</strong>
+                                {sortConfig.key !== "area" ? "↑↓" : ""}
+                                {sortConfig.key === "area" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Product Type") && (
+                              <th onClick={() => requestSort("masterplan_id")}>
+                                <strong> Masterplan</strong>
+                                {sortConfig.key !== "masterplan_id" ? "↑↓" : ""}
+                                {sortConfig.key === "masterplan_id" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Zipcode") && (
+                              <th onClick={() => requestSort("zipcode")}>
+                                <strong> Zipcode</strong>
+                                {sortConfig.key !== "zipcode" ? "↑↓" : ""}
+                                {sortConfig.key === "zipcode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Total Lots") && (
+                              <th onClick={() => requestSort("totallots")}>
+                                <strong> Total Lots</strong>
+                                {sortConfig.key !== "totallots" ? "↑↓" : ""}
+                                {sortConfig.key === "totallots" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Lot Width") && (
+                              <th onClick={() => requestSort("lotwidth")}>
+                                <strong>Lot Width</strong>
+                                {sortConfig.key !== "lotwidth" ? "↑↓" : ""}
+                                {sortConfig.key === "lotwidth" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Lot Size") && (
+                              <th onClick={() => requestSort("lotsize")}>
+                                <strong> Lot Size</strong>
+                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
+                                {sortConfig.key === "lotsize" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Zoning") && (
+                              <th onClick={() => requestSort("zoning")}>
+                                <strong> Zoning</strong>
+                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
+                                {sortConfig.key === "zoning" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Age Restricted") && (
+                              <th onClick={() => requestSort("age")}>
+                                <strong> Age Restricted</strong>
+                                {sortConfig.key !== "age" ? "↑↓" : ""}
+                                {sortConfig.key === "age" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("All Single Story") && (
+                              <th onClick={() => requestSort("single")}>
+                                <strong> All Single Story</strong>
+                                {sortConfig.key !== "single" ? "↑↓" : ""}
+                                {sortConfig.key === "single" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Gated") && (
+                              <th onClick={() => requestSort("gated")}>
+                                <strong> Gated</strong>
+                                {sortConfig.key !== "gated" ? "↑↓" : ""}
+                                {sortConfig.key === "gated" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Location") && (
+                              <th>
+                                <strong> Location</strong>
+                              </th>
+                            )}
+                            {checkFieldExist("Juridiction") && (
+                              <th onClick={() => requestSort("juridiction")}>
+                                <strong> Juridiction</strong>
+                                {sortConfig.key !== "juridiction" ? "↑↓" : ""}
+                                {sortConfig.key === "juridiction" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Latitude") && (
+                              <th onClick={() => requestSort("lat")}>
+                                <strong>Latitude</strong>
+                                {sortConfig.key !== "lat" ? "↑↓" : ""}
+                                {sortConfig.key === "lat" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Longitude") && (
+                              <th onClick={() => requestSort("lng")}>
+                                <strong> Longitude</strong>
+                                {sortConfig.key !== "lng" ? "↑↓" : ""}
+                                {sortConfig.key === "lng" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Gas Provider") && (
+                              <th onClick={() => requestSort("gasprovider")}>
+                                <strong> Gas Provider</strong>
+                                {sortConfig.key !== "gasprovider" ? "↑↓" : ""}
+                                {sortConfig.key === "gasprovider" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("HOA Fee") && (
+                              <th onClick={() => requestSort("hoafee")}>
+                                <strong> HOA Fee</strong>
+                                {sortConfig.key !== "hoafee" ? "↑↓" : ""}
+                                {sortConfig.key === "hoafee" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Masterplan Fee") && (
+                              <th onClick={() => requestSort("masterplanfee")}>
+                                <strong> Masterplan Fee</strong>
+                                {sortConfig.key !== "masterplanfee" ? "↑↓" : ""}
+                                {sortConfig.key === "masterplanfee" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Parcel Group") && (
+                              <th onClick={() => requestSort("parcel")}>
+                                <strong> Parcel Group</strong>
+                                {sortConfig.key !== "parcel" ? "↑↓" : ""}
+                                {sortConfig.key === "parcel" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Phone") && (
+                              <th onClick={() => requestSort("phone")}>
+                                <strong> Phone</strong>
+                                {sortConfig.key !== "phone" ? "↑↓" : ""}
+                                {sortConfig.key === "phone" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Website") && (
+                              <th>
+                                <strong> Website</strong>
+                                {sortConfig.key !== "website" ? "↑↓" : ""}
+                                {sortConfig.key === "website" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Date Added") && (
+                              <th onClick={() => requestSort("dateadded")}>
+                                <strong> Date Added</strong>
+                                {sortConfig.key !== "dateadded" ? "↑↓" : ""}
+                                {sortConfig.key === "dateadded" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("__pkSubID") && (
+                              <th
+                                onClick={() => requestSort("subdivision_code")}
+                              >
+                                <strong> __pkSubID </strong>
+                                {sortConfig.key !== "subdivision_code"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivision_code" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("_fkBuilderID") && (
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> _fkBuilderID </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}
+                            {checkFieldExist("Action") && (
+                              <th>
+                                {" "}
+                                <strong> Action </strong>
+                              </th>
+                            )}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -719,77 +906,137 @@ const SubdivisionList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>
-                                  {element.status === 1 && "Active"}
-                                  {element.status === 0 && "Sold Out"}
-                                  {element.status === 2 && "Future"}
-                                </td>
-                                <td>
-                                  {element.reporting === 1 && "Yes"}
-                                  {element.reporting === 0 && "No"}
-                                </td>
-                                <td>{element.builder.name}</td>
-                                <td>{element.name}</td>
-                                <td>{element.product_type}</td>
-                                <td>{element.area}</td>
-                                <td>{element.masterplan_id}</td>
-                                <td>{element.zipcode}</td>
-                                <td>{element.totallots}</td>
-                                <td>{element.lotwidth}</td>
-                                <td>{element.lotsize}</td>
-                                <td>{element.zoning}</td>
-                                <td>
-                                  {element.age === 1 && "Yes"}
-                                  {element.age === 0 && "No"}
-                                </td>
-                                <td>
-                                  {element.single === 1 && "Yes"}
-                                  {element.single === 0 && "No"}
-                                </td>
-                                <td>
-                                  {element.gated === 1 && "Yes"}
-                                  {element.gated === 0 && "No"}
-                                </td>
-                                <td>{element.location}</td>
-                                <td>{element.juridiction}</td>
-                                <td>{element.lat}</td>
-                                <td>{element.lng}</td>
-                                <td>{element.gasprovider}</td>
-                                <td>{element.hoafee}</td>
-                                <td>{element.masterplanfee}</td>
-                                <td>{element.parcel}</td>
-                                <td>{element.phone}</td>
-                                <td>{element.builder.website}</td>
-                                <td><DateComponent date={element.dateadded}/></td>         
-                                <td>{element.subdivision_code}</td>
-                                <td>{element.builder.builder_code}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  <div>
-                                    <Link
-                                      to={`/subdivisionUpdate/${element.id}`}
-                                      className="btn btn-primary shadow btn-xs sharp me-1"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </Link>
-                                    <Link
-                                      onClick={() =>
-                                        swal({
-                                          title: "Are you sure?",
-                                          icon: "warning",
-                                          buttons: true,
-                                          dangerMode: true,
-                                        }).then((willDelete) => {
-                                          if (willDelete) {
-                                            handleDelete(element.id);
-                                          }
-                                        })
-                                      }
-                                      className="btn btn-danger shadow btn-xs sharp"
-                                    >
-                                      <i className="fa fa-trash"></i>
-                                    </Link>
-                                  </div>
-                                </td>
+                                {checkFieldExist("Status") && (
+                                  <td>
+                                    {element.status === 1 && "Active"}
+                                    {element.status === 0 && "Sold Out"}
+                                    {element.status === 2 && "Future"}
+                                  </td>
+                                )}
+                                {checkFieldExist("Reporting") && (
+                                  <td>
+                                    {element.reporting === 1 && "Yes"}
+                                    {element.reporting === 0 && "No"}
+                                  </td>
+                                )}
+                                {checkFieldExist("Builder") && (
+                                  <td>{element.builder.name}</td>
+                                )}
+                                {checkFieldExist("Name") && (
+                                  <td>{element.name}</td>
+                                )}
+                                {checkFieldExist("Product Type") && (
+                                  <td>{element.product_type}</td>
+                                )}
+                                {checkFieldExist("Area") && (
+                                  <td>{element.area}</td>
+                                )}
+                                {checkFieldExist("Masterplan") && (
+                                  <td>{element.masterplan_id}</td>
+                                )}
+                                {checkFieldExist("Zipcode") && (
+                                  <td>{element.zipcode}</td>
+                                )}
+                                {checkFieldExist("Total Lots") && (
+                                  <td>{element.totallots}</td>
+                                )}
+                                {checkFieldExist("Lot Width") && (
+                                  <td>{element.lotwidth}</td>
+                                )}
+                                {checkFieldExist("Lot Size") && (
+                                  <td>{element.lotsize}</td>
+                                )}
+                                {checkFieldExist("Zoning") && (
+                                  <td>{element.zoning}</td>
+                                )}
+                                {checkFieldExist("Age Restricted") && (
+                                  <td>
+                                    {element.age === 1 && "Yes"}
+                                    {element.age === 0 && "No"}
+                                  </td>
+                                )}
+                                {checkFieldExist("All Single Story") && (
+                                  <td>
+                                    {element.single === 1 && "Yes"}
+                                    {element.single === 0 && "No"}
+                                  </td>
+                                )}
+                                {checkFieldExist("Gated") && (
+                                  <td>
+                                    {element.gated === 1 && "Yes"}
+                                    {element.gated === 0 && "No"}
+                                  </td>
+                                )}
+                                {checkFieldExist("Location") && (
+                                  <td>{element.location}</td>
+                                )}
+                                {checkFieldExist("Juridiction") && (
+                                  <td>{element.juridiction}</td>
+                                )}
+                                {checkFieldExist("Latitude") && (
+                                  <td>{element.lat}</td>
+                                )}
+                                {checkFieldExist("Longitude") && (
+                                  <td>{element.lng}</td>
+                                )}
+                                {checkFieldExist("Gas Provider") && (
+                                  <td>{element.gasprovider}</td>
+                                )}
+                                {checkFieldExist("HOA Fee") && (
+                                  <td>{element.hoafee}</td>
+                                )}
+                                {checkFieldExist("Masterplan Fee") && (
+                                  <td>{element.masterplanfee}</td>
+                                )}
+                                {checkFieldExist("Parcel Group") && (
+                                  <td>{element.parcel}</td>
+                                )}
+                                {checkFieldExist("Phone") && (
+                                  <td>{element.phone}</td>
+                                )}
+                                {checkFieldExist("Website") && (
+                                  <td>{element.builder.website}</td>
+                                )}
+                                {checkFieldExist("Date Added") && (
+                                  <td>
+                                    <DateComponent date={element.dateadded} />
+                                  </td>
+                                )}
+                                {checkFieldExist("__pkSubID") && (
+                                  <td>{element.subdivision_code}</td>
+                                )}
+                                {checkFieldExist("_fkBuilderID") && (
+                                  <td>{element.builder.builder_code}</td>
+                                )}
+                                {checkFieldExist("Action") && (
+                                  <td style={{ textAlign: "center" }}>
+                                    <div>
+                                      <Link
+                                        to={`/subdivisionUpdate/${element.id}`}
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                      >
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </Link>
+                                      <Link
+                                        onClick={() =>
+                                          swal({
+                                            title: "Are you sure?",
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                          }).then((willDelete) => {
+                                            if (willDelete) {
+                                              handleDelete(element.id);
+                                            }
+                                          })
+                                        }
+                                        className="btn btn-danger shadow btn-xs sharp"
+                                      >
+                                        <i className="fa fa-trash"></i>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                )}
                               </tr>
                             ))
                           ) : (
@@ -1670,6 +1917,78 @@ const SubdivisionList = () => {
                 </TabPanel>
               </TabContext>
             </Box>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage Subdivision Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                          {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

@@ -7,5 +7,8 @@ export default {
     store: (userData) => clientAuth.post(`admin/permit/store`, { json: userData }),
     show: (id) => clientAuth.get(`admin/permit/show/${id}`),
     import: (userData) => clientAuth.post(`admin/permit/import`, { json: userData }),
+    accessField: () => clientAuth.get(`admin/permit/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/permit/manage-access-fields`,{ json: userData }),
+    export: () => clientAuth.get(`admin/permit/export`),
 
 };

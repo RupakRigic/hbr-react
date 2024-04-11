@@ -12,6 +12,8 @@ import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import DateComponent from "../../components/date/DateFormat";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const TrafficsaleList = () => {
   const navigate = useNavigate();
@@ -40,10 +42,99 @@ const TrafficsaleList = () => {
     unsoldinventory: "",
     status: "",
   });
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "traffic" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "traffic",
+    };
+    try {
+      const data = await AdminTrafficsaleService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminTrafficsaleService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
 
   const [filterQuery, setFilterQuery] = useState({
     status: "",
-    subdivision_id:""
+    subdivision_id: "",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -161,7 +252,7 @@ const TrafficsaleList = () => {
   const HandleCancelFilter = (e) => {
     setFilterQuery({
       status: "",
-      subdivision_id:""
+      subdivision_id: "",
     });
   };
 
@@ -206,43 +297,51 @@ const TrafficsaleList = () => {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
         }
-        if (sortConfig.key === 'zipCode' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "zipCode" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.zipcode).toLowerCase();
           bValue = String(b.subdivision.zipcode).toLowerCase();
         }
-        if (sortConfig.key === 'lotWidth' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "lotWidth" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.lotwidth).toLowerCase();
           bValue = String(b.subdivision.lotwidth).toLowerCase();
         }
-        if (sortConfig.key === 'lotsize' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "lotsize" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.lotsize).toLowerCase();
           bValue = String(b.subdivision.lotsize).toLowerCase();
         }
-        if (sortConfig.key === 'zoning' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "zoning" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.zoning).toLowerCase();
           bValue = String(b.subdivision.zoning).toLowerCase();
         }
-        if (sortConfig.key === 'age' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "age" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.age).toLowerCase();
           bValue = String(b.subdivision.age).toLowerCase();
         }
-        if (sortConfig.key === 'stories' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "stories" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.single).toLowerCase();
           bValue = String(b.subdivision.single).toLowerCase();
         }
-        if (sortConfig.key === 'masterPlan' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "masterPlan" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.masterplan_id).toLowerCase();
           bValue = String(b.subdivision.masterplan_id).toLowerCase();
         }
-        if (sortConfig.key === 'area' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "area" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.area).toLowerCase();
           bValue = String(b.subdivision.area).toLowerCase();
         }
-        if (sortConfig.key === 'productType' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "productType" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.product_type).toLowerCase();
           bValue = String(b.subdivision.product_type).toLowerCase();
         }
-        if (sortConfig.key === 'subdivisionCode' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "subdivisionCode" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.subdivision_code).toLowerCase();
           bValue = String(b.subdivision.subdivision_code).toLowerCase();
         }
@@ -284,6 +383,35 @@ const TrafficsaleList = () => {
       navigate("/");
     }
   }, []);
+
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/trafficsale/export'
+          'https://hbrapi.rigicgspl.com/api/admin/trafficsale/export'
+
+          , {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'traffics.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
   return (
     <>
       <MainPagetitle
@@ -323,6 +451,14 @@ const TrafficsaleList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
+                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -335,9 +471,10 @@ const TrafficsaleList = () => {
                         <Dropdown.Menu>
                           <h5 className="">Filter Options</h5>
                           <div className="border-top">
-                          <div className="mt-3 ">
+                            <div className="mt-3 ">
                               <label className="form-label">
-                                Subdivision: <span className="text-danger"></span>
+                                Subdivision:{" "}
+                                <span className="text-danger"></span>
                               </label>
                               <select
                                 className="default-select form-control"
@@ -353,7 +490,7 @@ const TrafficsaleList = () => {
                                   </option>
                                 ))}
                               </select>
-                           </div>
+                            </div>
                             <div className="mt-3 mb-3">
                               <label className="form-label">
                                 Status: <span className="text-danger"></span>
@@ -409,221 +546,250 @@ const TrafficsaleList = () => {
                           <tr style={{ textAlign: "center" }}>
                             {" "}
                             <th>No.</th>
-                            <th onClick={() => requestSort("weekending")}>
-                              Week Ending
-                              {sortConfig.key !== "weekending" ? "↑↓" : ""}
-                              {sortConfig.key === "weekending" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>          
-                                   <th onClick={() => requestSort("builderName")}>
-                              Builder Name
-                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                              {sortConfig.key === "builderName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("subdivisionName")}>
-                              Subdivision Name
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("weeklytraffic")}>
-                              Weekly Traffic
-                              {sortConfig.key !== "weeklytraffic" ? "↑↓" : ""}
-                              {sortConfig.key === "weeklytraffic" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("grosssales")}>
-                             Weekly Gross Sales
-                              {sortConfig.key !== "grosssales" ? "↑↓" : ""}
-                              {sortConfig.key === "grosssales" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("cancelations")}>
-                              Weekly Cancellations
-                              {sortConfig.key !== "cancelations" ? "↑↓" : ""}
-                              {sortConfig.key === "cancelations" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("netsales")}>
-                            Weekly Net Sales     
-                            {sortConfig.key !== "netsales" ? "↑↓" : ""}
-                              {sortConfig.key === "netsales" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotreleased")}>
-                                Total Lots
-                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                              {sortConfig.key === "lotreleased" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotreleased")}>
-                              Weekly Lots Release For Sale
-                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                              {sortConfig.key === "lotreleased" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotreleased")}>
-                            Weekly Unsold Standing Inventory
-                              {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                              {sortConfig.key === "lotreleased" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("productType")}>
-                              Product Type{" "}
-                              {sortConfig.key !== "productType"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "productType" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                            {checkFieldExist("Week Ending") && (
+                              <th onClick={() => requestSort("weekending")}>
+                                Week Ending
+                                {sortConfig.key !== "weekending" ? "↑↓" : ""}
+                                {sortConfig.key === "weekending" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
                               </th>
+                            )}
+                            {checkFieldExist(" Builder Name") && (
+                              <th onClick={() => requestSort("builderName")}>
+                                Builder Name
+                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                                {sortConfig.key === "builderName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist(" Subdivision Name") && (
+                              <th
+                                onClick={() => requestSort("subdivisionName")}
+                              >
+                                Subdivision Name
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist(" Weekly Traffic") && (
+                              <th onClick={() => requestSort("weeklytraffic")}>
+                                Weekly Traffic
+                                {sortConfig.key !== "weeklytraffic" ? "↑↓" : ""}
+                                {sortConfig.key === "weeklytraffic" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist(" Weekly Gross Sales") && (
+                              <th onClick={() => requestSort("grosssales")}>
+                                Weekly Gross Sales
+                                {sortConfig.key !== "grosssales" ? "↑↓" : ""}
+                                {sortConfig.key === "grosssales" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Weekly Cancellations") && (
+                              <th onClick={() => requestSort("cancelations")}>
+                                Weekly Cancellations
+                                {sortConfig.key !== "cancelations" ? "↑↓" : ""}
+                                {sortConfig.key === "cancelations" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Weekly Net Sales") && (
+                              <th onClick={() => requestSort("netsales")}>
+                                Weekly Net Sales
+                                {sortConfig.key !== "netsales" ? "↑↓" : ""}
+                                {sortConfig.key === "netsales" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Total Lots") && (
+                              <th onClick={() => requestSort("lotreleased")}>
+                                Total Lots
+                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                                {sortConfig.key === "lotreleased" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Weekly Lots Release For Sale") && (
+                              <th onClick={() => requestSort("lotreleased")}>
+                                Weekly Lots Release For Sale
+                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                                {sortConfig.key === "lotreleased" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Weekly Unsold Standing Inventory") && (
+                              <th onClick={() => requestSort("lotreleased")}>
+                                Weekly Unsold Standing Inventory
+                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
+                                {sortConfig.key === "lotreleased" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Product Type") && (
+                              <th onClick={() => requestSort("productType")}>
+                                Product Type{" "}
+                                {sortConfig.key !== "productType" ? "↑↓" : ""}
+                                {sortConfig.key === "productType" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
-                                Area 
-                              {sortConfig.key !== "lotWidth"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "lotWidth" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("masterPlan")}>
-                              Master Plan{" "}
-                              {sortConfig.key !== "lotWidth"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "lotWidth" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("zipCode")}>
-                              Zip Code{" "}
-                              {sortConfig.key !== "lotWidth"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "lotWidth" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotWidth")}>
-                              <strong>Lot Width</strong>
-                              {sortConfig.key !== "lotWidth"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "lotWidth" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("lotsize")}>
-                              <strong>Lot Size</strong>
-                              {sortConfig.key !== "lotsize"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "lotsize" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("zoning")}>
-                              <strong>Zoning</strong>
-                              {sortConfig.key !== "zoning"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "zoning" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("age")}>
-                              <strong>Age Restricted</strong>
-                              {sortConfig.key !== "age"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "age" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("stories")}>
-                              <strong>All Single Story</strong>
-                              {sortConfig.key !== "stories"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "stories" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("created_at")}>
-                              <strong>Date Added</strong>
-                              {sortConfig.key !== "created_at"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "created_at" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              __pkRecordID {/* viewable to admin users only */}
-                            </th>
-                            <th onClick={() => requestSort("subdivisionCode")}>
-                             _fkSubID
-                            {sortConfig.key !== "created_at"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "created_at" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>Action</th>
+                                Area
+                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
+                                {sortConfig.key === "lotWidth" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Master Plan") && (
+                              <th onClick={() => requestSort("masterPlan")}>
+                                Master Plan{" "}
+                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
+                                {sortConfig.key === "lotWidth" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Zip Code") && (
+                              <th onClick={() => requestSort("zipCode")}>
+                                Zip Code{" "}
+                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
+                                {sortConfig.key === "lotWidth" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Lot Width") && (
+                              <th onClick={() => requestSort("lotWidth")}>
+                                <strong>Lot Width</strong>
+                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
+                                {sortConfig.key === "lotWidth" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Lot Size") && (
+                              <th onClick={() => requestSort("lotsize")}>
+                                <strong>Lot Size</strong>
+                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
+                                {sortConfig.key === "lotsize" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Zoning") && (
+                              <th onClick={() => requestSort("zoning")}>
+                                <strong>Zoning</strong>
+                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
+                                {sortConfig.key === "zoning" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Age Restricted") && (
+                              <th onClick={() => requestSort("age")}>
+                                <strong>Age Restricted</strong>
+                                {sortConfig.key !== "age" ? "↑↓" : ""}
+                                {sortConfig.key === "age" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("All Single Story") && (
+                              <th onClick={() => requestSort("stories")}>
+                                <strong>All Single Story</strong>
+                                {sortConfig.key !== "stories" ? "↑↓" : ""}
+                                {sortConfig.key === "stories" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Date Added") && (
+                              <th onClick={() => requestSort("created_at")}>
+                                <strong>Date Added</strong>
+                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                {sortConfig.key === "created_at" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("__pkRecordID") && (
+                              <th>
+                                __pkRecordID{" "}
+                                {/* viewable to admin users only */}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("_fkSubID") && (
+                              <th
+                                onClick={() => requestSort("subdivisionCode")}
+                              >
+                                _fkSubID
+                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                {sortConfig.key === "created_at" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Action") && <th>Action</th>}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -638,84 +804,135 @@ const TrafficsaleList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>
-                                <DateComponent date={element.weekending} />
-                                </td>
-
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision.builder?.name}
-                                </td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.name}
-                                </td>
-                                <td>{element.weeklytraffic}</td>
-                                <td>{element.grosssales}</td>
-                                <td>{element.cancelations}</td>
-                                <td>{element.netsales}</td>
-                                <td>{element.subdivision.totallots}</td>
-                                <td>{element.lotreleased}</td>
-                                <td>{element.unsoldinventory}</td>
-                                <td>{element.subdivision.product_type}</td>
-                                <td>{element.subdivision.area}</td>
-                                <td>{element.subdivision.masterplan_id}</td>
-                                <td>{element.subdivision.zipcode}</td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.lotwidth}
-                                </td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.lotsize}
-                                </td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.zoning}
-                                </td>
-                                <td>
-                                  { element.subdivision && element.subdivision.age=== 1 && "Yes"}
-                                  {element.subdivision && element.subdivision.age === 0 && "No"}
-                                </td>
-                                <td>
-                                  { element.subdivision && element.subdivision.single === 1 && "Yes"}
-                                  { element.subdivision && element.subdivision.single === 0 && "No"}
-                                </td>
-
-                                <td>
+                                {checkFieldExist("Week Ending") && (
+                                  <td>
+                                    <DateComponent date={element.weekending} />
+                                  </td>
+                                )}
+                                {checkFieldExist("Builder Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision.builder?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Subdivision Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Weekly Traffic") && (
+                                  <td>{element.weeklytraffic}</td>
+                                )}{" "}
+                                {checkFieldExist("Weekly Gross Sales") && (
+                                  <td>{element.grosssales}</td>
+                                )}{" "}
+                                {checkFieldExist("Weekly Cancellations") && (
+                                  <td>{element.cancelations}</td>
+                                )}{" "}
+                                {checkFieldExist("Weekly Net Sales") && (
+                                  <td>{element.netsales}</td>
+                                )}
+                                 {checkFieldExist("Total Lots") && (
+                                <td>{element.subdivision.totallots}</td> )}
+                                {checkFieldExist("Weekly Lots Release For Sale") && (
+                                  <td>{element.lotreleased}</td>
+                                )}{" "}
+                                {checkFieldExist("Weekly Unsold Standing Inventory") && (
+                                  <td>{element.unsoldinventory}</td>
+                                )}{" "}
+                                {checkFieldExist("Product Type") && (
+                                  <td>{element.subdivision.product_type}</td>
+                                )}{" "}
+                                {checkFieldExist("Area") && (
+                                  <td>{element.subdivision.area}</td>
+                                )}
+                                  {checkFieldExist("Area") && (
+                                <td>{element.subdivision.masterplan_id}</td> )}
+                                {checkFieldExist("Zip Code") && (
+                                  <td>{element.subdivision.zipcode}</td>
+                                )}{" "}
+                                {checkFieldExist("Lot Width") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.lotwidth}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Lot Size") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.lotsize}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Zoning") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.zoning}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Age Restricted") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision.age === 1 &&
+                                      "Yes"}
+                                    {element.subdivision &&
+                                      element.subdivision.age === 0 &&
+                                      "No"}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("All Single Story") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision.single === 1 &&
+                                      "Yes"}
+                                    {element.subdivision &&
+                                      element.subdivision.single === 0 &&
+                                      "No"}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Date Added") && (
+                                  <td>
                                     <DateComponent date={element.created_at} />
-                                </td>
-                                <td>{element.id}</td>
-                                <td>{element.subdivision.subdivision_code}</td>
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("__pkRecordID") && (
+                                  <td>{element.id}</td>
+                                )}{" "}
+                                {checkFieldExist("_fkSubID") && (
+                                  <td>
+                                    {element.subdivision.subdivision_code}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Action") && (
+                                  <td>
+                                    <div className="d-flex justify-content-center">
+                                      <Link
+                                        to={`/trafficsaleupdate/${element.id}`}
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                      >
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </Link>
+                                      <Link
+                                        onClick={() =>
+                                          swal({
+                                            title: "Are you sure?",
 
-                                <td>
-                                  <div className="d-flex justify-content-center">
-                                    <Link
-                                      to={`/trafficsaleupdate/${element.id}`}
-                                      className="btn btn-primary shadow btn-xs sharp me-1"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </Link>
-                                    <Link
-                                      onClick={() =>
-                                        swal({
-                                          title: "Are you sure?",
-
-                                          icon: "warning",
-                                          buttons: true,
-                                          dangerMode: true,
-                                        }).then((willDelete) => {
-                                          if (willDelete) {
-                                            handleDelete(element.id);
-                                          }
-                                        })
-                                      }
-                                      className="btn btn-danger shadow btn-xs sharp"
-                                    >
-                                      <i className="fa fa-trash"></i>
-                                    </Link>
-                                  </div>
-                                </td>
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                          }).then((willDelete) => {
+                                            if (willDelete) {
+                                              handleDelete(element.id);
+                                            }
+                                          })
+                                        }
+                                        className="btn btn-danger shadow btn-xs sharp"
+                                      >
+                                        <i className="fa fa-trash"></i>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                )}
                               </tr>
                             ))
                           ) : (
@@ -816,7 +1033,7 @@ const TrafficsaleList = () => {
                 <label className="">Week Ending:</label>
                 <div>
                   <span className="fw-bold">
-                    {<DateComponent date ={TrafficDetails.weekending} /> || "NA"}
+                    {<DateComponent date={TrafficDetails.weekending} /> || "NA"}
                   </span>
                 </div>
               </div>
@@ -878,6 +1095,78 @@ const TrafficsaleList = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage Weekly Traffic & Sales Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                            {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

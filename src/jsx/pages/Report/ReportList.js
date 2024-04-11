@@ -96,7 +96,10 @@ const ReportList = () => {
         console.log(bearerToken)
         try {
 
-            const response = await axios.post('http://127.0.0.1:8000/api/admin/report/export-reports',reportdata, {
+            const response = await axios.post(
+                // 'http://127.0.0.1:8000/api/admin/report/export-reports'
+                        'https://hbrapi.rigicgspl.com/api/admin/report/export-reports'
+                ,reportdata, {
             responseType: 'arraybuffer', 
             headers: {
                   'Accept': 'application/pdf', // Set Accept header to indicate that we expect a PDF response

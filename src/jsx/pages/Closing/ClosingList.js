@@ -12,6 +12,8 @@ import ClipLoader from "react-spinners/ClipLoader";
 import PermitList from "../Permit/PermitList";
 import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const ClosingList = () => {
   const [Error, setError] = useState("");
@@ -41,6 +43,97 @@ const ClosingList = () => {
     loanamount: "",
     document: "",
   });
+
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "closing" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "closing",
+    };
+    try {
+      const data = await AdminClosingService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminClosingService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
@@ -190,71 +283,87 @@ const ClosingList = () => {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-  
+
         if (aValue === null || bValue === null) {
           aValue = aValue || "";
           bValue = bValue || "";
         }
-  
-        if (typeof aValue === 'string') {
+
+        if (typeof aValue === "string") {
           aValue = aValue.toLowerCase();
         }
-        if (typeof bValue === 'string') {
+        if (typeof bValue === "string") {
           bValue = bValue.toLowerCase();
-        }  
-        if (sortConfig.key === 'builderName' && a.subdivision.builder.name && b.subdivision.builder.name) {
+        }
+        if (
+          sortConfig.key === "builderName" &&
+          a.subdivision.builder.name &&
+          b.subdivision.builder.name
+        ) {
           aValue = String(a.subdivision.builder.name).toLowerCase();
           bValue = String(b.subdivision.builder.name).toLowerCase();
         }
 
-        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "subdivisionName" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
         }
-        if (sortConfig.key === 'productType' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "productType" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.product_type).toLowerCase();
           bValue = String(b.subdivision.product_type).toLowerCase();
         }
-        if (sortConfig.key === 'area' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "area" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.area).toLowerCase();
           bValue = String(b.subdivision.area).toLowerCase();
         }
-        if (sortConfig.key === 'masterPlan' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "masterPlan" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.masterplan_id).toLowerCase();
           bValue = String(b.subdivision.masterplan_id).toLowerCase();
         }
-        if (sortConfig.key === 'zipCode' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "zipCode" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.zipcode).toLowerCase();
           bValue = String(b.subdivision.zipcode).toLowerCase();
         }
-        if (sortConfig.key === 'lotWidth' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "lotWidth" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.lotwidth).toLowerCase();
           bValue = String(b.subdivision.lotwidth).toLowerCase();
         }
-        if (sortConfig.key === 'lotsize' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "lotsize" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.lotsize).toLowerCase();
           bValue = String(b.subdivision.lotsize).toLowerCase();
         }
-        if (sortConfig.key === 'zoning' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "zoning" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.zoning).toLowerCase();
           bValue = String(b.subdivision.zoning).toLowerCase();
         }
-        if (sortConfig.key === 'age' && a.subdivision && b.subdivision) {
+        if (sortConfig.key === "age" && a.subdivision && b.subdivision) {
           aValue = String(a.subdivision.age).toLowerCase();
           bValue = String(b.subdivision.age).toLowerCase();
         }
-        if (sortConfig.key === 'subdivisionCode' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "subdivisionCode" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.subdivision_code).toLowerCase();
           bValue = String(b.subdivision.subdivision_code).toLowerCase();
         }
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          if (sortConfig.direction === 'asc') {
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          if (sortConfig.direction === "asc") {
             return aValue - bValue;
           } else {
             return bValue - aValue;
           }
         } else {
-          if (sortConfig.direction === 'asc') {
+          if (sortConfig.direction === "asc") {
             return aValue.localeCompare(bValue);
           } else {
             return bValue.localeCompare(aValue);
@@ -264,8 +373,36 @@ const ClosingList = () => {
     }
     return sorted;
   };
-  
 
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/closing/export'
+          'https://hbrapi.rigicgspl.com/api/admin/closing/export'
+
+          ,
+           {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'closings.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
   return (
     <>
       <MainPagetitle
@@ -303,6 +440,14 @@ const ClosingList = () => {
                       </div>
                     </div>
                     <div>
+                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
                       <Button
                         className="btn-sm"
                         variant="secondary"
@@ -343,227 +488,311 @@ const ClosingList = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
-                            <th>Closing Type</th>
-                            <th onClick={() => requestSort("closingdate")}>
-                              Closing Date
-                              {sortConfig.key !== "closingdate" ? "↑↓" : ""}
-                              {sortConfig.key === "closingdate" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("document")}>
-                              Doc
-                            {sortConfig.key !== "document" ? "↑↓" : ""}
-                              {sortConfig.key === "document" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("builderName")}>
-                              Builder Name
-                              {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                              {sortConfig.key === "builderName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("subdivisionName")}>
-                              Subdivision Name
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("closingprice")}>
-                              Closing Price
-                              {sortConfig.key !== "closingprice" ? "↑↓" : ""}
-                              {sortConfig.key === "closingprice" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("address")}>
-                              Address
-                              {sortConfig.key !== "address" ? "↑↓" : ""}
-                              {sortConfig.key === "address" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th >
-                              Parcel Number
-                            </th>
-                            <th onClick={() => requestSort("subdivisionName")}>
-                              Sub Legal Name
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("sellerleagal")}>
-                              Seller Legal Name
-                              {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
-                              {sortConfig.key === "sellerleagal" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("buyer")}>
-                              Buyer Name
-                              {sortConfig.key !== "buyer" ? "↑↓" : ""}
-                              {sortConfig.key === "buyer" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Lender
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th onClick={() => requestSort("loanamount")}>
-                              Loan Amount
-                              {sortConfig.key !== "loanamount" ? "↑↓" : ""}
-                              {sortConfig.key === "loanamount" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Type
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Product Type{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Area
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Master Plan
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Zip Code{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}{" "}
-                            </th>
-                            <th>
-                              Lot Width{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}{" "}
-                            </th>
-                            <th>
-                              Lot Size{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Zoning{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}{" "}
-                            </th>
-                            <th>
-                              Age Restricted{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              All Single Story{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              Date Added{" "}
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              __pkRecordID
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>
-                              _fkSubID
-                              {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </th>
-                            <th>Action</th>
+                            {checkFieldExist("Closing Type") && (
+                              <th>Closing Type</th>
+                            )}{" "}
+                            {checkFieldExist("Closing Date") && (
+                              <th onClick={() => requestSort("closingdate")}>
+                                Closing Date
+                                {sortConfig.key !== "closingdate" ? "↑↓" : ""}
+                                {sortConfig.key === "closingdate" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Doc") && (
+                              <th onClick={() => requestSort("document")}>
+                                Doc
+                                {sortConfig.key !== "document" ? "↑↓" : ""}
+                                {sortConfig.key === "document" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Builder Name") && (
+                              <th onClick={() => requestSort("builderName")}>
+                                Builder Name
+                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                                {sortConfig.key === "builderName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Subdivision Name") && (
+                              <th
+                                onClick={() => requestSort("subdivisionName")}
+                              >
+                                Subdivision Name
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Closing Price") && (
+                              <th onClick={() => requestSort("closingprice")}>
+                                Closing Price
+                                {sortConfig.key !== "closingprice" ? "↑↓" : ""}
+                                {sortConfig.key === "closingprice" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Address") && (
+                              <th onClick={() => requestSort("address")}>
+                                Address
+                                {sortConfig.key !== "address" ? "↑↓" : ""}
+                                {sortConfig.key === "address" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Parcel Number") && <th>Parcel Number</th>}
+                            {checkFieldExist("Sub Legal Name") && (
+                              <th
+                                onClick={() => requestSort("subdivisionName")}
+                              >
+                                Sub Legal Name
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Seller Legal Name") && (
+                              <th onClick={() => requestSort("sellerleagal")}>
+                                Seller Legal Name
+                                {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
+                                {sortConfig.key === "sellerleagal" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Buyer Name") && (
+                              <th onClick={() => requestSort("buyer")}>
+                                Buyer Name
+                                {sortConfig.key !== "buyer" ? "↑↓" : ""}
+                                {sortConfig.key === "buyer" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Lender") && (
+                              <th>
+                                Lender
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Loan Amount") && (
+                              <th onClick={() => requestSort("loanamount")}>
+                                Loan Amount
+                                {sortConfig.key !== "loanamount" ? "↑↓" : ""}
+                                {sortConfig.key === "loanamount" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Type") && (
+                              <th>
+                                Type
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Product Type") && (
+                              <th>
+                                Product Type{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Area") && (
+                              <th>
+                                Area
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Master Plan") && (
+                              <th>
+                                Master Plan
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Zip Code") && (
+                              <th>
+                                Zip Code{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}{" "}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Lot Width") && (
+                              <th>
+                                Lot Width{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}{" "}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Lot Size") && (
+                              <th>
+                                Lot Size{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Zoning") && (
+                              <th>
+                                Zoning{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}{" "}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Age Restricted") && (
+                              <th>
+                                Age Restricted{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("All Single Story") && (
+                              <th>
+                                All Single Story{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Date Added") && (
+                              <th>
+                                Date Added{" "}
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("__pkRecordID") && (
+                              <th>
+                                __pkRecordID
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("_fkSubID") && (
+                              <th>
+                                _fkSubID
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Action") && <th>Action</th>}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -578,74 +807,138 @@ const ClosingList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td>NA</td>
-                                <td><DateComponent date={element.closingdate} /></td>
-                                <td>{element.document}</td>
-
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision.builder?.name}
-                                </td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.name}
-                                </td>
-                                <td> <PriceComponent price={element.closingprice} />
-                                </td>
-                                <td>{element.address}</td>
-                                <td>{element.parcel}</td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.name}
-                                </td>                              
+                                {checkFieldExist("Closing Type") && <td>NA</td>}{" "}
+                                {checkFieldExist("Closing Date") && (
+                                  <td>
+                                    <DateComponent date={element.closingdate} />
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Doc") && (
+                                  <td>{element.document}</td>
+                                )}{" "}
+                                {checkFieldExist("Builder Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision.builder?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Subdivision Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Closing Price") && (
+                                  <td>
+                                    {" "}
+                                    <PriceComponent
+                                      price={element.closingprice}
+                                    />
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Address") && (
+                                  <td>{element.address}</td>
+                                )}{" "}
+                                {checkFieldExist("Parcel Number") && (
+                                  <td>{element.parcel}</td>
+                                )}{" "}
+                                {checkFieldExist("Sub Legal Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Seller Legal Name") && (
                                   <td>{element.sellerleagal}</td>
-                                <td>{element.buyer}</td>
-                                <td>{element.lender}</td>
-                                <td>{element.loanamount}</td>
-                                <td>NA</td>
-                                <td>{element.subdivision.product_type}</td>
-                                <td>{element.subdivision.area}</td>
-                                <td>{element.subdivision.masterplan_id}</td>
-                                <td>{element.subdivision.zipcode}</td>
-                                <td>{element.subdivision.lotwidth}</td>
-                                <td>{element.subdivision.lotsize}</td>
-                                <td>{element.subdivision.zoning}</td>
-                                <td>{element.subdivision.age == '1' ? 'Yes':'No'}</td>
-                                <td>{element.subdivision.single == '1' ? 'Yes':'No'}</td>
-                                <td>
-                                  <DateComponent date={element.created_at} />
-                                </td>
-                                <td>{element.id}</td>
-                                <td>{element.subdivision.subdivision_code}</td>
+                                )}{" "}
+                                {checkFieldExist("Buyer Name") && (
+                                  <td>{element.buyer}</td>
+                                )}{" "}
+                                {checkFieldExist("Lender") && (
+                                  <td>{element.lender}</td>
+                                )}{" "}
+                                {checkFieldExist("Loan Amount") && (
+                                  <td>{element.loanamount}</td>
+                                )}{" "}
+                                {checkFieldExist("Type") && <td>NA</td>}{" "}
+                                {checkFieldExist("Product Type") && (
+                                  <td>{element.subdivision.product_type}</td>
+                                )}{" "}
+                                {checkFieldExist("Area") && (
+                                  <td>{element.subdivision.area}</td>
+                                )}{" "}
+                                {checkFieldExist("Master Plan") && (
+                                  <td>{element.subdivision.masterplan_id}</td>
+                                )}{" "}
+                                {checkFieldExist("Zip Code") && (
+                                  <td>{element.subdivision.zipcode}</td>
+                                )}{" "}
+                                {checkFieldExist("Lot Width") && (
+                                  <td>{element.subdivision.lotwidth}</td>
+                                )}{" "}
+                                {checkFieldExist("Lot Size") && (
+                                  <td>{element.subdivision.lotsize}</td>
+                                )}{" "}
+                                {checkFieldExist("Zoning") && (
+                                  <td>{element.subdivision.zoning}</td>
+                                )}{" "}
+                                {checkFieldExist("Age Restricted") && (
+                                  <td>
+                                    {element.subdivision.age == "1"
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("All Single Story") && (
+                                  <td>
+                                    {element.subdivision.single == "1"
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Date Added") && (
+                                  <td>
+                                    <DateComponent date={element.created_at} />
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("__pkRecordID") && (
+                                  <td>{element.id}</td>
+                                )}{" "}
+                                {checkFieldExist("_fkSubID") && (
+                                  <td>
+                                    {element.subdivision.subdivision_code}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Action") && (
+                                  <td>
+                                    <div className="d-flex justify-content-center">
+                                      <Link
+                                        to={`/closingsaleupdate/${element.id}`}
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                      >
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </Link>
+                                      <Link
+                                        onClick={() =>
+                                          swal({
+                                            title: "Are you sure?",
 
-                                <td>
-                                  <div className="d-flex justify-content-center">
-                                    <Link
-                                      to={`/closingsaleupdate/${element.id}`}
-                                      className="btn btn-primary shadow btn-xs sharp me-1"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </Link>
-                                    <Link
-                                      onClick={() =>
-                                        swal({
-                                          title: "Are you sure?",
-
-                                          icon: "warning",
-                                          buttons: true,
-                                          dangerMode: true,
-                                        }).then((willDelete) => {
-                                          if (willDelete) {
-                                            handleDelete(element.id);
-                                          }
-                                        })
-                                      }
-                                      className="btn btn-danger shadow btn-xs sharp"
-                                    >
-                                      <i className="fa fa-trash"></i>
-                                    </Link>
-                                  </div>
-                                </td>
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                          }).then((willDelete) => {
+                                            if (willDelete) {
+                                              handleDelete(element.id);
+                                            }
+                                          })
+                                        }
+                                        className="btn btn-danger shadow btn-xs sharp"
+                                      >
+                                        <i className="fa fa-trash"></i>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                )}
                               </tr>
                             ))
                           ) : (
@@ -781,7 +1074,8 @@ const ClosingList = () => {
                 <label className="">Closing Date :</label>
                 <div>
                   <span className="fw-bold">
-                    {<DateComponent date ={ClosingDetails.closingdate} /> || "NA"}
+                    {<DateComponent date={ClosingDetails.closingdate} /> ||
+                      "NA"}
                   </span>
                 </div>
               </div>
@@ -790,7 +1084,8 @@ const ClosingList = () => {
                 <label className="">Closing Price :</label>
                 <div>
                   <span className="fw-bold">
-                    {<PriceComponent price={ClosingDetails.closingprice} /> || "NA"}
+                    {<PriceComponent price={ClosingDetails.closingprice} /> ||
+                      "NA"}
                   </span>
                 </div>
               </div>
@@ -813,6 +1108,78 @@ const ClosingList = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage Closings Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                            {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

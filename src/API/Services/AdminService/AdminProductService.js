@@ -6,6 +6,8 @@ export default {
     destroy: (id) => clientAuth.delete(`admin/product/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/product/store`, { json: userData }),
     show: (id) => clientAuth.get(`admin/product/show/${id}`),
-
+    accessField: () => clientAuth.get(`admin/product/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/product/manage-access-fields`,{ json: userData }),
+    export: () => clientAuth.get(`admin/product/export`),
 
 };

@@ -17,6 +17,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -38,7 +39,7 @@ const BuilderTable = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField();
+  const fieldList = AccessField({ tableName: 'builders' });
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -281,7 +282,38 @@ const BuilderTable = () => {
     setRole(e.target.value);
     setAccessRole(e.target.value);
   };
-  console.log(accessRole);
+
+
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/builder/export'
+          'https://hbrapi.rigicgspl.com/api/admin/builder/export'
+
+          , {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'builders.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
+
+
   return (
     <>
       <MainPagetitle
@@ -327,6 +359,7 @@ const BuilderTable = () => {
                         ""
                       ) : (
                         <div className="d-flex">
+                          <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
@@ -1398,7 +1431,7 @@ const BuilderTable = () => {
                     </div>
                   ))}
               </div>
-              <button type="submit" className="btn btn-primary me-3">
+              <button type="submit" className="btn btn-primary mt-3">
                 Submit
               </button>
             </form>

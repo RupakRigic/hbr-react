@@ -7,4 +7,7 @@ export default {
     store: (userData) => clientAuth.post(`admin/user/store`, { json: userData }),
     show: (id) => clientAuth.get(`admin/user/show/${id}`),
     roles: () => clientAuth.get(`admin/user/roles`),
+    accessField: () => clientAuth.get(`admin/user/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/user/manage-access-fields`,{ json: userData }),
+
 };

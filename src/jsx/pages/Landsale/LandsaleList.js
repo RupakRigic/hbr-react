@@ -14,6 +14,8 @@ import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const LandsaleList = () => {
   const [show, setShow] = useState(false);
@@ -58,6 +60,96 @@ const LandsaleList = () => {
     subdivision: "",
   });
 
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "landsale" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "landsale",
+    };
+    try {
+      const data = await AdminLandsaleService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminLandsaleService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
   const [isLoading, setIsLoading] = useState(true);
 
   // function prePage() {
@@ -82,7 +174,6 @@ const LandsaleList = () => {
       const responseData = await response.json();
       setLandsaleList(responseData);
       setIsLoading(false);
-
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -280,34 +371,42 @@ const LandsaleList = () => {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
-  
+
         if (aValue === null || bValue === null) {
           aValue = aValue || "";
           bValue = bValue || "";
-        }  
-        if (typeof aValue === 'string') {
+        }
+        if (typeof aValue === "string") {
           aValue = aValue.toLowerCase();
         }
-        if (typeof bValue === 'string') {
+        if (typeof bValue === "string") {
           bValue = bValue.toLowerCase();
         }
-  
-        if (sortConfig.key === 'builderName' && a.subdivision.builder && b.subdivision.builder) {
+
+        if (
+          sortConfig.key === "builderName" &&
+          a.subdivision.builder &&
+          b.subdivision.builder
+        ) {
           aValue = String(a.subdivision.builder.name).toLowerCase();
           bValue = String(b.subdivision.builder.name).toLowerCase();
         }
-        if (sortConfig.key === 'subdivisionName' && a.subdivision && b.subdivision) {
+        if (
+          sortConfig.key === "subdivisionName" &&
+          a.subdivision &&
+          b.subdivision
+        ) {
           aValue = String(a.subdivision.name).toLowerCase();
           bValue = String(b.subdivision.name).toLowerCase();
         }
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-          if (sortConfig.direction === 'asc') {
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          if (sortConfig.direction === "asc") {
             return aValue - bValue;
           } else {
             return bValue - aValue;
           }
         } else {
-          if (sortConfig.direction === 'asc') {
+          if (sortConfig.direction === "asc") {
             return aValue.localeCompare(bValue);
           } else {
             return bValue.localeCompare(aValue);
@@ -318,8 +417,34 @@ const LandsaleList = () => {
     return sorted;
   };
 
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/builder/export'
+          'https://hbrapi.rigicgspl.com/api/admin/builder/export'
+          ,
+           {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
 
-
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'landsales.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
   return (
     <>
       <MainPagetitle
@@ -330,7 +455,7 @@ const LandsaleList = () => {
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
-            <div className="card" style={{overflow:"auto"}}>
+            <div className="card" style={{ overflow: "auto" }}>
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
@@ -347,13 +472,25 @@ const LandsaleList = () => {
                         </button>
                         <Form.Control
                           type="text"
-                          style={{ borderTopLeftRadius: '0',borderBottomLeftRadius: '0' }}
+                          style={{
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                          }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
                       </div>
                     </div>
                     <div>
+                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
                       <Button
                         className="btn-sm"
                         variant="secondary"
@@ -375,189 +512,237 @@ const LandsaleList = () => {
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
                   >
-                                                            {isLoading ? (
+                    {isLoading ? (
                       <div className="d-flex justify-content-center align-items-center mb-5">
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <strong> No. </strong>
-                          </th>
-                          <th onClick={() => requestSort("builderName")}>
-                            Builder Name
-                            {sortConfig.key !== "builderName"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "builderName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong> No. </strong>
                             </th>
-                          <th onClick={() => requestSort("subdivisionName")}>
-                            Subdivision Name
-                          {sortConfig.key !== "subdivisionName"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "subdivisionName" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                          </th>
-                          <th onClick={() => requestSort("seller")}>
-                            <strong>Seller
-                            {sortConfig.key !== "seller"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "seller" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                            {checkFieldExist("Builder Name") && (
+                              <th onClick={() => requestSort("builderName")}>
+                                Builder Name
+                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
+                                {sortConfig.key === "builderName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Subdivision Name") && (
+                              <th
+                                onClick={() => requestSort("subdivisionName")}
+                              >
+                                Subdivision Name
+                                {sortConfig.key !== "subdivisionName"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionName" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Seller") && (
+                              <th onClick={() => requestSort("seller")}>
+                                <strong>
+                                  Seller
+                                  {sortConfig.key !== "seller" ? "↑↓" : ""}
+                                  {sortConfig.key === "seller" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Buyer") && (
+                              <th onClick={() => requestSort("buyer")}>
+                                <strong>
+                                  {" "}
+                                  Buyer
+                                  {sortConfig.key !== "buyer" ? "↑↓" : ""}
+                                  {sortConfig.key === "buyer" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Location") && (
+                              <th onClick={() => requestSort("location")}>
+                                <strong>
+                                  {" "}
+                                  Location
+                                  {sortConfig.key !== "location" ? "↑↓" : ""}
+                                  {sortConfig.key === "location" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Notes") && (
+                              <th onClick={() => requestSort("notes")}>
+                                <strong>
+                                  Notes
+                                  {sortConfig.key !== "notes" ? "↑↓" : ""}
+                                  {sortConfig.key === "notes" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("price")}>
+                                <strong>
+                                  {" "}
+                                  Price
+                                  {sortConfig.key !== "price" ? "↑↓" : ""}
+                                  {sortConfig.key === "price" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Date") && (
+                              <th onClick={() => requestSort("date")}>
+                                <strong>
+                                  {" "}
+                                  Date
+                                  {sortConfig.key !== "date" ? "↑↓" : ""}
+                                  {sortConfig.key === "date" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Action") && (
+                              <th>
+                                {" "}
+                                <strong>Action</strong>
+                              </th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {sortedData() !== null && sortedData().length > 0 ? (
+                            sortedData().map((element, index) => (
+                              <tr
+                                onClick={() => handleRowClick(element.id)}
+                                key={element.id}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {" "}
+                                <td>{index + 1}</td>
+                                {checkFieldExist("Builder Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision.builder?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Subdivision Name") && (
+                                  <td>
+                                    {element.subdivision &&
+                                      element.subdivision?.name}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Seller") && (
+                                  <td>{element.seller}</td>
+                                )}{" "}
+                                {checkFieldExist("Buyer") && (
+                                  <td>{element.buyer}</td>
+                                )}{" "}
+                                {checkFieldExist("Location") && (
+                                  <td>{element.location}</td>
+                                )}{" "}
+                                {checkFieldExist("Notes") && (
+                                  <td>{element.notes}</td>
+                                )}{" "}
+                                {checkFieldExist("Price") && (
+                                  <td>
+                                    <PriceComponent price={element.price} />
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Date") && (
+                                  <td>
+                                    <DateComponent date={element.date} />
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Action") && (
+                                  <td>
+                                    <div className="d-flex justify-content-center">
+                                      <Link
+                                        to={`/landsaleupdate/${element.id}`}
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                      >
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </Link>
+                                      <Link
+                                        onClick={() =>
+                                          swal({
+                                            title: "Are you sure?",
 
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("buyer")}>
-                            <strong> Buyer
-                            {sortConfig.key !== "buyer"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "buyer" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("location")}>
-                            <strong> Location
-                            {sortConfig.key !== "location"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "location" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("notes")}>
-                            <strong> 
-                              Notes
-                            {sortConfig.key !== "notes"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "notes" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("price")}>
-                            <strong> Price
-                            {sortConfig.key !== "price"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "price" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-                          <th onClick={() => requestSort("date")}>
-                            <strong> date
-                            {sortConfig.key !== "date"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "date" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </strong>
-                          </th>
-
-                          <th>
-                            {" "}
-                            <strong>Action</strong>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                        {sortedData() !== null && sortedData().length > 0 ? (
-                          sortedData().map((element, index) => (
-                            <tr
-                              onClick={() => handleRowClick(element.id)}
-                              key={element.id}
-                              style={{ textAlign: "center", cursor: "pointer" }}
-                            >
-                              {" "}
-                              <td>{index + 1}</td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision.builder?.name}
-                              </td>
-                              <td>
-                                {element.subdivision &&
-                                  element.subdivision?.name}
-                              </td>
-                              <td>{element.seller}</td>
-                              <td>{element.buyer}</td>
-                              <td>{element.location}</td>
-                              <td>{element.notes}</td>
-                              <td>
-                              <PriceComponent price ={element.price} />
-                              </td>
-                              <td><DateComponent date={element.date} /></td>
-                              <td>
-                                <div className="d-flex justify-content-center">
-                                  <Link
-                                    to={`/landsaleupdate/${element.id}`}
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                  >
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </Link>
-                                  <Link
-                                    onClick={() =>
-                                      swal({
-                                        title: "Are you sure?",
-
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                      }).then((willDelete) => {
-                                        if (willDelete) {
-                                          handleDelete(element.id);
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                          }).then((willDelete) => {
+                                            if (willDelete) {
+                                              handleDelete(element.id);
+                                            }
+                                          })
                                         }
-                                      })
-                                    }
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </Link>
-                                </div>
+                                        className="btn btn-danger shadow btn-xs sharp"
+                                      >
+                                        <i className="fa fa-trash"></i>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                )}
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ textAlign: "center" }}>
+                                No data found
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" style={{ textAlign: "center" }}>
-                              No data found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
                           )}
+                        </tbody>
+                      </table>
+                    )}
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}
@@ -721,7 +906,7 @@ const LandsaleList = () => {
                 <label className="">Date :</label>
                 <div>
                   <span className="fw-bold">
-                    {<DateComponent date ={landSaleDetails.date}/> || "NA"}
+                    {<DateComponent date={landSaleDetails.date} /> || "NA"}
                   </span>
                 </div>
               </div>
@@ -738,7 +923,7 @@ const LandsaleList = () => {
                 <label className="">Price :</label>
                 <div>
                   <span className="fw-bold">
-                    {  <PriceComponent price={landSaleDetails.price} /> || "NA"}
+                    {<PriceComponent price={landSaleDetails.price} /> || "NA"}
                   </span>
                 </div>
               </div>
@@ -825,6 +1010,78 @@ const LandsaleList = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage Weekly Traffic & Sales List Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                            {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

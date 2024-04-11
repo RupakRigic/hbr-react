@@ -12,6 +12,8 @@ import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
+import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import axios from "axios";
 
 const PermitList = () => {
   const [show, setShow] = useState(false);
@@ -54,6 +56,96 @@ const PermitList = () => {
     address1: "",
     address2: "",
   });
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "permits" });
+
+  useEffect(() => {
+    console.log(fieldList); // You can now use fieldList in this component
+  }, [fieldList]);
+
+  const checkFieldExist = (fieldName) => {
+    return fieldList.includes(fieldName.trim());
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "permits",
+    };
+    try {
+      const data = await AdminPermitService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (Array.isArray(accessList)) {
+      const initialCheckedState = {};
+      accessList.forEach((element) => {
+        initialCheckedState[element.field_name] =
+          element.role_name.includes(accessRole);
+      });
+      setCheckedItems(initialCheckedState);
+    }
+  }, [accessList, accessRole]);
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setCheckedItems((prevCheckedItems) => ({
+      ...prevCheckedItems,
+      [name]: checked,
+    }));
+    setAccessForm((prevAccessForm) => ({
+      ...prevAccessForm,
+      [name]: checked,
+    }));
+  };
+
+  const getAccesslist = async () => {
+    try {
+      const response = await AdminPermitService.accessField();
+      const responseData = await response.json();
+      setAccessList(responseData);
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
 
   // function prePage() {
   //   if (currentPage !== 1) {
@@ -251,7 +343,33 @@ const PermitList = () => {
     }
     return sorted;
   };
-  
+  const exportToExcelData = async () => {
+    try {
+        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
+        const response = await axios.get(
+          // 'http://127.0.0.1:8000/api/admin/permit/export'
+          'https://hbrapi.rigicgspl.com/api/admin/permit/export'
+          , {
+            responseType: 'blob',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'permit.xlsx');
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.log(error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+}
 
   return (
     <>
@@ -286,6 +404,14 @@ const PermitList = () => {
                       </div>
                     </div>
                     <div>
+                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        {" "}
+                        Field Access
+                      </button>
                       <Button
                         className="btn-sm"
                         variant="secondary"
@@ -322,6 +448,7 @@ const PermitList = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
+                            {checkFieldExist("Date") && (
                             <th onClick={() => requestSort("date")}>
                               <strong>Date </strong>
                               {sortConfig.key !== "date" ? "↑↓" : ""}
@@ -331,6 +458,9 @@ const PermitList = () => {
                                 </span>
                               )}
                             </th>
+                               )}
+                                                           {checkFieldExist("Builder Name") && (
+
                             <th onClick={() => requestSort("builderName")}>
                               <strong>Builder Name</strong>
                               {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -339,7 +469,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                                                        {checkFieldExist("Subdivision Name") && (
+
                             <th onClick={() => requestSort("subdivisionName")}>
                               <strong>Subdivision Name</strong>
                               {sortConfig.key !== "subdivisionName" ? "↑↓" : ""}
@@ -348,7 +480,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Address Number") && (
+
                             <th onClick={() => requestSort("address2")}>
                               <strong>Address Number</strong>
                               {sortConfig.key !== "address2" ? "↑↓" : ""}
@@ -357,8 +491,10 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
-                            <th onClick={() => requestSort("address1")}>
+                            </th>  )}
+                            {checkFieldExist("Date") && (
+
+                            <th onClick={() => requestSort("Address Name")}>
                               <strong>Address Name</strong>
                               {sortConfig.key !== "address1" ? "↑↓" : ""}
                               {sortConfig.key === "address1" && (
@@ -366,7 +502,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Parcel Number") && (
+
                             <th onClick={() => requestSort("address2")}>
                               <strong>Parcel Number</strong>
                               {sortConfig.key !== "parcel" ? "↑↓" : ""}
@@ -375,7 +513,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Contractor") && (
+
                             <th onClick={() => requestSort("contractor")}>
                               <strong>Contractor</strong>
                               {sortConfig.key !== "contractor" ? "↑↓" : ""}
@@ -384,7 +524,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Squre Footage") && (
+
                             <th onClick={() => requestSort("sqft")}>
                               <strong>Squre Footage</strong>
                               {sortConfig.key !== "sqft" ? "↑↓" : ""}
@@ -393,7 +535,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Owner") && (
+
                             <th onClick={() => requestSort("owner")}>
                               <strong>Owner</strong>
                               {sortConfig.key !== "owner" ? "↑↓" : ""}
@@ -402,8 +546,10 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
-                            <th onClick={() => requestSort("lotnumber")}>
+                            </th>  )}
+                            {checkFieldExist("Date") && (
+
+                            <th onClick={() => requestSort("Lot Number")}>
                               <strong>Lot Number</strong>
                               {sortConfig.key !== "lotnumber" ? "↑↓" : ""}
                               {sortConfig.key === "lotnumber" && (
@@ -411,7 +557,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Permit Number") && (
+
                             <th onClick={() => requestSort("permitnumber")}>
                               <strong>Permit Number</strong>
                               {sortConfig.key !== "permitnumber" ? "↑↓" : ""}
@@ -420,7 +568,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Plan") && (
+
                             <th onClick={() => requestSort("plan")}>
                               <strong>Plan</strong>
                               {sortConfig.key !== "plan" ? "↑↓" : ""}
@@ -429,7 +579,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Sub Legal Name") && (
+
                             <th 
                             // onClick={() => requestSort("plan")}
                             >
@@ -440,7 +592,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )} */}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Value") && (
+
                             <th onClick={() => requestSort("Value")}>
                               <strong>Value</strong>
                               {sortConfig.key !== "value" ? "↑↓" : ""}
@@ -449,7 +603,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Product Type") && (
+
                             <th onClick={() => requestSort("productType")}>
                               <strong>Product Type</strong>
                               {sortConfig.key !== "productType" ? "↑↓" : ""}
@@ -458,7 +614,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>  )}
+                            {checkFieldExist("Area") && (
+
                             <th onClick={() => requestSort("area")}>
                               <strong>Area</strong>
                               {sortConfig.key !== "Area" ? "↑↓" : ""}
@@ -467,8 +625,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
-                  
+                            </th>  )}
+                            {checkFieldExist("Master Plan") && (
+
                             <th onClick={() => requestSort("masterPlan")}>
                               <strong>Master Plan</strong>
                               {sortConfig.key !== "masterPlan" ? "↑↓" : ""}
@@ -477,7 +636,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>{" "}
+                            </th> )}
+                            {checkFieldExist("Zip Code") && (
+
                             <th onClick={() => requestSort("zipCode")}>
                               <strong>Zip Code</strong>
                               {sortConfig.key !== "zipCode" ? "↑↓" : ""}
@@ -486,7 +647,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>{" "}
+                            </th>)}
+                            {checkFieldExist("Lot Width") && (
+
                             <th onClick={() => requestSort("lotWidth")}>
                               <strong>Lot Width</strong>
                               {sortConfig.key !== "lotWidth"
@@ -497,7 +660,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("Lot Size") && (
+
                             <th onClick={() => requestSort("lotsize")}>
                               <strong>Lot Size</strong>
                               {sortConfig.key !== "lotsize"
@@ -508,7 +673,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("Zoning") && (
+
                             <th onClick={() => requestSort("zoning")}>
                               <strong>Zoning</strong>
                               {sortConfig.key !== "zoning"
@@ -519,7 +686,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("Age Restricted") && (
+
                             <th onClick={() => requestSort("age")}>
                               <strong>Age Restricted</strong>
                               {sortConfig.key !== "age"
@@ -530,7 +699,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("All Single Story") && (
+
                             <th onClick={() => requestSort("stories")}>
                               <strong>All Single Story</strong>
                               {sortConfig.key !== "stories"
@@ -541,7 +712,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("Date Added") && (
+
                             <th onClick={() => requestSort("created_at")}>
                               <strong>Date Added</strong>
                               {sortConfig.key !== "created_at"
@@ -552,7 +725,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("__pkPermitID") && (
+
                             <th onClick={() => requestSort("permitnumber ")}>
                               <strong>__pkPermitID</strong>
                               {sortConfig.key !== "permitnumber"
@@ -563,7 +738,9 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("_fkSubID") && (
+
                             <th onClick={() => requestSort("subdivisionCode")}>
                               <strong>_fkSubID </strong>
                               {sortConfig.key !== "subdivisionCode "
@@ -574,10 +751,12 @@ const PermitList = () => {
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )}
-                            </th>
+                            </th>)}
+                            {checkFieldExist("Action") && (
                             <th>
                               <strong>Action</strong>
                             </th>
+                          )}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -592,78 +771,131 @@ const PermitList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                <td><DateComponent date ={element.date}/></td>
+                                {checkFieldExist("Date") && (
 
-                                <td>
+                                <td><DateComponent date ={element.date}/></td>)}
+                            {checkFieldExist("Builder Name") && (
+                                  <td>
                                   {element.subdivision &&
                                     element.subdivision.builder?.name}
-                                </td>
-                                <td>
-                                  {element.subdivision &&
-                                    element.subdivision?.name}
-                                </td>
+                                </td>)}
+                                {checkFieldExist("Subdivision Name") && (
 
-                                <td>{element.address2}</td>
-                                <td>{element.address1}</td>
-                                <td>{element.parcel}</td>
-                                <td>{element.contractor}</td>
-                                <td>{element.sqft}</td>
-                                <td>{element.owner}</td>
-                                <td>{element.lotnumber}</td>
-                                <td>{element.permitnumber}</td>
-                                <td>{element.plan === '' || element.plan ===null? 'NA' : element.plan}</td>
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.name}
-                                </td>
-                                <td>{element.value}</td>
+                                </td>)}
+                                {checkFieldExist("Address Number") && (
+
+                                <td>{element.address2}</td>)}
+                                {checkFieldExist("Address Name") && (
+
+                                <td>{element.address1}</td>)}
+                                {checkFieldExist("Parcel Number") && (
+
+                                <td>{element.parcel}</td>)}
+                                {checkFieldExist("Contractor") && (
+
+                                <td>{element.contractor}</td>)}
+                                {checkFieldExist("Squre Footage") && (
+
+                                <td>{element.sqft}</td>)}
+                                {checkFieldExist("Owner") && (
+
+                                <td>{element.owner}</td>)}
+                                {checkFieldExist("Lot Number") && (
+
+                                <td>{element.lotnumber}</td>)}
+                                {checkFieldExist("Permit Number") && (
+
+                                <td>{element.permitnumber}</td>)}
+                                {checkFieldExist("Plan") && (
+
+                                <td>{element.plan === '' || element.plan ===null? 'NA' : element.plan}</td>
+                              )}
+                                {checkFieldExist("Sub Legal Name") && (
+
                                 <td>
+                                  {element.subdivision &&
+                                    element.subdivision?.name}
+                                </td> 
+                              )}
+                                {checkFieldExist("Value") && (
+                                <td>{element.value}</td>)}
+                                {checkFieldExist("Product Type") && (
+                                <td> 
                                   {element.subdivision &&
                                     element.subdivision?.product_type}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Area") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.area}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Master Plan") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.masterplan_id}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Zip Code") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.zipcode}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Lot Width") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.lotwidth}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Lot Size") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.lotsize}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Zoning") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.zoning}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Age Restricted") && (
+
                                 <td>
                                   { element.subdivision && element.subdivision.age=== 1 && "Yes"}
                                   {element.subdivision && element.subdivision.age === 0 && "No"}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("All Single Story") && (
+
                                 <td>
                                   { element.subdivision && element.subdivision.single === 1 && "Yes"}
                                   { element.subdivision && element.subdivision.single === 0 && "No"}
-                                </td>
+                                </td> )}
+                                {checkFieldExist("Date Added") && (
 
                                 <td>
                                     <DateComponent date={element.created_at} />
                                 </td>
+                              )}
+                                {checkFieldExist("__pkPermitID") && (
+
                                 <td>
                                   {element.permitnumber}
                                 </td>
+                              )}
+                                {checkFieldExist("_fkSubID") && (
+
                                 <td>
                                   {element.subdivision &&
                                     element.subdivision?.subdivision}
                                 </td>
+                              )}
+                                {checkFieldExist("Action") && (
+
                                 <td>
                                   <div className="d-flex justify-content-center">
                                     <Link
@@ -691,6 +923,7 @@ const PermitList = () => {
                                     </Link>
                                   </div>
                                 </td>
+                              )}  
                               </tr>
                             ))
                           ) : (
@@ -934,6 +1167,78 @@ const PermitList = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageAccessOffcanvas}
+        onHide={setManageAccessOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Manage Permit Fields Access{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageAccessOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <label className="form-label">
+              Select Role: <span className="text-danger"></span>
+            </label>
+            <select
+              className="default-select form-control"
+              name="manage_role_fields"
+              onChange={HandleRole}
+              value={role}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Data Uploader">Data Uploader</option>
+              <option value="User">User</option>
+            </select>
+            <form onSubmit={handleAccessForm}>
+              <div className="row">
+                {Array.isArray(accessList) &&
+                  accessList.map((element, index) => (
+                    <div className="col-md-4" key={index}>
+                      <div className="mt-5">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            // defaultChecked={(() => {
+                            //   const isChecked = element.role_name.includes(accessRole);
+                            //   console.log(accessRole);
+                            //   console.log(isChecked);
+                            //   return isChecked;
+                            // })()}
+                            checked={checkedItems[element.field_name]}
+                            onChange={handleCheckboxChange}
+                            name={element.field_name}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`flexCheckDefault${index}`}
+                          >
+                            {element.field_name}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <button type="submit" className="btn btn-primary mt-3">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       </Offcanvas>

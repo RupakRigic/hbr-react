@@ -8,5 +8,8 @@ export default {
     show: (id) => clientAuth.get(`admin/closing/show/${id}`),
     import: (userData) => clientAuth.post(`admin/closing/import`, { json: userData }),
 
+    accessField: () => clientAuth.get(`admin/closing/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/closing/manage-access-fields`,{ json: userData }),
+    export: () => clientAuth.get(`admin/closing/export`),
 
 };

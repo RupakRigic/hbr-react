@@ -7,5 +7,8 @@ export default {
     store: (userData) => clientAuth.post(`admin/landsale/store`, { json: userData }),
     show: (id) => clientAuth.get(`admin/landsale/show/${id}`),
     import: (userData) => clientAuth.post(`admin/landsale/import`, { json: userData }),
+    accessField: () => clientAuth.get(`admin/landsale/access-fields`),
+    manageAccessFields:(userData) =>  clientAuth.post(`admin/landsale/manage-access-fields`,{ json: userData }),
+    export: () => clientAuth.get(`admin/landsale/export`),
 
 };
