@@ -20,6 +20,7 @@ import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import Modal from "react-bootstrap/Modal";
 
 const ProductList = () => {
   const [Error, setError] = useState("");
@@ -78,11 +79,16 @@ const ProductList = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const [checkedItems, setCheckedItems] = useState({}); 
   const fieldList = AccessField({ tableName: "products" });
+  const [show, setShow] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFileError, setSelectedFileError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleClose = () => setShow(false);
 
   useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
+    console.log(fieldList);
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
@@ -397,8 +403,8 @@ const ProductList = () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/product/export'
-          'https://hbrapi.rigicgspl.com/api/admin/product/export'
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/product/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/product/export'
 
           , {
             responseType: 'blob',
@@ -421,6 +427,55 @@ const ProductList = () => {
         }
     }
 }
+const handleFileChange = async (e) => {
+  setSelectedFile(e.target.files[0]);
+};
+const handleUploadClick = async () => {
+  const file = selectedFile;
+
+  if (file && file.type === "text/csv") {
+    setLoading(true);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = async () => {
+      var iFile = fileReader.result;
+      setSelectedFile(iFile);
+      console.log(iFile);
+      const inputData = {
+        csv: iFile,
+      };
+      try {
+        let responseData = await AdminProductService.import(inputData).json();
+        setSelectedFile("");
+        document.getElementById("fileInput").value = null;
+        setLoading(false);
+        swal("Imported Sucessfully").then((willDelete) => {
+          if (willDelete) {
+            navigate("/builderlist");
+            setShow(false);
+          }
+        });
+        getbuilderlist();
+      } catch (error) {
+        if (error.name === "HTTPError") {
+          const errorJson = error.response.json();
+          setSelectedFile("");
+          setError(errorJson.message);
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+        }
+      }
+    };
+
+    setSelectedFileError("");
+  } else {
+    setSelectedFile("");
+    setSelectedFileError("Please select a CSV file.");
+  }
+};
+const handlBuilderClick = (e) => {
+  setShow(true);
+};
   return (
     <>
       <MainPagetitle
@@ -467,6 +522,13 @@ const ProductList = () => {
                         {" "}
                         Field Access
                       </button>
+                      <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={handlBuilderClick}
+                      >                       
+                        Import
+                      </Button>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -1034,7 +1096,31 @@ const ProductList = () => {
         Title="Add Product"
         parentCallback={handleCallback}
       />
-
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Import Permit CSV Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mt-3">
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+          </div>
+          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
+            {selectedFileError}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUploadClick}
+            disabled={loading}
+          >
+            {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}

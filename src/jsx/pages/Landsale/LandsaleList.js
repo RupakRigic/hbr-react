@@ -207,68 +207,6 @@ const LandsaleList = () => {
     getLandsaleList();
   };
 
-  const handleFileChange = async (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-  const handleUploadClick = async () => {
-    const file = selectedFile;
-    if (BuilderCode == "select" || BuilderCode == "") {
-      setSelectedFileError("Please select builder.");
-
-      return false;
-    }
-    if (SubdivisionCode == "select" || SubdivisionCode == "") {
-      setSelectedFileError("Please select Subdivision.");
-
-      return false;
-    }
-
-    if (file && file.type === "text/csv") {
-      setLoading(true);
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = async () => {
-        var iFile = fileReader.result;
-        setSelectedFile(iFile);
-        const inputData = {
-          csv: iFile,
-          builder_id: BuilderCode,
-          subdivision_id: SubdivisionCode,
-        };
-
-        try {
-          let responseData = await AdminLandsaleService.import(
-            inputData
-          ).json();
-          setSelectedFile("");
-          document.getElementById("fileInput").value = null;
-          setLoading(false);
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/landsalelist");
-              setBuilderCode("");
-              setShow(false);
-            }
-          });
-          getLandsaleList();
-        } catch (error) {
-          if (error.name === "HTTPError") {
-            const errorJson = error.response.json();
-            setSelectedFile("");
-            setError(errorJson.message);
-            document.getElementById("fileInput").value = null;
-            setLoading(false);
-          }
-        }
-      };
-
-      setSelectedFileError("");
-    } else {
-      setSelectedFile("");
-      setSelectedFileError("Please select a CSV file.");
-    }
-  };
-
   const getbuilderlist = async () => {
     try {
       let response = await AdminBuilderService.index();
@@ -312,9 +250,6 @@ const LandsaleList = () => {
     getsubdivisionlist();
   }, []);
 
-  const handlBuilderClick = (e) => {
-    setShow(true);
-  };
   const handleModalClick = () => {
     navigate("/report-list");
   };
@@ -421,8 +356,8 @@ const LandsaleList = () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/builder/export'
-          'https://hbrapi.rigicgspl.com/api/admin/builder/export'
+         `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/builder/export'
           ,
            {
             responseType: 'blob',
@@ -445,6 +380,55 @@ const LandsaleList = () => {
         }
     }
 }
+const handleFileChange = async (e) => {
+  setSelectedFile(e.target.files[0]);
+};
+const handleUploadClick = async () => {
+  const file = selectedFile;
+
+  if (file && file.type === "text/csv") {
+    setLoading(true);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = async () => {
+      var iFile = fileReader.result;
+      setSelectedFile(iFile);
+      console.log(iFile);
+      const inputData = {
+        csv: iFile,
+      };
+      try {
+        let responseData = await AdminLandsaleService.import(inputData).json();
+        setSelectedFile("");
+        document.getElementById("fileInput").value = null;
+        setLoading(false);
+        swal("Imported Sucessfully").then((willDelete) => {
+          if (willDelete) {
+            navigate("/builderlist");
+            setShow(false);
+          }
+        });
+        getbuilderlist();
+      } catch (error) {
+        if (error.name === "HTTPError") {
+          const errorJson = error.response.json();
+          setSelectedFile("");
+          setError(errorJson.message);
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+        }
+      }
+    };
+
+    setSelectedFileError("");
+  } else {
+    setSelectedFile("");
+    setSelectedFileError("Please select a CSV file.");
+  }
+};
+const handlBuilderClick = (e) => {
+  setShow(true);
+};
   return (
     <>
       <MainPagetitle
@@ -492,7 +476,7 @@ const LandsaleList = () => {
                         Field Access
                       </button>
                       <Button
-                        className="btn-sm"
+                        className="btn-sm me-1"
                         variant="secondary"
                         onClick={handlBuilderClick}
                       >
@@ -797,33 +781,11 @@ const LandsaleList = () => {
         parentCallback={handleCallback}
       />
 
-      <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import landsale CSV Data</Modal.Title>
+          <Modal.Title>Import Land Sale CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <label className="mt-1">Select Builder:</label>
-          <Form.Select
-            onChange={handleBuilderCode}
-            value={BuilderCode}
-            className="default-select form-control"
-          >
-            <option value="">Select Builder</option>
-            {BuilderList.map((element) => (
-              <option value={element.id}>{element.name}</option>
-            ))}
-          </Form.Select>
-          <label className="mt-1">Select Subdivision:</label>
-          <Form.Select
-            onChange={handleSubdivisionCode}
-            value={SubdivisionCode}
-            className="default-select form-control"
-          >
-            <option value="">Select Subdivision</option>
-            {SubdivisionList.map((element) => (
-              <option value={element.id}>{element.name}</option>
-            ))}
-          </Form.Select>
           <div className="mt-3">
             <input type="file" id="fileInput" onChange={handleFileChange} />
           </div>
@@ -1013,6 +975,7 @@ const LandsaleList = () => {
           </div>
         </div>
       </Offcanvas>
+
       <Offcanvas
         show={manageAccessOffcanvas}
         onHide={setManageAccessOffcanvas}

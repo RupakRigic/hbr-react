@@ -9,5 +9,6 @@ export default {
     accessField: () => clientAuth.get(`admin/product/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/product/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/product/export`),
+    import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
 
 };

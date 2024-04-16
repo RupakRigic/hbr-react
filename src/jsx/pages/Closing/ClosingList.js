@@ -14,6 +14,7 @@ import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import Modal from "react-bootstrap/Modal";
 
 const ClosingList = () => {
   const [Error, setError] = useState("");
@@ -26,10 +27,12 @@ const ClosingList = () => {
   // const records = ClosingList.slice(firstIndex, lastIndex);
   // const npage = Math.ceil(ClosingList.length / recordsPage);
   // const number = [...Array(npage + 1).keys()].slice(1);
-  const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
-  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
   const [loading, setLoading] = useState(false);
+  const handleClose = () => setShow(false);
+  const navigate = useNavigate();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [ClosingDetails, setClosingDetails] = useState({
@@ -184,9 +187,12 @@ const ClosingList = () => {
     }
   };
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+    console.log(file);
     if (file && file.type === "text/csv") {
       setLoading(true);
       const fileReader = new FileReader();
@@ -194,6 +200,7 @@ const ClosingList = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
+        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
@@ -204,12 +211,12 @@ const ClosingList = () => {
           setLoading(false);
           swal("Imported Sucessfully").then((willDelete) => {
             if (willDelete) {
-              navigate("/closingsalelist");
+              navigate("/subdivisionlist");
+              setShow(false);
             }
           });
           getClosingList();
         } catch (error) {
-          console.log(error);
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
             setSelectedFile("");
@@ -219,21 +226,22 @@ const ClosingList = () => {
           }
         }
       };
-
+  
       setSelectedFileError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
     }
   };
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
 
   const handleCallback = () => {
     // Update the name in the component's state
     getClosingList();
   };
-  const handleUploadClick = () => {
-    document.getElementById("fileInput").click();
-  };
+
 
   const handleRowClick = async (id) => {
     try {
@@ -378,8 +386,8 @@ const ClosingList = () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/closing/export'
-          'https://hbrapi.rigicgspl.com/api/admin/closing/export'
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/closing/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/closing/export'
 
           ,
            {
@@ -449,19 +457,12 @@ const ClosingList = () => {
                         Field Access
                       </button>
                       <Button
-                        className="btn-sm"
+                        className="btn-sm me-1"
                         variant="secondary"
-                        onClick={handleUploadClick}
-                        disabled={loading}
+                        onClick={handlBuilderClick}
                       >
-                        {loading ? "Loading.." : "Import"}
+                        Import
                       </Button>
-                      <input
-                        type="file"
-                        id="fileInput"
-                        style={{ display: "none" }}
-                        onChange={handleFileChange}
-                      />
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -807,7 +808,7 @@ const ClosingList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Closing Type") && <td>NA</td>}{" "}
+                                {checkFieldExist("Closing Type") && <td>{element.closing_type}</td>}{" "}
                                 {checkFieldExist("Closing Date") && (
                                   <td>
                                     <DateComponent date={element.closingdate} />
@@ -844,8 +845,7 @@ const ClosingList = () => {
                                 )}{" "}
                                 {checkFieldExist("Sub Legal Name") && (
                                   <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
+                                    {element.sublegal_name}
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Seller Legal Name") && (
@@ -1004,6 +1004,31 @@ const ClosingList = () => {
         Title="Add Closing"
         parentCallback={handleCallback}
       />
+    <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Import Permit CSV Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mt-3">
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+          </div>
+          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
+            {selectedFileError}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUploadClick}
+            disabled={loading}
+          >
+            {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}

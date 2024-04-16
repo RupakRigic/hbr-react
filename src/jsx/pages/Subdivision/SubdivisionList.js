@@ -18,6 +18,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import Modal from "react-bootstrap/Modal";
 
 const SubdivisionList = () => {
   const [Error, setError] = useState("");
@@ -112,8 +113,12 @@ const SubdivisionList = () => {
   //     setCurrentPage(currentPage + 1);
   //   }
   // }
-
   const subdivision = useRef();
+  const [show, setShow] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFileError, setSelectedFileError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleClose = () => setShow(false);
 
   const getbuilderlist = async () => {
     try {
@@ -314,8 +319,8 @@ const SubdivisionList = () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/subdivision/export'
-          'https://hbrapi.rigicgspl.com/api/admin/subdivision/export'
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/subdivision/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/subdivision/export'
 
           , {
             responseType: 'blob',
@@ -412,6 +417,57 @@ const SubdivisionList = () => {
     }
   }, []);
 
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+  
+    if (file && file.type === "text/csv") {
+      setLoading(true);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = async () => {
+        var iFile = fileReader.result;
+        setSelectedFile(iFile);
+        console.log(iFile);
+        const inputData = {
+          csv: iFile,
+        };
+        try {
+          let responseData = await AdminSubdevisionService.import(inputData).json();
+          setSelectedFile("");
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+          swal("Imported Sucessfully").then((willDelete) => {
+            if (willDelete) {
+              navigate("/subdivisionlist");
+              setShow(false);
+            }
+          });
+          getbuilderlist();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
+          }
+        }
+      };
+  
+      setSelectedFileError("");
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
+  
+
   return (
     <>
       <MainPagetitle
@@ -457,6 +513,13 @@ const SubdivisionList = () => {
                         {" "}
                         Field Access
                       </button>
+                      <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={handlBuilderClick}
+                      >
+                        Import
+                      </Button>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -1102,7 +1165,31 @@ const SubdivisionList = () => {
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
-
+    <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Import Permit CSV Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mt-3">
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+          </div>
+          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
+            {selectedFileError}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUploadClick}
+            disabled={loading}
+          >
+            {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
