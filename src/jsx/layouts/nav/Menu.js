@@ -41,13 +41,13 @@ export const MenuList = [
         iconStyle: SVGICON.GridDots,
         to: '/trafficsalelist',
     },
-    {
-        title: 'Base Prices',
-        // classsChange: 'mm-collapse',
-        iconStyle: SVGICON.Pages,
-        to: '/priceList',
+    // {
+    //     title: 'Base Prices',
+    //     // classsChange: 'mm-collapse',
+    //     iconStyle: SVGICON.Pages,
+    //     to: '/priceList',
 
-    },
+    // },
     {
         title: 'Closings',
         iconStyle: SVGICON.CoreHr,

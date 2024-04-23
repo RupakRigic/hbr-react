@@ -2,7 +2,9 @@ import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'rea
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 
+import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
+import AdminSubdivisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
 const ProductOffcanvas = forwardRef((props, ref) => {
@@ -12,12 +14,34 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     const [addProduct, setAddProduct] = useState(false);
     const [ProductCode, setProductCode] = useState('');
     const [ProductList, setProductList] = useState([]);
+
+    const [builderList, setBuilderList] = useState([]);
+    const [BuilderCode, setBuilderCode] = useState('');
+
+    const [subDivisionList, setSubDivisionList] = useState([]);
+    const [SubDivisionCode, setDivisionCode] = useState('');
+
+    useEffect(() => {
+        getBuilderList()
+        //getProductList();
+    }, [])
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddProduct(true)
         }
     }));
-
+    const getBuilderList = async () => {
+        try {
+            const response = await AdminBuilderService.index()
+            const responseData = await response.json()
+            setBuilderList(responseData)
+        } catch (error) {
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+                setError(errorJson.message)
+            }
+        }
+    }
     const navigate = useNavigate()
     const getProductList = async () => {
 
@@ -35,15 +59,37 @@ const ProductOffcanvas = forwardRef((props, ref) => {
             }
         }
     }
-    useEffect(() => {
-        getProductList();
-    }, [])
-
     const handleProductCode = code => {
-
         setProductCode(code.target.value);
-
     }
+    const handleBuilderCode = async(event) => {
+        setBuilderCode(event.target.value)
+        try {
+            const response = await AdminSubdivisionService.getByBuilderId(event.target.value)
+            const responseData = await response.json()
+            setSubDivisionList(responseData.data)
+        } catch (error) {
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+                setError(errorJson.message)
+            }
+        }
+    }
+    
+    const handleSubDivisionCode = async(event) => {
+        setDivisionCode(event.target.value)
+        try {
+            const response = await AdminProductService.getBySubDivisionId(event.target.value)
+            const responseData = await response.json()
+            setProductList(responseData.data)
+        } catch (error) {
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+                setError(errorJson.message)
+            }
+        }
+    }
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -96,10 +142,43 @@ const ProductOffcanvas = forwardRef((props, ref) => {
 
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                <div className="col-xl-6 mb-3">
+                            <div className="col-xl-4 mb-3">
+                                    <label className="form-label">Builder<span className="text-danger">*</span></label>
+                                    <Form.Group controlId="tournamentList">
+                                        <Form.Select
+                                            onChange={handleBuilderCode}
+                                            value={BuilderCode}
+                                            className="default-select form-control"
+                                        >
+                                            <option value=''>Select Builder</option>
+                                            {
+                                                builderList.map((element) => (
+                                                    <option value={element.id}>{element.name}</option>
+                                                ))
+                                            }
+                                        </Form.Select>
+                                    </Form.Group>
+                                </div>
+                                <div className="col-xl-4 mb-3">
+                                    <label className="form-label">Sub Division<span className="text-danger">*</span></label>
+                                    <Form.Group controlId="tournamentList">
+                                        <Form.Select
+                                            onChange={handleSubDivisionCode}
+                                            value={SubDivisionCode}
+                                            className="default-select form-control"
+                                        >
+                                            <option value=''>Select Sub Division</option>
+                                            {
+                                                subDivisionList.map((element) => (
+                                                    <option value={element.id}>{element.name}</option>
+                                                ))
+                                            }
+                                        </Form.Select>
+                                    </Form.Group>
+                                </div>
+                                <div className="col-xl-4 mb-3">
                                     <label className="form-label">Product<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-
                                         <Form.Select
                                             onChange={handleProductCode}
                                             value={ProductCode}
@@ -113,7 +192,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                             }
                                         </Form.Select>
                                     </Form.Group>
-
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Base Price: <span className="text-danger">*</span></label>

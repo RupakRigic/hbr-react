@@ -810,7 +810,8 @@ const ClosingList = () => {
                                 {checkFieldExist("Closing Type") && <td>NA</td>}{" "}
                                 {checkFieldExist("Closing Date") && (
                                   <td>
-                                    <DateComponent date={element.closingdate} />
+                                    { new Intl.DateTimeFormat('fr-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(element.closingdate))}
+                                    {/* <DateComponent date={element.closingdate} /> */}
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Doc") && (

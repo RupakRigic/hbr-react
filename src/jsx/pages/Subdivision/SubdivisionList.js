@@ -1992,6 +1992,11 @@ const SubdivisionList = () => {
           </div>
         </div>
       </Offcanvas>
+      <SubdivisionOffcanvas
+        ref={subdivision}
+        Title="Add Subdivision"
+        parentCallback={handleCallback}
+      />
     </>
   );
 };

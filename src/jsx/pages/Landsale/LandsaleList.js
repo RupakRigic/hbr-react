@@ -694,6 +694,7 @@ const LandsaleList = () => {
                                 {checkFieldExist("Price") && (
                                   <td>
                                     <PriceComponent price={element.price} />
+                                    / {element.typeofunit}
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Date") && (

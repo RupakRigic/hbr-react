@@ -7,7 +7,7 @@ const DateComponent = ({ date }) => {
     month: '2-digit',
     day: '2-digit'
   }).format(new Date(date));
-
+ 
   return <span>{formattedDate}</span>;
 };
 

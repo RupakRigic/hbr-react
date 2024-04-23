@@ -506,7 +506,7 @@ const PermitList = () => {
                               </th>
                             )}
 
-                            {checkFieldExist("Date") && (
+                            {/* {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("Address Name")}>
                                 <strong>Address Name</strong>
                                 {sortConfig.key !== "address1" ? "↑↓" : ""}
@@ -527,7 +527,18 @@ const PermitList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}
+                            )} */}
+                            
+                            <th onClick={() => requestSort("address2")}>
+                              <strong>Full Address</strong>
+                              {sortConfig.key !== "address2" ? "↑↓" : ""}
+                              {sortConfig.key === "address2" && (
+                                <span>
+                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                </span>
+                              )}
+                            </th>
+                           
                             {checkFieldExist("Parcel Number") && (
                               <th onClick={() => requestSort("address2")}>
                                 <strong>Parcel Number</strong>
@@ -801,12 +812,13 @@ const PermitList = () => {
                                       element.subdivision?.name}
                                   </td>
                                 )}
-                                {checkFieldExist("Address Number") && (
+                                  <td>{element.address2 +" - "+ element.address1}</td>
+                                {/* {checkFieldExist("Address Number") && (
                                   <td>{element.address2}</td>
                                 )}
                                 {checkFieldExist("Address Name") && (
                                   <td>{element.address1}</td>
-                                )}
+                                )} */}
                                 {checkFieldExist("Parcel Number") && (
                                   <td>{element.parcel}</td>
                                 )}

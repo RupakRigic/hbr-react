@@ -212,7 +212,8 @@ function RechartJs() {
   const navigate = useNavigate();
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setValue(event.target.value)
+    //setValue(newValue);
   };
 
   const handleDisplay = (e) => {
@@ -589,20 +590,26 @@ function RechartJs() {
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
+            {/* <TabList onChange={handleChange} aria-label="lab API tabs example">
               <Tab label="Buyer Traffic" value="1" />
               <Tab label="Net Sales" value="2" />
-
               <Tab label="Cancellation%" value="3" />
               <Tab label="Standing Inventory" value="4" />
-
               <Tab label="Net Sales Per Sub" value="5" />
               <Tab label="Active Subdivisions" value="6" />
-            </TabList>
+            </TabList> */}
+            <div className="col-xl-3 mb-3">
+              <select className="default-select form-control" onChange={handleChange}>
+                <option value="1">Buyer Traffic</option>
+                <option value="2">Net Sales</option>
+                <option value="3">Cancellation%</option>
+                <option value="4">Standing Inventory</option>
+                <option value="5">Net Sales Per Sub</option>
+                <option value="6">Active Subdivisions</option>
+              </select>
+            </div>
           </Box>
-
-          <TabPanel value="1" className="p-0">
-            <Row>
+            <Row className={value==1?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -652,10 +659,7 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
-
-          <TabPanel value="2" className="p-0">
-            <Row>
+            <Row className={value==2?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -702,10 +706,7 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
-
-          <TabPanel value="3" className="p-0">
-            <Row>
+            <Row className={value==3?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -755,10 +756,7 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
-
-          <TabPanel value="4" className="p-0">
-            <Row>
+            <Row className={value==4?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -805,10 +803,7 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
-
-          <TabPanel value="5" className="p-0">
-            <Row>
+            <Row className={value==5?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -858,10 +853,7 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
-
-          <TabPanel value="6" className="p-0">
-            <Row>
+            <Row className={value==6?'cshow':'chide'}>
               <Col xl={12} lg={12}>
                 {" "}
                 <Card>
@@ -911,7 +903,6 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-          </TabPanel>
         </TabContext>
       </Box>
 

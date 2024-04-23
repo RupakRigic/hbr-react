@@ -9,5 +9,5 @@ export default {
     accessField: () => clientAuth.get(`admin/product/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/product/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/product/export`),
-
+    getBySubDivisionId: (id) => clientAuth.get(`admin/product/showbysubdivisionid/${id}`),
 };

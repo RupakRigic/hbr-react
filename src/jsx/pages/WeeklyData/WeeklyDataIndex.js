@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
 import WeeklyDataOffcanvas from "./WeeklyDataOffcanvas";
+import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -213,6 +214,14 @@ const WeeklyDataIndex = () => {
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <h4 className="heading mb-0">Data Reporting List</h4>
+                    <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => subdivision.current.showEmployeModal()}
+                      >
+                        + Add Subdivision
+                      </Link>
                   </div>
                   <div
                     id="employee-tbl_wrapper"
@@ -266,10 +275,10 @@ const WeeklyDataIndex = () => {
                       <tbody style={{ textAlign: "center" }}>
                         {records.map((element, index) => {
                           return (
+                            
                             <tr style={{ textAlign: "center" }}>
                               <td>{element.weekly_data[0].week_ending_date}</td>
                               <td>
-                                {/* {element.weekly_data[0].status} */}
                                 <div class="form-check form-switch">
                                   <input
                                     name="status"
@@ -277,7 +286,7 @@ const WeeklyDataIndex = () => {
                                     type="checkbox"
                                     role="switch"
                                     id="flexSwitchCheckDefault"
-                                    defaultChecked={element.weekly_data[0].status}
+                                    //defaultChecked={element.weekly_data[0].status}
                                     onChange={(event) =>
                                       {
                                         handleStatusChange(
@@ -427,6 +436,7 @@ const WeeklyDataIndex = () => {
                                 </div>
                               </td> */}
                             </tr>
+                           
                           );
                         })}
                       </tbody>
@@ -479,11 +489,16 @@ const WeeklyDataIndex = () => {
           </div>
         </div>
       </div>
-      <WeeklyDataOffcanvas
+      <SubdivisionOffcanvas
         ref={subdivision}
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
+      {/* <WeeklyDataOffcanvas
+        ref={subdivision}
+        Title="Add Subdivision"
+        parentCallback={handleCallback}
+      /> */}
     </>
   );
 };
