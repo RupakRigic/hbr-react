@@ -97,8 +97,8 @@ const ReportList = () => {
         try {
 
             const response = await axios.post(
-                // 'http://127.0.0.1:8000/api/admin/report/export-reports'
-                        'https://hbrapi.rigicgspl.com/api/admin/report/export-reports'
+                `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`
+                // 'https://hbrapi.rigicgspl.com/api/admin/report/export-reports'
                 ,reportdata, {
             responseType: 'arraybuffer', 
             headers: {

@@ -13,6 +13,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import Modal from "react-bootstrap/Modal";
 
 const PriceList = () => {
   const [Error, setError] = useState("");
@@ -41,6 +42,8 @@ const PriceList = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "prices" });
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -180,53 +183,6 @@ const PriceList = () => {
     // Update the name in the component's state
     getpriceList();
   };
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-
-    if (file && file.type === "text/csv") {
-      setLoading(true);
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = async () => {
-        var iFile = fileReader.result;
-        setSelectedFile(iFile);
-        const inputData = {
-          csv: iFile,
-        };
-        try {
-          let responseData = await AdminPriceService.import(inputData).json();
-          setSelectedFile("");
-          document.getElementById("fileInput").value = null;
-          setLoading(false);
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/priceList");
-            }
-          });
-          getpriceList();
-        } catch (error) {
-          console.log(error);
-          if (error.name === "HTTPError") {
-            const errorJson = error.response.json();
-            setSelectedFile("");
-            setError(errorJson.message);
-            document.getElementById("fileInput").value = null;
-            setLoading(false);
-          }
-        }
-      };
-
-      setSelectedFileError("");
-    } else {
-      setSelectedFile("");
-      setSelectedFileError("Please select a CSV file.");
-    }
-  };
-
-  const handleUploadClick = () => {
-    document.getElementById("fileInput").click();
-  };
-
   const handleRowClick = async (id) => {
     try {
       let responseData = await AdminPriceService.show(id).json();
@@ -438,12 +394,62 @@ const PriceList = () => {
     return sorted;
   };
 
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+  
+    if (file && file.type === "text/csv") {
+      setLoading(true);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = async () => {
+        var iFile = fileReader.result;
+        setSelectedFile(iFile);
+        console.log(iFile);
+        const inputData = {
+          csv: iFile,
+        };
+        try {
+          let responseData = await AdminPriceService.import(inputData).json();
+          setSelectedFile("");
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+          swal("Imported Sucessfully").then((willDelete) => {
+            if (willDelete) {
+              navigate("/builderlist");
+              setShow(false);
+            }
+          });
+          getpriceList();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
+          }
+        }
+      };
+  
+      setSelectedFileError("");
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
+
   const exportToExcelData = async () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/price/export'
-          'https://hbrapi.rigicgspl.com/api/admin/price/export'
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/price/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/price/export'
           , {
             responseType: 'blob',
             headers: {
@@ -511,12 +517,11 @@ const PriceList = () => {
                         Field Access
                       </button>
                       <Button
-                        className="btn-sm"
+                        className="btn-sm me-1"
                         variant="secondary"
-                        onClick={handleUploadClick}
-                        disabled={loading}
-                      >
-                        {loading ? "Loading.." : "Import"}
+                        onClick={handlBuilderClick}
+                      >                       
+                        Import
                       </Button>
                       <input
                         type="file"
@@ -1093,6 +1098,31 @@ const PriceList = () => {
           </div>
         </div>
       </Offcanvas>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Import Permit CSV Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mt-3">
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+          </div>
+          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
+            {selectedFileError}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUploadClick}
+            disabled={loading}
+          >
+            {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Offcanvas
         show={manageAccessOffcanvas}
         onHide={setManageAccessOffcanvas}

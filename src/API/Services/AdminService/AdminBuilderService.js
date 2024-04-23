@@ -11,5 +11,7 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/builder/manage-access-fields`,{ json: userData }),
     getRoleFieldList:(tableName)=> clientAuth.get(`admin/builder/access-list/${tableName}`),    
     export: () => clientAuth.get(`admin/builder/export`),
+    import: (userData) => clientAuth.post(`admin/builder/import`, { json: userData }),
+
 
 };

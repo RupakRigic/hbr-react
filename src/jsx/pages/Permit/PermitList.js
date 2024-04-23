@@ -198,12 +198,7 @@ const PermitList = () => {
   };
   const handleUploadClick = async () => {
     const file = selectedFile;
-    if (BuilderCode == "select" || BuilderCode == "") {
-      setSelectedFileError("Please select builder");
-
-      return false;
-    }
-
+  
     if (file && file.type === "text/csv") {
       setLoading(true);
       const fileReader = new FileReader();
@@ -211,9 +206,9 @@ const PermitList = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
+        console.log(iFile);
         const inputData = {
           csv: iFile,
-          builder_id: BuilderCode,
         };
         try {
           let responseData = await AdminPermitService.import(inputData).json();
@@ -222,12 +217,11 @@ const PermitList = () => {
           setLoading(false);
           swal("Imported Sucessfully").then((willDelete) => {
             if (willDelete) {
-              navigate("/permitlist");
-              setBuilderCode("");
+              navigate("/builderlist");
               setShow(false);
             }
           });
-          getPermitList();
+          getbuilderlist();
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
@@ -238,14 +232,13 @@ const PermitList = () => {
           }
         }
       };
-
+  
       setSelectedFileError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
     }
   };
-
   const getbuilderlist = async () => {
     try {
       const response = await AdminBuilderService.index();
@@ -358,8 +351,8 @@ const PermitList = () => {
     try {
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
       const response = await axios.get(
-        // 'http://127.0.0.1:8000/api/admin/permit/export'
-        "https://hbrapi.rigicgspl.com/api/admin/permit/export",
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/permit/export`,
+        // "https://hbrapi.rigicgspl.com/api/admin/permit/export",
         {
           responseType: "blob",
           headers: {
@@ -433,10 +426,10 @@ const PermitList = () => {
                         Field Access
                       </button>
                       <Button
-                        className="btn-sm"
+                        className="btn-sm me-1"
                         variant="secondary"
                         onClick={handlBuilderClick}
-                      >
+                      >                       
                         Import
                       </Button>
 
@@ -1029,17 +1022,6 @@ const PermitList = () => {
           <Modal.Title>Import Permit CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Select Builder:
-          <Form.Select
-            onChange={handleBuilderCode}
-            value={BuilderCode}
-            className="default-select form-control"
-          >
-            <option value="">Select Builder</option>
-            {BuilderList.map((element) => (
-              <option value={element.id}>{element.name}</option>
-            ))}
-          </Form.Select>
           <div className="mt-3">
             <input type="file" id="fileInput" onChange={handleFileChange} />
           </div>

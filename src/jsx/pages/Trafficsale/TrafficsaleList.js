@@ -388,8 +388,8 @@ const TrafficsaleList = () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
         const response = await axios.get(
-          // 'http://127.0.0.1:8000/api/admin/trafficsale/export'
-          'https://hbrapi.rigicgspl.com/api/admin/trafficsale/export'
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/trafficsale/export`
+          // 'https://hbrapi.rigicgspl.com/api/admin/trafficsale/export'
 
           , {
             responseType: 'blob',

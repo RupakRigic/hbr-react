@@ -11,5 +11,6 @@ export default {
     getRoleFieldList:()=> clientAuth.get(`admin/subdivision/access-list`),
     export: () => clientAuth.get(`admin/subdivision/export`),
     getByBuilderId: (id) => clientAuth.get(`admin/subdivision/showbybuilderid/${id}`),
+    import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
 
 };
