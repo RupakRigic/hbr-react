@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect,useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -7,6 +7,7 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import { Offcanvas, Form } from "react-bootstrap";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import { debounce } from "lodash";
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import Box from "@mui/material/Box";
@@ -20,11 +21,14 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 
+import { Row, Col, Card } from 'react-bootstrap';
 const SubdivisionList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState(null);
+  const [exportmodelshow, setExportModelShow] = useState(false)
+  const [selectedColumns, setSelectedColumns] = useState([]);
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
@@ -48,7 +52,72 @@ const SubdivisionList = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "subdivisions" });
+  const headers = [
+    { label: 'Status', key: 'firstname' },
+    { label: 'Reporting', key: 'lastname' },
+    { label: 'Builder', key: 'nickname' },
+    { label: 'Name', key: 'zipcode' },
+    { label: 'Product Type', key: 'city' },
+    { label: 'Area', key: 'with' },
+    { label: 'Masterplan', key: 'without' },
+    { label: 'Zipcode', key: 'reentries' },
+    { label: 'Total Lots', key: 'rakes' },
+    { label: 'Lot Width', key: 'firstname' },
+    { label: 'Lot Size', key: 'lastname' },
+    { label: 'Zoning', key: 'nickname' },
+    { label: 'Age Restricted', key: 'zipcode' },
+    { label: 'All Single Story', key: 'city' },
+    { label: 'Gated', key: 'with' },
+    { label: 'Location', key: 'without' },
+    { label: 'Juridiction', key: 'reentries' },
+    { label: 'Latitude', key: 'rakes' },
+    { label: 'Longitude', key: 'zipcode' },
+    { label: 'Gas Provider', key: 'city' },
+    { label: 'HOA Fee', key: 'with' },
+    { label: 'Masterplan Fee', key: 'without' },
+    { label: 'Parcel Group', key: 'reentries' },
+    { label: 'Phone', key: 'rakes' },
+    { label: 'Website', key: 'with' },
+  ];
+  const columns = [
+    { label: 'Status', key: 'firstname' },
+    { label: 'Reporting', key: 'lastname' },
+    { label: 'Builder', key: 'nickname' },
+    { label: 'Name', key: 'zipcode' },
+    { label: 'Product Type', key: 'city' },
+    { label: 'Area', key: 'with' },
+    { label: 'Masterplan', key: 'without' },
+    { label: 'Zipcode', key: 'reentries' },
+    { label: 'Total Lots', key: 'rakes' },
+    { label: 'Lot Width', key: 'firstname' },
+    { label: 'Lot Size', key: 'lastname' },
+    { label: 'Zoning', key: 'nickname' },
+    { label: 'Age Restricted', key: 'zipcode' },
+    { label: 'All Single Story', key: 'city' },
+    { label: 'Gated', key: 'with' },
+    { label: 'Location', key: 'without' },
+    { label: 'Juridiction', key: 'reentries' },
+    { label: 'Latitude', key: 'rakes' },
+    { label: 'Longitude', key: 'zipcode' },
+    { label: 'Gas Provider', key: 'city' },
+    { label: 'HOA Fee', key: 'with' },
+    { label: 'Masterplan Fee', key: 'without' },
+    { label: 'Parcel Group', key: 'reentries' },
+    { label: 'Phone', key: 'rakes' },
+    { label: 'Website', key: 'with' },
+  ];
+ 
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+    setSelectedColumns(updatedColumns);
+  //   newdata.map((nw, i) =>
+  //   [nw === "Name" ? row.firstname : '', nw === "Surname" ? row.lastname : '', nw === "Nickname" ? row.nickname : '', nw === "ZipCode" ? row.zipcode : '', nw === "City" ? row.city : '', nw === "Registrations with check-in" ? row.with : '', nw === "Registrations without check-in" ? row.without : '', nw === "Cumulated Buy-in bounty Re-entries" ? row.reentries : '', nw === "Cumulated rakes" ? row.rakes : '']
+  // )
+   
 
+  };
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -57,6 +126,33 @@ const SubdivisionList = () => {
     return fieldList.includes(fieldName.trim());
   };
 
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+
+    const tableData = BuilderList.map((row) =>
+    newdata.map((nw, i) =>
+    [nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '', nw === "Reporting" ?(row.reporting===1 && "Yes" || row.status===0 && "No") : '', nw === "Builder" ? row.builder.name : '', nw === "Name" ? row.name : '', nw === "Product Type" ? row.product_type : '', nw === "Area" ? row.area : '', nw === "Masterplan" ? row.masterplan_id : '', nw === "Zipcode" ? row.zipcode : '', nw === "Total Lots" ? row.totallots : '', nw === "Lot Width" ? row.lotwidth : '', nw === "Lot Size" ? row.lotsize : '', nw === "Zoning" ? row.zoning : '', nw === "Age Restricted" ? (row.age===1 && "Yes" || row.age===0 && "No") : '', nw === "All Single Story" ? (row.single===1 && "Yes" || row.single===0 && "No") : '', nw === "Gated" ? (row.gated===1 && "Yes" || row.gated===0 && "No"):'', nw === "Location" ? row.location : '', nw === "Juridiction" ? row.juridiction : '', nw === "Latitude" ? row.lat : '', nw === "Longitude" ? row.lng : '', nw === "Gas Provider" ? row.gasprovider : '', nw === "HOA Fee" ? row.hoafee : '', nw === "Masterplan Fee" ? row.masterplanfee : '', nw === "Parcel Group" ? row.parcel : '', nw === "Phone" ? row.phone : '', nw === "Website" ? row.website : '']
+    )
+  )
+
+    downloadExcel({
+      fileName: "Sub Division List",
+      sheet: "Sub Division List",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
+  
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
     subdivision_code: "",
@@ -505,7 +601,8 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -2084,6 +2181,39 @@ const SubdivisionList = () => {
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
     </>
   );
 };
