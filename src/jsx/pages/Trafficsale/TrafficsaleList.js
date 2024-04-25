@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import TrafficsaleOffcanvas from "./TrafficsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas, Form } from "react-bootstrap";
+import { Offcanvas, Form, Row  } from "react-bootstrap";
 import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
@@ -14,6 +14,8 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import Modal from "react-bootstrap/Modal";
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 
 const TrafficsaleList = () => {
   const navigate = useNavigate();
@@ -22,7 +24,8 @@ const TrafficsaleList = () => {
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
-
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [exportmodelshow, setExportModelShow] = useState(false)
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
@@ -51,12 +54,121 @@ const TrafficsaleList = () => {
   const fieldList = AccessField({ tableName: "traffic" });
 
   useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
+    console.log('data trafficsaleList : ',fieldList); // You can now use fieldList in this component
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
+
+
+  
+  const headers = [
+    { label: 'Week Ending', key: 'WeekEnding' },
+    { label: 'Builder Name', key: 'BuilderName' }, 
+    { label: 'Subdivision Name', key: 'SubdivisionName' },
+    { label: 'Weekly Traffic', key: 'WeeklyTraffic' },
+    { label: 'Weekly Gross Sales', key: 'WeeklyGrossSales' },
+    { label: 'Weekly Cancellations', key: 'WeeklyCancellations' },
+    { label: 'Weekly Net Sales', key: 'WeeklyNetSales' },
+    { label: 'Total Lots', key: 'TotalLots' },
+    { label: 'Weekly Lots Release For Sale', key: 'WeeklyLotsReleaseForSale' },
+    { label: 'Weekly Unsold Standing Inventory', key: 'WeeklyUnsoldStandingInventory' },
+    { label: 'Product Type', key: 'ProductType' },
+    { label: 'Area', key: 'Area' },
+    { label: 'Master Plan', key: 'MasterPlan' },
+    { label: 'Zip Code', key: 'ZipCode' },
+    { label: 'Lot Width', key: 'LotWidth' },
+    { label: 'Lot Size', key: 'LotSize' },
+    { label: 'Zoning', key: 'Zoning' },
+    { label: 'Age Restricted', key: 'AgeRestricted' },
+    { label: 'All Single Story', key: 'AllSingleStory' },
+    { label: 'Pk Record id', key: 'pkRecordID' },
+    { label: 'Fk Sub id', key: 'fkSubID' },
+     
+  ];
+  const columns = [
+    { label: 'Week Ending', key: 'WeekEnding' },
+    { label: 'Builder Name', key: 'BuilderName' }, 
+    { label: 'Subdivision Name', key: 'SubdivisionName' },
+    { label: 'Weekly Traffic', key: 'WeeklyTraffic' },
+    { label: 'Weekly Gross Sales', key: 'WeeklyGrossSales' },
+    { label: 'Weekly Cancellations', key: 'WeeklyCancellations' },
+    { label: 'Weekly Net Sales', key: 'WeeklyNetSales' },
+    { label: 'Total Lots', key: 'TotalLots' },
+    { label: 'Weekly Lots Release For Sale', key: 'WeeklyLotsReleaseForSale' },
+    { label: 'Weekly Unsold Standing Inventory', key: 'WeeklyUnsoldStandingInventory' },
+    { label: 'Product Type', key: 'ProductType' },
+    { label: 'Area', key: 'Area' },
+    { label: 'Master Plan', key: 'MasterPlan' },
+    { label: 'Zip Code', key: 'ZipCode' },
+    { label: 'Lot Width', key: 'LotWidth' },
+    { label: 'Lot Size', key: 'LotSize' },
+    { label: 'Zoning', key: 'Zoning' },
+    { label: 'Age Restricted', key: 'AgeRestricted' },
+    { label: 'All Single Story', key: 'AllSingleStory' },
+    { label: 'Pk Record id', key: 'pkRecordID' },
+    { label: 'Fk Sub id', key: 'fkSubID' }, 
+  ];
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+      console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);  
+  };
+  console.log('trafficsaleList : ',trafficsaleList);
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    setSelectedColumns('')
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+ 
+    const tableData = trafficsaleList.map((row) => 
+    newdata.map((nw, i) =>
+    [ 
+        nw === "Week Ending" ?  row.weekending : '',
+        nw === "Builder Name" ?  row.subdivision.builder?.name : '',
+        nw === "Subdivision Name" ?  row.subdivision?.name : '',
+        nw === "Weekly Traffic" ?  row.weeklytraffic : '',
+        nw === "Weekly Gross Sales" ?  row.grosssales : '',
+        nw === "Weekly Cancellations" ?  row.cancelations : '',
+        nw === "Weekly Net Sales" ?  row.netsales : '',
+        nw === "Total Lots" ?  row.subdivision.totallots : '',
+        nw === "Weekly Lots Release For Sale" ?  row.lotreleased : '',
+        nw === "Weekly Unsold Standing Inventory" ?  row.unsoldinventory : '',  
+        nw === "Product Type" ?  row.subdivision.product_type : '',
+        nw === "Area" ?  row.subdivision.area : '',
+        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
+        nw === "Zip Code" ?  row.subdivision.zipcode : '',
+        nw === "Lot Width" ?  row.subdivision?.lotwidth : '',
+        nw === "Lot Size" ?  row.subdivision?.lotsize : '',
+        nw === "Zoning" ?  row.subdivision?.zoning : '', 
+        nw === "Age Restricted" ? (row.subdivision?.age === 1 && "Yes" || row.subdivision?.age === 0 && "No") : '', 
+        nw === "All Single Story" ? (row.subdivision?.single === 1 && "Yes" || row.subdivision?.single === 0 && "No") : '',  
+        nw === "Pk Record id" ?  row.id : '',
+        nw === "Fk sub id" ?  row.subdivision.subdivision_code : '',     
+    ]
+    ),
+    
+  )
+ 
+ 
+    downloadExcel({
+      fileName: "Sub Division List",
+      sheet: "Sub Division List",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -451,7 +563,10 @@ const TrafficsaleList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -899,7 +1014,7 @@ const TrafficsaleList = () => {
                                   <td>{element.id}</td>
                                 )}{" "}
                                 {checkFieldExist("_fkSubID") && (
-                                  <td>
+                                  <td>  
                                     {element.subdivision.subdivision_code}
                                   </td>
                                 )}{" "}
@@ -1170,6 +1285,41 @@ const TrafficsaleList = () => {
           </div>
         </div>
       </Offcanvas>
+
+      
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
     </>
   );
 };

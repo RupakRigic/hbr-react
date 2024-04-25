@@ -148,7 +148,7 @@
   --font-family-base: georgiaregular, sans-serif, sans-serif;
   --font-family-title: georgiaregular, sans-serif, sans-serif;
   --title: #DB7E2E; }
-  .table td{color:#575757;}
+  .table td{color:#000000;}
   h1,h2,h3,h4,h5,h6{font-family: 'arialregular';}
   .metismenu li a span{font-family: 'arialregular';}
 .table td{font-family: 'georgiaregular';}
@@ -743,8 +743,14 @@ progress {
 
 .list-unstyled {
   padding-left: 0;
-  list-style: none; }
+  list-style: none;
+ 
+}
 
+ul.list-unstyled li {
+  width: 50%;
+  float: left;
+}
 .list-inline {
   padding-left: 0;
   list-style: none; }

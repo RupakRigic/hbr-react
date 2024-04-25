@@ -29,6 +29,7 @@ const SubdivisionList = () => {
   const [BuilderList, setBuilderList] = useState(null);
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
+  // console.log('BuilderList',BuilderList);
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
@@ -78,6 +79,7 @@ const SubdivisionList = () => {
     { label: 'Parcel Group', key: 'reentries' },
     { label: 'Phone', key: 'rakes' },
     { label: 'Website', key: 'with' },
+    { label: 'FK Builder Id', key: 'BuilderID' },
   ];
   const columns = [
     { label: 'Status', key: 'firstname' },
@@ -105,12 +107,14 @@ const SubdivisionList = () => {
     { label: 'Parcel Group', key: 'reentries' },
     { label: 'Phone', key: 'rakes' },
     { label: 'Website', key: 'with' },
+    { label: 'FK Builder Id', key: 'BuilderID' },
   ];
  
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
+      console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
   //   newdata.map((nw, i) =>
   //   [nw === "Name" ? row.firstname : '', nw === "Surname" ? row.lastname : '', nw === "Nickname" ? row.nickname : '', nw === "ZipCode" ? row.zipcode : '', nw === "City" ? row.city : '', nw === "Registrations with check-in" ? row.with : '', nw === "Registrations without check-in" ? row.without : '', nw === "Cumulated Buy-in bounty Re-entries" ? row.reentries : '', nw === "Cumulated rakes" ? row.rakes : '']
@@ -124,10 +128,10 @@ const SubdivisionList = () => {
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
-  };
-
+  }; 
   const handleDownloadExcel = () => {
     setExportModelShow(false)
+    setSelectedColumns('')
     var tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
@@ -135,13 +139,15 @@ const SubdivisionList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
     var newdata = tableHeaders.map((element) => { return element })
-
-    const tableData = BuilderList.map((row) =>
+ 
+    const tableData = BuilderList.map((row) => 
     newdata.map((nw, i) =>
-    [nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '', nw === "Reporting" ?(row.reporting===1 && "Yes" || row.status===0 && "No") : '', nw === "Builder" ? row.builder.name : '', nw === "Name" ? row.name : '', nw === "Product Type" ? row.product_type : '', nw === "Area" ? row.area : '', nw === "Masterplan" ? row.masterplan_id : '', nw === "Zipcode" ? row.zipcode : '', nw === "Total Lots" ? row.totallots : '', nw === "Lot Width" ? row.lotwidth : '', nw === "Lot Size" ? row.lotsize : '', nw === "Zoning" ? row.zoning : '', nw === "Age Restricted" ? (row.age===1 && "Yes" || row.age===0 && "No") : '', nw === "All Single Story" ? (row.single===1 && "Yes" || row.single===0 && "No") : '', nw === "Gated" ? (row.gated===1 && "Yes" || row.gated===0 && "No"):'', nw === "Location" ? row.location : '', nw === "Juridiction" ? row.juridiction : '', nw === "Latitude" ? row.lat : '', nw === "Longitude" ? row.lng : '', nw === "Gas Provider" ? row.gasprovider : '', nw === "HOA Fee" ? row.hoafee : '', nw === "Masterplan Fee" ? row.masterplanfee : '', nw === "Parcel Group" ? row.parcel : '', nw === "Phone" ? row.phone : '', nw === "Website" ? row.website : '']
-    )
+    [nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '', nw === "Reporting" ?(row.reporting===1 && "Yes" || row.status===0 && "No") : '', nw === "Builder" ? row.builder.name : '', nw === "Name" ? row.name : '', nw === "Product Type" ? row.product_type : '', nw === "Area" ? row.area : '', nw === "Masterplan" ? row.masterplan_id : '', nw === "Zipcode" ? row.zipcode : '', nw === "Total Lots" ? row.totallots : '', nw === "Lot Width" ? row.lotwidth : '', nw === "Lot Size" ? row.lotsize : '', nw === "Zoning" ? row.zoning : '', nw === "Age Restricted" ? (row.age===1 && "Yes" || row.age===0 && "No") : '', nw === "All Single Story" ? (row.single===1 && "Yes" || row.single===0 && "No") : '', nw === "Gated" ? (row.gated===1 && "Yes" || row.gated===0 && "No"):'', nw === "Location" ? row.location : '', nw === "Juridiction" ? row.juridiction : '', nw === "Latitude" ? row.lat : '', nw === "Longitude" ? row.lng : '', nw === "Gas Provider" ? row.gasprovider : '', nw === "HOA Fee" ? row.hoafee : '', nw === "Masterplan Fee" ? row.masterplanfee : '', nw === "Parcel Group" ? row.parcel : '', nw === "Phone" ? row.phone : '', nw === "Website" ?  row.builder.website : '', nw === "FK Builder Id" ?  row.builder.builder_code : '']
+    ),
+    
   )
-
+ 
+ 
     downloadExcel({
       fileName: "Sub Division List",
       sheet: "Sub Division List",
@@ -481,6 +487,7 @@ const SubdivisionList = () => {
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
+    console.log('logs',event.target);
     setCheckedItems((prevCheckedItems) => ({
       ...prevCheckedItems,
       [name]: checked,
