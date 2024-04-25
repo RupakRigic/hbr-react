@@ -805,7 +805,7 @@ const PermitList = () => {
                                       element.subdivision?.name}
                                   </td>
                                 )}
-                                  <td>{element.address2 +" - "+ element.address1}</td>
+                                  <td>{element.address2 +" "+ element.address1}</td>
                                 {/* {checkFieldExist("Address Number") && (
                                   <td>{element.address2}</td>
                                 )}
