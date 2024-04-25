@@ -743,8 +743,14 @@ progress {
 
 .list-unstyled {
   padding-left: 0;
-  list-style: none; }
+  list-style: none;
+ 
+}
 
+ul.list-unstyled li {
+  width: 50%;
+  float: left;
+}
 .list-inline {
   padding-left: 0;
   list-style: none; }

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import ProductOffcanvas from "./ProductOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas, Form } from "react-bootstrap";
+import { Offcanvas, Form, Row } from "react-bootstrap";
 import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
@@ -21,6 +21,8 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+ 
 
 const ProductList = () => {
   const [Error, setError] = useState("");
@@ -28,6 +30,8 @@ const ProductList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [productList, setProductList] = useState(null);
   const [BuilderList, setBuilderList] = useState([]);
+  const [exportmodelshow, setExportModelShow] = useState(false)
+  const [selectedColumns, setSelectedColumns] = useState([]);
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;ProductDetails
   // const lastIndex = currentPage * recordsPage;
@@ -48,6 +52,120 @@ const ProductList = () => {
   //         setCurrentPage(currentPage + 1)
   //     }
   // }
+ 
+  
+  const headers = [
+    { label: 'Status', key: 'Status' },
+    { label: 'Builder Name', key: 'buildername' },
+    { label: 'Subdivision Name', key: 'subdivname' },
+    { label: 'Product Name', key: 'producutname' },
+    { label: 'Square Footage', key: 'squarefootage' },
+    { label: 'Stories', key: 'stories' },
+    { label: 'Bed Rooms', key: 'bedrooms' },
+    { label: 'Bath Rooms', key: 'bathrooms' },
+    { label: 'Garage', key: 'garage' },
+    { label: 'Current Base Price', key: 'currentbaseprice' },
+    { label: 'Current Price Per SQFT', key: 'currentprice' },
+    { label: 'Product Website', key: 'productwebsite' },
+    { label: 'Product Type', key: 'producttype' },
+    { label: 'Area', key: 'area' },
+    { label: 'Master Plan', key: 'masterplan' },
+    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'Lot Width', key: 'lotwidth' },
+    { label: 'Lot Size', key: 'lotsize' },
+    { label: 'Zoning', key: 'zoning' },
+    { label: 'Age Restrictedr', key: 'agerestrictedr' },
+    { label: 'All Single Story', key: 'singlestory' },
+    { label: 'Product ID', key: 'productid' },
+    { label: 'Fk Sub ID', key: 'fksubid' }, 
+  ];
+  const columns = [
+    { label: 'Status', key: 'Status' },
+    { label: 'Builder Name', key: 'buildername' },
+    { label: 'Subdivision Name', key: 'subdivname' },
+    { label: 'Product Name', key: 'producutname' },
+    { label: 'Square Footage', key: 'squarefootage' },
+    { label: 'Stories', key: 'stories' },
+    { label: 'Bed Rooms', key: 'bedrooms' },
+    { label: 'Bath Rooms', key: 'bathrooms' },
+    { label: 'Garage', key: 'garage' },
+    { label: 'Current Base Price', key: 'currentbaseprice' },
+    { label: 'Current Price Per SQFT', key: 'currentprice' },
+    { label: 'Product Website', key: 'productwebsite' },
+    { label: 'Product Type', key: 'producttype' },
+    { label: 'Area', key: 'area' },
+    { label: 'Master Plan', key: 'masterplan' },
+    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'Lot Width', key: 'lotwidth' },
+    { label: 'Lot Size', key: 'lotsize' },
+    { label: 'Zoning', key: 'zoning' },
+    { label: 'Age Restrictedr', key: 'agerestrictedr' },
+    { label: 'All Single Story', key: 'singlestory' },
+    { label: 'Product ID', key: 'productid' },
+    { label: 'Fk Sub ID', key: 'fksubid' }, 
+  ];
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+      console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);  
+  };
+  console.log('data',productList);
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    setSelectedColumns('')
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+ 
+    const tableData = productList.map((row) => 
+    newdata.map((nw, i) =>
+    [
+        nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '',
+        nw === "Builder Name" ?  row.subdivision.builder.name : '',
+        nw === "Subdivision Name" ?  row.subdivision.name : '',
+        nw === "Product Name" ?  row.name : '', 
+        nw === "Square Footage" ?  row.sqft : '',
+        nw === "Stories" ?  row.stories : '',
+        nw === "Bed Rooms" ?  row.bedroom : '',
+        nw === "Bath Rooms" ?  row.bathroom : '',
+        nw === "Garage" ?  row.garage : '',
+        nw === "Current Base Price" ?  row.recentprice : '',
+        nw === "Current Price Per SQFT" ?  row.recentpricesqft : '',
+        nw === "Product Website" ?  row.Website : '',
+        nw === "Product Type" ?  row.subdivision.product_type : '',
+        nw === "Area" ?  row.subdivision.area : '',
+        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
+        nw === "Zip Code" ?  row.subdivision.zipcode : '',
+        nw === "Lot Width" ?  row.subdivision.lotwidth : '',
+        nw === "Lot Size" ?  row.subdivision.lotsize : '',
+        nw === "Zoning" ?  row.subdivision.zoning : '',
+        nw === "Age Restrictedr" ? (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : '', 
+        nw === "All Single Story" ?   (row.subdivision.single==1 && "Yes" || row.subdivision.single===0 && "No") : '',
+        nw === "Product ID" ?  row.product_code : '',
+        nw === "Fk Sub ID" ?  row.subdivision.subdivision_code : '',
+    ]
+    ),
+    
+  )
+ 
+ 
+    downloadExcel({
+      fileName: "Sub Division List",
+      sheet: "Sub Division List",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
+
   const [filterQuery, setFilterQuery] = useState({
     status: "",
     subdivision_id: "",
@@ -88,12 +206,14 @@ const ProductList = () => {
   const handleClose = () => setShow(false);
 
   useEffect(() => {
-    console.log(fieldList);
+    console.log('data',fieldList);
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
+ 
+  
   const [value, setValue] = React.useState("1");
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -514,7 +634,9 @@ const handlBuilderClick = (e) => {
                     </div>
 
                     <div className="d-flex">
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -1427,6 +1549,40 @@ const handlBuilderClick = (e) => {
           </div>
         </div>
       </Offcanvas>
+
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
     </>
   );
 };
