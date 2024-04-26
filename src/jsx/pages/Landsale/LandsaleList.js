@@ -8,7 +8,7 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import Button from "react-bootstrap/Button";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import Modal from "react-bootstrap/Modal";
-import { Offcanvas, Form } from "react-bootstrap";
+import { Offcanvas, Form, Row } from "react-bootstrap";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -16,6 +16,7 @@ import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 
 const LandsaleList = () => {
   const [show, setShow] = useState(false);
@@ -23,6 +24,9 @@ const LandsaleList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [LandsaleList, setLandsaleList] = useState([]);
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [exportmodelshow, setExportModelShow] = useState(false)
+  
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
@@ -75,6 +79,73 @@ const LandsaleList = () => {
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
+
+  
+  
+  const headers = [
+    { label: 'Builder Name', key: 'Builder_Name' },
+    { label: 'Subdivision Name', key: 'Subdivision_Name' },
+    { label: 'Seller', key: 'Seller' },
+    { label: 'Buyer', key: 'Buyer' },
+    { label: 'Location', key: 'Location' },
+    { label: 'Notes', key: 'Notes' },   
+    { label: 'Price', key: 'Price' }, 
+     
+  ];
+  const columns = [
+    { label: 'Builder Name', key: 'Builder_Name' },
+    { label: 'Subdivision Name', key: 'Subdivision_Name' },
+    { label: 'Seller', key: 'Seller' },
+    { label: 'Buyer', key: 'Buyer' },
+    { label: 'Location', key: 'Location' },
+    { label: 'Notes', key: 'Notes' },   
+    { label: 'Price', key: 'Price' },  
+  ];
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+      console.log('load upadate: ',updatedColumns);
+    setSelectedColumns(updatedColumns);  
+  };  
+
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    setSelectedColumns('')
+    console.log('click dataa D : ',selectedColumns);
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+ 
+    const tableData = LandsaleList.map((row) => 
+    newdata.map((nw, i) =>
+    [  
+      nw === "Builder Name" ? row.subdivision?.builder?.name  : '', 
+      nw === "Subdivision Name" ? row.subdivision?.name  : '', 
+      nw === "Seller" ? row.seller  : '', 
+      nw === "Buyer" ? row.buyer  : '', 
+      nw === "Location" ? row.location  : '', 
+      nw === "Notes" ? row.notes  : '', 
+      nw === "Price" ? row.price+'/'+row.typeofunit  : '',  
+    ]
+    ),
+    
+  ) 
+    downloadExcel({
+      fileName: "Land sales",
+      sheet: "Land sales",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
+
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -466,7 +537,8 @@ const handlBuilderClick = (e) => {
                       </div>
                     </div>
                     <div>
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -1049,6 +1121,40 @@ const handlBuilderClick = (e) => {
           </div>
         </div>
       </Offcanvas>
+
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
     </>
   );
 };

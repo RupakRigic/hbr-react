@@ -747,9 +747,12 @@ progress {
  
 }
 
-ul.list-unstyled li {
-  width: 50%;
-  float: left;
+ 
+@media (min-width: 425px) { 
+  ul.list-unstyled li {
+    width: 50%;
+    float: left;
+  }
 }
 .list-inline {
   padding-left: 0;

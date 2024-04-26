@@ -160,8 +160,8 @@ const TrafficsaleList = () => {
  
  
     downloadExcel({
-      fileName: "Sub Division List",
-      sheet: "Sub Division List",
+      fileName: "Weekly Traffic & Sales List",
+      sheet: "Weekly Traffic & Sales List",
       tablePayload: {
         header: tableHeaders,
         body: tableData

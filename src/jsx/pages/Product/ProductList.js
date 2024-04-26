@@ -156,8 +156,8 @@ const ProductList = () => {
  
  
     downloadExcel({
-      fileName: "Sub Division List",
-      sheet: "Sub Division List",
+      fileName: "Product",
+      sheet: "Product",
       tablePayload: {
         header: tableHeaders,
         body: tableData
