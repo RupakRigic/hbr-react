@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import ClosingOffcanvas from "./ClosingOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import Button from "react-bootstrap/Button";
-import { Offcanvas, Form } from "react-bootstrap";
+import { Offcanvas, Form, Row } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import PermitList from "../Permit/PermitList";
@@ -15,12 +15,15 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+ 
 const ClosingList = () => {
-  const [Error, setError] = useState("");
-
+  const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [exportmodelshow, setExportModelShow] = useState(false)
+
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
   // const firstIndex = lastIndex - recordsPage;
@@ -56,12 +59,127 @@ const ClosingList = () => {
   const fieldList = AccessField({ tableName: "closing" });
 
   useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
+    console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
+
+  
+  const headers = [
+    { label: 'Closing Type', key: 'Closing_Type' },  
+    { label: 'Closing Date', key: 'Closing_Date' }, 
+    { label: 'Doc', key: 'Doc' }, 
+    { label: 'Builder Name', key: 'Builder_Name' }, 
+    { label: 'Subdivision Name', key: 'Subdivision_Name' }, 
+    { label: 'Closing Price', key: 'Closing+Price' }, 
+    { label: 'Address', key: 'Address' }, 
+    { label: 'Parcel Number', key: 'Parcel_Number' }, 
+    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' }, 
+    { label: 'Seller Legal Name', key: 'Seller_Legal Name' }, 
+    { label: 'Buyer Name', key: 'Buyer_Name' }, 
+    { label: 'Lender', key: 'Lender' }, 
+    { label: 'Loan Amount', key: 'Loan_Amount' }, 
+    { label: 'Type', key: 'Type' }, 
+    { label: 'Product Type', key: 'Product_Type' }, 
+    { label: 'Area', key: 'Area' }, 
+    { label: 'Master Plan', key: 'Master_Plan' }, 
+    { label: 'Zip Code', key: 'Zip_Code' }, 
+    { label: 'Lot Width', key: 'Lot_Width' }, 
+    { label: 'Lot Size', key: 'Lot_Size' }, 
+    { label: 'Zoning', key: 'Zoning' }, 
+    { label: 'Age Restricted', key: 'Age_Restricted' }, 
+    { label: 'All Single Story', key: 'All_Single_Story' },  
+    { label: 'Fk Sub Id', key: 'fkSubID' }, 
+     
+  ];
+  const columns = [
+    { label: 'Closing Type', key: 'Closing_Type' },  
+    { label: 'Closing Date', key: 'Closing_Date' }, 
+    { label: 'Doc', key: 'Doc' }, 
+    { label: 'Builder Name', key: 'Builder_Name' }, 
+    { label: 'Subdivision Name', key: 'Subdivision_Name' }, 
+    { label: 'Closing Price', key: 'Closing+Price' }, 
+    { label: 'Address', key: 'Address' }, 
+    { label: 'Parcel Number', key: 'Parcel_Number' }, 
+    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' }, 
+    { label: 'Seller Legal Name', key: 'Seller_Legal Name' }, 
+    { label: 'Buyer Name', key: 'Buyer_Name' }, 
+    { label: 'Lender', key: 'Lender' }, 
+    { label: 'Loan Amount', key: 'Loan_Amount' }, 
+    { label: 'Type', key: 'Type' }, 
+    { label: 'Product Type', key: 'Product_Type' }, 
+    { label: 'Area', key: 'Area' }, 
+    { label: 'Master Plan', key: 'Master_Plan' }, 
+    { label: 'Zip Code', key: 'Zip_Code' }, 
+    { label: 'Lot Width', key: 'Lot_Width' }, 
+    { label: 'Lot Size', key: 'Lot_Size' }, 
+    { label: 'Zoning', key: 'Zoning' }, 
+    { label: 'Age Restricted', key: 'Age_Restricted' }, 
+    { label: 'All Single Story', key: 'All_Single_Story' },  
+    { label: 'Fk Sub Id', key: 'fkSubID' }, 
+  ];
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+      console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);  
+  };  
+
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    setSelectedColumns('')
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+ 
+    const tableData = ClosingList.map((row) => 
+    newdata.map((nw, i) =>
+    [  
+      nw === "Closing Type" ? row.closing_type  : '',
+      nw === "Closing Date" ? row.closingdate  : '',
+      nw === "Doc" ? row.document  : '',
+      nw === "Builder Name" ? row.subdivision.builder?.name  : '',
+      nw === "Subdivision Name" ? row.subdivision?.name  : '',
+      nw === "Closing Price" ? row.closingprice  : '',
+      nw === "Address" ? row.address  : '',
+      nw === "Parcel Number" ? row.parcel  : '',
+      nw === "Sub Legal Name" ? row.sublegal_name  : '',
+      nw === "Seller Legal Name" ? row.sellerleagal  : '',
+      nw === "Buyer Name" ? row.buyer  : '',
+      nw === "Lender" ? row.lender  : '',
+      nw === "Loan Amount" ? row.loanamount  : '',
+      nw === "Type" ? row.type  : '',
+      nw === "Product Type" ? row.subdivision.product_type  : '',
+      nw === "Area" ? row.subdivision.area  : '',
+      nw === "Master Plan" ? row.subdivision.masterplan_id  : '',
+      nw === "Zip Code" ? row.subdivision.zipcode  : '',
+      nw === "Lot Width" ? row.subdivision.lotwidth  : '',
+      nw === "Lot Size" ? row.subdivision.lotsize  : '',
+      nw === "Zoning" ? row.subdivision.zoning  : '',
+      nw === "Age Restricted" ?  (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : ''  ,
+      nw === "All Single Story" ? (row.subdivision.single === 1 && "Yes" || row.subdivision.single === 0 && "No") : '', 
+      nw === "Fk Sub Id" ? row.subdivision.subdivision_code  : '',  
+    ]
+    ),
+    
+  ) 
+    downloadExcel({
+      fileName: "Closing",
+      sheet: "Closing",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -448,7 +566,11 @@ const ClosingList = () => {
                       </div>
                     </div>
                     <div>
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+
+
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -1209,6 +1331,41 @@ const ClosingList = () => {
           </div>
         </div>
       </Offcanvas>
+
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
+
     </>
   );
 };

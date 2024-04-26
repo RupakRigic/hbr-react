@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import BuilderOffcanvas from "./BuilderOffcanvas";
-import { Form, Offcanvas } from "react-bootstrap";
+import { Form, Offcanvas, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import clientAuth from "../../../API/clientAuth";
@@ -19,7 +19,7 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -48,6 +48,9 @@ const BuilderTable = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: 'builders' });
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [exportmodelshow, setExportModelShow] = useState(false)
+  
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -55,6 +58,101 @@ const BuilderTable = () => {
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
+
+  
+  const headers = [
+    { label: 'Logo', key: 'Logo' }, 
+    { label: 'Website', key: 'website' },
+    { label: 'Builder Name', key: 'name' },
+    { label: 'Company Type', key: 'companytype' },
+    { label: 'LV office Phone', key: 'phone' },
+    { label: 'LV office Email', key: 'email' },
+    { label: 'LV office address', key: 'officeaddress1' },
+    { label: 'LV office City', key: 'city' },
+    { label: 'LV office Zip', key: 'zipcode' },
+    { label: 'Current Division President', key: 'current_division_president' },
+    { label: 'Current Land Acquisitions', key: 'current_land_aquisitions' },
+    { label: 'Corporate Office Address ', key: 'coporate_officeaddress_1' }, 
+    { label: 'Corporate Office City', key: 'coporate_officeaddress_city' },
+    { label: 'Corporate Office State', key: 'coporate_office_state' },
+    { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
+    { label: 'Stock Market', key: 'stock_market' },
+    { label: 'Stock Symbol', key: 'stock_symbol' }, 
+     
+  ];
+  const columns = [
+    { label: 'Logo', key: 'Logo' }, 
+    { label: 'Website', key: 'website' },
+    { label: 'Builder Name', key: 'name' },
+    { label: 'Company Type', key: 'companytype' },
+    { label: 'LV office Phone', key: 'phone' },
+    { label: 'LV office Email', key: 'email' },
+    { label: 'LV office address', key: 'officeaddress1' },
+    { label: 'LV office City', key: 'city' },
+    { label: 'LV office Zip', key: 'zipcode' },
+    { label: 'Current Division President', key: 'current_division_president' },
+    { label: 'Current Land Acquisitions', key: 'current_land_aquisitions' },
+    { label: 'Corporate Office Address 1', key: 'coporate_officeaddress_1' }, 
+    { label: 'Corporate Office City', key: 'coporate_officeaddress_city' },
+    { label: 'Corporate Office State', key: 'coporate_office_state' },
+    { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
+    { label: 'Stock Market', key: 'stock_market' },
+    { label: 'Stock Symbol', key: 'stock_symbol' }, 
+  ];
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+      console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);  
+  };  
+
+  const handleDownloadExcel = () => {
+    setExportModelShow(false)
+    setSelectedColumns('')
+    var tableHeaders;
+    if (selectedColumns.length > 0) {
+      tableHeaders = selectedColumns;
+    } else {
+      tableHeaders = headers.map((c) => c.label);
+    }
+    var newdata = tableHeaders.map((element) => { return element })
+ 
+    const tableData = BuilderList.map((row) => 
+    newdata.map((nw, i) =>
+    [  
+        nw === "Logo" ? imageUrl+row.logo  : '',
+        nw === "Website" ?  row.website : '',
+        nw === "Builder Name" ?  row.name : '',
+        nw === "Company Type" ?  row.company_type : '',
+        nw === "LV office Phone" ?  row.phone : '',
+        nw === "LV office Email" ?  row.email : '',
+        nw === "LV office address" ?  row.officeaddress1 : '',
+        nw === "LV office City" ?  row.city : '',
+        nw === "LV office Zip code" ?  row.zipcode : '',
+        nw === "Current Division President" ?  row.current_division_president : '',
+        nw === "Current Land Acquisitions" ?  row.current_land_aquisitions : '',
+        nw === "Corporate Office Address" ?  row.coporate_officeaddress_1 : '', 
+        nw === "Corporate Office City" ?  row.coporate_officeaddress_city : '',
+        nw === "Corporate Office State" ?  row.coporate_officeaddress_2 : '',
+        nw === "Corporate Office Zip" ?  row.coporate_officeaddress_zipcode : '',
+        nw === "Stock Market" ?  row.stock_market : '',
+        nw === "Stock Symbol" ?  row.stock_symbol : '',  
+    ]
+    ),
+    
+  ) 
+    downloadExcel({
+      fileName: "Builders",
+      sheet: "Builders",
+      tablePayload: {
+        header: tableHeaders,
+        body: tableData
+      },
+    });
+
+  }
+   
 
   const [BuilderDetails, SetBuilderDetails] = useState({
     code: "",
@@ -415,7 +513,10 @@ const handlBuilderClick = (e) => {
                         ""
                       ) : (
                         <div className="d-flex">
-                          <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                          {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+
+
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
@@ -1706,6 +1807,39 @@ const handlBuilderClick = (e) => {
           </div>
         </div>
       </Offcanvas>
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {columns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
+      </Modal>
     </>
   );
 };

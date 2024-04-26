@@ -186,8 +186,8 @@ const PermitList = () => {
  
  
     downloadExcel({
-      fileName: "Sub Division List",
-      sheet: "Sub Division List",
+      fileName: "Permit",
+      sheet: "Permit",
       tablePayload: {
         header: tableHeaders,
         body: tableData
