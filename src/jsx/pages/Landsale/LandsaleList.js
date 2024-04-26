@@ -105,7 +105,7 @@ const LandsaleList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log('load upadate: ',updatedColumns);
+      console.log('load upadate:  ',updatedColumns);
     setSelectedColumns(updatedColumns);  
   };  
 
@@ -135,6 +135,7 @@ const LandsaleList = () => {
     ),
     
   ) 
+   
     downloadExcel({
       fileName: "Land sales",
       sheet: "Land sales",
