@@ -1022,32 +1022,7 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-                            <th
-                                onClick={() => requestSort("subdivisionCode")}
-                              >
-                                <strong>Current Base Price</strong>
-                                {sortConfig.key !== "subdivisionCode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                            </th>
-                            <th
-                                onClick={() => requestSort("subdivisionCode")}
-                              >
-                                <strong>Current Price Per Sqft</strong>
-                                {sortConfig.key !== "subdivisionCode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                            </th>
+                           
                             <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
@@ -1181,6 +1156,8 @@ const handlBuilderClick = (e) => {
                                     {element.subdivision.subdivision_code}
                                   </td>
                                 )}
+                                <td>0</td>
+                                <td>0</td>
                                 {checkFieldExist("Action") && (
                                   <td>
                                     <div className="d-flex justify-content-center">
@@ -1504,6 +1481,7 @@ const handlBuilderClick = (e) => {
                                       <td>
                                         <DateComponent date={element.date} />
                                       </td>
+                                     
                                     </tr>
                                   )
                                 )

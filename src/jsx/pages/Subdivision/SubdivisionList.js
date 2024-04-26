@@ -1454,38 +1454,37 @@ const SubdivisionList = () => {
                                 {checkFieldExist("_fkBuilderID") && (
                                   <td>{element.builder.builder_code}</td>
                                 )}
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                
+                                <td>{element.total_closings}</td>
+                                <td>{element.total_permits}</td>
+                                <td>{element.total_net_sales}</td>
+                                <td>{element.months_open}</td>
+                                <td>{element.latest_traffic_data.weekending?element.latest_traffic_data.weekending:''}</td>
+                                <td>{element.latest_lots_released}</td>
+                                <td>{element.latest_standing_inventory}</td>
+                                <td>{element.unsold_lots}</td>
+                                <td>{element.avg_sqft_all}</td>
+                                <td>{element.avg_sqft_active}</td>
+                                <td>{element.avg_base_price_all}</td>
+                                <td>{element.avg_base_price_active}</td>
+                                <td>{element.min_sqft_all}</td>
+                                <td>{element.min_sqft_active}</td>
+                                <td>{element.max_sqft_all}</td>
+                                <td>{element.max_sqft_active}</td>
+                                <td>{element.min_base_price_all}</td>
+                                <td>{element.min_sqft_active_current}</td>
+                                <td>{element.max_base_price_all}</td>
+                                <td>{element.max_sqft_active_current}</td>
+                                <td>{element.avg_net_traffic_per_month_this_year}</td>
+                                <td>{element.avg_net_sales_per_month_this_year}</td>
+                                <td>{element.avg_closings_per_month_this_year}</td>
+                                <td>{element.avg_net_sales_per_month_since_open}</td>
+                                <td>{element.avg_net_sales_per_month_last_three_months}</td>
+                                <td>{element.max_week_ending}</td>
+                                <td>{element.min_week_ending}</td>
+                                <td>{element.sqft_group}</td>
+                                <td>{element.price_group}</td>
+                                <td>{element.month_net_sold}</td>
+                                <td>{element.year_net_sold}</td>
                                 {checkFieldExist("Action") && (
                                   <td style={{ textAlign: "center" }}>
                                     <div>
