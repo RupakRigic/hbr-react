@@ -1053,6 +1053,285 @@ const SubdivisionList = () => {
                                 )}
                               </th>
                             )}
+                            <th onClick={() => requestSort("builderCode")}>
+                                <strong> Total Closings </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Total Permits </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Total Net Sales </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Months Open </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Latest Traffic/Sales Data </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Latest Lots Released </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Latest Standing Inventory </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Unsold Lots </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Sqft All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Sqft Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Base Price All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Base Price Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Min Sqft All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Min Sqft Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Max Sqft All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Max Sqft Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Min Base Price All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Min Sqft Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Max Base Price All </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Max Sqft Active </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Net Traffic Per Month This Year </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Net Sales Per Month This Year </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Closings Per Month This Year </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Net Sales Per Month Since Open </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Avg Net Sales Per Month Last 3 Months </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Max Week Ending </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Min Week Ending </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Sqft Group </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Price Group </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Month Net Sold </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                              <th onClick={() => requestSort("builderCode")}>
+                                <strong> Year Net Sold </strong>
+                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
+                                {sortConfig.key === "builderCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
                             {checkFieldExist("Action") && (
                               <th>
                                 {" "}
@@ -1175,6 +1454,38 @@ const SubdivisionList = () => {
                                 {checkFieldExist("_fkBuilderID") && (
                                   <td>{element.builder.builder_code}</td>
                                 )}
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                
                                 {checkFieldExist("Action") && (
                                   <td style={{ textAlign: "center" }}>
                                     <div>

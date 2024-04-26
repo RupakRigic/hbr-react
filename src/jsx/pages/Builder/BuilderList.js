@@ -830,6 +830,175 @@ const handlBuilderClick = (e) => {
                                 </strong>
                               </th>
                             )}
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Active Communities
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                Closing This Year
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                Permits This Year
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                Net Sales this year
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Current Avg Base Price
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Median Closing Price This Year 
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Avg Net Sales Per Month This Year 
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Avg Closings Per Month This Year 
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Total Closings 
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                 Total Permits
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                 Total Net Sales
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Date Of First Closing
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
+                            <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                  Date Of Latest Closing
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                            </th>
                             {SyestemUserRole === "Data Uploader" ||
                             SyestemUserRole === "User" ? (
                               ""
@@ -942,7 +1111,19 @@ const handlBuilderClick = (e) => {
                                     <DateComponent date={element.created_at} />
                                   </td>
                                 )}
-
+                                <td>{element.active_communities}</td>
+                                <td>{element.closing_this_year}</td>
+                                <td>{element.permits_this_year}</td>
+                                <td>{element.net_sales_this_year}</td>
+                                <td>{element.current_avg_base_Price}</td>
+                                <td>{element.median_closing_price_this_year}</td>
+                                <td>{element.avg_net_sales_per_month_this_year}</td>
+                                <td>{element.avg_closings_per_month_this_year}</td>
+                                <td>{element.total_closings}</td>
+                                <td>{element.total_permits}</td>
+                                <td>{element.total_net_sales}</td>
+                                <td>{element.date_of_first_closing}</td>
+                                <td>{element.date_of_latest_closing}</td>
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
                                   SyestemUserRole === "User" ? (

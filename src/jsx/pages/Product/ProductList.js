@@ -1022,6 +1022,58 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
+                            <th
+                                onClick={() => requestSort("subdivisionCode")}
+                              >
+                                <strong>Current Base Price</strong>
+                                {sortConfig.key !== "subdivisionCode"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                            </th>
+                            <th
+                                onClick={() => requestSort("subdivisionCode")}
+                              >
+                                <strong>Current Price Per Sqft</strong>
+                                {sortConfig.key !== "subdivisionCode"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                            </th>
+                            <th
+                                onClick={() => requestSort("subdivisionCode")}
+                              >
+                                <strong>Price Change Since Open</strong>
+                                {sortConfig.key !== "subdivisionCode"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                            </th>
+                            <th
+                                onClick={() => requestSort("subdivisionCode")}
+                              >
+                                <strong>Price Change Last 12 Months</strong>
+                                {sortConfig.key !== "subdivisionCode"
+                                  ? "↑↓"
+                                  : ""}
+                                {sortConfig.key === "subdivisionCode" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                            </th>
                             {checkFieldExist("Action") && <th>Action</th>}
                           </tr>
                         </thead>
