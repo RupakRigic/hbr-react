@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import clientAuth from "../../../API/clientAuth";
 import MainPagetitle from "../../layouts/MainPagetitle";
+import PriceComponent from "../../components/Price/PriceComponent";
 import { debounce } from "lodash";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -50,7 +51,7 @@ const BuilderTable = () => {
   const fieldList = AccessField({ tableName: 'builders' });
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
-  
+  const [calculationField, setCalculationField] = useState(false)
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -59,7 +60,6 @@ const BuilderTable = () => {
     return fieldList.includes(fieldName.trim());
   };
 
-  
   const headers = [
     { label: 'Logo', key: 'Logo' }, 
     { label: 'Website', key: 'website' },
@@ -78,7 +78,20 @@ const BuilderTable = () => {
     { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
     { label: 'Stock Market', key: 'stock_market' },
     { label: 'Stock Symbol', key: 'stock_symbol' }, 
-     
+    { label: 'Active Communities', key: 'active_communities' }, 
+    { label: 'Closing This Year', key: 'closing_this_year' },
+    { label: 'Permits This Year', key: 'permits_this_year' },
+    { label: 'Net Sales this year', key: 'net_sales_this_year' },
+    { label: 'Current Avg Base Price', key: 'current_avg_base_Price' },
+    { label: 'Median Closing Price This Year ', key: 'median_closing_price_this_year' },
+    { label: 'Median Closing Price Last Year', key: 'median_closing_price_last_year' },
+    { label: 'Avg Net Sales Per Month This Year ', key: 'avg_net_sales_per_month_this_year' },
+    { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
+    { label: 'Total Closings', key: 'total_closings' },
+    { label: 'Total Permits', key: 'total_permits' },
+    { label: 'Total Net Sales', key: 'total_net_sales' }, 
+    { label: 'Date Of First Closing', key: 'date_of_first_closing' },
+    { label: 'Date Of Latest Closing', key: 'date_of_latest_closing' }
   ];
   const columns = [
     { label: 'Logo', key: 'Logo' }, 
@@ -97,8 +110,24 @@ const BuilderTable = () => {
     { label: 'Corporate Office State', key: 'coporate_office_state' },
     { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
     { label: 'Stock Market', key: 'stock_market' },
-    { label: 'Stock Symbol', key: 'stock_symbol' }, 
+    { label: 'Stock Symbol', key: 'stock_symbol' },
+    { label: 'Active Communities', key: 'active_communities' }, 
+    { label: 'Closing This Year', key: 'closing_this_year' },
+    { label: 'Permits This Year', key: 'permits_this_year' },
+    { label: 'Net Sales this year', key: 'net_sales_this_year' },
+    { label: 'Current Avg Base Price', key: 'current_avg_base_Price' },
+    { label: 'Median Closing Price This Year ', key: 'median_closing_price_this_year' },
+    { label: 'Median Closing Price Last Year', key: 'median_closing_price_last_year' },
+    { label: 'Avg Net Sales Per Month This Year ', key: 'avg_net_sales_per_month_this_year' },
+    { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
+    { label: 'Total Closings', key: 'total_closings' },
+    { label: 'Total Permits', key: 'total_permits' },
+    { label: 'Total Net Sales', key: 'total_net_sales' }, 
+    { label: 'Date Of First Closing', key: 'date_of_first_closing' },
+    { label: 'Date Of Latest Closing', key: 'date_of_latest_closing' } 
   ];
+
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
@@ -137,7 +166,21 @@ const BuilderTable = () => {
         nw === "Corporate Office State" ?  row.coporate_officeaddress_2 : '',
         nw === "Corporate Office Zip" ?  row.coporate_officeaddress_zipcode : '',
         nw === "Stock Market" ?  row.stock_market : '',
-        nw === "Stock Symbol" ?  row.stock_symbol : '',  
+        nw === "Stock Symbol" ?  row.stock_symbol : '',
+        nw === 'Active Communities'?row.  active_communities : ' ', 
+        nw === 'Closing This Year'?row.closing_this_year:' ',
+        nw === 'Permits This Year'?row.permits_this_year:' ',
+        nw === 'Net Sales this year'?row.net_sales_this_year:' ',
+        nw ==='Current Avg Base Price'?row.current_avg_base_Price:' ',
+        nw === 'Median Closing Price This Year '?row.median_closing_price_this_year:' ',
+        nw === 'Median Closing Price Last Year'?row.median_closing_price_last_year:' ',
+        nw === 'Avg Net Sales Per Month This Year '?row.avg_net_sales_per_month_this_year:' ',
+        nw ==='Avg Closings Per Month This Year'?row.avg_closings_per_month_this_year:' ',
+        nw === 'Total Closings'?row.total_closings:' ',
+        nw === 'Total Permits'?row.total_permits:' ',
+        nw === 'Total Net Sales'?row.total_net_sales:' ', 
+        nw === 'Date Of First Closing'?row.date_of_first_closing:' ',
+        nw === 'Date Of Latest Closing'?row.date_of_latest_closing:' ',
     ]
     ),
     
@@ -1229,9 +1272,21 @@ const handlBuilderClick = (e) => {
                                 <td>{element.closing_this_year}</td>
                                 <td>{element.permits_this_year}</td>
                                 <td>{element.net_sales_this_year}</td>
-                                <td>{element.current_avg_base_Price}</td>
-                                <td>{element.median_closing_price_this_year}</td>
-                                <td>{element.median_closing_price_last_year}</td>
+                                <td>
+                                  <PriceComponent
+                                      price={element.current_avg_base_Price}
+                                  />
+                                </td>
+                                <td> 
+                                  <PriceComponent
+                                      price={element.median_closing_price_this_year}
+                                  />
+                                  </td>
+                                <td>
+                                  <PriceComponent
+                                        price={element.median_closing_price_last_year}
+                                    />
+                                </td>
                                 <td>{element.avg_net_sales_per_month_this_year}</td>
                                 <td>{element.avg_closings_per_month_this_year}</td>
                                 <td>{element.total_closings}</td>
@@ -1792,7 +1847,7 @@ const handlBuilderClick = (e) => {
                               : element.field_name === "current_division_president"
                               ? "Current Division President"
                               : element.field_name === "stock_symbol"
-                              ? "Stock Symbol"
+                              ? "Stock Symbol "
                               : element.field_name === "current_land_aquisitions"
                               ? "Current Land Acquisitions"
                               : element.field_name === "coporate_officeaddress_1"

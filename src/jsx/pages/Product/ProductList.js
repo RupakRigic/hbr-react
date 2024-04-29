@@ -78,6 +78,8 @@ const ProductList = () => {
     { label: 'All Single Story', key: 'singlestory' },
     { label: 'Product ID', key: 'productid' },
     { label: 'Fk Sub ID', key: 'fksubid' }, 
+    { label: 'Price Change Since Open', key: 'productid' },
+    { label: 'Price Change Last 12 Months', key: 'fksubid' }, 
   ];
   const columns = [
     { label: 'Status', key: 'Status' },
