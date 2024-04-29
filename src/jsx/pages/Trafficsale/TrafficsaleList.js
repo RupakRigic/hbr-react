@@ -22,6 +22,9 @@ const TrafficsaleList = () => {
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [trafficsaleList, setTrafficsaleList] = useState([]);
+  const [trafficListCount, setTrafficListCount] = useState('');
+  const [TotaltrafficListCount, setTotalTrafficListCount] = useState('');
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -273,6 +276,7 @@ const TrafficsaleList = () => {
       const responseData = await response.json();
       setTrafficsaleList(responseData);
       setIsLoading(false);
+      setTrafficListCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -283,6 +287,24 @@ const TrafficsaleList = () => {
   };
   useEffect(() => {
     gettrafficsaleList();
+  }, []);
+
+  const gettrafficsaleListCount = async () => {
+    console.log(searchQuery);
+    try {
+      const response = await AdminTrafficsaleService.index();
+      const responseData = await response.json();
+      setTotalTrafficListCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    gettrafficsaleListCount();
   }, []);
   const handleDelete = async (e) => {
     try {
@@ -1060,6 +1082,9 @@ const TrafficsaleList = () => {
                         </tbody>
                       </table>
                     )}
+                    <div className="dataTables_info">
+                         Showing {trafficListCount} of {TotaltrafficListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

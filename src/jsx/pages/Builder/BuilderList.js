@@ -36,6 +36,9 @@ const BuilderTable = () => {
   const handleClose = () => setShow(false);
 
   const [BuilderList, setBuilderList] = useState(null);
+  const [BuilderListCount, setBuilderListCount] = useState('');
+  const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
+
   const navigate = useNavigate();
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -46,20 +49,19 @@ const BuilderTable = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: 'builders' });
+  const [checkedItems, setCheckedItems] = useState({});
+  const fieldList = AccessField({ tableName: "builders" });
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [exportmodelshow, setExportModelShow] = useState(false)
-  
+  const [exportmodelshow, setExportModelShow] = useState(false);
+
   useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
+    console.log(fieldList); 
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
 
-  
   const headers = [
     { label: 'Logo', key: 'Logo' }, 
     { label: 'Website', key: 'website' },
@@ -147,12 +149,10 @@ const BuilderTable = () => {
       sheet: "Builders",
       tablePayload: {
         header: tableHeaders,
-        body: tableData
+        body: tableData,
       },
     });
-
-  }
-   
+  };
 
   const [BuilderDetails, SetBuilderDetails] = useState({
     code: "",
@@ -191,6 +191,8 @@ const BuilderTable = () => {
       const response = await AdminBuilderService.index(searchQuery);
       const responseData = await response.json();
       setBuilderList(responseData);
+      console.log(responseData.length);
+      setBuilderListCount(responseData.length);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -203,6 +205,27 @@ const BuilderTable = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const getbuilderCount = async () => {
+    try {
+      const response = await AdminBuilderService.index();
+      const responseData = await response.json();
+      setTotalBuilderListCount(responseData.length)
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getbuilderCount();
     } else {
       navigate("/");
     }
@@ -389,85 +412,86 @@ const BuilderTable = () => {
     setAccessRole(e.target.value);
   };
 
-
   const exportToExcelData = async () => {
     try {
-        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
-        const response = await axios.get(
-          `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`
-          , {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${bearerToken}`
-            }
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'builders.xlsx');
-        document.body.appendChild(link);
-        link.click();
-    } catch (error) {
-        console.log(error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+      const response = await axios.get(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`,
+        {
+          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
         }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "builders.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
     }
-}
+  };
 
-const handleFileChange = async (e) => {
-  setSelectedFile(e.target.files[0]);
-};
-const handleUploadClick = async () => {
-  const file = selectedFile;
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  const handleUploadClick = async () => {
+    const file = selectedFile;
 
-  if (file && file.type === "text/csv") {
-    setLoading(true);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = async () => {
-      var iFile = fileReader.result;
-      setSelectedFile(iFile);
-      console.log(iFile);
-      const inputData = {
-        csv: iFile,
-      };
-      try {
-        let responseData = await AdminBuilderService.import(inputData).json();
-        setSelectedFile("");
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-        swal("Imported Sucessfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/builderlist");
-            setShow(false);
-          }
-        });
-        getbuilderlist();
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = error.response.json();
+    if (file && file.type === "text/csv") {
+      setLoading(true);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = async () => {
+        var iFile = fileReader.result;
+        setSelectedFile(iFile);
+        console.log(iFile);
+        const inputData = {
+          csv: iFile,
+        };
+        try {
+          let responseData = await AdminBuilderService.import(inputData).json();
           setSelectedFile("");
-          setError(errorJson.message);
           document.getElementById("fileInput").value = null;
           setLoading(false);
+          swal("Imported Sucessfully").then((willDelete) => {
+            if (willDelete) {
+              navigate("/builderlist");
+              setShow(false);
+            }
+          });
+          getbuilderlist();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
+          }
         }
-      }
-    };
+      };
 
-    setSelectedFileError("");
-  } else {
-    setSelectedFile("");
-    setSelectedFileError("Please select a CSV file.");
-  }
-};
-const handlBuilderClick = (e) => {
-  setShow(true);
-};
+      setSelectedFileError("");
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
 
-  
   return (
     <>
       <MainPagetitle
@@ -514,8 +538,13 @@ const handlBuilderClick = (e) => {
                       ) : (
                         <div className="d-flex">
                           {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
-
+                          <button
+                            onClick={() => setExportModelShow(true)}
+                            className="btn btn-primary btn-sm me-1"
+                          >
+                            {" "}
+                            <i class="fas fa-file-excel"></i>
+                          </button>
 
                           <button
                             className="btn btn-primary btn-sm me-1"
@@ -525,12 +554,12 @@ const handlBuilderClick = (e) => {
                             Field Access
                           </button>
                           <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >                       
-                        Import
-                      </Button>
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            Import
+                          </Button>
                           <Dropdown>
                             <Dropdown.Toggle
                               variant="success"
@@ -637,7 +666,6 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-
                             {checkFieldExist("name") && (
                               <th onClick={() => requestSort("name")}>
                                 <strong>Builder Name</strong>
@@ -679,7 +707,6 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-
                             {checkFieldExist("officeaddress1") && (
                               <th onClick={() => requestSort("officeaddress1")}>
                                 <strong>LV Office Address</strong>
@@ -694,7 +721,6 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-
                             {checkFieldExist("city") && (
                               <th onClick={() => requestSort("city")}>
                                 <strong>
@@ -710,7 +736,6 @@ const handlBuilderClick = (e) => {
                                 </strong>
                               </th>
                             )}
-
                             {checkFieldExist("zipcode") && (
                               <th onClick={() => requestSort("zipcode")}>
                                 <strong>LV Office Zip</strong>
@@ -723,7 +748,6 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-
                             {checkFieldExist("current_division_president") && (
                               <th
                                 onClick={() =>
@@ -743,7 +767,6 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-
                             {checkFieldExist("current_land_aquisitions") && (
                               <th
                                 onClick={() =>
@@ -766,7 +789,6 @@ const handlBuilderClick = (e) => {
                                 </strong>
                               </th>
                             )}
-
                             {checkFieldExist("coporate_officeaddress_1") && (
                               <th
                                 onClick={() =>
@@ -812,7 +834,6 @@ const handlBuilderClick = (e) => {
                                 </strong>
                               </th>
                             )}
-
                             {checkFieldExist("coporate_officeaddress_2") && (
                               <th
                                 onClick={() =>
@@ -931,10 +952,17 @@ const handlBuilderClick = (e) => {
                                 </strong>
                               </th>
                             )}
-                            <th onClick={() => requestSort("active_communities")}>
+                            {checkFieldExist("Active Communities") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("active_communities")
+                                }
+                              >
                                 <strong>
                                   Active Communities
-                                  {sortConfig.key !== "active_communities" ? "↑↓" : ""}
+                                  {sortConfig.key !== "active_communities"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "active_communities" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -943,11 +971,17 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("closing_this_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Closing This Year") && (
+                              <th
+                                onClick={() => requestSort("closing_this_year")}
+                              >
                                 <strong>
-                                Closing This Year
-                                  {sortConfig.key !== "closing_this_year" ? "↑↓" : ""}
+                                  Closing This Year
+                                  {sortConfig.key !== "closing_this_year"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "closing_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -956,11 +990,17 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("permits_this_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Permits This Year") && (
+                              <th
+                                onClick={() => requestSort("permits_this_year")}
+                              >
                                 <strong>
-                                Permits This Year
-                                  {sortConfig.key !== "permits_this_year" ? "↑↓" : ""}
+                                  Permits This Year
+                                  {sortConfig.key !== "permits_this_year"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "permits_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -969,11 +1009,15 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("created_at")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Net Sales this year") && (
+                              <th onClick={() => requestSort("created_at")}>
                                 <strong>
-                                Net Sales this year
-                                  {sortConfig.key !== "net_sales_this_year" ? "↑↓" : ""}
+                                  Net Sales this year
+                                  {sortConfig.key !== "net_sales_this_year"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "net_sales_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -982,12 +1026,21 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("current_avg_base_Price")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Current Avg Base Price") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("current_avg_base_Price")
+                                }
+                              >
                                 <strong>
                                   Current Avg Base Price
-                                  {sortConfig.key !== "current_avg_base_Price" ? "↑↓" : ""}
-                                  {sortConfig.key === "current_avg_base_Price" && (
+                                  {sortConfig.key !== "current_avg_base_Price"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "current_avg_base_Price" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -995,12 +1048,22 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("median_closing_price_this_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Median Closing Price This Year") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("median_closing_price_this_year")
+                                }
+                              >
                                 <strong>
-                                  Median Closing Price This Year 
-                                  {sortConfig.key !== "median_closing_price_this_year" ? "↑↓" : ""}
-                                  {sortConfig.key === "median_closing_price_this_year" && (
+                                  Median Closing Price This Year
+                                  {sortConfig.key !==
+                                  "median_closing_price_this_year"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "median_closing_price_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1008,12 +1071,22 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("median_closing_price_last_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Median Closing Price Last Year") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("median_closing_price_last_year")
+                                }
+                              >
                                 <strong>
-                                  Median Closing Price Last Year 
-                                  {sortConfig.key !== "median_closing_price_last_year" ? "↑↓" : ""}
-                                  {sortConfig.key === "median_closing_price_last_year" && (
+                                  Median Closing Price Last Year
+                                  {sortConfig.key !==
+                                  "median_closing_price_last_year"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "median_closing_price_last_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1021,12 +1094,24 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("avg_net_sales_per_month_this_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Avg Net Sales Per Month This Year") && (
+                              <th
+                                onClick={() =>
+                                  requestSort(
+                                    "avg_net_sales_per_month_this_year"
+                                  )
+                                }
+                              >
                                 <strong>
-                                  Avg Net Sales Per Month This Year 
-                                  {sortConfig.key !== "avg_net_sales_per_month_this_year" ? "↑↓" : ""}
-                                  {sortConfig.key === "avg_net_sales_per_month_this_year" && (
+                                  Avg Net Sales Per Month This Year
+                                  {sortConfig.key !==
+                                  "avg_net_sales_per_month_this_year"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "avg_net_sales_per_month_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1034,12 +1119,24 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("avg_closings_per_month_this_year")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Avg Closings Per Month This Year") && (
+                              <th
+                                onClick={() =>
+                                  requestSort(
+                                    "avg_closings_per_month_this_year"
+                                  )
+                                }
+                              >
                                 <strong>
-                                  Avg Closings Per Month This Year 
-                                  {sortConfig.key !== "avg_closings_per_month_this_year" ? "↑↓" : ""}
-                                  {sortConfig.key === "avg_closings_per_month_this_year" && (
+                                  Avg Closings Per Month This Year
+                                  {sortConfig.key !==
+                                  "avg_closings_per_month_this_year"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "avg_closings_per_month_this_year" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1047,11 +1144,15 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("total_closings")}>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Total Closings") && (
+                              <th onClick={() => requestSort("total_closings")}>
                                 <strong>
-                                  Total Closings 
-                                  {sortConfig.key !== "total_closings" ? "↑↓" : ""}
+                                  Total Closings
+                                  {sortConfig.key !== "total_closings"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "total_closings" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -1060,11 +1161,15 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("total_permits")}>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Total Permits") && (
+                              <th onClick={() => requestSort("total_permits")}>
                                 <strong>
-                                 Total Permits
-                                  {sortConfig.key !== "total_permits" ? "↑↓" : ""}
+                                  Total Permits
+                                  {sortConfig.key !== "total_permits"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "total_permits" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -1073,11 +1178,17 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("total_net_sales")}>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Total Net Sales") && (
+                              <th
+                                onClick={() => requestSort("total_net_sales")}
+                              >
                                 <strong>
-                                 Total Net Sales
-                                  {sortConfig.key !== "total_net_sales" ? "↑↓" : ""}
+                                  Total Net Sales
+                                  {sortConfig.key !== "total_net_sales"
+                                    ? "↑↓"
+                                    : ""}
                                   {sortConfig.key === "total_net_sales" && (
                                     <span>
                                       {sortConfig.direction === "asc"
@@ -1086,12 +1197,21 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("date_of_first_closing")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Date Of First Closing") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("date_of_first_closing")
+                                }
+                              >
                                 <strong>
                                   Date Of First Closing
-                                  {sortConfig.key !== "date_of_first_closing" ? "↑↓" : ""}
-                                  {sortConfig.key === "date_of_first_closing" && (
+                                  {sortConfig.key !== "date_of_first_closing"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "date_of_first_closing" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1099,12 +1219,21 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
-                            <th onClick={() => requestSort("date_of_latest_closing")}>
+                              </th>
+                            )}
+                            {checkFieldExist("Date Of First Closing") && (
+                              <th
+                                onClick={() =>
+                                  requestSort("date_of_latest_closing")
+                                }
+                              >
                                 <strong>
                                   Date Of Latest Closing
-                                  {sortConfig.key !== "date_of_latest_closing" ? "↑↓" : ""}
-                                  {sortConfig.key === "date_of_latest_closing" && (
+                                  {sortConfig.key !== "date_of_latest_closing"
+                                    ? "↑↓"
+                                    : ""}
+                                  {sortConfig.key ===
+                                    "date_of_latest_closing" && (
                                     <span>
                                       {sortConfig.direction === "asc"
                                         ? "↑"
@@ -1112,7 +1241,8 @@ const handlBuilderClick = (e) => {
                                     </span>
                                   )}
                                 </strong>
-                            </th>
+                              </th>
+                            )}
                             {SyestemUserRole === "Data Uploader" ||
                             SyestemUserRole === "User" ? (
                               ""
@@ -1225,20 +1355,57 @@ const handlBuilderClick = (e) => {
                                     <DateComponent date={element.created_at} />
                                   </td>
                                 )}
-                                <td>{element.active_communities}</td>
-                                <td>{element.closing_this_year}</td>
-                                <td>{element.permits_this_year}</td>
-                                <td>{element.net_sales_this_year}</td>
-                                <td>{element.current_avg_base_Price}</td>
-                                <td>{element.median_closing_price_this_year}</td>
-                                <td>{element.median_closing_price_last_year}</td>
-                                <td>{element.avg_net_sales_per_month_this_year}</td>
-                                <td>{element.avg_closings_per_month_this_year}</td>
-                                <td>{element.total_closings}</td>
-                                <td>{element.total_permits}</td>
-                                <td>{element.total_net_sales}</td>
-                                <td>{element.date_of_first_closing}</td>
-                                <td>{element.date_of_latest_closing}</td>
+                                {checkFieldExist("Active Communities") && (
+                                  <td>{element.active_communities}</td>
+                                )}
+                                {checkFieldExist("Closing This Year") && (
+                                  <td>{element.closing_this_year}</td>
+                                )}
+                                {checkFieldExist("Permits This Year") && (
+                                  <td>{element.permits_this_year}</td>
+                                )}
+                                {checkFieldExist("Net Sales this year") && (
+                                  <td>{element.net_sales_this_year}</td>
+                                )}
+                                {checkFieldExist("Current Avg Base Price") && (
+                                  <td>{element.current_avg_base_Price}</td>
+                                )}
+                                {checkFieldExist("Median Closing Price This Year") && (
+                                  <td>
+                                    {element.median_closing_price_this_year}
+                                  </td>
+                                )}
+                                {checkFieldExist("Median Closing Price Last Year") && (
+                                  <td>
+                                    {element.median_closing_price_last_year}
+                                  </td>
+                                )}
+                                {checkFieldExist("Avg Net Sales Per Month This Year") && (
+                                  <td>
+                                    {element.avg_net_sales_per_month_this_year}
+                                  </td>
+                                )}
+                                {checkFieldExist("Avg Closings Per Month This Year") && (
+                                  <td>
+                                    {element.avg_closings_per_month_this_year}
+                                  </td>
+                                )}
+                                {checkFieldExist("Total Closings") && (
+                                  <td>{element.total_closings}</td>
+                                )}
+                                {checkFieldExist("Total Permits") && (
+                                  <td>{element.total_permits}</td>
+                                )}
+                                {checkFieldExist("Total Net Sales") && (
+                                  <td>{element.total_net_sales}</td>
+                                )}
+                                {checkFieldExist("Date Of First Closing") && (
+                                  <td>{element.date_of_first_closing}</td>
+                                )}
+                                {checkFieldExist("Date Of Latest Closing") && (
+                                  <td>{element.date_of_latest_closing}</td>
+                                )}
+
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
                                   SyestemUserRole === "User" ? (
@@ -1285,13 +1452,11 @@ const handlBuilderClick = (e) => {
                     )}
 
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                    */}
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {BuilderList.length < lastIndex
-                          ? BuilderList.length
-                          : lastIndex}{" "}
-                        of {BuilderList.length} entries
+                         Showing {BuilderListCount} of {TotalBuilderListCount} 
                       </div>
+                        {/*
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
                         id="example2_paginate"
@@ -1323,7 +1488,6 @@ const handlBuilderClick = (e) => {
                         >
                           <i className="fa-solid fa-angle-right" />
                         </Link>
-                      </div>
                     </div> */}
                   </div>
                 </div>

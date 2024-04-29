@@ -17,6 +17,9 @@ const UserList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
+  const [userListCount, setUserCount] = useState('');
+  const [TotaluserListCount, setTotalUserCount] = useState('');
+
   // const [currentPage, setCurrentPage] = useState(1);
   // const recordsPage = 20;
   // const lastIndex = currentPage * recordsPage;
@@ -150,6 +153,7 @@ const UserList = () => {
       const responseData = await response.json();
       setUserList(responseData);
       setIsLoading(false);
+      setUserCount(responseData.length)
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -160,6 +164,26 @@ const UserList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getuserList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const getuserListCount = async () => {
+    try {
+      const response = await AdminUserRoleService.index();
+      const responseData = await response.json();
+      setTotalUserCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getuserListCount();
     } else {
       navigate("/");
     }
@@ -552,6 +576,9 @@ const UserList = () => {
                         </tbody>
                       </table>
                     )}
+                            <div className="dataTables_info">
+                         Showing {userListCount} of {TotaluserListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

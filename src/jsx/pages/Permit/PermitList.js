@@ -22,6 +22,9 @@ const PermitList = () => {
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [permitList, setPermitList] = useState([]);
+  const [permitListCount, setPermitListCount] = useState('');
+  const [TotalPermitListCount, setTotalPermitListCount] = useState('');
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -290,6 +293,7 @@ const PermitList = () => {
       const responseData = await response.json();
       setPermitList(responseData);
       setIsLoading(false);
+      setPermitListCount(responseData.length)
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -299,6 +303,21 @@ const PermitList = () => {
   };
   useEffect(() => {
     getPermitList();
+  }, []);
+  const getPermitListCount = async () => {
+    try {
+      const response = await AdminPermitService.index(searchQuery);
+      const responseData = await response.json();
+      setTotalPermitListCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    getPermitListCount();
   }, []);
   const handleDelete = async (e) => {
     try {
@@ -1090,6 +1109,9 @@ const PermitList = () => {
                         </tbody>
                       </table>
                     )}
+                      <div className="dataTables_info">
+                         Showing {permitListCount} of {TotalPermitListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

@@ -29,6 +29,9 @@ const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [productList, setProductList] = useState(null);
+  const [productListCount, setProductsListCount] = useState('');
+  const [TotalProductListCount, setTotalProductsListCount] = useState('');
+
   const [BuilderList, setBuilderList] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -225,6 +228,7 @@ const ProductList = () => {
       const responseData = await response.json();
       setProductList(responseData);
       setIsLoading(false);
+      setProductsListCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -236,6 +240,27 @@ const ProductList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getproductList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const getProductsCount = async () => {
+    try {
+      const response = await AdminProductService.index();
+      const responseData = await response.json();
+      setTotalProductsListCount(responseData.length)
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getProductsCount();
     } else {
       navigate("/");
     }
@@ -1022,8 +1047,8 @@ const handlBuilderClick = (e) => {
                                 )}
                               </th>
                             )}
-                           
-                            <th
+                          {checkFieldExist("Price Change Since Open") && (
+                              <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
                                 <strong>Price Change Since Open</strong>
@@ -1036,7 +1061,9 @@ const handlBuilderClick = (e) => {
                                   </span>
                                 )}
                             </th>
-                            <th
+                          )}
+                      {checkFieldExist("Price Change Last 12 Months") && (
+                              <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
                                 <strong>Price Change Last 12 Months</strong>
@@ -1049,6 +1076,7 @@ const handlBuilderClick = (e) => {
                                   </span>
                                 )}
                             </th>
+                  )}
                             {checkFieldExist("Action") && <th>Action</th>}
                           </tr>
                         </thead>
@@ -1156,8 +1184,12 @@ const handlBuilderClick = (e) => {
                                     {element.subdivision.subdivision_code}
                                   </td>
                                 )}
+                              {checkFieldExist("_fkSubID") && (
                                 <td>0</td>
+                              )}
+                            {checkFieldExist("_fkSubID") && (
                                 <td>0</td>
+                              )}
                                 {checkFieldExist("Action") && (
                                   <td>
                                     <div className="d-flex justify-content-center">
@@ -1199,6 +1231,9 @@ const handlBuilderClick = (e) => {
                         </tbody>
                       </table>
                     )}
+             <div className="dataTables_info">
+                         Showing {productListCount} of {TotalProductListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                                             <div className='dataTables_info'>
                                                 Showing {lastIndex - recordsPage + 1} to{" "}

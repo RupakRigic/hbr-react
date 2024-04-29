@@ -14,6 +14,8 @@ const File = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [productList, setProductList] = useState([]);
+  const [fileListCount, setFileListCount] = useState('');
+  const [TotalFileListCount, setTotalFileListCount] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -137,6 +139,7 @@ const File = () => {
       const responseData = await response.json();
       setProductList(responseData);
       setIsLoading(false);
+      setFileListCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -148,6 +151,26 @@ const File = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getproductList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+  const getproductListCount = async () => {
+    try {
+      const response = await AdminCSVFileService.index();
+      const responseData = await response.json();
+      setTotalFileListCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getproductListCount();
     } else {
       navigate("/");
     }
@@ -399,6 +422,9 @@ const File = () => {
                         </tbody>
                       </table>
                     )}
+                    <div className="dataTables_info">
+                         Showing {fileListCount} of {TotalFileListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

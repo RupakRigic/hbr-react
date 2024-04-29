@@ -20,6 +20,8 @@ import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 const ClosingList = () => {
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
+  const [closingListCount, setClosingListCount] = useState('');
+  const [TotalClosingListCount, setTotalClosingListCount] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
@@ -280,6 +282,7 @@ const ClosingList = () => {
       const responseData = await response.json();
       setClosingList(responseData);
       setIsLoading(false);
+      setClosingListCount(responseData.length)
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -290,6 +293,24 @@ const ClosingList = () => {
   };
   useEffect(() => {
     getClosingList();
+  }, []);
+
+  const getClosingListCount = async () => {
+    try {
+      const response = await AdminClosingService.index();
+      const responseData = await response.json();
+
+      setTotalClosingListCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    getClosingListCount();
   }, []);
   const handleDelete = async (e) => {
     try {
@@ -1074,6 +1095,9 @@ const ClosingList = () => {
                         </tbody>
                       </table>
                     )}
+                    <div className="dataTables_info">
+                         Showing {closingListCount} of {TotalClosingListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

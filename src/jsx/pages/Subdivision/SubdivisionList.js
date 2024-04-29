@@ -27,6 +27,9 @@ const SubdivisionList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState(null);
+  const [BuilderListCount, setBuilderListCount] = useState('');
+  const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
+
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
   // console.log('BuilderList',BuilderList);
@@ -228,6 +231,7 @@ const SubdivisionList = () => {
       const responseData = await response.json();
       setBuilderList(responseData);
       setIsLoading(false);
+      setBuilderListCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -239,6 +243,26 @@ const SubdivisionList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+  const getbuilderCount = async () => {
+    try {
+      const response = await AdminSubdevisionService.index();
+      const responseData = await response.json();
+      setTotalBuilderListCount(responseData.length)
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getbuilderCount();
     } else {
       navigate("/");
     }
@@ -1053,6 +1077,7 @@ const SubdivisionList = () => {
                                 )}
                               </th>
                             )}
+                            {checkFieldExist("Total Closings") && (
                             <th onClick={() => requestSort("total_closings")}>
                                 <strong> Total Closings </strong>
                                 {sortConfig.key !== "total_closings" ? "↑↓" : ""}
@@ -1062,6 +1087,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                            {checkFieldExist("Total Permits") && (                     
                               <th onClick={() => requestSort("total_permits")}>
                                 <strong> Total Permits </strong>
                                 {sortConfig.key !== "total_permits" ? "↑↓" : ""}
@@ -1071,6 +1098,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                            )}
+                              {checkFieldExist("Total Net Sales") && (
                               <th onClick={() => requestSort("total_net_sales")}>
                                 <strong> Total Net Sales </strong>
                                 {sortConfig.key !== "total_net_sales" ? "↑↓" : ""}
@@ -1080,6 +1109,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Months Open") && (
                               <th onClick={() => requestSort("months_open")}>
                                 <strong> Months Open </strong>
                                 {sortConfig.key !== "months_open" ? "↑↓" : ""}
@@ -1089,6 +1120,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                            )}
+                              {checkFieldExist("Latest Traffic/Sales Data") && (
                               <th onClick={() => requestSort("latest_traffic_data")}>
                                 <strong> Latest Traffic/Sales Data </strong>
                                 {sortConfig.key !== "latest_traffic_data" ? "↑↓" : ""}
@@ -1098,6 +1131,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                             )}
+                              {checkFieldExist("Latest Lots Released") && (
                               <th onClick={() => requestSort("latest_lots_released")}>
                                 <strong> Latest Lots Released </strong>
                                 {sortConfig.key !== "latest_lots_released" ? "↑↓" : ""}
@@ -1107,6 +1142,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Latest Standing Inventory") && (
                               <th onClick={() => requestSort("latest_standing_inventory")}>
                                 <strong> Latest Standing Inventory </strong>
                                 {sortConfig.key !== "latest_standing_inventory" ? "↑↓" : ""}
@@ -1116,6 +1153,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Unsold Lots") && (
                               <th onClick={() => requestSort("unsold_lots")}>
                                 <strong> Unsold Lots </strong>
                                 {sortConfig.key !== "unsold_lots" ? "↑↓" : ""}
@@ -1125,6 +1164,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Avg Sqft All") && (
                               <th onClick={() => requestSort("avg_sqft_all")}>
                                 <strong> Avg Sqft All </strong>
                                 {sortConfig.key !== "avg_sqft_all" ? "↑↓" : ""}
@@ -1134,6 +1175,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Avg Sqft Active") && (
                               <th onClick={() => requestSort("avg_sqft_active")}>
                                 <strong> Avg Sqft Active </strong>
                                 {sortConfig.key !== "avg_sqft_active" ? "↑↓" : ""}
@@ -1143,6 +1186,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                            )}
+                              {checkFieldExist("Avg Base Price All") && (
                               <th onClick={() => requestSort("avg_base_price_all")}>
                                 <strong> Avg Base Price All </strong>
                                 {sortConfig.key !== "avg_base_price_all" ? "↑↓" : ""}
@@ -1152,6 +1197,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Avg Base Price Active") && (
                               <th onClick={() => requestSort("avg_base_price_active")}>
                                 <strong> Avg Base Price Active </strong>
                                 {sortConfig.key !== "avg_base_price_active" ? "↑↓" : ""}
@@ -1161,6 +1208,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Min Sqft All") && (
                               <th onClick={() => requestSort("min_sqft_all")}>
                                 <strong> Min Sqft All </strong>
                                 {sortConfig.key !== "min_sqft_all" ? "↑↓" : ""}
@@ -1170,6 +1219,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active")}>
                                 <strong> Min Sqft Active </strong>
                                 {sortConfig.key !== "min_sqft_active" ? "↑↓" : ""}
@@ -1179,6 +1230,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Max Sqft All") && (
                               <th onClick={() => requestSort("max_sqft_all")}>
                                 <strong> Max Sqft All </strong>
                                 {sortConfig.key !== "max_sqft_all" ? "↑↓" : ""}
@@ -1188,6 +1241,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active")}>
                                 <strong> Max Sqft Active </strong>
                                 {sortConfig.key !== "max_sqft_active" ? "↑↓" : ""}
@@ -1197,6 +1252,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                                   )}
+                              {checkFieldExist("Min Base Price All") && (
                               <th onClick={() => requestSort("min_base_price_all")}>
                                 <strong> Min Base Price All </strong>
                                 {sortConfig.key !== "min_base_price_all" ? "↑↓" : ""}
@@ -1206,6 +1263,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active_current")}>
                                 <strong> Min Sqft Active </strong>
                                 {sortConfig.key !== "min_sqft_active_current" ? "↑↓" : ""}
@@ -1215,6 +1274,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Max Base Price All") && (
                               <th onClick={() => requestSort("max_base_price_all")}>
                                 <strong> Max Base Price All </strong>
                                 {sortConfig.key !== "max_base_price_all" ? "↑↓" : ""}
@@ -1224,6 +1285,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active_current")}>
                                 <strong> Max Sqft Active </strong>
                                 {sortConfig.key !== "max_sqft_active_current" ? "↑↓" : ""}
@@ -1233,6 +1296,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Avg Net Traffic Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_traffic_per_month_this_year")}>
                                 <strong> Avg Net Traffic Per Month This Year </strong>
                                 {sortConfig.key !== "avg_net_traffic_per_month_this_year" ? "↑↓" : ""}
@@ -1242,6 +1307,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Avg Net Sales Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_this_year")}>
                                 <strong> Avg Net Sales Per Month This Year </strong>
                                 {sortConfig.key !== "avg_net_sales_per_month_this_year" ? "↑↓" : ""}
@@ -1251,6 +1318,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                             )}
+                              {checkFieldExist("Avg Closings Per Month This Year") && (
                               <th onClick={() => requestSort("avg_closings_per_month_this_year")}>
                                 <strong> Avg Closings Per Month This Year </strong>
                                 {sortConfig.key !== "avg_closings_per_month_this_year" ? "↑↓" : ""}
@@ -1260,6 +1329,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Avg Net Sales Per Month Since Open") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_since_open")}>
                                 <strong> Avg Net Sales Per Month Since Open </strong>
                                 {sortConfig.key !== "avg_net_sales_per_month_since_open" ? "↑↓" : ""}
@@ -1269,6 +1340,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Avg Net Sales Per Month Last 3 Months") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_last_three_months")}>
                                 <strong> Avg Net Sales Per Month Last 3 Months </strong>
                                 {sortConfig.key !== "avg_net_sales_per_month_last_three_months" ? "↑↓" : ""}
@@ -1278,6 +1351,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Max Week Ending") && (
                               <th onClick={() => requestSort("max_week_ending")}>
                                 <strong> Max Week Ending </strong>
                                 {sortConfig.key !== "max_week_ending" ? "↑↓" : ""}
@@ -1287,6 +1362,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Min Week Ending") && (
                               <th onClick={() => requestSort("min_week_ending")}>
                                 <strong> Min Week Ending </strong>
                                 {sortConfig.key !== "min_week_ending" ? "↑↓" : ""}
@@ -1296,6 +1373,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                                )}
+                              {checkFieldExist("Sqft Group") && (
                               <th onClick={() => requestSort("sqft_group")}>
                                 <strong> Sqft Group </strong>
                                 {sortConfig.key !== "sqft_group" ? "↑↓" : ""}
@@ -1305,6 +1384,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                               )}
+                              {checkFieldExist("Price Group") && (
                               <th onClick={() => requestSort("price_group")}>
                                 <strong> Price Group </strong>
                                 {sortConfig.key !== "price_group" ? "↑↓" : ""}
@@ -1314,6 +1395,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Month Net Sold") && (
                               <th onClick={() => requestSort("month_net_sold")}>
                                 <strong> Month Net Sold </strong>
                                 {sortConfig.key !== "month_net_sold" ? "↑↓" : ""}
@@ -1323,6 +1406,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              )}
+                              {checkFieldExist("Year Net Sold") && (
                               <th onClick={() => requestSort("year_net_sold")}>
                                 <strong> Year Net Sold </strong>
                                 {sortConfig.key !== "year_net_sold" ? "↑↓" : ""}
@@ -1332,6 +1417,8 @@ const SubdivisionList = () => {
                                   </span>
                                 )}
                               </th>
+                              
+                            )}
                             {checkFieldExist("Action") && (
                               <th>
                                 {" "}
@@ -1526,6 +1613,9 @@ const SubdivisionList = () => {
                         </tbody>
                       </table>
                     )}
+                    <div className="dataTables_info">
+                         Showing {BuilderListCount} of {TotalBuilderListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}

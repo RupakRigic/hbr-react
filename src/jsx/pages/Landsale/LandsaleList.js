@@ -24,6 +24,9 @@ const LandsaleList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [LandsaleList, setLandsaleList] = useState([]);
+  const [landSaleListCount, setlandSaleListCount] = useState('');
+  const [TotalLandsaleListCount, setTotallandSaleListCount] = useState('');
+
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   
@@ -245,6 +248,7 @@ const LandsaleList = () => {
       const response = await AdminLandsaleService.index(searchQuery);
       const responseData = await response.json();
       setLandsaleList(responseData);
+      setlandSaleListCount(responseData.length);
       setIsLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -257,6 +261,27 @@ const LandsaleList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getLandsaleList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const getLandsaleListCount = async () => {
+    try {
+      const response = await AdminLandsaleService.index();
+      const responseData = await response.json();
+      setTotallandSaleListCount(responseData.length);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getLandsaleListCount();
     } else {
       navigate("/");
     }
@@ -801,6 +826,9 @@ const handlBuilderClick = (e) => {
                         </tbody>
                       </table>
                     )}
+                      <div className="dataTables_info">
+                         Showing {landSaleListCount} of {TotalLandsaleListCount} 
+                      </div>
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to{" "}
