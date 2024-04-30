@@ -26,6 +26,7 @@
     "formik": "^2.2.9",
     "ky-universal": "^0.12.0",
     "lightgallery": "^2.7.1",
+    "multi-column-sort": "^2.2.1",
     "node-sass": "^9.0.0",
     "p-min-delay": "^4.0.2",
     "react": "^18.2.0",

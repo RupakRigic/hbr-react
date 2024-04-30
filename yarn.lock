@@ -8343,6 +8343,11 @@ ms@2.1.3:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
+multi-column-sort@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/multi-column-sort/-/multi-column-sort-2.2.1.tgz"
+  integrity sha512-AXExoyZBnA2Db1SUOQVGoxlsN8uPpy//s85SAsa1D/3YyiSm9ljVyCz59zJXJ+uUHTvNTzVy3z7kKoIeWEcQGA==
+
 multicast-dns@^7.2.5:
   version "7.2.5"
   resolved "https://registry.npmjs.org/multicast-dns/-/multicast-dns-7.2.5.tgz"

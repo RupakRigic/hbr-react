@@ -288,13 +288,12 @@ const TrafficsaleList = () => {
   useEffect(() => {
     gettrafficsaleList();
   }, []);
-
   const gettrafficsaleListCount = async () => {
-    console.log(searchQuery);
     try {
       const response = await AdminTrafficsaleService.index();
       const responseData = await response.json();
       setTotalTrafficListCount(responseData.length);
+      console.log(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();

@@ -20,8 +20,9 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-
+import PriceComponent from "../../components/Price/PriceComponent";
 import { Row, Col, Card } from 'react-bootstrap';
+
 const SubdivisionList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
@@ -1662,29 +1663,31 @@ const SubdivisionList = () => {
                                 <td>{element.total_permits}</td>
                                 <td>{element.total_net_sales}</td>
                                 <td>{element.months_open}</td>
-                                <td>{element.latest_traffic_data}</td>
+                                <td>
+                                  <DateComponent date={element.latest_traffic_data} />
+                                  </td>
                                 <td>{element.latest_lots_released}</td>
                                 <td>{element.latest_standing_inventory}</td>
                                 <td>{element.unsold_lots}</td>
                                 <td>{element.avg_sqft_all}</td>
                                 <td>{element.avg_sqft_active}</td>
-                                <td>{element.avg_base_price_all}</td>
-                                <td>{element.avg_base_price_active}</td>
+                               <td>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
+                                <td>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
                                 <td>{element.min_sqft_all}</td>
                                 <td>{element.min_sqft_active}</td>
                                 <td>{element.max_sqft_all}</td>
                                 <td>{element.max_sqft_active}</td>
-                                <td>{element.min_base_price_all}</td>
+                                <td>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
                                 <td>{element.min_sqft_active_current}</td>
-                                <td>{element.max_base_price_all}</td>
+                                <td>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
                                 <td>{element.max_sqft_active_current}</td>
                                 <td>{element.avg_net_traffic_per_month_this_year}</td>
                                 <td>{element.avg_net_sales_per_month_this_year}</td>
                                 <td>{element.avg_closings_per_month_this_year}</td>
                                 <td>{element.avg_net_sales_per_month_since_open}</td>
                                 <td>{element.avg_net_sales_per_month_last_three_months}</td>
-                                <td>{element.max_week_ending}</td>
-                                <td>{element.min_week_ending}</td>
+                                <td>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
+                                <td>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
                                 <td>{element.sqft_group}</td>
                                 <td>{element.price_group}</td>
                                 <td>{element.month_net_sold}</td>

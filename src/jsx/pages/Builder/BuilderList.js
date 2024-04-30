@@ -21,6 +21,7 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import multiColumnSort from 'multi-column-sort';
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -222,17 +223,48 @@ const BuilderTable = () => {
     coporate_officeaddress_lng: "",
     logo: "",
   });
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [data, setData] = useState([]); // Your data state
+  const [sortConfig, setSortConfig] = useState([]); // Your sort configuration state
+
 
   const builder = useRef();
   const [value, setValue] = React.useState("1");
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const getbuilderCount = async () => {
+    try {
+      const response = await AdminBuilderService.index();
+      const responseData = await response.json();
+      setTotalBuilderListCount(responseData.length)
+      console.log(responseData.length);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getbuilderCount();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map(sort => `${sort.key}:${sort.direction}`).join(',');
+};
 
   const getbuilderlist = async () => {
     try {
-      const response = await AdminBuilderService.index(searchQuery);
+      let sortConfigString ='';
+      if (sortConfig !== null) {
+         sortConfigString = '&sortConfig='+stringifySortConfig(sortConfig);
+      }
+      const response = await AdminBuilderService.index(searchQuery,sortConfigString);
       const responseData = await response.json();
       setBuilderList(responseData);
       console.log(responseData.length);
@@ -249,27 +281,6 @@ const BuilderTable = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist();
-    } else {
-      navigate("/");
-    }
-  }, []);
-
-  const getbuilderCount = async () => {
-    try {
-      const response = await AdminBuilderService.index();
-      const responseData = await response.json();
-      setTotalBuilderListCount(responseData.length)
-    } catch (error) {
-      console.log(error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getbuilderCount();
     } else {
       navigate("/");
     }
@@ -429,27 +440,46 @@ const BuilderTable = () => {
     }
   };
   const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
-    }
-    setSortConfig({ key, direction });
+    setSortConfig((prevSortConfig) => {
+      const index = prevSortConfig.findIndex((item) => item.key === key);
+      let updatedSortConfig = [...prevSortConfig];
+      if (index !== -1) {
+        updatedSortConfig[index] = {
+          key,
+          direction: prevSortConfig[index].direction === "asc" ? "desc" : "asc",
+        };
+      } else {
+        updatedSortConfig.push({ key, direction: "asc" });
+      }
+      return updatedSortConfig;
+    });
+    getbuilderlist()
+    setIsLoading(true);
   };
 
+  useEffect(() => {
+    console.log(sortConfig); // Log updated sortConfig after each update
+  }, [sortConfig]);
+
+
   const sortedData = () => {
-    const sorted = [...BuilderList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sorted;
+
+    return BuilderList;
+    // return [...BuilderList].sort((a, b) => {
+    //   for (const config of sortConfig) {
+    //     const aValue = a[config.key];
+    //     const bValue = b[config.key];
+  
+    //     if (config.direction === "desc") {
+    //       if (aValue < bValue) return 1;
+    //       if (aValue > bValue) return -1;
+    //     } else {
+    //       if (aValue < bValue) return -1;
+    //       if (aValue > bValue) return 1;
+    //     }
+    //   }
+    //   return 0;
+    // });
   };
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -1444,12 +1474,13 @@ const BuilderTable = () => {
                                   <td>{element.total_net_sales}</td>
                                 )}
                                 {checkFieldExist("Date Of First Closing") && (
-                                  <td>{element.date_of_first_closing}</td>
+                                  <td>
+                                  <DateComponent date={element.date_of_first_closing} />
+                                </td>
                                 )}
                                 {checkFieldExist("Date Of Latest Closing") && (
-                                  <td>{element.date_of_latest_closing}</td>
+                                  <td><DateComponent date={element.date_of_latest_closing} /></td>
                                 )}
-
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
                                   SyestemUserRole === "User" ? (

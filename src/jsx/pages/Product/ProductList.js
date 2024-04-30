@@ -1186,10 +1186,10 @@ const handlBuilderClick = (e) => {
                                     {element.subdivision.subdivision_code}
                                   </td>
                                 )}
-                              {checkFieldExist("_fkSubID") && (
+                              {checkFieldExist("Price Change Since Open") && (
                                 <td>0</td>
                               )}
-                            {checkFieldExist("_fkSubID") && (
+                            {checkFieldExist("Price Change Last 12 Months") && (
                                 <td>0</td>
                               )}
                                 {checkFieldExist("Action") && (
