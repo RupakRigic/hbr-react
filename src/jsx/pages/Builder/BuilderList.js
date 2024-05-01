@@ -20,8 +20,8 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
-import multiColumnSort from 'multi-column-sort';
+import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
+import multiColumnSort from "multi-column-sort";
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -37,9 +37,11 @@ const BuilderTable = () => {
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
 
-  const [BuilderList, setBuilderList] = useState(null);
-  const [BuilderListCount, setBuilderListCount] = useState('');
-  const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
+  const [BuilderList, setBuilderList] = useState([]);
+  const [BuilderListCount, setBuilderListCount] = useState("");
+  const [TotalBuilderListCount, setTotalBuilderListCount] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
   const SyestemUserRole = localStorage.getItem("user")
@@ -54,10 +56,10 @@ const BuilderTable = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "builders" });
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [exportmodelshow, setExportModelShow] = useState(false)
-  const [calculationField, setCalculationField] = useState(false)
+  const [exportmodelshow, setExportModelShow] = useState(false);
+  const [calculationField, setCalculationField] = useState(false);
   useEffect(() => {
-    console.log(fieldList); 
+    console.log(fieldList);
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
@@ -65,130 +67,162 @@ const BuilderTable = () => {
   };
 
   const headers = [
-    { label: 'Logo', key: 'Logo' }, 
-    { label: 'Website', key: 'website' },
-    { label: 'Builder Name', key: 'name' },
-    { label: 'Company Type', key: 'companytype' },
-    { label: 'LV office Phone', key: 'phone' },
-    { label: 'LV office Email', key: 'email' },
-    { label: 'LV office address', key: 'officeaddress1' },
-    { label: 'LV office City', key: 'city' },
-    { label: 'LV office Zip', key: 'zipcode' },
-    { label: 'Current Division President', key: 'current_division_president' },
-    { label: 'Current Land Acquisitions', key: 'current_land_aquisitions' },
-    { label: 'Corporate Office Address ', key: 'coporate_officeaddress_1' }, 
-    { label: 'Corporate Office City', key: 'coporate_officeaddress_city' },
-    { label: 'Corporate Office State', key: 'coporate_office_state' },
-    { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
-    { label: 'Stock Market', key: 'stock_market' },
-    { label: 'Stock Symbol', key: 'stock_symbol' }, 
-    { label: 'Active Communities', key: 'active_communities' }, 
-    { label: 'Closing This Year', key: 'closing_this_year' },
-    { label: 'Permits This Year', key: 'permits_this_year' },
-    { label: 'Net Sales this year', key: 'net_sales_this_year' },
-    { label: 'Current Avg Base Price', key: 'current_avg_base_Price' },
-    { label: 'Median Closing Price This Year ', key: 'median_closing_price_this_year' },
-    { label: 'Median Closing Price Last Year', key: 'median_closing_price_last_year' },
-    { label: 'Avg Net Sales Per Month This Year ', key: 'avg_net_sales_per_month_this_year' },
-    { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
-    { label: 'Total Closings', key: 'total_closings' },
-    { label: 'Total Permits', key: 'total_permits' },
-    { label: 'Total Net Sales', key: 'total_net_sales' }, 
-    { label: 'Date Of First Closing', key: 'date_of_first_closing' },
-    { label: 'Date Of Latest Closing', key: 'date_of_latest_closing' }
+    { label: "Logo", key: "Logo" },
+    { label: "Website", key: "website" },
+    { label: "Builder Name", key: "name" },
+    { label: "Company Type", key: "companytype" },
+    { label: "LV office Phone", key: "phone" },
+    { label: "LV office Email", key: "email" },
+    { label: "LV office address", key: "officeaddress1" },
+    { label: "LV office City", key: "city" },
+    { label: "LV office Zip", key: "zipcode" },
+    { label: "Current Division President", key: "current_division_president" },
+    { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
+    { label: "Corporate Office Address ", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office City", key: "coporate_officeaddress_city" },
+    { label: "Corporate Office State", key: "coporate_office_state" },
+    { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
+    { label: "Stock Market", key: "stock_market" },
+    { label: "Stock Symbol", key: "stock_symbol" },
+    { label: "Active Communities", key: "active_communities" },
+    { label: "Closing This Year", key: "closing_this_year" },
+    { label: "Permits This Year", key: "permits_this_year" },
+    { label: "Net Sales this year", key: "net_sales_this_year" },
+    { label: "Current Avg Base Price", key: "current_avg_base_Price" },
+    {
+      label: "Median Closing Price This Year ",
+      key: "median_closing_price_this_year",
+    },
+    {
+      label: "Median Closing Price Last Year",
+      key: "median_closing_price_last_year",
+    },
+    {
+      label: "Avg Net Sales Per Month This Year ",
+      key: "avg_net_sales_per_month_this_year",
+    },
+    {
+      label: "Avg Closings Per Month This Year",
+      key: "avg_closings_per_month_this_year",
+    },
+    { label: "Total Closings", key: "total_closings" },
+    { label: "Total Permits", key: "total_permits" },
+    { label: "Total Net Sales", key: "total_net_sales" },
+    { label: "Date Of First Closing", key: "date_of_first_closing" },
+    { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
   const columns = [
-    { label: 'Logo', key: 'Logo' }, 
-    { label: 'Website', key: 'website' },
-    { label: 'Builder Name', key: 'name' },
-    { label: 'Company Type', key: 'companytype' },
-    { label: 'LV office Phone', key: 'phone' },
-    { label: 'LV office Email', key: 'email' },
-    { label: 'LV office address', key: 'officeaddress1' },
-    { label: 'LV office City', key: 'city' },
-    { label: 'LV office Zip', key: 'zipcode' },
-    { label: 'Current Division President', key: 'current_division_president' },
-    { label: 'Current Land Acquisitions', key: 'current_land_aquisitions' },
-    { label: 'Corporate Office Address 1', key: 'coporate_officeaddress_1' }, 
-    { label: 'Corporate Office City', key: 'coporate_officeaddress_city' },
-    { label: 'Corporate Office State', key: 'coporate_office_state' },
-    { label: 'Corporate Office Zip', key: 'coporate_officeaddress_zipcode' },
-    { label: 'Stock Market', key: 'stock_market' },
-    { label: 'Stock Symbol', key: 'stock_symbol' },
-    { label: 'Active Communities', key: 'active_communities' }, 
-    { label: 'Closing This Year', key: 'closing_this_year' },
-    { label: 'Permits This Year', key: 'permits_this_year' },
-    { label: 'Net Sales this year', key: 'net_sales_this_year' },
-    { label: 'Current Avg Base Price', key: 'current_avg_base_Price' },
-    { label: 'Median Closing Price This Year ', key: 'median_closing_price_this_year' },
-    { label: 'Median Closing Price Last Year', key: 'median_closing_price_last_year' },
-    { label: 'Avg Net Sales Per Month This Year ', key: 'avg_net_sales_per_month_this_year' },
-    { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
-    { label: 'Total Closings', key: 'total_closings' },
-    { label: 'Total Permits', key: 'total_permits' },
-    { label: 'Total Net Sales', key: 'total_net_sales' }, 
-    { label: 'Date Of First Closing', key: 'date_of_first_closing' },
-    { label: 'Date Of Latest Closing', key: 'date_of_latest_closing' } 
+    { label: "Logo", key: "Logo" },
+    { label: "Website", key: "website" },
+    { label: "Builder Name", key: "name" },
+    { label: "Company Type", key: "companytype" },
+    { label: "LV office Phone", key: "phone" },
+    { label: "LV office Email", key: "email" },
+    { label: "LV office address", key: "officeaddress1" },
+    { label: "LV office City", key: "city" },
+    { label: "LV office Zip", key: "zipcode" },
+    { label: "Current Division President", key: "current_division_president" },
+    { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
+    { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office City", key: "coporate_officeaddress_city" },
+    { label: "Corporate Office State", key: "coporate_office_state" },
+    { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
+    { label: "Stock Market", key: "stock_market" },
+    { label: "Stock Symbol", key: "stock_symbol" },
+    { label: "Active Communities", key: "active_communities" },
+    { label: "Closing This Year", key: "closing_this_year" },
+    { label: "Permits This Year", key: "permits_this_year" },
+    { label: "Net Sales this year", key: "net_sales_this_year" },
+    { label: "Current Avg Base Price", key: "current_avg_base_Price" },
+    {
+      label: "Median Closing Price This Year ",
+      key: "median_closing_price_this_year",
+    },
+    {
+      label: "Median Closing Price Last Year",
+      key: "median_closing_price_last_year",
+    },
+    {
+      label: "Avg Net Sales Per Month This Year ",
+      key: "avg_net_sales_per_month_this_year",
+    },
+    {
+      label: "Avg Closings Per Month This Year",
+      key: "avg_closings_per_month_this_year",
+    },
+    { label: "Total Closings", key: "total_closings" },
+    { label: "Total Permits", key: "total_permits" },
+    { label: "Total Net Sales", key: "total_net_sales" },
+    { label: "Date Of First Closing", key: "date_of_first_closing" },
+    { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
-
 
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log(updatedColumns);
-    setSelectedColumns(updatedColumns);  
-  };  
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
+  };
 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
+    setExportModelShow(false);
+    setSelectedColumns("");
     var tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = BuilderList.map((row) => 
-    newdata.map((nw, i) =>
-    [  
-        nw === "Logo" ? imageUrl+row.logo  : '',
-        nw === "Website" ?  row.website : '',
-        nw === "Builder Name" ?  row.name : '',
-        nw === "Company Type" ?  row.company_type : '',
-        nw === "LV office Phone" ?  row.phone : '',
-        nw === "LV office Email" ?  row.email : '',
-        nw === "LV office address" ?  row.officeaddress1 : '',
-        nw === "LV office City" ?  row.city : '',
-        nw === "LV office Zip code" ?  row.zipcode : '',
-        nw === "Current Division President" ?  row.current_division_president : '',
-        nw === "Current Land Acquisitions" ?  row.current_land_aquisitions : '',
-        nw === "Corporate Office Address" ?  row.coporate_officeaddress_1 : '', 
-        nw === "Corporate Office City" ?  row.coporate_officeaddress_city : '',
-        nw === "Corporate Office State" ?  row.coporate_officeaddress_2 : '',
-        nw === "Corporate Office Zip" ?  row.coporate_officeaddress_zipcode : '',
-        nw === "Stock Market" ?  row.stock_market : '',
-        nw === "Stock Symbol" ?  row.stock_symbol : '',
-        nw === 'Active Communities'?row.  active_communities : ' ', 
-        nw === 'Closing This Year'?row.closing_this_year:' ',
-        nw === 'Permits This Year'?row.permits_this_year:' ',
-        nw === 'Net Sales this year'?row.net_sales_this_year:' ',
-        nw ==='Current Avg Base Price'?row.current_avg_base_Price:' ',
-        nw === 'Median Closing Price This Year '?row.median_closing_price_this_year:' ',
-        nw === 'Median Closing Price Last Year'?row.median_closing_price_last_year:' ',
-        nw === 'Avg Net Sales Per Month This Year '?row.avg_net_sales_per_month_this_year:' ',
-        nw ==='Avg Closings Per Month This Year'?row.avg_closings_per_month_this_year:' ',
-        nw === 'Total Closings'?row.total_closings:' ',
-        nw === 'Total Permits'?row.total_permits:' ',
-        nw === 'Total Net Sales'?row.total_net_sales:' ', 
-        nw === 'Date Of First Closing'?row.date_of_first_closing:' ',
-        nw === 'Date Of Latest Closing'?row.date_of_latest_closing:' ',
-    ]
-    ),
-    
-  ) 
+    var newdata = tableHeaders.map((element) => {
+      return element;
+    });
+
+    const tableData = BuilderList.map((row) =>
+      newdata.map((nw, i) => [
+        nw === "Logo" ? imageUrl + row.logo : "",
+        nw === "Website" ? row.website : "",
+        nw === "Builder Name" ? row.name : "",
+        nw === "Company Type" ? row.company_type : "",
+        nw === "LV office Phone" ? row.phone : "",
+        nw === "LV office Email" ? row.email : "",
+        nw === "LV office address" ? row.officeaddress1 : "",
+        nw === "LV office City" ? row.city : "",
+        nw === "LV office Zip code" ? row.zipcode : "",
+        nw === "Current Division President"
+          ? row.current_division_president
+          : "",
+        nw === "Current Land Acquisitions" ? row.current_land_aquisitions : "",
+        nw === "Corporate Office Address" ? row.coporate_officeaddress_1 : "",
+        nw === "Corporate Office City" ? row.coporate_officeaddress_city : "",
+        nw === "Corporate Office State" ? row.coporate_officeaddress_2 : "",
+        nw === "Corporate Office Zip" ? row.coporate_officeaddress_zipcode : "",
+        nw === "Stock Market" ? row.stock_market : "",
+        nw === "Stock Symbol" ? row.stock_symbol : "",
+        nw === "Active Communities" ? row.active_communities : " ",
+        nw === "Closing This Year" ? row.closing_this_year : " ",
+        nw === "Permits This Year" ? row.permits_this_year : " ",
+        nw === "Net Sales this year" ? row.net_sales_this_year : " ",
+        nw === "Current Avg Base Price" ? row.current_avg_base_Price : " ",
+        nw === "Median Closing Price This Year "
+          ? row.median_closing_price_this_year
+          : " ",
+        nw === "Median Closing Price Last Year"
+          ? row.median_closing_price_last_year
+          : " ",
+        nw === "Avg Net Sales Per Month This Year "
+          ? row.avg_net_sales_per_month_this_year
+          : " ",
+        nw === "Avg Closings Per Month This Year"
+          ? row.avg_closings_per_month_this_year
+          : " ",
+        nw === "Total Closings" ? row.total_closings : " ",
+        nw === "Total Permits" ? row.total_permits : " ",
+        nw === "Total Net Sales" ? row.total_net_sales : " ",
+        nw === "Date Of First Closing" ? row.date_of_first_closing : " ",
+        nw === "Date Of Latest Closing" ? row.date_of_latest_closing : " ",
+      ])
+    );
     downloadExcel({
       fileName: "Builders",
       sheet: "Builders",
@@ -226,7 +260,6 @@ const BuilderTable = () => {
   const [data, setData] = useState([]); // Your data state
   const [sortConfig, setSortConfig] = useState([]); // Your sort configuration state
 
-
   const builder = useRef();
   const [value, setValue] = React.useState("1");
   const handleChange = (event, newValue) => {
@@ -236,7 +269,7 @@ const BuilderTable = () => {
     try {
       const response = await AdminBuilderService.index();
       const responseData = await response.json();
-      setTotalBuilderListCount(responseData.length)
+      setTotalBuilderListCount(responseData.length);
       console.log(responseData.length);
     } catch (error) {
       console.log(error);
@@ -255,21 +288,41 @@ const BuilderTable = () => {
   }, []);
 
   const stringifySortConfig = (sortConfig) => {
-    return sortConfig.map(sort => `${sort.key}:${sort.direction}`).join(',');
-};
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
 
-  const getbuilderlist = async () => {
+  const handleScroll = () => {
+    if (
+      window.innerHeight + window.scrollY >=
+        document.documentElement.offsetHeight &&
+      !loading &&
+      hasMore
+    ) {
+      window.removeEventListener("scroll", handleScroll);
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const getbuilderlist = async (pageNumber) => {
     try {
-      let sortConfigString ='';
+      let sortConfigString = "";
       if (sortConfig !== null) {
-         sortConfigString = '&sortConfig='+stringifySortConfig(sortConfig);
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      const response = await AdminBuilderService.index(searchQuery,sortConfigString);
+      const response = await AdminBuilderService.index(
+        pageNumber,
+        searchQuery,
+        sortConfigString
+      );
       const responseData = await response.json();
-      setBuilderList(responseData);
-      console.log(responseData.length);
-      setBuilderListCount(responseData.length);
+      setHasMore(responseData.data.length > 0);
+      setLoading(false);
+      console.log(pageNumber);
+      setBuilderList((prevData) => [...prevData, ...responseData.data]);
+      setBuilderListCount(responseData.data.length);
       setIsLoading(false);
+
+      window.addEventListener("scroll", handleScroll);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -278,13 +331,14 @@ const BuilderTable = () => {
       }
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist();
+      getbuilderlist(page);
     } else {
       navigate("/");
     }
-  }, []);
+  }, [page]);
 
   const getAccesslist = async () => {
     try {
@@ -379,7 +433,7 @@ const BuilderTable = () => {
       )
       .join("&");
 
-    return queryString ? `?${queryString}` : "";
+    return queryString ? `&${queryString}` : "";
   };
 
   const HandleCancelFilter = (e) => {
@@ -453,23 +507,22 @@ const BuilderTable = () => {
       }
       return updatedSortConfig;
     });
-    getbuilderlist()
-    setIsLoading(true);
   };
 
   useEffect(() => {
-    console.log(sortConfig); // Log updated sortConfig after each update
+    // Perform any relevant action when sortConfig changes
+    getbuilderlist();
+    setIsLoading(true);
+    console.log(sortConfig);
   }, [sortConfig]);
 
-
   const sortedData = () => {
-
     return BuilderList;
     // return [...BuilderList].sort((a, b) => {
     //   for (const config of sortConfig) {
     //     const aValue = a[config.key];
     //     const bValue = b[config.key];
-  
+
     //     if (config.direction === "desc") {
     //       if (aValue < bValue) return 1;
     //       if (aValue > bValue) return -1;
@@ -568,11 +621,11 @@ const BuilderTable = () => {
 
   return (
     <>
-      <MainPagetitle
+      {/* <MainPagetitle
         mainTitle="Builders"
         pageTitle="Builders"
         parentTitle="Home"
-      />
+      /> */}
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
@@ -1124,7 +1177,9 @@ const BuilderTable = () => {
                                 </strong>
                               </th>
                             )}
-                            {checkFieldExist("Median Closing Price This Year") && (
+                            {checkFieldExist(
+                              "Median Closing Price This Year"
+                            ) && (
                               <th
                                 onClick={() =>
                                   requestSort("median_closing_price_this_year")
@@ -1147,7 +1202,9 @@ const BuilderTable = () => {
                                 </strong>
                               </th>
                             )}
-                            {checkFieldExist("Median Closing Price Last Year") && (
+                            {checkFieldExist(
+                              "Median Closing Price Last Year"
+                            ) && (
                               <th
                                 onClick={() =>
                                   requestSort("median_closing_price_last_year")
@@ -1170,7 +1227,9 @@ const BuilderTable = () => {
                                 </strong>
                               </th>
                             )}
-                            {checkFieldExist("Avg Net Sales Per Month This Year") && (
+                            {checkFieldExist(
+                              "Avg Net Sales Per Month This Year"
+                            ) && (
                               <th
                                 onClick={() =>
                                   requestSort(
@@ -1195,7 +1254,9 @@ const BuilderTable = () => {
                                 </strong>
                               </th>
                             )}
-                            {checkFieldExist("Avg Closings Per Month This Year") && (
+                            {checkFieldExist(
+                              "Avg Closings Per Month This Year"
+                            ) && (
                               <th
                                 onClick={() =>
                                   requestSort(
@@ -1332,7 +1393,7 @@ const BuilderTable = () => {
                             sortedData().map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
+                                key={index} // Fallback key using index
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -1444,22 +1505,30 @@ const BuilderTable = () => {
                                 {checkFieldExist("Current Avg Base Price") && (
                                   <td>{element.current_avg_base_Price}</td>
                                 )}
-                                {checkFieldExist("Median Closing Price This Year") && (
+                                {checkFieldExist(
+                                  "Median Closing Price This Year"
+                                ) && (
                                   <td>
                                     {element.median_closing_price_this_year}
                                   </td>
                                 )}
-                                {checkFieldExist("Median Closing Price Last Year") && (
+                                {checkFieldExist(
+                                  "Median Closing Price Last Year"
+                                ) && (
                                   <td>
                                     {element.median_closing_price_last_year}
                                   </td>
                                 )}
-                                {checkFieldExist("Avg Net Sales Per Month This Year") && (
+                                {checkFieldExist(
+                                  "Avg Net Sales Per Month This Year"
+                                ) && (
                                   <td>
                                     {element.avg_net_sales_per_month_this_year}
                                   </td>
                                 )}
-                                {checkFieldExist("Avg Closings Per Month This Year") && (
+                                {checkFieldExist(
+                                  "Avg Closings Per Month This Year"
+                                ) && (
                                   <td>
                                     {element.avg_closings_per_month_this_year}
                                   </td>
@@ -1475,11 +1544,17 @@ const BuilderTable = () => {
                                 )}
                                 {checkFieldExist("Date Of First Closing") && (
                                   <td>
-                                  <DateComponent date={element.date_of_first_closing} />
-                                </td>
+                                    <DateComponent
+                                      date={element.date_of_first_closing}
+                                    />
+                                  </td>
                                 )}
                                 {checkFieldExist("Date Of Latest Closing") && (
-                                  <td><DateComponent date={element.date_of_latest_closing} /></td>
+                                  <td>
+                                    <DateComponent
+                                      date={element.date_of_latest_closing}
+                                    />
+                                  </td>
                                 )}
                                 <td>
                                   {SyestemUserRole === "Data Uploader" ||
@@ -1527,11 +1602,11 @@ const BuilderTable = () => {
                     )}
 
                     {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
-                    */}
-                      <div className="dataTables_info">
-                         Showing {BuilderListCount} of {TotalBuilderListCount} 
-                      </div>
-                        {/*
+                     */}
+                    <div className="dataTables_info">
+                      Showing {BuilderListCount} of {TotalBuilderListCount}
+                    </div>
+                    {/*
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
                         id="example2_paginate"
@@ -2028,19 +2103,25 @@ const BuilderTable = () => {
                               ? "Status"
                               : element.field_name === "stock_market"
                               ? "Stock Market"
-                              : element.field_name === "current_division_president"
+                              : element.field_name ===
+                                "current_division_president"
                               ? "Current Division President"
                               : element.field_name === "stock_symbol"
                               ? "Stock Symbol "
-                              : element.field_name === "current_land_aquisitions"
+                              : element.field_name ===
+                                "current_land_aquisitions"
                               ? "Current Land Acquisitions"
-                              : element.field_name === "coporate_officeaddress_1"
+                              : element.field_name ===
+                                "coporate_officeaddress_1"
                               ? "Corporate Office Address"
-                              : element.field_name === "coporate_officeaddress_2"
+                              : element.field_name ===
+                                "coporate_officeaddress_2"
                               ? "Corporate Office State"
-                              : element.field_name === "coporate_officeaddress_city"
+                              : element.field_name ===
+                                "coporate_officeaddress_city"
                               ? "Corporate Office City"
-                              : element.field_name === "coporate_officeaddress_zipcode"
+                              : element.field_name ===
+                                "coporate_officeaddress_zipcode"
                               ? "Corporate Office Zip"
                               : element.field_name === "officeaddress2"
                               ? "Address 2"
@@ -2063,33 +2144,39 @@ const BuilderTable = () => {
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => setExportModelShow(false)}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => setExportModelShow(false)}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-            {columns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+            <Row>
+              <ul className="list-unstyled">
+                {columns.map((col) => (
+                  <li key={col.label}>
+                    <label className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button
+              varient="primary"
+              class="btn btn-primary"
+              onClick={handleDownloadExcel}
+            >
+              Download
+            </button>
           </Modal.Footer>
         </>
       </Modal>
