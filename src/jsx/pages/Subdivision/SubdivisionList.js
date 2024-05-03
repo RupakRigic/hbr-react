@@ -27,20 +27,20 @@ const SubdivisionList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [BuilderList, setBuilderList] = useState(null);
+  const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
   const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
 
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
-  // console.log('BuilderList',BuilderList);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = BuilderList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(BuilderList.length / recordsPage);
-  // const number = [...Array(npage + 1).keys()].slice(1);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 10;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+
   const [filterQuery, setFilterQuery] = useState({
     status: "",
     product_type: "",
@@ -322,20 +322,20 @@ const SubdivisionList = () => {
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
-
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
   const subdivision = useRef();
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -343,33 +343,19 @@ const SubdivisionList = () => {
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
 
-  const getbuilderlist = async () => {
-    try {
-      const response = await AdminSubdevisionService.index(searchQuery);
-      const responseData = await response.json();
-      setBuilderList(responseData);
-      setIsLoading(false);
-      setBuilderListCount(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
 
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getbuilderlist();
-    } else {
-      navigate("/");
-    }
-  }, []);
-  const getbuilderCount = async () => {
+  const getbuilderlist = async (pageNumber) => {
     try {
-      const response = await AdminSubdevisionService.index();
+      const response = await AdminSubdevisionService.index(
+        pageNumber,
+        searchQuery,
+      );
       const responseData = await response.json();
-      setTotalBuilderListCount(responseData.length)
+      setLoading(false);
+      setIsLoading(false);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setBuilderList(responseData.data);
+      setBuilderListCount(responseData.total)
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -378,13 +364,16 @@ const SubdivisionList = () => {
       }
     }
   };
+  
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderCount();
+      getbuilderlist(currentPage);
     } else {
       navigate("/");
     }
-  }, []);
+  }, [currentPage]);
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminSubdevisionService.destroy(e).json();
@@ -423,7 +412,7 @@ const SubdivisionList = () => {
     try {
       const response = await AdminBuilderService.index();
       const responseData = await response.json();
-      setBuilderListDropDown(responseData);
+      setBuilderListDropDown(responseData.data);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -450,7 +439,7 @@ const SubdivisionList = () => {
   const HandleSearch = (e) => {
     setIsLoading(true);
     const query = e.target.value.trim();
-    debouncedHandleSearch(`?q=${query}`);
+    debouncedHandleSearch(`&q=${query}`);
   };
 
   useEffect(() => {
@@ -473,7 +462,7 @@ const SubdivisionList = () => {
       )
       .join("&");
 
-    return queryString ? `?${queryString}` : "";
+    return queryString ? `&${queryString}` : "";
   };
 
   const HandleCancelFilter = (e) => {
@@ -512,52 +501,7 @@ const SubdivisionList = () => {
     }
     setSortConfig({ key, direction });
   };
-  const sortedData = () => {
-    const sorted = [...BuilderList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-
-        // Convert string values to lowercase for case-insensitive sorting
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortConfig.key === "builderName" && a.builder && b.builder) {
-          aValue = String(a.builder.name).toLowerCase();
-          bValue = String(b.builder.name).toLowerCase();
-        }
-        if (sortConfig.key === "builderCode" && a.builder && b.builder) {
-          aValue = String(a.builder.builder_code).toLowerCase();
-          bValue = String(b.builder.name).toLowerCase();
-        }
-
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
-    }
-    return sorted;
-  };
 
   const exportToExcelData = async () => {
     try {
@@ -1546,8 +1490,8 @@ const SubdivisionList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {BuilderList !== null && BuilderList.length > 0 ? (
+                            BuilderList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
@@ -1733,16 +1677,10 @@ const SubdivisionList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="dataTables_info">
-                         Showing {BuilderListCount} of {TotalBuilderListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                 <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {BuilderList.length < lastIndex
-                          ? BuilderList.length
-                          : lastIndex}{" "}
-                        of {BuilderList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {BuilderListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -1756,18 +1694,48 @@ const SubdivisionList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1776,7 +1744,7 @@ const SubdivisionList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

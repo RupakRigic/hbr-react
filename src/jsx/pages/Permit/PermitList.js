@@ -14,7 +14,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 
 const PermitList = () => {
   const [show, setShow] = useState(false);
@@ -22,22 +22,21 @@ const PermitList = () => {
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [permitList, setPermitList] = useState([]);
-  const [permitListCount, setPermitListCount] = useState('');
-  const [TotalPermitListCount, setTotalPermitListCount] = useState('');
+  const [permitListCount, setPermitListCount] = useState("");
+  const [TotalPermitListCount, setTotalPermitListCount] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [exportmodelshow, setExportModelShow] = useState(false)
+  const [exportmodelshow, setExportModelShow] = useState(false);
 
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 15;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = permitList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(permitList.length / recordsPage);
-  // const number = [...Array(npage + 1).keys()].slice(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
 
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -71,133 +70,132 @@ const PermitList = () => {
   const fieldList = AccessField({ tableName: "permits" });
 
   useEffect(() => {
-    console.log('list field : ',fieldList); // You can now use fieldList in this component
+    console.log("list field : ", fieldList); // You can now use fieldList in this component
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
 
-    
   const headers = [
-    { label: 'Date', key: 'Date' },
-    { label: 'Builder Name', key: 'BuilderName' },
-    { label: 'Subdivision Name', key: 'SubdivisionName' },
-    { label: 'Address Number', key: 'AddressNumber' },
-    { label: 'Address Name', key: 'AddressName' },
-    { label: 'Parcel Number', key: 'ParcelNumber' },
-    { label: 'Contractor', key: 'Contractor' },
-    { label: 'Squre Footage', key: 'SqureFootage' },
-    { label: 'Owner', key: 'Owner' },
-    { label: 'Lot Number', key: 'LotNumber' },
-    { label: 'Permit Number', key: 'PermitNumber' },
-    { label: 'Plan', key: 'Plan' },
-    { label: 'Sub Legal Name', key: 'SubLegalName' },
-    { label: 'Value', key: 'Value' },
-    { label: 'Product Type', key: 'ProductType' },
-    { label: 'Area', key: 'Area' },
-    { label: 'Master Plan', key: 'MasterPlan' },
-    { label: 'Zip Code', key: 'ZipCode' },
-    { label: 'Lot Width', key: 'LotWidth' },
-    { label: 'Lot Size', key: 'LotSize' }, 
-    { label: 'Zoning', key: 'Zoning' },
-    { label: 'Age Restricted', key: 'AgeRestricted' },
-    { label: 'All Single Story', key: 'AllSingleStory' },
-    { label: 'Permit id', key: 'PermitID' },
-    { label: 'Fk sub id', key: 'fkSubID' }, 
-     
+    { label: "Date", key: "Date" },
+    { label: "Builder Name", key: "BuilderName" },
+    { label: "Subdivision Name", key: "SubdivisionName" },
+    { label: "Address Number", key: "AddressNumber" },
+    { label: "Address Name", key: "AddressName" },
+    { label: "Parcel Number", key: "ParcelNumber" },
+    { label: "Contractor", key: "Contractor" },
+    { label: "Squre Footage", key: "SqureFootage" },
+    { label: "Owner", key: "Owner" },
+    { label: "Lot Number", key: "LotNumber" },
+    { label: "Permit Number", key: "PermitNumber" },
+    { label: "Plan", key: "Plan" },
+    { label: "Sub Legal Name", key: "SubLegalName" },
+    { label: "Value", key: "Value" },
+    { label: "Product Type", key: "ProductType" },
+    { label: "Area", key: "Area" },
+    { label: "Master Plan", key: "MasterPlan" },
+    { label: "Zip Code", key: "ZipCode" },
+    { label: "Lot Width", key: "LotWidth" },
+    { label: "Lot Size", key: "LotSize" },
+    { label: "Zoning", key: "Zoning" },
+    { label: "Age Restricted", key: "AgeRestricted" },
+    { label: "All Single Story", key: "AllSingleStory" },
+    { label: "Permit id", key: "PermitID" },
+    { label: "Fk sub id", key: "fkSubID" },
   ];
   const columns = [
-    
-    { label: 'Date', key: 'Date' },
-    { label: 'Builder Name', key: 'BuilderName' },
-    { label: 'Subdivision Name', key: 'SubdivisionName' },
-    { label: 'Address Number', key: 'AddressNumber' },
-    { label: 'Address Name', key: 'AddressName' },
-    { label: 'Parcel Number', key: 'ParcelNumber' },
-    { label: 'Contractor', key: 'Contractor' },
-    { label: 'Squre Footage', key: 'SqureFootage' },
-    { label: 'Owner', key: 'Owner' },
-    { label: 'Lot Number', key: 'LotNumber' },
-    { label: 'Permit Number', key: 'PermitNumber' },
-    { label: 'Plan', key: 'Plan' },
-    { label: 'Sub Legal Name', key: 'SubLegalName' },
-    { label: 'Value', key: 'Value' },
-    { label: 'Product Type', key: 'ProductType' },
-    { label: 'Area', key: 'Area' },
-    { label: 'Master Plan', key: 'MasterPlan' },
-    { label: 'Zip Code', key: 'ZipCode' },
-    { label: 'Lot Width', key: 'LotWidth' },
-    { label: 'Lot Size', key: 'LotSize' },
-    { label: 'Zoning', key: 'Zoning' },
-    { label: 'Age Restricted', key: 'AgeRestricted' },
-    { label: 'All Single Story', key: 'AllSingleStory' },
-    { label: 'Permit id', key: 'PermitID' },
-    { label: 'Fk sub id', key: 'fkSubID' }, 
+    { label: "Date", key: "Date" },
+    { label: "Builder Name", key: "BuilderName" },
+    { label: "Subdivision Name", key: "SubdivisionName" },
+    { label: "Address Number", key: "AddressNumber" },
+    { label: "Address Name", key: "AddressName" },
+    { label: "Parcel Number", key: "ParcelNumber" },
+    { label: "Contractor", key: "Contractor" },
+    { label: "Squre Footage", key: "SqureFootage" },
+    { label: "Owner", key: "Owner" },
+    { label: "Lot Number", key: "LotNumber" },
+    { label: "Permit Number", key: "PermitNumber" },
+    { label: "Plan", key: "Plan" },
+    { label: "Sub Legal Name", key: "SubLegalName" },
+    { label: "Value", key: "Value" },
+    { label: "Product Type", key: "ProductType" },
+    { label: "Area", key: "Area" },
+    { label: "Master Plan", key: "MasterPlan" },
+    { label: "Zip Code", key: "ZipCode" },
+    { label: "Lot Width", key: "LotWidth" },
+    { label: "Lot Size", key: "LotSize" },
+    { label: "Zoning", key: "Zoning" },
+    { label: "Age Restricted", key: "AgeRestricted" },
+    { label: "All Single Story", key: "AllSingleStory" },
+    { label: "Permit id", key: "PermitID" },
+    { label: "Fk sub id", key: "fkSubID" },
   ];
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log(updatedColumns);
-    setSelectedColumns(updatedColumns);  
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
   };
-  console.log('permitList : ',permitList);
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
+    setExportModelShow(false);
+    setSelectedColumns("");
     var tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = permitList.map((row) => 
-    newdata.map((nw, i) =>
-    [ 
-        nw === "Date" ?  row.date : '',
-        nw === "Builder Name" ?  row.subdivision?.builder.name : '',
-        nw === "Subdivision Name" ?  row.subdivision?.name : '',
-        nw === "Address Number" ?  row.address1 : '',
-        nw === "Address Name" ?  row.address2 : '',
-        nw === "Parcel Number" ?  row.parcel : '',
-        nw === "Contractor" ?  row.contractor : '',
-        nw === "Squre Footage" ?  row.sqft : '',
-        nw === "Owner" ?  row.owner : '',
-        nw === "Lot Number" ?  row.lotnumber : '',
-        nw === "Permit Number" ?  row.permitnumber : '',
-        nw === "Plan" ?  row.plan : '',
-        nw === "Sub Legal Name" ?  row.subdivision?.name : '',
-        nw === "Value" ?  row.value : '',
-        nw === "Product Type" ?  row.subdivision?.product_type : '',
-        nw === "Area" ?  row.subdivision?.area : '',
-        nw === "Master Plan" ?  row.subdivision?.masterplan_id : '',
-        nw === "Zip Code" ?  row.subdivision?.zipcode : '',
-        nw === "Lot Width" ?  row.subdivision?.lotwidth : '',
-        nw === "Lot Size" ?  row.subdivision?.lotsize : '',
-        nw === "Zoning" ?  row.subdivision?.zoning : '', 
-        nw === "Age Restricted" ? (row.subdivision?.age === 1 && "Yes" || row.subdivision?.age === 0 && "No") : '', 
-        nw === "All Single Story" ? (row.subdivision?.single === 1 && "Yes" || row.subdivision?.single === 0 && "No") : '',  
-        nw === "Permit id" ?  row.permitnumber : '',
-        nw === "Fk sub id" ?  row.subdivision?.subdivision_code : '',     
-    ]
-    ),
-    
-  )
- 
- 
+    var newdata = tableHeaders.map((element) => {
+      return element;
+    });
+
+    const tableData = permitList.map((row) =>
+      newdata.map((nw, i) => [
+        nw === "Date" ? row.date : "",
+        nw === "Builder Name" ? row.subdivision?.builder.name : "",
+        nw === "Subdivision Name" ? row.subdivision?.name : "",
+        nw === "Address Number" ? row.address1 : "",
+        nw === "Address Name" ? row.address2 : "",
+        nw === "Parcel Number" ? row.parcel : "",
+        nw === "Contractor" ? row.contractor : "",
+        nw === "Squre Footage" ? row.sqft : "",
+        nw === "Owner" ? row.owner : "",
+        nw === "Lot Number" ? row.lotnumber : "",
+        nw === "Permit Number" ? row.permitnumber : "",
+        nw === "Plan" ? row.plan : "",
+        nw === "Sub Legal Name" ? row.subdivision?.name : "",
+        nw === "Value" ? row.value : "",
+        nw === "Product Type" ? row.subdivision?.product_type : "",
+        nw === "Area" ? row.subdivision?.area : "",
+        nw === "Master Plan" ? row.subdivision?.masterplan_id : "",
+        nw === "Zip Code" ? row.subdivision?.zipcode : "",
+        nw === "Lot Width" ? row.subdivision?.lotwidth : "",
+        nw === "Lot Size" ? row.subdivision?.lotsize : "",
+        nw === "Zoning" ? row.subdivision?.zoning : "",
+        nw === "Age Restricted"
+          ? (row.subdivision?.age === 1 && "Yes") ||
+            (row.subdivision?.age === 0 && "No")
+          : "",
+        nw === "All Single Story"
+          ? (row.subdivision?.single === 1 && "Yes") ||
+            (row.subdivision?.single === 0 && "No")
+          : "",
+        nw === "Permit id" ? row.permitnumber : "",
+        nw === "Fk sub id" ? row.subdivision?.subdivision_code : "",
+      ])
+    );
+
     downloadExcel({
       fileName: "Permit",
       sheet: "Permit",
       tablePayload: {
         header: tableHeaders,
-        body: tableData
+        body: tableData,
       },
     });
-
-  }
+  };
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -271,29 +269,32 @@ const PermitList = () => {
     }
   }, []);
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+    console.log(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const permit = useRef();
 
-  const getPermitList = async () => {
+  const getPermitList = async (currentPage) => {
     try {
-      const response = await AdminPermitService.index(searchQuery);
+      const response = await AdminPermitService.index(currentPage, searchQuery);
       const responseData = await response.json();
-      setPermitList(responseData);
+      setPermitList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      console.log(permitList);
       setIsLoading(false);
-      setPermitListCount(responseData.length)
+      setPermitListCount(responseData.total);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -302,8 +303,10 @@ const PermitList = () => {
     }
   };
   useEffect(() => {
-    getPermitList();
-  }, []);
+    console.log(currentPage);
+    getPermitList(currentPage);
+  }, [currentPage]);
+
   const getPermitListCount = async () => {
     try {
       const response = await AdminPermitService.index(searchQuery);
@@ -341,7 +344,7 @@ const PermitList = () => {
   };
   const handleUploadClick = async () => {
     const file = selectedFile;
-  
+
     if (file && file.type === "text/csv") {
       setLoading(true);
       const fileReader = new FileReader();
@@ -375,7 +378,7 @@ const PermitList = () => {
           }
         }
       };
-  
+
       setSelectedFileError("");
     } else {
       setSelectedFile("");
@@ -441,7 +444,7 @@ const PermitList = () => {
     setIsLoading(true);
     const query = e.target.value.trim();
 
-    debouncedHandleSearch(`?q=${query}`);
+    debouncedHandleSearch(`&=${query}`);
   };
 
   const requestSort = (key) => {
@@ -452,43 +455,43 @@ const PermitList = () => {
     setSortConfig({ key, direction });
   };
   const sortedData = () => {
-    const sorted = [...permitList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
+    return permitList;
+    // if (sortConfig.key !== "") {
+    //   sorted.sort((a, b) => {
+    //     let aValue = a[sortConfig.key];
+    //     let bValue = b[sortConfig.key];
 
-        if (sortConfig.key === "builderName") {
-          aValue =
-            (a.subdivision &&
-              a.subdivision.builder &&
-              a.subdivision.builder.name) ||
-            "";
-          bValue =
-            (b.subdivision &&
-              b.subdivision.builder &&
-              b.subdivision.builder.name) ||
-            "";
-        } else if (sortConfig.key === "subdivisionName") {
-          aValue = (a.subdivision && a.subdivision.name) || "";
-          bValue = (b.subdivision && b.subdivision.name) || "";
-        }
+    //     if (sortConfig.key === "builderName") {
+    //       aValue =
+    //         (a.subdivision &&
+    //           a.subdivision.builder &&
+    //           a.subdivision.builder.name) ||
+    //         "";
+    //       bValue =
+    //         (b.subdivision &&
+    //           b.subdivision.builder &&
+    //           b.subdivision.builder.name) ||
+    //         "";
+    //     } else if (sortConfig.key === "subdivisionName") {
+    //       aValue = (a.subdivision && a.subdivision.name) || "";
+    //       bValue = (b.subdivision && b.subdivision.name) || "";
+    //     }
 
-        aValue = typeof aValue === "string" ? aValue.toLowerCase() : aValue;
-        bValue = typeof bValue === "string" ? bValue.toLowerCase() : bValue;
+    //     aValue = typeof aValue === "string" ? aValue.toLowerCase() : aValue;
+    //     bValue = typeof bValue === "string" ? bValue.toLowerCase() : bValue;
 
-        // Sorting logic
-        if (aValue === bValue) return 0;
-        return sortConfig.direction === "asc"
-          ? aValue < bValue
-            ? -1
-            : 1
-          : aValue > bValue
-          ? -1
-          : 1;
-      });
-    }
-    return sorted;
+    //     // Sorting logic
+    //     if (aValue === bValue) return 0;
+    //     return sortConfig.direction === "asc"
+    //       ? aValue < bValue
+    //         ? -1
+    //         : 1
+    //       : aValue > bValue
+    //       ? -1
+    //       : 1;
+    //   });
+    // }
+    // return sorted;
   };
   const exportToExcelData = async () => {
     try {
@@ -561,7 +564,13 @@ const PermitList = () => {
                         {" "}
                         <i class="fas fa-file-excel"></i>
                       </button> */}
-                      <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      <button
+                        onClick={() => setExportModelShow(true)}
+                        className="btn btn-primary btn-sm me-1"
+                      >
+                        {" "}
+                        <i class="fas fa-file-excel"></i>
+                      </button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -574,7 +583,7 @@ const PermitList = () => {
                         className="btn-sm me-1"
                         variant="secondary"
                         onClick={handlBuilderClick}
-                      >                       
+                      >
                         Import
                       </Button>
 
@@ -666,7 +675,7 @@ const PermitList = () => {
                                 )}
                               </th>
                             )} */}
-                            
+
                             <th onClick={() => requestSort("address2")}>
                               <strong>Full Address</strong>
                               {sortConfig.key !== "address2" ? "↑↓" : ""}
@@ -676,7 +685,7 @@ const PermitList = () => {
                                 </span>
                               )}
                             </th>
-                           
+
                             {checkFieldExist("Parcel Number") && (
                               <th onClick={() => requestSort("address2")}>
                                 <strong>Parcel Number</strong>
@@ -922,8 +931,8 @@ const PermitList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {permitList != null && permitList.length > 0 ? (
+                            permitList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
@@ -950,7 +959,9 @@ const PermitList = () => {
                                       element.subdivision?.name}
                                   </td>
                                 )}
-                                  <td>{element.address2 +" "+ element.address1}</td>
+                                <td>
+                                  {element.address2 + " " + element.address1}
+                                </td>
                                 {/* {checkFieldExist("Address Number") && (
                                   <td>{element.address2}</td>
                                 )}
@@ -1109,16 +1120,10 @@ const PermitList = () => {
                         </tbody>
                       </table>
                     )}
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                         Showing {permitListCount} of {TotalPermitListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {permitList.length < lastIndex
-                          ? permitList.length
-                          : lastIndex}{" "}
-                        of {permitList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {permitListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -1132,18 +1137,48 @@ const PermitList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1152,7 +1187,7 @@ const PermitList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1411,33 +1446,39 @@ const PermitList = () => {
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => setExportModelShow(false)}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => setExportModelShow(false)}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-            {columns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+            <Row>
+              <ul className="list-unstyled">
+                {columns.map((col) => (
+                  <li key={col.label}>
+                    <label className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button
+              varient="primary"
+              class="btn btn-primary"
+              onClick={handleDownloadExcel}
+            >
+              Download
+            </button>
           </Modal.Footer>
         </>
       </Modal>

@@ -1,7 +1,7 @@
 import client from "../../client";
 import clientAuth from "../../clientAuth"
 export default {
-    index: (searchQuery = '') => clientAuth.get(`admin/subdivision/index${searchQuery}`),
+    index: (page=1,searchQuery = '') => clientAuth.get(`admin/subdivision/index?page=${page}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/subdivision/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/subdivision/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/subdivision/store`, { json: userData }),

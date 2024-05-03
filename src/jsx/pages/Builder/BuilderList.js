@@ -39,9 +39,12 @@ const BuilderTable = () => {
 
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState("");
-  const [TotalBuilderListCount, setTotalBuilderListCount] = useState("");
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
 
   const navigate = useNavigate();
   const SyestemUserRole = localStorage.getItem("user")
@@ -265,42 +268,9 @@ const BuilderTable = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const getbuilderCount = async () => {
-    try {
-      const response = await AdminBuilderService.index();
-      const responseData = await response.json();
-      setTotalBuilderListCount(responseData.length);
-      console.log(responseData.length);
-    } catch (error) {
-      console.log(error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getbuilderCount();
-    } else {
-      navigate("/");
-    }
-  }, []);
 
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
-  };
-
-  const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >=
-        document.documentElement.offsetHeight &&
-      !loading &&
-      hasMore
-    ) {
-      window.removeEventListener("scroll", handleScroll);
-      setPage((prevPage) => prevPage + 1);
-    }
   };
 
   const getbuilderlist = async (pageNumber) => {
@@ -315,14 +285,10 @@ const BuilderTable = () => {
         sortConfigString
       );
       const responseData = await response.json();
-      setHasMore(responseData.data.length > 0);
-      setLoading(false);
-      console.log(pageNumber);
-      setBuilderList((prevData) => [...prevData, ...responseData.data]);
-      setBuilderListCount(responseData.data.length);
-      setIsLoading(false);
-
-      window.addEventListener("scroll", handleScroll);
+      setBuilderList(responseData.data)
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setBuilderListCount(responseData.total);
+      setIsLoading(false);  
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -331,14 +297,30 @@ const BuilderTable = () => {
       }
     }
   };
+  
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist(page);
+      getbuilderlist(currentPage);
     } else {
       navigate("/");
     }
-  }, [page]);
+  }, [currentPage]);
+
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+    console.log(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const getAccesslist = async () => {
     try {
@@ -414,7 +396,7 @@ const BuilderTable = () => {
   const HandleSearch = (e) => {
     setIsLoading(true);
     const query = e.target.value.trim();
-    debouncedHandleSearch(`?q=${query}`);
+    debouncedHandleSearch(`&q=${query}`);
   };
 
   const HandleFilter = (e) => {
@@ -510,30 +492,12 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    // Perform any relevant action when sortConfig changes
     getbuilderlist();
     setIsLoading(true);
     console.log(sortConfig);
   }, [sortConfig]);
 
-  const sortedData = () => {
-    return BuilderList;
-    // return [...BuilderList].sort((a, b) => {
-    //   for (const config of sortConfig) {
-    //     const aValue = a[config.key];
-    //     const bValue = b[config.key];
 
-    //     if (config.direction === "desc") {
-    //       if (aValue < bValue) return 1;
-    //       if (aValue > bValue) return -1;
-    //     } else {
-    //       if (aValue < bValue) return -1;
-    //       if (aValue > bValue) return 1;
-    //     }
-    //   }
-    //   return 0;
-    // });
-  };
   const HandleRole = (e) => {
     setRole(e.target.value);
     setAccessRole(e.target.value);
@@ -767,846 +731,844 @@ const BuilderTable = () => {
                         <ClipLoader color="#4474fc" />
                       </div>
                     ) : (
-                      <table
-                        id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable"
-                      >
-                        <thead>
-                          <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <strong>No.</strong>
-                            </th>
-                            {checkFieldExist("logo") && (
+                        <table
+                          id="empoloyees-tblwrapper"
+                          className="table ItemsCheckboxSec dataTable"
+                        >
+                          <thead>
+                            <tr style={{ textAlign: "center" }}>
                               <th>
-                                <strong>Logo</strong>
+                                <strong>No.</strong>
                               </th>
-                            )}
-                            {checkFieldExist("website") && (
-                              <th onClick={() => requestSort("website")}>
-                                <strong>Website</strong>
-                                {sortConfig.key !== "website" ? "↑↓" : ""}
+                              {checkFieldExist("logo") && (
+                                <th>
+                                  <strong>Logo</strong>
+                                </th>
+                              )}
+                              {checkFieldExist("website") && (
+                                <th onClick={() => requestSort("website")}>
+                                  <strong>Website</strong>
+                                  {sortConfig.key !== "website" ? "↑↓" : ""}
 
-                                {sortConfig.key === "website" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("name") && (
-                              <th onClick={() => requestSort("name")}>
-                                <strong>Builder Name</strong>
-                                {sortConfig.key !== "name" ? "↑↓" : ""}
+                                  {sortConfig.key === "website" && (
+                                    <span>
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )}
+                                </th>
+                              )}
+                              {checkFieldExist("name") && (
+                                <th onClick={() => requestSort("name")}>
+                                  <strong>Builder Name</strong>
+                                  {sortConfig.key !== "name" ? "↑↓" : ""}
 
-                                {sortConfig.key === "name" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("company_type") && (
-                              <th onClick={() => requestSort("company_type")}>
-                                <strong>Company Type</strong>
-                                {sortConfig.key !== "company_type" ? "↑↓" : ""}
+                                  {sortConfig.key === "name" && (
+                                    <span>
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )}
+                                </th>
+                              )}
+                              {checkFieldExist("company_type") && (
+                                <th onClick={() => requestSort("company_type")}>
+                                  <strong>Company Type</strong>
+                                  {sortConfig.key !== "company_type" ? "↑↓" : ""}
 
-                                {sortConfig.key === "company_type" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("email") && (
-                              <th>
-                                <strong>Email</strong>
-                              </th>
-                            )}
-                            {checkFieldExist("phone") && (
-                              <th onClick={() => requestSort("phone")}>
-                                <strong>LV Office Phone</strong>
-                                {sortConfig.key !== "phone" ? "↑↓" : ""}
+                                  {sortConfig.key === "company_type" && (
+                                    <span>
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )}
+                                </th>
+                              )}
+                              {checkFieldExist("email") && (
+                                <th>
+                                  <strong>Email</strong>
+                                </th>
+                              )}
+                              {checkFieldExist("phone") && (
+                                <th onClick={() => requestSort("phone")}>
+                                  <strong>LV Office Phone</strong>
+                                  {sortConfig.key !== "phone" ? "↑↓" : ""}
 
-                                {sortConfig.key === "phone" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("officeaddress1") && (
-                              <th onClick={() => requestSort("officeaddress1")}>
-                                <strong>LV Office Address</strong>
-                                {sortConfig.key !== "officeaddress1"
-                                  ? "↑↓"
-                                  : ""}
+                                  {sortConfig.key === "phone" && (
+                                    <span>
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )}
+                                </th>
+                              )}
+                              {checkFieldExist("officeaddress1") && (
+                                <th onClick={() => requestSort("officeaddress1")}>
+                                  <strong>LV Office Address</strong>
+                                  {sortConfig.key !== "officeaddress1"
+                                    ? "↑↓"
+                                    : ""}
 
-                                {sortConfig.key === "officeaddress1" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("city") && (
-                              <th onClick={() => requestSort("city")}>
-                                <strong>
-                                  LV Office City
-                                  {sortConfig.key !== "city" ? "↑↓" : ""}
-                                  {sortConfig.key === "city" && (
+                                  {sortConfig.key === "officeaddress1" && (
                                     <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("zipcode") && (
-                              <th onClick={() => requestSort("zipcode")}>
-                                <strong>LV Office Zip</strong>
-                                {sortConfig.key !== "zipcode" ? "↑↓" : ""}
+                                </th>
+                              )}
+                              {checkFieldExist("city") && (
+                                <th onClick={() => requestSort("city")}>
+                                  <strong>
+                                    LV Office City
+                                    {sortConfig.key !== "city" ? "↑↓" : ""}
+                                    {sortConfig.key === "city" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("zipcode") && (
+                                <th onClick={() => requestSort("zipcode")}>
+                                  <strong>LV Office Zip</strong>
+                                  {sortConfig.key !== "zipcode" ? "↑↓" : ""}
 
-                                {sortConfig.key === "zipcode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("current_division_president") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("current_division_president")
-                                }
-                              >
-                                <strong>Current Division President</strong>
-                                {sortConfig.key !== "current_division_president"
-                                  ? "↑↓"
-                                  : ""}
+                                  {sortConfig.key === "zipcode" && (
+                                    <span>
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )}
+                                </th>
+                              )}
+                              {checkFieldExist("current_division_president") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("current_division_president")
+                                  }
+                                >
+                                  <strong>Current Division President</strong>
+                                  {sortConfig.key !== "current_division_president"
+                                    ? "↑↓"
+                                    : ""}
 
-                                {sortConfig.key ===
-                                  "current_division_president" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("current_land_aquisitions") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("current_land_aquisitions")
-                                }
-                              >
-                                <strong>
-                                  Current Land Acquisitions
-                                  {sortConfig.key !== "current_land_aquisitions"
-                                    ? "↑↓"
-                                    : ""}
                                   {sortConfig.key ===
-                                    "current_land_aquisitions" && (
+                                    "current_division_president" && (
                                     <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
+                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("coporate_officeaddress_1") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("coporate_officeaddress_1")
-                                }
-                              >
-                                <strong>
-                                  Corporate Office Address
-                                  {sortConfig.key !== "coporate_officeaddress_1"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "coporate_officeaddress_1" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("coporate_officeaddress_city") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("coporate_officeaddress_city")
-                                }
-                              >
-                                <strong>
-                                  Corporate Office City
-                                  {sortConfig.key !==
-                                  "coporate_officeaddress_city"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "coporate_officeaddress_city" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("coporate_officeaddress_2") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("coporate_officeaddress_2")
-                                }
-                              >
-                                <strong>
-                                  Corporate Office State
-                                  {sortConfig.key !== "coporate_officeaddress_2"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "coporate_officeaddress_2" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist(
-                              "coporate_officeaddress_zipcode"
-                            ) && (
-                              <th
-                                onClick={() =>
-                                  requestSort("coporate_officeaddress_zipcode")
-                                }
-                              >
-                                <strong>
-                                  Corporate Office Zip
-                                  {sortConfig.key !==
-                                  "coporate_officeaddress_zipcode"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "coporate_officeaddress_zipcode" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("stock_market") && (
-                              <th onClick={() => requestSort("stock_market")}>
-                                <strong>
-                                  Stock Market
-                                  {sortConfig.key !== "stock_market"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "stock_market" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("stock_symbol") && (
-                              <th onClick={() => requestSort("stock_symbol")}>
-                                <strong>
-                                  Stock Symbol
-                                  {sortConfig.key !== "stock_symbol"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "stock_symbol" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("icon") && (
-                              <th>
-                                <strong>Icon</strong>
-                              </th>
-                            )}
-                            {checkFieldExist("builder_code") && (
-                              <th onClick={() => requestSort("builder_code")}>
-                                <strong>
-                                  __pkBuilderID
-                                  {sortConfig.key !== "builder_code"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "builder_code" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("created_at") && (
-                              <th onClick={() => requestSort("created_at")}>
-                                <strong>
-                                  Date Added
-                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                  {sortConfig.key === "created_at" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Active Communities") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("active_communities")
-                                }
-                              >
-                                <strong>
-                                  Active Communities
-                                  {sortConfig.key !== "active_communities"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "active_communities" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Closing This Year") && (
-                              <th
-                                onClick={() => requestSort("closing_this_year")}
-                              >
-                                <strong>
-                                  Closing This Year
-                                  {sortConfig.key !== "closing_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "closing_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Permits This Year") && (
-                              <th
-                                onClick={() => requestSort("permits_this_year")}
-                              >
-                                <strong>
-                                  Permits This Year
-                                  {sortConfig.key !== "permits_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "permits_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Net Sales this year") && (
-                              <th onClick={() => requestSort("created_at")}>
-                                <strong>
-                                  Net Sales this year
-                                  {sortConfig.key !== "net_sales_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "net_sales_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Current Avg Base Price") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("current_avg_base_Price")
-                                }
-                              >
-                                <strong>
-                                  Current Avg Base Price
-                                  {sortConfig.key !== "current_avg_base_Price"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "current_avg_base_Price" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist(
-                              "Median Closing Price This Year"
-                            ) && (
-                              <th
-                                onClick={() =>
-                                  requestSort("median_closing_price_this_year")
-                                }
-                              >
-                                <strong>
-                                  Median Closing Price This Year
-                                  {sortConfig.key !==
-                                  "median_closing_price_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "median_closing_price_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist(
-                              "Median Closing Price Last Year"
-                            ) && (
-                              <th
-                                onClick={() =>
-                                  requestSort("median_closing_price_last_year")
-                                }
-                              >
-                                <strong>
-                                  Median Closing Price Last Year
-                                  {sortConfig.key !==
-                                  "median_closing_price_last_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "median_closing_price_last_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist(
-                              "Avg Net Sales Per Month This Year"
-                            ) && (
-                              <th
-                                onClick={() =>
-                                  requestSort(
+                                </th>
+                              )}
+                              {checkFieldExist("current_land_aquisitions") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("current_land_aquisitions")
+                                  }
+                                >
+                                  <strong>
+                                    Current Land Acquisitions
+                                    {sortConfig.key !== "current_land_aquisitions"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "current_land_aquisitions" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("coporate_officeaddress_1") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("coporate_officeaddress_1")
+                                  }
+                                >
+                                  <strong>
+                                    Corporate Office Address
+                                    {sortConfig.key !== "coporate_officeaddress_1"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "coporate_officeaddress_1" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("coporate_officeaddress_city") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("coporate_officeaddress_city")
+                                  }
+                                >
+                                  <strong>
+                                    Corporate Office City
+                                    {sortConfig.key !==
+                                    "coporate_officeaddress_city"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "coporate_officeaddress_city" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("coporate_officeaddress_2") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("coporate_officeaddress_2")
+                                  }
+                                >
+                                  <strong>
+                                    Corporate Office State
+                                    {sortConfig.key !== "coporate_officeaddress_2"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "coporate_officeaddress_2" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist(
+                                "coporate_officeaddress_zipcode"
+                              ) && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("coporate_officeaddress_zipcode")
+                                  }
+                                >
+                                  <strong>
+                                    Corporate Office Zip
+                                    {sortConfig.key !==
+                                    "coporate_officeaddress_zipcode"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "coporate_officeaddress_zipcode" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("stock_market") && (
+                                <th onClick={() => requestSort("stock_market")}>
+                                  <strong>
+                                    Stock Market
+                                    {sortConfig.key !== "stock_market"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "stock_market" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("stock_symbol") && (
+                                <th onClick={() => requestSort("stock_symbol")}>
+                                  <strong>
+                                    Stock Symbol
+                                    {sortConfig.key !== "stock_symbol"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "stock_symbol" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("icon") && (
+                                <th>
+                                  <strong>Icon</strong>
+                                </th>
+                              )}
+                              {checkFieldExist("builder_code") && (
+                                <th onClick={() => requestSort("builder_code")}>
+                                  <strong>
+                                    __pkBuilderID
+                                    {sortConfig.key !== "builder_code"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "builder_code" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("created_at") && (
+                                <th onClick={() => requestSort("created_at")}>
+                                  <strong>
+                                    Date Added
+                                    {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                    {sortConfig.key === "created_at" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Active Communities") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("active_communities")
+                                  }
+                                >
+                                  <strong>
+                                    Active Communities
+                                    {sortConfig.key !== "active_communities"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "active_communities" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Closing This Year") && (
+                                <th
+                                  onClick={() => requestSort("closing_this_year")}
+                                >
+                                  <strong>
+                                    Closing This Year
+                                    {sortConfig.key !== "closing_this_year"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "closing_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Permits This Year") && (
+                                <th
+                                  onClick={() => requestSort("permits_this_year")}
+                                >
+                                  <strong>
+                                    Permits This Year
+                                    {sortConfig.key !== "permits_this_year"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "permits_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Net Sales this year") && (
+                                <th onClick={() => requestSort("created_at")}>
+                                  <strong>
+                                    Net Sales this year
+                                    {sortConfig.key !== "net_sales_this_year"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "net_sales_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Current Avg Base Price") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("current_avg_base_Price")
+                                  }
+                                >
+                                  <strong>
+                                    Current Avg Base Price
+                                    {sortConfig.key !== "current_avg_base_Price"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "current_avg_base_Price" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist(
+                                "Median Closing Price This Year"
+                              ) && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("median_closing_price_this_year")
+                                  }
+                                >
+                                  <strong>
+                                    Median Closing Price This Year
+                                    {sortConfig.key !==
+                                    "median_closing_price_this_year"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "median_closing_price_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist(
+                                "Median Closing Price Last Year"
+                              ) && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("median_closing_price_last_year")
+                                  }
+                                >
+                                  <strong>
+                                    Median Closing Price Last Year
+                                    {sortConfig.key !==
+                                    "median_closing_price_last_year"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "median_closing_price_last_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist(
+                                "Avg Net Sales Per Month This Year"
+                              ) && (
+                                <th
+                                  onClick={() =>
+                                    requestSort(
+                                      "avg_net_sales_per_month_this_year"
+                                    )
+                                  }
+                                >
+                                  <strong>
+                                    Avg Net Sales Per Month This Year
+                                    {sortConfig.key !==
                                     "avg_net_sales_per_month_this_year"
-                                  )
-                                }
-                              >
-                                <strong>
-                                  Avg Net Sales Per Month This Year
-                                  {sortConfig.key !==
-                                  "avg_net_sales_per_month_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "avg_net_sales_per_month_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist(
-                              "Avg Closings Per Month This Year"
-                            ) && (
-                              <th
-                                onClick={() =>
-                                  requestSort(
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "avg_net_sales_per_month_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist(
+                                "Avg Closings Per Month This Year"
+                              ) && (
+                                <th
+                                  onClick={() =>
+                                    requestSort(
+                                      "avg_closings_per_month_this_year"
+                                    )
+                                  }
+                                >
+                                  <strong>
+                                    Avg Closings Per Month This Year
+                                    {sortConfig.key !==
                                     "avg_closings_per_month_this_year"
-                                  )
-                                }
-                              >
-                                <strong>
-                                  Avg Closings Per Month This Year
-                                  {sortConfig.key !==
-                                  "avg_closings_per_month_this_year"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "avg_closings_per_month_this_year" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "avg_closings_per_month_this_year" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}{" "}
+                              {checkFieldExist("Total Closings") && (
+                                <th onClick={() => requestSort("total_closings")}>
+                                  <strong>
+                                    Total Closings
+                                    {sortConfig.key !== "total_closings"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "total_closings" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}{" "}
+                              {checkFieldExist("Total Permits") && (
+                                <th onClick={() => requestSort("total_permits")}>
+                                  <strong>
+                                    Total Permits
+                                    {sortConfig.key !== "total_permits"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "total_permits" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}{" "}
+                              {checkFieldExist("Total Net Sales") && (
+                                <th
+                                  onClick={() => requestSort("total_net_sales")}
+                                >
+                                  <strong>
+                                    Total Net Sales
+                                    {sortConfig.key !== "total_net_sales"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key === "total_net_sales" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Date Of First Closing") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("date_of_first_closing")
+                                  }
+                                >
+                                  <strong>
+                                    Date Of First Closing
+                                    {sortConfig.key !== "date_of_first_closing"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "date_of_first_closing" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {checkFieldExist("Date Of First Closing") && (
+                                <th
+                                  onClick={() =>
+                                    requestSort("date_of_latest_closing")
+                                  }
+                                >
+                                  <strong>
+                                    Date Of Latest Closing
+                                    {sortConfig.key !== "date_of_latest_closing"
+                                      ? "↑↓"
+                                      : ""}
+                                    {sortConfig.key ===
+                                      "date_of_latest_closing" && (
+                                      <span>
+                                        {sortConfig.direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
+                                  </strong>
+                                </th>
+                              )}
+                              {SyestemUserRole === "Data Uploader" ||
+                              SyestemUserRole === "User" ? (
+                                ""
+                              ) : (
+                                <th>
+                                  <strong>Action</strong>
+                                </th>
+                              )}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {BuilderList !== null && BuilderList.length > 0 ? (
+                              BuilderList.map((element, index) => (
+                                <tr
+                                  onClick={() => handleRowClick(element.id)}
+                                  key={index} // Fallback key using index
+                                  style={{
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <td>{index + 1}</td>
+                                  {checkFieldExist("logo") && (
+                                    <td>
+                                      <div>
+                                        <img
+                                          src={
+                                            element.logo
+                                              ? imageUrl + element.logo
+                                              : ""
+                                          }
+                                          className="rounded-lg me-2"
+                                          width="70"
+                                          alt=""
+                                        />
+                                      </div>
+                                    </td>
                                   )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Total Closings") && (
-                              <th onClick={() => requestSort("total_closings")}>
-                                <strong>
-                                  Total Closings
-                                  {sortConfig.key !== "total_closings"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "total_closings" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {checkFieldExist("website") && (
+                                    <td>{element.website}</td>
                                   )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Total Permits") && (
-                              <th onClick={() => requestSort("total_permits")}>
-                                <strong>
-                                  Total Permits
-                                  {sortConfig.key !== "total_permits"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "total_permits" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {checkFieldExist("name") && (
+                                    <td>{element.name}</td>
                                   )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Total Net Sales") && (
-                              <th
-                                onClick={() => requestSort("total_net_sales")}
-                              >
-                                <strong>
-                                  Total Net Sales
-                                  {sortConfig.key !== "total_net_sales"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key === "total_net_sales" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {checkFieldExist("company_type") && (
+                                    <td>{element.company_type}</td>
                                   )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Date Of First Closing") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("date_of_first_closing")
-                                }
-                              >
-                                <strong>
-                                  Date Of First Closing
-                                  {sortConfig.key !== "date_of_first_closing"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "date_of_first_closing" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {checkFieldExist("phone") && (
+                                    <td>{element.phone}</td>
                                   )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Date Of First Closing") && (
-                              <th
-                                onClick={() =>
-                                  requestSort("date_of_latest_closing")
-                                }
-                              >
-                                <strong>
-                                  Date Of Latest Closing
-                                  {sortConfig.key !== "date_of_latest_closing"
-                                    ? "↑↓"
-                                    : ""}
-                                  {sortConfig.key ===
-                                    "date_of_latest_closing" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {checkFieldExist("email") && (
+                                    <td>{element.email}</td>
                                   )}
-                                </strong>
-                              </th>
-                            )}
-                            {SyestemUserRole === "Data Uploader" ||
-                            SyestemUserRole === "User" ? (
-                              ""
-                            ) : (
-                              <th>
-                                <strong>Action</strong>
-                              </th>
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
-                              <tr
-                                onClick={() => handleRowClick(element.id)}
-                                key={index} // Fallback key using index
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <td>{index + 1}</td>
-                                {checkFieldExist("logo") && (
-                                  <td>
-                                    <div>
-                                      <img
-                                        src={
-                                          element.logo
-                                            ? imageUrl + element.logo
-                                            : ""
-                                        }
-                                        className="rounded-lg me-2"
-                                        width="70"
-                                        alt=""
-                                      />
-                                    </div>
-                                  </td>
-                                )}
-                                {checkFieldExist("website") && (
-                                  <td>{element.website}</td>
-                                )}
-                                {checkFieldExist("name") && (
-                                  <td>{element.name}</td>
-                                )}
-                                {checkFieldExist("company_type") && (
-                                  <td>{element.company_type}</td>
-                                )}
-                                {checkFieldExist("phone") && (
-                                  <td>{element.phone}</td>
-                                )}
-                                {checkFieldExist("email") && (
-                                  <td>{element.email}</td>
-                                )}
-                                {checkFieldExist("officeaddress1") && (
-                                  <td>{element.officeaddress1}</td>
-                                )}
+                                  {checkFieldExist("officeaddress1") && (
+                                    <td>{element.officeaddress1}</td>
+                                  )}
 
-                                {checkFieldExist("city") && (
-                                  <td>{element.city}</td>
-                                )}
-                                {checkFieldExist("zipcode") && (
-                                  <td>{element.zipcode}</td>
-                                )}
-                                {checkFieldExist(
-                                  "current_division_president"
-                                ) && (
-                                  <td>{element.current_division_president}</td>
-                                )}
-                                {checkFieldExist(
-                                  "current_land_aquisitions"
-                                ) && (
-                                  <td>{element.current_land_aquisitions}</td>
-                                )}
-                                {checkFieldExist(
-                                  "coporate_officeaddress_1"
-                                ) && (
-                                  <td>{element.coporate_officeaddress_1}</td>
-                                )}
-                                {checkFieldExist(
-                                  "coporate_officeaddress_city"
-                                ) && (
-                                  <td>{element.coporate_officeaddress_city}</td>
-                                )}
-                                {checkFieldExist(
-                                  "coporate_officeaddress_2"
-                                ) && (
-                                  <td>{element.coporate_officeaddress_2}</td>
-                                )}
-                                {checkFieldExist(
-                                  "coporate_officeaddress_zipcode"
-                                ) && (
-                                  <td>
-                                    {element.coporate_officeaddress_zipcode}
-                                  </td>
-                                )}
-                                {checkFieldExist("stock_market") && (
-                                  <td>{element.stock_market}</td>
-                                )}
-                                {checkFieldExist("stock_symbol") && (
-                                  <td>{element.stock_symbol}</td>
-                                )}
-                                {checkFieldExist("icon") && (
-                                  <td>{element.icon}</td>
-                                )}
-                                {checkFieldExist("builder_code") && (
-                                  <td>{element.builder_code}</td>
-                                )}
-                                {checkFieldExist("created_at") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}
-                                {checkFieldExist("Active Communities") && (
-                                  <td>{element.active_communities}</td>
-                                )}
-                                {checkFieldExist("Closing This Year") && (
-                                  <td>{element.closing_this_year}</td>
-                                )}
-                                {checkFieldExist("Permits This Year") && (
-                                  <td>{element.permits_this_year}</td>
-                                )}
-                                {checkFieldExist("Net Sales this year") && (
-                                  <td>{element.net_sales_this_year}</td>
-                                )}
-                                {checkFieldExist("Current Avg Base Price") && (
-                                  <td>{element.current_avg_base_Price}</td>
-                                )}
-                                {checkFieldExist(
-                                  "Median Closing Price This Year"
-                                ) && (
-                                  <td>
-                                    {element.median_closing_price_this_year}
-                                  </td>
-                                )}
-                                {checkFieldExist(
-                                  "Median Closing Price Last Year"
-                                ) && (
-                                  <td>
-                                    {element.median_closing_price_last_year}
-                                  </td>
-                                )}
-                                {checkFieldExist(
-                                  "Avg Net Sales Per Month This Year"
-                                ) && (
-                                  <td>
-                                    {element.avg_net_sales_per_month_this_year}
-                                  </td>
-                                )}
-                                {checkFieldExist(
-                                  "Avg Closings Per Month This Year"
-                                ) && (
-                                  <td>
-                                    {element.avg_closings_per_month_this_year}
-                                  </td>
-                                )}
-                                {checkFieldExist("Total Closings") && (
-                                  <td>{element.total_closings}</td>
-                                )}
-                                {checkFieldExist("Total Permits") && (
-                                  <td>{element.total_permits}</td>
-                                )}
-                                {checkFieldExist("Total Net Sales") && (
-                                  <td>{element.total_net_sales}</td>
-                                )}
-                                {checkFieldExist("Date Of First Closing") && (
-                                  <td>
-                                    <DateComponent
-                                      date={element.date_of_first_closing}
-                                    />
-                                  </td>
-                                )}
-                                {checkFieldExist("Date Of Latest Closing") && (
-                                  <td>
-                                    <DateComponent
-                                      date={element.date_of_latest_closing}
-                                    />
-                                  </td>
-                                )}
-                                <td>
-                                  {SyestemUserRole === "Data Uploader" ||
-                                  SyestemUserRole === "User" ? (
-                                    ""
-                                  ) : (
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/builderUpdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
+                                  {checkFieldExist("city") && (
+                                    <td>{element.city}</td>
                                   )}
+                                  {checkFieldExist("zipcode") && (
+                                    <td>{element.zipcode}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "current_division_president"
+                                  ) && (
+                                    <td>{element.current_division_president}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "current_land_aquisitions"
+                                  ) && (
+                                    <td>{element.current_land_aquisitions}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "coporate_officeaddress_1"
+                                  ) && (
+                                    <td>{element.coporate_officeaddress_1}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "coporate_officeaddress_city"
+                                  ) && (
+                                    <td>{element.coporate_officeaddress_city}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "coporate_officeaddress_2"
+                                  ) && (
+                                    <td>{element.coporate_officeaddress_2}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "coporate_officeaddress_zipcode"
+                                  ) && (
+                                    <td>
+                                      {element.coporate_officeaddress_zipcode}
+                                    </td>
+                                  )}
+                                  {checkFieldExist("stock_market") && (
+                                    <td>{element.stock_market}</td>
+                                  )}
+                                  {checkFieldExist("stock_symbol") && (
+                                    <td>{element.stock_symbol}</td>
+                                  )}
+                                  {checkFieldExist("icon") && (
+                                    <td>{element.icon}</td>
+                                  )}
+                                  {checkFieldExist("builder_code") && (
+                                    <td>{element.builder_code}</td>
+                                  )}
+                                  {checkFieldExist("created_at") && (
+                                    <td>
+                                      <DateComponent date={element.created_at} />
+                                    </td>
+                                  )}
+                                  {checkFieldExist("Active Communities") && (
+                                    <td>{element.active_communities}</td>
+                                  )}
+                                  {checkFieldExist("Closing This Year") && (
+                                    <td>{element.closing_this_year}</td>
+                                  )}
+                                  {checkFieldExist("Permits This Year") && (
+                                    <td>{element.permits_this_year}</td>
+                                  )}
+                                  {checkFieldExist("Net Sales this year") && (
+                                    <td>{element.net_sales_this_year}</td>
+                                  )}
+                                  {checkFieldExist("Current Avg Base Price") && (
+                                    <td>{element.current_avg_base_Price}</td>
+                                  )}
+                                  {checkFieldExist(
+                                    "Median Closing Price This Year"
+                                  ) && (
+                                    <td>
+                                      {element.median_closing_price_this_year}
+                                    </td>
+                                  )}
+                                  {checkFieldExist(
+                                    "Median Closing Price Last Year"
+                                  ) && (
+                                    <td>
+                                      {element.median_closing_price_last_year}
+                                    </td>
+                                  )}
+                                  {checkFieldExist(
+                                    "Avg Net Sales Per Month This Year"
+                                  ) && (
+                                    <td>
+                                      {element.avg_net_sales_per_month_this_year}
+                                    </td>
+                                  )}
+                                  {checkFieldExist(
+                                    "Avg Closings Per Month This Year"
+                                  ) && (
+                                    <td>
+                                      {element.avg_closings_per_month_this_year}
+                                    </td>
+                                  )}
+                                  {checkFieldExist("Total Closings") && (
+                                    <td>{element.total_closings}</td>
+                                  )}
+                                  {checkFieldExist("Total Permits") && (
+                                    <td>{element.total_permits}</td>
+                                  )}
+                                  {checkFieldExist("Total Net Sales") && (
+                                    <td>{element.total_net_sales}</td>
+                                  )}
+                                  {checkFieldExist("Date Of First Closing") && (
+                                    <td>
+                                      <DateComponent
+                                        date={element.date_of_first_closing}
+                                      />
+                                    </td>
+                                  )}
+                                  {checkFieldExist("Date Of Latest Closing") && (
+                                    <td>
+                                      <DateComponent
+                                        date={element.date_of_latest_closing}
+                                      />
+                                    </td>
+                                  )}
+                                  <td>
+                                    {SyestemUserRole === "Data Uploader" ||
+                                    SyestemUserRole === "User" ? (
+                                      ""
+                                    ) : (
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/builderUpdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan="7" style={{ textAlign: "center" }}>
+                                  No data found
                                 </td>
                               </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
-                                No data found
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                            )}
+                          </tbody>
+                        </table>
                     )}
-
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
-                     */}
-                    <div className="dataTables_info">
-                      Showing {BuilderListCount} of {TotalBuilderListCount}
-                    </div>
-                    {/*
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {BuilderListCount} entries
+                      </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
                         id="example2_paginate"
@@ -1619,18 +1581,48 @@ const BuilderTable = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1638,7 +1630,8 @@ const BuilderTable = () => {
                         >
                           <i className="fa-solid fa-angle-right" />
                         </Link>
-                    </div> */}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

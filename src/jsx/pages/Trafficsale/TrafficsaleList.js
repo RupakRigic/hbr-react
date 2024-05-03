@@ -29,13 +29,12 @@ const TrafficsaleList = () => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = trafficsaleList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(trafficsaleList.length / recordsPage);
-  // const number = [...Array(npage + 1).keys()].slice(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [TrafficDetails, setTrafficDetails] = useState({
     subdivision: "",
@@ -253,30 +252,30 @@ const TrafficsaleList = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const trafficsale = useRef();
 
-  const gettrafficsaleList = async () => {
-    console.log(searchQuery);
+  const gettrafficsaleList = async (currentPage) => {
     try {
-      const response = await AdminTrafficsaleService.index(searchQuery);
+      const response = await AdminTrafficsaleService.index(currentPage,searchQuery);
       const responseData = await response.json();
-      setTrafficsaleList(responseData);
+      setTrafficsaleList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setTrafficListCount(responseData.total);
       setIsLoading(false);
-      setTrafficListCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -285,26 +284,10 @@ const TrafficsaleList = () => {
       }
     }
   };
-  useEffect(() => {
-    gettrafficsaleList();
-  }, []);
-  const gettrafficsaleListCount = async () => {
-    try {
-      const response = await AdminTrafficsaleService.index();
-      const responseData = await response.json();
-      setTotalTrafficListCount(responseData.length);
-      console.log(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
+  useEffect((currentPage) => {
+    gettrafficsaleList(currentPage);
+  }, [currentPage]);
 
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    gettrafficsaleListCount();
-  }, []);
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminTrafficsaleService.destroy(e).json();
@@ -499,7 +482,7 @@ const TrafficsaleList = () => {
     try {
       const response = await AdminSubdevisionService.index(searchQuery);
       const responseData = await response.json();
-      setBuilderList(responseData);
+      setBuilderList(responseData.data);
       setIsLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -1081,16 +1064,10 @@ const TrafficsaleList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="dataTables_info">
-                         Showing {trafficListCount} of {TotaltrafficListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {trafficsaleList.length < lastIndex
-                          ? trafficsaleList.length
-                          : lastIndex}{" "}
-                        of {trafficsaleList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {trafficListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -1104,18 +1081,48 @@ const TrafficsaleList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1124,7 +1131,7 @@ const TrafficsaleList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

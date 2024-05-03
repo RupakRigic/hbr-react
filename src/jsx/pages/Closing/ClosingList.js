@@ -21,17 +21,14 @@ const ClosingList = () => {
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
   const [closingListCount, setClosingListCount] = useState('');
-  const [TotalClosingListCount, setTotalClosingListCount] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
-
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = ClosingList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(ClosingList.length / recordsPage);
-  // const number = [...Array(npage + 1).keys()].slice(1);
   const [selectedFileError, setSelectedFileError] = useState("");
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -260,29 +257,31 @@ const ClosingList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const closingsale = useRef();
 
   const getClosingList = async () => {
     try {
-      const response = await AdminClosingService.index(searchQuery);
+      const response = await AdminClosingService.index(currentPage,searchQuery);
       const responseData = await response.json();
-      setClosingList(responseData);
-      setIsLoading(false);
-      setClosingListCount(responseData.length)
+      console.log(responseData.data);
+      setClosingList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setClosingListCount(responseData.total);
+      setIsLoading(false)
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -291,27 +290,15 @@ const ClosingList = () => {
       }
     }
   };
+
   useEffect(() => {
-    getClosingList();
-  }, []);
-
-  const getClosingListCount = async () => {
-    try {
-      const response = await AdminClosingService.index();
-      const responseData = await response.json();
-
-      setTotalClosingListCount(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
+    if (localStorage.getItem("usertoken")) {
+      getClosingList(currentPage);
+    } else {
+      navigate("/");
     }
-  };
-  useEffect(() => {
-    getClosingListCount();
-  }, []);
+  }, [currentPage]);
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminClosingService.destroy(e).json();
@@ -424,102 +411,7 @@ const ClosingList = () => {
     }
     setSortConfig({ key, direction });
   };
-  const sortedData = () => {
-    const sorted = [...ClosingList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
-        if (
-          sortConfig.key === "builderName" &&
-          a.subdivision.builder.name &&
-          b.subdivision.builder.name
-        ) {
-          aValue = String(a.subdivision.builder.name).toLowerCase();
-          bValue = String(b.subdivision.builder.name).toLowerCase();
-        }
-
-        if (
-          sortConfig.key === "subdivisionName" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.name).toLowerCase();
-          bValue = String(b.subdivision.name).toLowerCase();
-        }
-        if (
-          sortConfig.key === "productType" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.product_type).toLowerCase();
-          bValue = String(b.subdivision.product_type).toLowerCase();
-        }
-        if (sortConfig.key === "area" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.area).toLowerCase();
-          bValue = String(b.subdivision.area).toLowerCase();
-        }
-        if (sortConfig.key === "masterPlan" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.masterplan_id).toLowerCase();
-          bValue = String(b.subdivision.masterplan_id).toLowerCase();
-        }
-        if (sortConfig.key === "zipCode" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.zipcode).toLowerCase();
-          bValue = String(b.subdivision.zipcode).toLowerCase();
-        }
-        if (sortConfig.key === "lotWidth" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.lotwidth).toLowerCase();
-          bValue = String(b.subdivision.lotwidth).toLowerCase();
-        }
-        if (sortConfig.key === "lotsize" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.lotsize).toLowerCase();
-          bValue = String(b.subdivision.lotsize).toLowerCase();
-        }
-        if (sortConfig.key === "zoning" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.zoning).toLowerCase();
-          bValue = String(b.subdivision.zoning).toLowerCase();
-        }
-        if (sortConfig.key === "age" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.age).toLowerCase();
-          bValue = String(b.subdivision.age).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionCode" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.subdivision_code).toLowerCase();
-          bValue = String(b.subdivision.subdivision_code).toLowerCase();
-        }
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
-    }
-    return sorted;
-  };
 
   const exportToExcelData = async () => {
     try {
@@ -940,8 +832,8 @@ const ClosingList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {ClosingList !== null && ClosingList.length > 0 ? (
+                            ClosingList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
@@ -1095,16 +987,10 @@ const ClosingList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="dataTables_info">
-                         Showing {closingListCount} of {TotalClosingListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {ClosingList.length < lastIndex
-                          ? ClosingList.length
-                          : lastIndex}{" "}
-                        of {ClosingList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {closingListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -1118,18 +1004,48 @@ const ClosingList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1138,7 +1054,7 @@ const ClosingList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

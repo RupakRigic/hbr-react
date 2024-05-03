@@ -20,26 +20,13 @@ const File = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = productList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(productList.length / recordsPage)
-  // const number = [...Array(npage + 1).keys()].slice(1)
-  // function prePage() {
-  //     if (currentPage !== 1) {
-  //         setCurrentPage(currentPage - 1)
-  //     }
-  // }
-  // function changeCPage(id) {
-  //     setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //     if (currentPage !== npage) {
-  //         setCurrentPage(currentPage + 1)
-  //     }
-  // }
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -137,9 +124,12 @@ const File = () => {
     try {
       const response = await AdminCSVFileService.index(searchQuery);
       const responseData = await response.json();
-      setProductList(responseData);
+      
+      setProductList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setFileListCount(responseData.total);
       setIsLoading(false);
-      setFileListCount(responseData.length);
+
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -148,33 +138,28 @@ const File = () => {
       }
     }
   };
-  useEffect(() => {
+  useEffect((currentPage) => {
     if (localStorage.getItem("usertoken")) {
-      getproductList();
+      getproductList(currentPage);
     } else {
       navigate("/");
     }
-  }, []);
-  const getproductListCount = async () => {
-    try {
-      const response = await AdminCSVFileService.index();
-      const responseData = await response.json();
-      setTotalFileListCount(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
+  }, [currentPage]);
 
-        setError(errorJson.message);
-      }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
     }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getproductListCount();
-    } else {
-      navigate("/");
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
     }
-  }, []);
+  }
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminCSVFileService.destroy(e).json();
@@ -422,16 +407,10 @@ const File = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="dataTables_info">
-                         Showing {fileListCount} of {TotalFileListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {productList.length < lastIndex
-                          ? productList.length
-                          : lastIndex}{" "}
-                        of {productList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {fileListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -445,18 +424,48 @@ const File = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -465,7 +474,7 @@ const File = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

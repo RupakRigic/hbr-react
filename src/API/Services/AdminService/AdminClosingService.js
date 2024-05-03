@@ -1,7 +1,7 @@
 
 import clientAuth from "../../clientAuth"
 export default {
-    index: (searchQuery='') => clientAuth.get(`admin/closing/index${searchQuery}`),
+    index: (page=1,searchQuery='') => clientAuth.get(`admin/closing/index?page=${page}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/closing/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/closing/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/closing/store`, { json: userData }),

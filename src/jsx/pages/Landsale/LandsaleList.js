@@ -17,6 +17,7 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import TrafficsaleList from "../Trafficsale/TrafficsaleList";
 
 const LandsaleList = () => {
   const [show, setShow] = useState(false);
@@ -30,12 +31,13 @@ const LandsaleList = () => {
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = LandsaleList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(LandsaleList.length / recordsPage);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
@@ -227,29 +229,31 @@ const LandsaleList = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const landsale = useRef();
 
-  const getLandsaleList = async () => {
+  const getLandsaleList = async (currentPage) => {
     try {
-      const response = await AdminLandsaleService.index(searchQuery);
+      const response = await AdminLandsaleService.index(currentPage,searchQuery);
       const responseData = await response.json();
-      setLandsaleList(responseData);
-      setlandSaleListCount(responseData.length);
-      setIsLoading(false);
+      setLandsaleList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setlandSaleListCount(responseData.total);
+      setIsLoading(false)
+
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -260,11 +264,11 @@ const LandsaleList = () => {
   };
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getLandsaleList();
+      getLandsaleList(currentPage);
     } else {
       navigate("/");
     }
-  }, []);
+  }, [currentPage]);
 
   const getLandsaleListCount = async () => {
     try {
@@ -826,16 +830,10 @@ const handlBuilderClick = (e) => {
                         </tbody>
                       </table>
                     )}
+           <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                         Showing {landSaleListCount} of {TotalLandsaleListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {LandsaleList.length < lastIndex
-                          ? LandsaleList.length
-                          : lastIndex}{" "}
-                        of {LandsaleList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {TrafficsaleList} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -849,18 +847,48 @@ const handlBuilderClick = (e) => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -869,7 +897,7 @@ const handlBuilderClick = (e) => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

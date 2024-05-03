@@ -25,7 +25,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     try {
       const response = await AdminSubdevisionService.index();
       const responseData = await response.json();
-      SetSubdivisionList(responseData);
+      SetSubdivisionList(responseData.data);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();

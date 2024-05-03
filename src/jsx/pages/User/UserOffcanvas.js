@@ -41,7 +41,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
             let response = await AdminBuilderService.index()
             let responseData = await response.json()
 
-            setBuilderList(responseData)
+            setBuilderList(responseData.data)
 
         } catch (error) {
             if (error.name === 'HTTPError') {

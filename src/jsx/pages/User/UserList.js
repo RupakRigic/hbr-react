@@ -20,13 +20,13 @@ const UserList = () => {
   const [userListCount, setUserCount] = useState('');
   const [TotaluserListCount, setTotalUserCount] = useState('');
 
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const recordsPage = 20;
-  // const lastIndex = currentPage * recordsPage;
-  // const firstIndex = lastIndex - recordsPage;
-  // const records = userList.slice(firstIndex, lastIndex);
-  // const npage = Math.ceil(userList.length / recordsPage);
-  // const number = [...Array(npage + 1).keys()].slice(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [UserDetails, setUserDetails] = useState({
     builder: "",
@@ -132,48 +132,30 @@ const UserList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const product = useRef();
   const getuserList = async () => {
     try {
-      const response = await AdminUserRoleService.index(searchQuery);
+      const response = await AdminUserRoleService.index(currentPage,searchQuery);
       const responseData = await response.json();
-      setUserList(responseData);
+      setUserList(responseData.data);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setUserCount(responseData.total);
       setIsLoading(false);
-      setUserCount(responseData.length)
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getuserList();
-    } else {
-      navigate("/");
-    }
-  }, []);
 
-  const getuserListCount = async () => {
-    try {
-      const response = await AdminUserRoleService.index();
-      const responseData = await response.json();
-      setTotalUserCount(responseData.length);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -181,13 +163,14 @@ const UserList = () => {
       }
     }
   };
-  useEffect(() => {
+  useEffect((currentPage) => {
     if (localStorage.getItem("usertoken")) {
-      getuserListCount();
+      getuserList(currentPage);
     } else {
       navigate("/");
     }
-  }, []);
+  }, [currentPage]);
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminUserRoleService.destroy(e).json();
@@ -576,16 +559,10 @@ const UserList = () => {
                         </tbody>
                       </table>
                     )}
-                            <div className="dataTables_info">
-                         Showing {userListCount} of {TotaluserListCount} 
-                      </div>
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {userList.length < lastIndex
-                          ? userList.length
-                          : lastIndex}{" "}
-                        of {userList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {userListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -599,18 +576,48 @@ const UserList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -619,7 +626,7 @@ const UserList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

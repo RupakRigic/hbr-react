@@ -26,7 +26,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
 
             const response = await AdminSubdevisionService.index()
             const responseData = await response.json()
-            SetSubdivisionList(responseData)
+            SetSubdivisionList(responseData.data)
 
         } catch (error) {
             if (error.name === 'HTTPError') {

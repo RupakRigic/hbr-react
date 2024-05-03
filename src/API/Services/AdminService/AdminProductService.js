@@ -1,7 +1,7 @@
 import client from "../../client";
 import clientAuth from "../../clientAuth"
 export default {
-    index: (searchQuery = '') => clientAuth.get(`admin/product/index${searchQuery}`),
+    index: (page=1,searchQuery = '') => clientAuth.get(`admin/product/index?page=${page}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/product/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/product/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/product/store`, { json: userData }),
