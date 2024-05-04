@@ -476,19 +476,18 @@ const BuilderTable = () => {
     }
   };
   const requestSort = (key) => {
-    setSortConfig((prevSortConfig) => {
-      const index = prevSortConfig.findIndex((item) => item.key === key);
-      let updatedSortConfig = [...prevSortConfig];
-      if (index !== -1) {
-        updatedSortConfig[index] = {
-          key,
-          direction: prevSortConfig[index].direction === "asc" ? "desc" : "asc",
-        };
-      } else {
-        updatedSortConfig.push({ key, direction: "asc" });
-      }
-      return updatedSortConfig;
-    });
+    let direction = "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
+    }
+    setSortConfig(newSortConfig);
+    getbuilderlist(currentPage, sortConfig);
   };
 
   useEffect(() => {

@@ -342,6 +342,7 @@ const SubdivisionList = () => {
   const [selectedFileError, setSelectedFileError] = useState("");
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
+  console.log(BuilderList);
 
 
   const getbuilderlist = async (pageNumber) => {

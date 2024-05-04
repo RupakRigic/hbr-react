@@ -18,7 +18,7 @@ const File = () => {
   const [TotalFileListCount, setTotalFileListCount] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -35,7 +35,8 @@ const File = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "csv" });
-
+  const [data, setData] = useState(productList);
+  
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -119,10 +120,19 @@ const File = () => {
   }, []);
 
   const File = useRef();
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
 
-  const getproductList = async () => {
+  const getproductList = async (currentPage) => {
     try {
-      const response = await AdminCSVFileService.index(searchQuery);
+
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+
+      const response = await AdminCSVFileService.index(currentPage,sortConfigString,searchQuery);
       const responseData = await response.json();
       
       setProductList(responseData.data);
@@ -131,6 +141,7 @@ const File = () => {
       setIsLoading(false);
 
     } catch (error) {
+      console.log(error)
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
 
@@ -197,63 +208,35 @@ const File = () => {
   };
 
   const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    let direction = 'asc';
+    
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === 'asc' ? 'desc' : 'asc';
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getproductList(currentPage,sortConfig);
   };
-  const sortedData = () => {
-    const sorted = [...productList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
+  // const sortedData = () => {
+  //   let sorted = [...productList];
+  //   if (sortConfig.length > 0) {
+  //     sorted = sorted.sort((a, b) => {
+  //       for (const { key, direction } of sortConfig) {
+  //         if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+  //         if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+  //       }
+  //       return 0;
+  //     });
+  //   }
+  //   return sorted;
+  // };
+  
 
-        if (
-          sortConfig.key === "builderName" &&
-          a.subdivision.builder &&
-          b.subdivision.builder
-        ) {
-          aValue = String(a.subdivision.builder.name).toLowerCase();
-          bValue = String(b.subdivision.builder.name).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionName" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.name).toLowerCase();
-          bValue = String(b.subdivision.name).toLowerCase();
-        }
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
-    }
-    return sorted;
-  };
 
   return (
     <>
@@ -338,6 +321,34 @@ const File = () => {
                                 </strong>
                               </th>
                             )}{" "}
+                            {/* {checkFieldExist("Title") && ( */}
+                              <th onClick={() => requestSort("created_at")}>
+                                <strong>
+                                created_at
+                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
+                                  {sortConfig.key === "created_at" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                              <th onClick={() => requestSort("csv")}>
+                                <strong>
+                                csv
+                                  {sortConfig.key !== "csv" ? "↑↓" : ""}
+                                  {sortConfig.key === "csv" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            {/* )}{" "} */}
                             {checkFieldExist("Download") && (
                               <th>
                                 <strong>Download</strong>
@@ -351,13 +362,15 @@ const File = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {productList !== null && productList.length > 0 ? (
+                            productList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
                                 <td>{index + 1}</td>
                                 {checkFieldExist("Title") && (
                                   <td>{element.name}</td>
                                 )}
+                                <td>{element.created_at}</td>
+                                <td>{element.csv}</td>
                                 {checkFieldExist("Download") && (
                                   <td>
                                     <a

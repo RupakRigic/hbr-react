@@ -16,7 +16,7 @@ import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import TrafficsaleList from "../Trafficsale/TrafficsaleList";
 
 const LandsaleList = () => {
@@ -25,12 +25,12 @@ const LandsaleList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [LandsaleList, setLandsaleList] = useState([]);
-  const [landSaleListCount, setlandSaleListCount] = useState('');
-  const [TotalLandsaleListCount, setTotallandSaleListCount] = useState('');
+  const [landSaleListCount, setlandSaleListCount] = useState("");
+  const [TotalLandsaleListCount, setTotallandSaleListCount] = useState("");
 
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [exportmodelshow, setExportModelShow] = useState(false)
-  
+  const [exportmodelshow, setExportModelShow] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -47,7 +47,7 @@ const LandsaleList = () => {
   const [SubdivisionCode, setSubdivisionCode] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // const number = [...Array(npage + 1).keys()].slice(1);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [landSaleDetails, setLandSaleDetails] = useState({
     seller: "",
@@ -85,73 +85,67 @@ const LandsaleList = () => {
     return fieldList.includes(fieldName.trim());
   };
 
-  
-  
   const headers = [
-    { label: 'Builder Name', key: 'Builder_Name' },
-    { label: 'Subdivision Name', key: 'Subdivision_Name' },
-    { label: 'Seller', key: 'Seller' },
-    { label: 'Buyer', key: 'Buyer' },
-    { label: 'Location', key: 'Location' },
-    { label: 'Notes', key: 'Notes' },   
-    { label: 'Price', key: 'Price' }, 
-     
+    { label: "Builder Name", key: "Builder_Name" },
+    { label: "Subdivision Name", key: "Subdivision_Name" },
+    { label: "Seller", key: "Seller" },
+    { label: "Buyer", key: "Buyer" },
+    { label: "Location", key: "Location" },
+    { label: "Notes", key: "Notes" },
+    { label: "Price", key: "Price" },
   ];
   const columns = [
-    { label: 'Builder Name', key: 'Builder_Name' },
-    { label: 'Subdivision Name', key: 'Subdivision_Name' },
-    { label: 'Seller', key: 'Seller' },
-    { label: 'Buyer', key: 'Buyer' },
-    { label: 'Location', key: 'Location' },
-    { label: 'Notes', key: 'Notes' },   
-    { label: 'Price', key: 'Price' },  
+    { label: "Builder Name", key: "Builder_Name" },
+    { label: "Subdivision Name", key: "Subdivision_Name" },
+    { label: "Seller", key: "Seller" },
+    { label: "Buyer", key: "Buyer" },
+    { label: "Location", key: "Location" },
+    { label: "Notes", key: "Notes" },
+    { label: "Price", key: "Price" },
   ];
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log('load upadate:  ',updatedColumns);
-    setSelectedColumns(updatedColumns);  
-  };  
+    console.log("load upadate:  ", updatedColumns);
+    setSelectedColumns(updatedColumns);
+  };
 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    console.log('click dataa D : ',selectedColumns);
+    setExportModelShow(false);
+    setSelectedColumns("");
+    console.log("click dataa D : ", selectedColumns);
     var tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = LandsaleList.map((row) => 
-    newdata.map((nw, i) =>
-    [  
-      nw === "Builder Name" ? row.subdivision?.builder?.name  : '', 
-      nw === "Subdivision Name" ? row.subdivision?.name  : '', 
-      nw === "Seller" ? row.seller  : '', 
-      nw === "Buyer" ? row.buyer  : '', 
-      nw === "Location" ? row.location  : '', 
-      nw === "Notes" ? row.notes  : '', 
-      nw === "Price" ? row.price+'/'+row.typeofunit  : '',  
-    ]
-    ),
-    
-  ) 
-   
+    var newdata = tableHeaders.map((element) => {
+      return element;
+    });
+
+    const tableData = LandsaleList.map((row) =>
+      newdata.map((nw, i) => [
+        nw === "Builder Name" ? row.subdivision?.builder?.name : "",
+        nw === "Subdivision Name" ? row.subdivision?.name : "",
+        nw === "Seller" ? row.seller : "",
+        nw === "Buyer" ? row.buyer : "",
+        nw === "Location" ? row.location : "",
+        nw === "Notes" ? row.notes : "",
+        nw === "Price" ? row.price + "/" + row.typeofunit : "",
+      ])
+    );
+
     downloadExcel({
       fileName: "Land sales",
       sheet: "Land sales",
       tablePayload: {
         header: tableHeaders,
-        body: tableData
+        body: tableData,
       },
     });
-
-  }
-
+  };
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -244,16 +238,27 @@ const LandsaleList = () => {
   }
 
   const landsale = useRef();
-
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getLandsaleList = async (currentPage) => {
     try {
-      const response = await AdminLandsaleService.index(currentPage,searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      console.log(sortConfigString);
+      const response = await AdminLandsaleService.index(
+        currentPage,
+        sortConfigString,
+        searchQuery
+      );
       const responseData = await response.json();
       setLandsaleList(responseData.data);
+      console.log(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
-      setIsLoading(false)
-
+      setIsLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -304,7 +309,6 @@ const LandsaleList = () => {
     }
   };
   const handleCallback = () => {
-    // Update the name in the component's state
     getLandsaleList();
   };
 
@@ -396,140 +400,101 @@ const LandsaleList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
-    }
-    setSortConfig({ key, direction });
-  };
-  const sortedData = () => {
-    const sorted = [...LandsaleList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
-
-        if (
-          sortConfig.key === "builderName" &&
-          a.subdivision.builder &&
-          b.subdivision.builder
-        ) {
-          aValue = String(a.subdivision.builder.name).toLowerCase();
-          bValue = String(b.subdivision.builder.name).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionName" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.name).toLowerCase();
-          bValue = String(b.subdivision.name).toLowerCase();
-        }
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    return sorted;
+    setSortConfig(newSortConfig);
+    getLandsaleList(currentPage, sortConfig);
   };
 
   const exportToExcelData = async () => {
     try {
-        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
-        const response = await axios.get(
-         `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`
-          // 'https://hbrapi.rigicgspl.com/api/admin/builder/export'
-          ,
-           {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${bearerToken}`
-            }
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'landsales.xlsx');
-        document.body.appendChild(link);
-        link.click();
-    } catch (error) {
-        console.log(error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+      const response = await axios.get(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`,
+        // 'https://hbrapi.rigicgspl.com/api/admin/builder/export'
+        {
+          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
         }
-    }
-}
-const handleFileChange = async (e) => {
-  setSelectedFile(e.target.files[0]);
-};
-const handleUploadClick = async () => {
-  const file = selectedFile;
+      );
 
-  if (file && file.type === "text/csv") {
-    setLoading(true);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = async () => {
-      var iFile = fileReader.result;
-      setSelectedFile(iFile);
-      console.log(iFile);
-      const inputData = {
-        csv: iFile,
-      };
-      try {
-        let responseData = await AdminLandsaleService.import(inputData).json();
-        setSelectedFile("");
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-        swal("Imported Sucessfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/builderlist");
-            setShow(false);
-          }
-        });
-        getbuilderlist();
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = error.response.json();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "landsales.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+
+    if (file && file.type === "text/csv") {
+      setLoading(true);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = async () => {
+        var iFile = fileReader.result;
+        setSelectedFile(iFile);
+        console.log(iFile);
+        const inputData = {
+          csv: iFile,
+        };
+        try {
+          let responseData = await AdminLandsaleService.import(
+            inputData
+          ).json();
           setSelectedFile("");
-          setError(errorJson.message);
           document.getElementById("fileInput").value = null;
           setLoading(false);
+          swal("Imported Sucessfully").then((willDelete) => {
+            if (willDelete) {
+              navigate("/builderlist");
+              setShow(false);
+            }
+          });
+          getbuilderlist();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
+          }
         }
-      }
-    };
+      };
 
-    setSelectedFileError("");
-  } else {
-    setSelectedFile("");
-    setSelectedFileError("Please select a CSV file.");
-  }
-};
-const handlBuilderClick = (e) => {
-  setShow(true);
-};
+      setSelectedFileError("");
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
+  console.log(sortConfig);
   return (
     <>
       <MainPagetitle
@@ -567,8 +532,14 @@ const handlBuilderClick = (e) => {
                       </div>
                     </div>
                     <div>
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                      <button
+                        onClick={() => setExportModelShow(true)}
+                        className="btn btn-primary btn-sm me-1"
+                      >
+                        {" "}
+                        <i class="fas fa-file-excel"></i>
+                      </button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -615,11 +586,18 @@ const handlBuilderClick = (e) => {
                             {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "builderName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "builderName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}{" "}
@@ -628,13 +606,18 @@ const handlBuilderClick = (e) => {
                                 onClick={() => requestSort("subdivisionName")}
                               >
                                 Subdivision Name
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivisionName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivisionName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}{" "}
@@ -642,13 +625,18 @@ const handlBuilderClick = (e) => {
                               <th onClick={() => requestSort("seller")}>
                                 <strong>
                                   Seller
-                                  {sortConfig.key !== "seller" ? "↑↓" : ""}
-                                  {sortConfig.key === "seller" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "seller"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc"
+                                      {sortConfig.find(
+                                        (item) => item.key === "seller"
+                                      ).direction === "asc"
                                         ? "↑"
                                         : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
@@ -658,13 +646,18 @@ const handlBuilderClick = (e) => {
                                 <strong>
                                   {" "}
                                   Buyer
-                                  {sortConfig.key !== "buyer" ? "↑↓" : ""}
-                                  {sortConfig.key === "buyer" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "buyer"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc"
+                                      {sortConfig.find(
+                                        (item) => item.key === "buyer"
+                                      ).direction === "asc"
                                         ? "↑"
                                         : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
@@ -674,14 +667,19 @@ const handlBuilderClick = (e) => {
                                 <strong>
                                   {" "}
                                   Location
-                                  {sortConfig.key !== "location" ? "↑↓" : ""}
-                                  {sortConfig.key === "location" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
+                                  {sortConfig.some(
+                                  (item) => item.key === "location"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "location"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
                                 </strong>
                               </th>
                             )}{" "}
@@ -705,14 +703,19 @@ const handlBuilderClick = (e) => {
                                 <strong>
                                   {" "}
                                   Price
-                                  {sortConfig.key !== "price" ? "↑↓" : ""}
-                                  {sortConfig.key === "price" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
+                                  {sortConfig.some(
+                                  (item) => item.key === "price"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "price"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
                                 </strong>
                               </th>
                             )}{" "}
@@ -721,14 +724,19 @@ const handlBuilderClick = (e) => {
                                 <strong>
                                   {" "}
                                   Date
-                                  {sortConfig.key !== "date" ? "↑↓" : ""}
-                                  {sortConfig.key === "date" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
+                                  {sortConfig.some(
+                                  (item) => item.key === "date"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "date"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
                                 </strong>
                               </th>
                             )}{" "}
@@ -741,11 +749,10 @@ const handlBuilderClick = (e) => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {LandsaleList !== null && LandsaleList.length > 0 ? (
+                            LandsaleList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -779,8 +786,8 @@ const handlBuilderClick = (e) => {
                                 )}{" "}
                                 {checkFieldExist("Price") && (
                                   <td>
-                                    <PriceComponent price={element.price} />
-                                    / {element.typeofunit}
+                                    <PriceComponent price={element.price} />/{" "}
+                                    {element.typeofunit}
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Date") && (
@@ -830,7 +837,7 @@ const handlBuilderClick = (e) => {
                         </tbody>
                       </table>
                     )}
-           <div className="d-sm-flex text-center justify-content-between align-items-center">
+                    <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
                         {TrafficsaleList} entries
@@ -911,7 +918,7 @@ const handlBuilderClick = (e) => {
         parentCallback={handleCallback}
       />
 
-    <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Land Sale CSV Data</Modal.Title>
         </Modal.Header>
@@ -1182,33 +1189,39 @@ const handlBuilderClick = (e) => {
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => setExportModelShow(false)}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => setExportModelShow(false)}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-            {columns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+            <Row>
+              <ul className="list-unstyled">
+                {columns.map((col) => (
+                  <li key={col.label}>
+                    <label className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button
+              varient="primary"
+              class="btn btn-primary"
+              onClick={handleDownloadExcel}
+            >
+              Download
+            </button>
           </Modal.Footer>
         </>
       </Modal>

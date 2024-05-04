@@ -2,7 +2,7 @@ import client from "../../client";
 import clientAuth from "../../clientAuth"
 
 export default {
-    index: (searchQuery = '') => clientAuth.get(`admin/csvfile/index${searchQuery}`),
+    index: (page=1,sortConfig='',searchQuery = '') => clientAuth.get(`admin/csvfile/index?page=${page}${sortConfig}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/csvfile/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/csvfile/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/csvfile/store`, { json: userData }),
