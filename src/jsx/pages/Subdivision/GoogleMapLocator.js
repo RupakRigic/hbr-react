@@ -4,6 +4,8 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import AdminGoogleMapService from "../../../API/Services/AdminService/AdminGoogleMapService";
 import DateComponent from "../../components/date/DateFormat";
 import PriceComponent from "../../components/Price/PriceComponent";
+import { Form } from "react-bootstrap";
+import Select from "react-select";
 
 
 const containerStyle = {
@@ -25,9 +27,10 @@ const GoogleMapLocator = () => {
   useEffect(() => {
     const fetchBuilderList = async () => {
       try {
-        const response = await AdminBuilderService.index();
+        const response = await AdminBuilderService.builderDropDown();
         const data = await response.json();
-        setBuilderList(data.data);
+        console.log(data)
+        setBuilderList(data);
       } catch (error) {
         console.log("Error fetching builder list:", error);
       }
@@ -52,9 +55,13 @@ const GoogleMapLocator = () => {
     fetchSubdivisionList();
   }, [builderId]);
 
-  const handleBuilderChange = (e) => {
-    const { value } = e.target;
-    setBuilderId(value); // Update builderId based on the selected value
+  const handleBuilderChange = (selectedOption) => {
+    if (selectedOption) {
+      setBuilderId(selectedOption.id);
+      console.log(selectedOption.id);
+    } else {
+      setBuilderId("");
+    }
   };
 
   return (
@@ -62,17 +69,16 @@ const GoogleMapLocator = () => {
       <div className="row mb-3">
         <div className="col-md-4">  
           <label className="form-label">Builder:</label>
-          <select
-            className="default-select form-control"
-            name="builder_id"
-            value={builderId}
-            onChange={handleBuilderChange}
-          >
-            <option value="">All</option>
-            {builderList.map((builder) => (
-              <option key={builder.id} value={builder.id}>{builder.name}</option>
-            ))}
-          </select>
+  
+          <Form.Group controlId="tournamentList">
+                          <Select
+                            options={builderList}
+                            onChange={handleBuilderChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={builderList.builderId}
+                          ></Select>
+                        </Form.Group>
         </div>
       </div>
       

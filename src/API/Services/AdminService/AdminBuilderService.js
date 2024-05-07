@@ -12,7 +12,6 @@ export default {
     getRoleFieldList:(tableName)=> clientAuth.get(`admin/builder/access-list/${tableName}`),    
     export: () => clientAuth.get(`admin/builder/export`),
     import: (userData) => clientAuth.post(`admin/builder/import`, { json: userData }),
-    builderListDropdown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),    
-
+    builderDropDown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),    
 
 };

@@ -355,8 +355,7 @@ const SubdivisionList = () => {
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-
-      console.log(sortConfigString);
+      console.log(sortConfig);
       const response = await AdminSubdevisionService.index(
         pageNumber,
         sortConfigString,
@@ -862,167 +861,271 @@ const SubdivisionList = () => {
                             {checkFieldExist("Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong> Status</strong>
-                                {sortConfig.key !== "status" ? "↑↓" : ""}
-
-                                {sortConfig.key === "status" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "status"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "status"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Reporting") && (
                               <th onClick={() => requestSort("reporting")}>
                                 <strong> Reporting</strong>
-                                {sortConfig.key !== "reporting" ? "↑↓" : ""}
-                                {sortConfig.key === "reporting" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "reporting"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "reporting"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Builder") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong> Builder</strong>
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "builderName"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "builderName"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
-                            {checkFieldExist("Builder") && (
-                              <th onClick={() => requestSort("Name")}>
+                            {checkFieldExist("Name") && (
+                              <th onClick={() => requestSort("name")}>
                                 <strong> Name</strong>
-                                {sortConfig.key !== "name" ? "↑↓" : ""}
-                                {sortConfig.key === "name" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "name"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "name"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("product_type")}>
                                 <strong> Product Type</strong>
-                                {sortConfig.key !== "product_type" ? "↑↓" : ""}
-                                {sortConfig.key === "product_type" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "product_type"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "product_type"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong> Area</strong>
-                                {sortConfig.key !== "area" ? "↑↓" : ""}
-                                {sortConfig.key === "area" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "area"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "area"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("masterplan_id")}>
                                 <strong> Masterplan</strong>
-                                {sortConfig.key !== "masterplan_id" ? "↑↓" : ""}
-                                {sortConfig.key === "masterplan_id" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "masterplan_id"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "masterplan_id"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Zipcode") && (
                               <th onClick={() => requestSort("zipcode")}>
                                 <strong> Zipcode</strong>
-                                {sortConfig.key !== "zipcode" ? "↑↓" : ""}
-                                {sortConfig.key === "zipcode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "zipcode"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "zipcode"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Total Lots") && (
                               <th onClick={() => requestSort("totallots")}>
                                 <strong> Total Lots</strong>
-                                {sortConfig.key !== "totallots" ? "↑↓" : ""}
-                                {sortConfig.key === "totallots" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "totallots"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "totallots"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotwidth")}>
                                 <strong>Lot Width</strong>
-                                {sortConfig.key !== "lotwidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotwidth" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "lotwidth"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "lotwidth"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong> Lot Size</strong>
-                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
-                                {sortConfig.key === "lotsize" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "lotsize"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "lotsize"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong> Zoning</strong>
-                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
-                                {sortConfig.key === "zoning" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "zoning"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "zoning"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong> Age Restricted</strong>
-                                {sortConfig.key !== "age" ? "↑↓" : ""}
-                                {sortConfig.key === "age" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "age"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "age"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("single")}>
                                 <strong> All Single Story</strong>
-                                {sortConfig.key !== "single" ? "↑↓" : ""}
-                                {sortConfig.key === "single" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "single"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "single"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Gated") && (
                               <th onClick={() => requestSort("gated")}>
                                 <strong> Gated</strong>
-                                {sortConfig.key !== "gated" ? "↑↓" : ""}
-                                {sortConfig.key === "gated" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "gated"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "gated"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Location") && (
@@ -1033,111 +1136,181 @@ const SubdivisionList = () => {
                             {checkFieldExist("Juridiction") && (
                               <th onClick={() => requestSort("juridiction")}>
                                 <strong> Juridiction</strong>
-                                {sortConfig.key !== "juridiction" ? "↑↓" : ""}
-                                {sortConfig.key === "juridiction" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "juridiction"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "juridiction"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Latitude") && (
                               <th onClick={() => requestSort("lat")}>
                                 <strong>Latitude</strong>
-                                {sortConfig.key !== "lat" ? "↑↓" : ""}
-                                {sortConfig.key === "lat" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "lat"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "lat"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Longitude") && (
                               <th onClick={() => requestSort("lng")}>
                                 <strong> Longitude</strong>
-                                {sortConfig.key !== "lng" ? "↑↓" : ""}
-                                {sortConfig.key === "lng" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "lng"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "lng"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Gas Provider") && (
                               <th onClick={() => requestSort("gasprovider")}>
                                 <strong> Gas Provider</strong>
-                                {sortConfig.key !== "gasprovider" ? "↑↓" : ""}
-                                {sortConfig.key === "gasprovider" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "gasprovider"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "gasprovider"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("HOA Fee") && (
                               <th onClick={() => requestSort("hoafee")}>
                                 <strong> HOA Fee</strong>
-                                {sortConfig.key !== "hoafee" ? "↑↓" : ""}
-                                {sortConfig.key === "hoafee" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "hoafee"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "hoafee"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Masterplan Fee") && (
                               <th onClick={() => requestSort("masterplanfee")}>
                                 <strong> Masterplan Fee</strong>
-                                {sortConfig.key !== "masterplanfee" ? "↑↓" : ""}
-                                {sortConfig.key === "masterplanfee" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "masterplanfee"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "masterplanfee"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Parcel Group") && (
                               <th onClick={() => requestSort("parcel")}>
                                 <strong> Parcel Group</strong>
-                                {sortConfig.key !== "parcel" ? "↑↓" : ""}
-                                {sortConfig.key === "parcel" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "parcel"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "parcel"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Phone") && (
                               <th onClick={() => requestSort("phone")}>
                                 <strong> Phone</strong>
-                                {sortConfig.key !== "phone" ? "↑↓" : ""}
-                                {sortConfig.key === "phone" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "phone"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "phone"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
-                            {checkFieldExist("Website") && (
+                            {checkFieldExist("website") && (
                               <th>
                                 <strong> Website</strong>
-                                {sortConfig.key !== "website" ? "↑↓" : ""}
-                                {sortConfig.key === "website" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "website"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "website"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Date Added") && (
-                              <th onClick={() => requestSort("dateadded")}>
+                              <th onClick={() => requestSort("created_at")}>
                                 <strong> Date Added</strong>
-                                {sortConfig.key !== "dateadded" ? "↑↓" : ""}
-                                {sortConfig.key === "dateadded" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "created_at"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "created_at"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("__pkSubID") && (
@@ -1145,366 +1318,595 @@ const SubdivisionList = () => {
                                 onClick={() => requestSort("subdivision_code")}
                               >
                                 <strong> __pkSubID </strong>
-                                {sortConfig.key !== "subdivision_code"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivision_code" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "subdivision_code"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "subdivision_code"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("_fkBuilderID") && (
-                              <th onClick={() => requestSort("builderCode")}>
+                              <th onClick={() => requestSort("builder_code")}>
                                 <strong> _fkBuilderID </strong>
-                                {sortConfig.key !== "builderCode" ? "↑↓" : ""}
-                                {sortConfig.key === "builderCode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "builder_code"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "builder_code"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                             {checkFieldExist("Total Closings") && (
                             <th onClick={() => requestSort("total_closings")}>
                                 <strong> Total Closings </strong>
-                                {sortConfig.key !== "total_closings" ? "↑↓" : ""}
-                                {sortConfig.key === "total_closings" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "total_closings"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_closings"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                             {checkFieldExist("Total Permits") && (                     
                               <th onClick={() => requestSort("total_permits")}>
                                 <strong> Total Permits </strong>
-                                {sortConfig.key !== "total_permits" ? "↑↓" : ""}
-                                {sortConfig.key === "total_permits" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "total_permits"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_permits"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                               {checkFieldExist("Total Net Sales") && (
                               <th onClick={() => requestSort("total_net_sales")}>
                                 <strong> Total Net Sales </strong>
-                                {sortConfig.key !== "total_net_sales" ? "↑↓" : ""}
-                                {sortConfig.key === "total_net_sales" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "total_net_sales"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_net_sales"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Months Open") && (
                               <th onClick={() => requestSort("months_open")}>
                                 <strong> Months Open </strong>
-                                {sortConfig.key !== "months_open" ? "↑↓" : ""}
-                                {sortConfig.key === "months_open" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "months_open"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "months_open"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                               {checkFieldExist("Latest Traffic/Sales Data") && (
                               <th onClick={() => requestSort("latest_traffic_data")}>
                                 <strong> Latest Traffic/Sales Data </strong>
-                                {sortConfig.key !== "latest_traffic_data" ? "↑↓" : ""}
-                                {sortConfig.key === "latest_traffic_data" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "latest_traffic_data"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "latest_traffic_data"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                              )}
                               {checkFieldExist("Latest Lots Released") && (
                               <th onClick={() => requestSort("latest_lots_released")}>
                                 <strong> Latest Lots Released </strong>
-                                {sortConfig.key !== "latest_lots_released" ? "↑↓" : ""}
-                                {sortConfig.key === "latest_lots_released" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "latest_lots_released"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "latest_lots_released"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Latest Standing Inventory") && (
                               <th onClick={() => requestSort("latest_standing_inventory")}>
                                 <strong> Latest Standing Inventory </strong>
-                                {sortConfig.key !== "latest_standing_inventory" ? "↑↓" : ""}
-                                {sortConfig.key === "latest_standing_inventory" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "latest_standing_inventory"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "latest_standing_inventory"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Unsold Lots") && (
                               <th onClick={() => requestSort("unsold_lots")}>
                                 <strong> Unsold Lots </strong>
-                                {sortConfig.key !== "unsold_lots" ? "↑↓" : ""}
-                                {sortConfig.key === "unsold_lots" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "unsold_lots"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "unsold_lots"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Avg Sqft All") && (
                               <th onClick={() => requestSort("avg_sqft_all")}>
                                 <strong> Avg Sqft All </strong>
-                                {sortConfig.key !== "avg_sqft_all" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_sqft_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_sqft_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_sqft_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Avg Sqft Active") && (
                               <th onClick={() => requestSort("avg_sqft_active")}>
                                 <strong> Avg Sqft Active </strong>
-                                {sortConfig.key !== "avg_sqft_active" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_sqft_active" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_sqft_active"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_sqft_active"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                             )}
                               {checkFieldExist("Avg Base Price All") && (
                               <th onClick={() => requestSort("avg_base_price_all")}>
                                 <strong> Avg Base Price All </strong>
-                                {sortConfig.key !== "avg_base_price_all" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_base_price_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_base_price_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_base_price_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Avg Base Price Active") && (
                               <th onClick={() => requestSort("avg_base_price_active")}>
                                 <strong> Avg Base Price Active </strong>
-                                {sortConfig.key !== "avg_base_price_active" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_base_price_active" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_base_price_active"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_base_price_active"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Min Sqft All") && (
                               <th onClick={() => requestSort("min_sqft_all")}>
                                 <strong> Min Sqft All </strong>
-                                {sortConfig.key !== "min_sqft_all" ? "↑↓" : ""}
-                                {sortConfig.key === "min_sqft_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "min_sqft_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "min_sqft_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active")}>
                                 <strong> Min Sqft Active </strong>
-                                {sortConfig.key !== "min_sqft_active" ? "↑↓" : ""}
-                                {sortConfig.key === "min_sqft_active" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "min_sqft_active"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "min_sqft_active"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Max Sqft All") && (
                               <th onClick={() => requestSort("max_sqft_all")}>
                                 <strong> Max Sqft All </strong>
-                                {sortConfig.key !== "max_sqft_all" ? "↑↓" : ""}
-                                {sortConfig.key === "max_sqft_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "max_sqft_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "max_sqft_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active")}>
                                 <strong> Max Sqft Active </strong>
-                                {sortConfig.key !== "max_sqft_active" ? "↑↓" : ""}
-                                {sortConfig.key === "max_sqft_active" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "max_sqft_active"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "max_sqft_active"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                    )}
                               {checkFieldExist("Min Base Price All") && (
                               <th onClick={() => requestSort("min_base_price_all")}>
                                 <strong> Min Base Price All </strong>
-                                {sortConfig.key !== "min_base_price_all" ? "↑↓" : ""}
-                                {sortConfig.key === "min_base_price_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "min_base_price_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "min_base_price_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active_current")}>
                                 <strong> Min Sqft Active </strong>
-                                {sortConfig.key !== "min_sqft_active_current" ? "↑↓" : ""}
-                                {sortConfig.key === "min_sqft_active_current" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "min_sqft_active_current"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "min_sqft_active_current"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Max Base Price All") && (
                               <th onClick={() => requestSort("max_base_price_all")}>
                                 <strong> Max Base Price All </strong>
-                                {sortConfig.key !== "max_base_price_all" ? "↑↓" : ""}
-                                {sortConfig.key === "max_base_price_all" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "max_base_price_all"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "max_base_price_all"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active_current")}>
                                 <strong> Max Sqft Active </strong>
-                                {sortConfig.key !== "max_sqft_active_current" ? "↑↓" : ""}
-                                {sortConfig.key === "max_sqft_active_current" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "max_sqft_active_current"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "max_sqft_active_current"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Avg Net Traffic Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_traffic_per_month_this_year")}>
                                 <strong> Avg Net Traffic Per Month This Year </strong>
-                                {sortConfig.key !== "avg_net_traffic_per_month_this_year" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_net_traffic_per_month_this_year" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_net_traffic_per_month_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_net_traffic_per_month_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Avg Net Sales Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_this_year")}>
                                 <strong> Avg Net Sales Per Month This Year </strong>
-                                {sortConfig.key !== "avg_net_sales_per_month_this_year" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_net_sales_per_month_this_year" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_net_sales_per_month_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_net_sales_per_month_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                              )}
                               {checkFieldExist("Avg Closings Per Month This Year") && (
                               <th onClick={() => requestSort("avg_closings_per_month_this_year")}>
                                 <strong> Avg Closings Per Month This Year </strong>
-                                {sortConfig.key !== "avg_closings_per_month_this_year" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_closings_per_month_this_year" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_closings_per_month_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_closings_per_month_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Avg Net Sales Per Month Since Open") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_since_open")}>
                                 <strong> Avg Net Sales Per Month Since Open </strong>
-                                {sortConfig.key !== "avg_net_sales_per_month_since_open" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_net_sales_per_month_since_open" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_net_sales_per_month_since_open"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_net_sales_per_month_since_open"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Avg Net Sales Per Month Last 3 Months") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_last_three_months")}>
                                 <strong> Avg Net Sales Per Month Last 3 Months </strong>
-                                {sortConfig.key !== "avg_net_sales_per_month_last_three_months" ? "↑↓" : ""}
-                                {sortConfig.key === "avg_net_sales_per_month_last_three_months" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "avg_net_sales_per_month_last_three_months"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_net_sales_per_month_last_three_months"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Max Week Ending") && (
                               <th onClick={() => requestSort("max_week_ending")}>
                                 <strong> Max Week Ending </strong>
-                                {sortConfig.key !== "max_week_ending" ? "↑↓" : ""}
-                                {sortConfig.key === "max_week_ending" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "max_week_ending"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "max_week_ending"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Min Week Ending") && (
                               <th onClick={() => requestSort("min_week_ending")}>
                                 <strong> Min Week Ending </strong>
-                                {sortConfig.key !== "min_week_ending" ? "↑↓" : ""}
-                                {sortConfig.key === "min_week_ending" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "min_week_ending"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "min_week_ending"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                 )}
                               {checkFieldExist("Sqft Group") && (
                               <th onClick={() => requestSort("sqft_group")}>
                                 <strong> Sqft Group </strong>
-                                {sortConfig.key !== "sqft_group" ? "↑↓" : ""}
-                                {sortConfig.key === "sqft_group" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "sqft_group"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "sqft_group"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                                )}
                               {checkFieldExist("Price Group") && (
                               <th onClick={() => requestSort("price_group")}>
                                 <strong> Price Group </strong>
-                                {sortConfig.key !== "price_group" ? "↑↓" : ""}
-                                {sortConfig.key === "price_group" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "price_group"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "price_group"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Month Net Sold") && (
                               <th onClick={() => requestSort("month_net_sold")}>
                                 <strong> Month Net Sold </strong>
-                                {sortConfig.key !== "month_net_sold" ? "↑↓" : ""}
-                                {sortConfig.key === "month_net_sold" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "month_net_sold"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "month_net_sold"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               )}
                               {checkFieldExist("Year Net Sold") && (
                               <th onClick={() => requestSort("year_net_sold")}>
                                 <strong> Year Net Sold </strong>
-                                {sortConfig.key !== "year_net_sold" ? "↑↓" : ""}
-                                {sortConfig.key === "year_net_sold" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
+                                {sortConfig.some(
+                                    (item) => item.key === "year_net_sold"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "year_net_sold"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                               </th>
                               
                             )}

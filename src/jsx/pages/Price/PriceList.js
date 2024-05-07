@@ -40,10 +40,11 @@ const PriceList = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "prices" });
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
+  const [productListCount, setProductListCount] = useState('');
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -129,28 +130,38 @@ const PriceList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
-  // function prePage() {
-  //   if (currentPage !== 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {
-  //   setCurrentPage(id);
-  // }
-  // function nextPage() {
-  //   if (currentPage !== npage) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // }
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 10;
+  const lastIndex = currentPage * recordsPage;
+  const firstIndex = lastIndex - recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
 
   const product = useRef();
 
-  const getpriceList = async () => {
+  const getpriceList = async (pageNumber) => {
     try {
-      const response = await AdminPriceService.index(searchQuery);
+      const response = await AdminPriceService.index(pageNumber,searchQuery);
       const responseData = await response.json();
-      setPriceList(responseData);
       setIsLoading(false);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setPriceList(responseData.data);
+      setProductListCount(responseData.total)
+
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -161,7 +172,7 @@ const PriceList = () => {
   };
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getpriceList();
+      getpriceList(currentPage);
     } else {
       navigate("/");
     }
@@ -205,14 +216,14 @@ const PriceList = () => {
   ).current;
 
   useEffect(() => {
-    getpriceList();
-  }, [searchQuery]);
+    getpriceList(currentPage);
+  }, [currentPage, searchQuery]);
 
   const HandleSearch = (e) => {
     setIsLoading(true);
     const query = e.target.value.trim();
     if (query) {
-      debouncedHandleSearch(`?q=${query}`);
+      debouncedHandleSearch(`&q=${query}`);
     } else {
       setSearchQuery("");
     }
@@ -993,13 +1004,10 @@ const PriceList = () => {
                         </tbody>
                       </table>
                     )}
-                    {/* <div className="d-sm-flex text-center justify-content-between align-items-center">
+            <div className="d-sm-flex text-center justify-content-between align-items-center">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {priceList.length < lastIndex
-                          ? priceList.length
-                          : lastIndex}{" "}
-                        of {priceList.length} entries
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {productListCount} entries
                       </div>
                       <div
                         className="dataTables_paginate paging_simple_numbers justify-content-center"
@@ -1013,18 +1021,48 @@ const PriceList = () => {
                           <i className="fa-solid fa-angle-left" />
                         </Link>
                         <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
                         </span>
+
                         <Link
                           className="paginate_button next"
                           to="#"
@@ -1033,7 +1071,7 @@ const PriceList = () => {
                           <i className="fa-solid fa-angle-right" />
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -279,6 +279,7 @@ const BuilderTable = () => {
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
+      console.log(searchQuery);
       const response = await AdminBuilderService.index(
         pageNumber,
         searchQuery,
@@ -747,36 +748,54 @@ const BuilderTable = () => {
                               {checkFieldExist("website") && (
                                 <th onClick={() => requestSort("website")}>
                                   <strong>Website</strong>
-                                  {sortConfig.key !== "website" ? "↑↓" : ""}
-
-                                  {sortConfig.key === "website" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "website"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "website"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
                               {checkFieldExist("name") && (
                                 <th onClick={() => requestSort("name")}>
                                   <strong>Builder Name</strong>
-                                  {sortConfig.key !== "name" ? "↑↓" : ""}
-
-                                  {sortConfig.key === "name" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "name"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "name"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
                               {checkFieldExist("company_type") && (
                                 <th onClick={() => requestSort("company_type")}>
                                   <strong>Company Type</strong>
-                                  {sortConfig.key !== "company_type" ? "↑↓" : ""}
-
-                                  {sortConfig.key === "company_type" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "company_type"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "company_type"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
@@ -788,26 +807,36 @@ const BuilderTable = () => {
                               {checkFieldExist("phone") && (
                                 <th onClick={() => requestSort("phone")}>
                                   <strong>LV Office Phone</strong>
-                                  {sortConfig.key !== "phone" ? "↑↓" : ""}
-
-                                  {sortConfig.key === "phone" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "phone"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "phone"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
                               {checkFieldExist("officeaddress1") && (
                                 <th onClick={() => requestSort("officeaddress1")}>
                                   <strong>LV Office Address</strong>
-                                  {sortConfig.key !== "officeaddress1"
-                                    ? "↑↓"
-                                    : ""}
-
-                                  {sortConfig.key === "officeaddress1" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "officeaddress1"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "officeaddress1"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
@@ -815,26 +844,37 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("city")}>
                                   <strong>
                                     LV Office City
-                                    {sortConfig.key !== "city" ? "↑↓" : ""}
-                                    {sortConfig.key === "city" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "city"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "city"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
                               {checkFieldExist("zipcode") && (
                                 <th onClick={() => requestSort("zipcode")}>
                                   <strong>LV Office Zip</strong>
-                                  {sortConfig.key !== "zipcode" ? "↑↓" : ""}
-
-                                  {sortConfig.key === "zipcode" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "zipcode"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "zipcode"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
@@ -845,15 +885,18 @@ const BuilderTable = () => {
                                   }
                                 >
                                   <strong>Current Division President</strong>
-                                  {sortConfig.key !== "current_division_president"
-                                    ? "↑↓"
-                                    : ""}
-
-                                  {sortConfig.key ===
-                                    "current_division_president" && (
+                                  {sortConfig.some(
+                                    (item) => item.key === "current_division_president"
+                                  ) ? (
                                     <span>
-                                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                      {sortConfig.find(
+                                        (item) => item.key === "current_division_president"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
                                     </span>
+                                  ) : (
+                                    <span>↑↓</span>
                                   )}
                                 </th>
                               )}
@@ -865,17 +908,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Current Land Acquisitions
-                                    {sortConfig.key !== "current_land_aquisitions"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "current_land_aquisitions" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "current_land_aquisitions"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "current_land_aquisitions"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -887,17 +932,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Corporate Office Address
-                                    {sortConfig.key !== "coporate_officeaddress_1"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "coporate_officeaddress_1" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "coporate_officeaddress_1"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "coporate_officeaddress_1"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -909,18 +956,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Corporate Office City
-                                    {sortConfig.key !==
-                                    "coporate_officeaddress_city"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "coporate_officeaddress_city" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "coporate_officeaddress_city"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "coporate_officeaddress_city"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -932,17 +980,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Corporate Office State
-                                    {sortConfig.key !== "coporate_officeaddress_2"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "coporate_officeaddress_2" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "coporate_officeaddress_2"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "coporate_officeaddress_2"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -956,18 +1006,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Corporate Office Zip
-                                    {sortConfig.key !==
-                                    "coporate_officeaddress_zipcode"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "coporate_officeaddress_zipcode" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "coporate_officeaddress_zipcode"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "coporate_officeaddress_zipcode"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -975,16 +1026,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("stock_market")}>
                                   <strong>
                                     Stock Market
-                                    {sortConfig.key !== "stock_market"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "stock_market" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "stock_market"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "stock_market"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -992,16 +1046,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("stock_symbol")}>
                                   <strong>
                                     Stock Symbol
-                                    {sortConfig.key !== "stock_symbol"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "stock_symbol" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "stock_symbol"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "stock_symbol"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1014,16 +1071,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("builder_code")}>
                                   <strong>
                                     __pkBuilderID
-                                    {sortConfig.key !== "builder_code"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "builder_code" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "builder_code"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "builder_code"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1031,14 +1091,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("created_at")}>
                                   <strong>
                                     Date Added
-                                    {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                    {sortConfig.key === "created_at" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "created_at"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "created_at"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1050,16 +1115,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Active Communities
-                                    {sortConfig.key !== "active_communities"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "active_communities" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "active_communities"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "active_communities"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1069,16 +1137,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Closing This Year
-                                    {sortConfig.key !== "closing_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "closing_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "closing_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "closing_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1088,33 +1159,39 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Permits This Year
-                                    {sortConfig.key !== "permits_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "permits_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "permits_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "permits_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
                               {checkFieldExist("Net Sales this year") && (
-                                <th onClick={() => requestSort("created_at")}>
+                                <th onClick={() => requestSort("net_sales_this_year")}>
                                   <strong>
                                     Net Sales this year
-                                    {sortConfig.key !== "net_sales_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "net_sales_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "net_sales_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "net_sales_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1126,17 +1203,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Current Avg Base Price
-                                    {sortConfig.key !== "current_avg_base_Price"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "current_avg_base_Price" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "current_avg_base_Price"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "current_avg_base_Price"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1150,18 +1229,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Median Closing Price This Year
-                                    {sortConfig.key !==
-                                    "median_closing_price_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "median_closing_price_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "median_closing_price_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "median_closing_price_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1175,18 +1255,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Median Closing Price Last Year
-                                    {sortConfig.key !==
-                                    "median_closing_price_last_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "median_closing_price_last_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "median_closing_price_last_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "median_closing_price_last_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1202,18 +1283,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Avg Net Sales Per Month This Year
-                                    {sortConfig.key !==
-                                    "avg_net_sales_per_month_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "avg_net_sales_per_month_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "avg_net_sales_per_month_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_net_sales_per_month_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1229,18 +1311,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Avg Closings Per Month This Year
-                                    {sortConfig.key !==
-                                    "avg_closings_per_month_this_year"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "avg_closings_per_month_this_year" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "avg_closings_per_month_this_year"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "avg_closings_per_month_this_year"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}{" "}
@@ -1248,16 +1331,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("total_closings")}>
                                   <strong>
                                     Total Closings
-                                    {sortConfig.key !== "total_closings"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "total_closings" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "total_closings"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_closings"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}{" "}
@@ -1265,16 +1351,19 @@ const BuilderTable = () => {
                                 <th onClick={() => requestSort("total_permits")}>
                                   <strong>
                                     Total Permits
-                                    {sortConfig.key !== "total_permits"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "total_permits" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "total_permits"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_permits"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}{" "}
@@ -1284,16 +1373,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Total Net Sales
-                                    {sortConfig.key !== "total_net_sales"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key === "total_net_sales" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "total_net_sales"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "total_net_sales"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1305,17 +1397,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Date Of First Closing
-                                    {sortConfig.key !== "date_of_first_closing"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "date_of_first_closing" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "date_of_first_closing"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "date_of_first_closing"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1327,17 +1421,19 @@ const BuilderTable = () => {
                                 >
                                   <strong>
                                     Date Of Latest Closing
-                                    {sortConfig.key !== "date_of_latest_closing"
-                                      ? "↑↓"
-                                      : ""}
-                                    {sortConfig.key ===
-                                      "date_of_latest_closing" && (
-                                      <span>
-                                        {sortConfig.direction === "asc"
-                                          ? "↑"
-                                          : "↓"}
-                                      </span>
-                                    )}
+                                    {sortConfig.some(
+                                    (item) => item.key === "date_of_latest_closing"
+                                  ) ? (
+                                    <span>
+                                      {sortConfig.find(
+                                        (item) => item.key === "date_of_latest_closing"
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    <span>↑↓</span>
+                                  )}
                                   </strong>
                                 </th>
                               )}
@@ -1356,7 +1452,7 @@ const BuilderTable = () => {
                               BuilderList.map((element, index) => (
                                 <tr
                                   onClick={() => handleRowClick(element.id)}
-                                  key={index} // Fallback key using index
+                                  key={index} 
                                   style={{
                                     textAlign: "center",
                                     cursor: "pointer",

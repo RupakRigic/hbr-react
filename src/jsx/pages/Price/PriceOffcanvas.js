@@ -23,7 +23,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
 
     useEffect(() => {
         getBuilderList()
-        //getProductList();
+        getProductList();
     }, [])
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -34,7 +34,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         try {
             const response = await AdminBuilderService.index()
             const responseData = await response.json()
-            setBuilderList(responseData)
+            setBuilderList(responseData.data)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
@@ -49,7 +49,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
 
             const response = await AdminProductService.index()
             const responseData = await response.json()
-            setProductList(responseData)
+            setProductList(responseData.data)
 
         } catch (error) {
             if (error.name === 'HTTPError') {
