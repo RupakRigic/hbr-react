@@ -16,6 +16,7 @@
     "@mui/lab": "^5.0.0-alpha.167",
     "@mui/material": "^5.15.12",
     "@n8tb1t/use-scroll-position": "^2.0.3",
+    "@react-google-maps/api": "^2.19.3",
     "@svg-maps/world": "^1.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

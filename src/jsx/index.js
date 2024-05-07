@@ -38,6 +38,7 @@ import PriceList from "./pages/Price/PriceList";
 import PriceUpdate from "./pages/Price/PriceUpdate";
 
 import BuilderUpdate from "./pages/Builder/BuilderUpdate";
+import GoogleMapLocator from "./pages/Subdivision/GoogleMapLocator";
 const allroutes = [
   // Dashboard
   { url: "", component: <Login /> },
@@ -138,6 +139,11 @@ const allroutes = [
   {
     url: "/report-list",
     component: <ReportList />,
+    allowedRoles: ["Admin", "User"],
+  },
+  {
+    url: "/google-map-locator",
+    component: <GoogleMapLocator />,
     allowedRoles: ["Admin", "User"],
   },
 ];

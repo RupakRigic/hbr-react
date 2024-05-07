@@ -22,6 +22,8 @@ import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import PriceComponent from "../../components/Price/PriceComponent";
 import { Row, Col, Card } from 'react-bootstrap';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+
 
 const SubdivisionList = () => {
   const [Error, setError] = useState("");
@@ -321,7 +323,7 @@ const SubdivisionList = () => {
   });
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
   
   function prePage() {
     if (currentPage !== 1) {
@@ -344,11 +346,20 @@ const SubdivisionList = () => {
   const handleClose = () => setShow(false);
   console.log(BuilderList);
 
-
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getbuilderlist = async (pageNumber) => {
     try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+
+      console.log(sortConfigString);
       const response = await AdminSubdevisionService.index(
         pageNumber,
+        sortConfigString,
         searchQuery,
       );
       const responseData = await response.json();
@@ -497,10 +508,17 @@ const SubdivisionList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getbuilderlist(currentPage, sortConfig);
   };
 
 
@@ -697,6 +715,14 @@ const SubdivisionList = () => {
                     <div className="d-flex">
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                   
+                    <Link
+                        to={"/google-map-locator"}
+                        className="btn btn-primary btn-sm me-1"
+                      >
+                        <i class="fa fa-map-marker" aria-hidden="true"></i>
+                      </Link>
+
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -1610,7 +1636,7 @@ const SubdivisionList = () => {
                                 <td>{element.months_open}</td>
                                 <td>
                                   <DateComponent date={element.latest_traffic_data} />
-                                  </td>
+                                 </td>
                                 <td>{element.latest_lots_released}</td>
                                 <td>{element.latest_standing_inventory}</td>
                                 <td>{element.unsold_lots}</td>
