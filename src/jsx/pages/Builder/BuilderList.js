@@ -28,8 +28,21 @@ const BuilderTable = () => {
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState({
+    name :"",
     is_active: "",
+    active_communities:"",
+    closing_this_year:"",
+    permits_this_year:"",
+    net_sales_this_year:"",
+    current_avg_base_Price:"",
+    avg_net_sales_per_month_this_year:"",
+    avg_closings_per_month_this_year:"",
     company_type: "",
+    city:"",
+    zipcode:"",
+    officeaddress1:"",
+    coporate_officeaddress_zipcode:"",
+    stock_market:""
   });
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -386,13 +399,20 @@ const BuilderTable = () => {
     }, 1000)
   ).current;
 
-  useEffect(() => {
-    getbuilderlist();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   getbuilderlist();
+  // }, [searchQuery]);
 
   useEffect(() => {
     setSearchQuery(filterString());
   }, [filterQuery]);
+
+  const HandleFilterForm = (e) =>
+  {
+    e.preventDefault();
+    console.log(555);
+    getbuilderlist(searchQuery);
+  };
 
   const HandleSearch = (e) => {
     setIsLoading(true);
@@ -662,9 +682,18 @@ const BuilderTable = () => {
                             <Dropdown.Menu>
                               <h5 className="">Filter Options</h5>
                               <div className="border-top">
-                                <div className="mt-3 mb-1">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="name" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
                                   <label className="form-label">
-                                    Status:{" "}
+                                    STATUS:{" "}
                                     <span className="text-danger"></span>
                                   </label>
                                   <select
@@ -672,39 +701,123 @@ const BuilderTable = () => {
                                     value={filterQuery.is_active}
                                     name="is_active"
                                     onChange={HandleFilter}
+
                                   >
                                     {/* <option data-display="Select">Please select</option> */}
                                     <option value="">All</option>
                                     <option value="1">Active</option>
                                     <option value="0">De-active</option>
                                   </select>
-                                </div>
                               </div>
-                              <div className="mb-3">
+                              <div className="col-md-4 mt-3">
                                 <label className="form-label">
-                                  Company Type:{" "}
+                                ACTIVE COMMUNITIES :{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <select
-                                  className="default-select form-control"
-                                  name="company_type"
-                                  value={filterQuery.company_type}
-                                  onChange={HandleFilter}
-                                >
-                                  {/* <option data-display="Select">Please select</option> */}
-                                  <option value="">All</option>
-                                  <option value="private">Private</option>
-                                  <option value="public">Public</option>
-                                </select>
+                                <input name="active_communities" className="form-control"  onChange={HandleFilter}/>
                               </div>
-                              <div className="d-flex justify-content-end">
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                CLOSINGS THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="closing_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                PERMITS THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="permits_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                NET SALES THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                CURRENT AVG BASE PRICE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                AVG NET SALES PER MONTH THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                AVG CLOSINGS PER MONTH THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                COMPANY TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="name" className="form-control"/>
+                              </div>
+                              <div className="col-md-4 mt-3">
+                                <label className="form-label">
+                                LV OFFICE CITY:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="city" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3 ">
+                                <label className="form-label">
+                                LV OFFICE ZIP:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="zipcode" className="form-control"/>
+                              </div>
+                              <div className="col-md-4 mt-3 mb-3">
+                                <label className="form-label">
+                                CORPORATE OFFICE STATE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3 mb-3">
+                                <label className="form-label">
+                                CORPORATE OFFICE ZIP:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-4 mt-3 mb-3">
+                                <label className="form-label">
+                                STOCK MARKET:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="stock_market" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                             </div>
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
                                 <Button
                                   className="btn-sm"
                                   onClick={HandleCancelFilter}
                                   variant="secondary"
                                 >
                                   Reset
-                                </Button>
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
                               </div>
                             </Dropdown.Menu>
                           </Dropdown>
