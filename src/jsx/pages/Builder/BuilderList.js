@@ -73,6 +73,7 @@ const BuilderTable = () => {
   const fieldList = AccessField({ tableName: "builders" });
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
+  const [columnSeq, setcolumnSeq] = useState(false);
   const [calculationField, setCalculationField] = useState(false);
   useEffect(() => {
     console.log(fieldList);
@@ -600,6 +601,7 @@ const BuilderTable = () => {
     }
   };
   const [items, setItems] = useState(['Item 1', 'Item 2', 'Item 3']);
+  const [colSeq, setcolSeq] = useState(["Logo","Website", "Builder Name", "Company Type","LV office Phone", "LV office Email","LV office address", "LV office City", "LV office Zip","Current Division President","Current Land Acquisitions","Corporate Office Address 1","Corporate Office City","Corporate Office State", "Corporate Office Zip","Stock Market", "Stock Symbol","Active Communities","Closing This Year","Permits This Year","Net Sales this year", "Current Avg Base Price","Median Closing Price This Year ",  "Median Closing Price Last Year","Avg Net Sales Per Month This Year ","Avg Closings Per Month This Year","Total Closings", "Total Permits","Total Net Sales", "Date Of First Closing","Date Of Latest Closing"]);
   const handlBuilderClick = (e) => {
     setShow(true);
   };
@@ -617,14 +619,14 @@ const BuilderTable = () => {
     const targetIndex = event.currentTarget.dataset.index;
 
     // Create a copy of the items array
-    const newItems = [...items];
+    const newItems = [...colSeq];
     // Remove the dragged item from its original position
     const [draggedItem] = newItems.splice(sourceIndex, 1);
     // Insert the dragged item at the drop target position
     newItems.splice(targetIndex, 0, draggedItem);
 
     // Update the state with the new order of items
-    setItems(newItems);
+    setcolSeq(newItems);
   };
   return (
     <>
@@ -671,13 +673,13 @@ const BuilderTable = () => {
                       ) : (
                         <div className="d-flex">
                           {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                          <button
-                            onClick={() => setExportModelShow(true)}
+                          {/* <button
+                            onClick={() => setcolumnSeq(true)}
                             className="btn btn-primary btn-sm me-1"
                           >
                             {" "}
                             Column Sequencing
-                          </button>
+                          </button> */}
                           <button
                             onClick={() => setExportModelShow(true)}
                             className="btn btn-primary btn-sm me-1"
@@ -2405,6 +2407,46 @@ const BuilderTable = () => {
               onClick={handleDownloadExcel}
             >
               Download
+            </button>
+          </Modal.Footer>
+        </>
+      </Modal>
+      <Modal show={columnSeq} onHide={setcolumnSeq}>
+        <>
+          <Modal.Header>
+            <Modal.Title>Column Sequence</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => setcolumnSeq(false)}
+            ></button>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <ul className="list-unstyled">
+                {colSeq.map((col,index) => (
+                  <li 
+                    key={index}
+                    draggable
+                    onDragStart={handleDragStart(index)}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    data-index={index}
+                    style={{ backgroundColor: 'lightblue', padding: '10px', margin: '5px', cursor: 'move' }}
+                  > 
+                    {col}
+                  </li>
+                ))}
+              </ul>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              varient="primary"
+              class="btn btn-primary"
+              onClick={handleDownloadExcel}
+            >
+              Save
             </button>
           </Modal.Footer>
         </>
