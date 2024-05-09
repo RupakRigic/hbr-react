@@ -255,7 +255,7 @@ const ClosingList = () => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
 
   function prePage() {
     if (currentPage !== 1) {
@@ -272,10 +272,17 @@ const ClosingList = () => {
   }
 
   const closingsale = useRef();
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
 
-  const getClosingList = async () => {
+  const getClosingList = async (currentPage) => {
     try {
-      const response = await AdminClosingService.index(currentPage,searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminClosingService.index(currentPage,sortConfigString,searchQuery);
       const responseData = await response.json();
       console.log(responseData.data);
       setClosingList(responseData.data);
@@ -406,11 +413,18 @@ const ClosingList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getClosingList(currentPage, sortConfig);
   };
+
 
 
   const exportToExcelData = async () => {
@@ -455,7 +469,7 @@ const ClosingList = () => {
             <div className="card" style={{ overflow: "auto" }}>
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Closing List</h4>
                       <div
@@ -508,6 +522,74 @@ const ClosingList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {closingListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                    </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -525,7 +607,15 @@ const ClosingList = () => {
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
                             {checkFieldExist("Closing Type") && (
-                              <th>Closing Type</th>
+                              <th onClick={() => requestSort("closing_type")}>
+                                Closing Type
+                             {sortConfig.key !== "closing_type" ? "↑↓" : ""}
+                                {sortConfig.key === "closing_type" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
                             )}{" "}
                             {checkFieldExist("Closing Date") && (
                               <th onClick={() => requestSort("closingdate")}>
@@ -597,7 +687,17 @@ const ClosingList = () => {
                                 )}
                               </th>
                             )}{" "}
-                            {checkFieldExist("Parcel Number") && <th>Parcel Number</th>}
+                            {checkFieldExist("Parcel Number") && 
+                            <th onClick={() => requestSort("parcel")}>
+                              Parcel Number                              
+                              {sortConfig.key !== "parcel" ? "↑↓" : ""}
+                                {sortConfig.key === "parcel" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                            </th>
+                            }
                             {checkFieldExist("Sub Legal Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
@@ -836,7 +936,6 @@ const ClosingList = () => {
                             ClosingList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -846,8 +945,7 @@ const ClosingList = () => {
                                 {checkFieldExist("Closing Type") && <td>{element.closing_type}</td>}{" "}
                                 {checkFieldExist("Closing Date") && (
                                   <td>
-                                    { new Intl.DateTimeFormat('fr-CA', {month:'2-digit',day:'2-digit', year:'numeric'}).format(new Date(element.closingdate))}
-                                    {/* <DateComponent date={element.closingdate} /> */}
+                                    <DateComponent date={element.closingdate} />
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Doc") && (
@@ -987,74 +1085,6 @@ const ClosingList = () => {
                         </tbody>
                       </table>
                     )}
-                <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {closingListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

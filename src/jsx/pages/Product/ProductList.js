@@ -158,7 +158,7 @@ const ProductList = () => {
   const product = useRef();
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -222,10 +222,18 @@ const ProductList = () => {
     }
   }
 
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getproductList = async (pageNumber) => {
     try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
       const response = await AdminProductService.index(
         pageNumber,
+        sortConfigString,
         searchQuery,
       );
       const responseData = await response.json();
@@ -408,10 +416,17 @@ const ProductList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getproductList(currentPage, sortConfig);
   };
 
   const getbuilderlist = async () => {
@@ -525,7 +540,7 @@ const handlBuilderClick = (e) => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Product List</h4>
                       <div
@@ -639,6 +654,74 @@ const handlBuilderClick = (e) => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {productListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -660,22 +743,36 @@ const handlBuilderClick = (e) => {
                             {checkFieldExist("Plan Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong>Plan Status</strong>
-                                {sortConfig.key !== "status" ? "↑↓" : ""}
-                                {sortConfig.key === "status" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "status"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "status"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong>Builder Name</strong>
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "builderName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "builderName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -685,90 +782,144 @@ const handlBuilderClick = (e) => {
                               >
                                 <strong>Subdivision Name</strong>
 
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivisionName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivisionName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Product Name") && (
                               <th onClick={() => requestSort("name")}>
                                 <strong>Product Name</strong>
-                                {sortConfig.key !== "name" ? "↑↓" : ""}
-                                {sortConfig.key === "name" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "name"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "name"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Square Footage") && (
                               <th onClick={() => requestSort("sqft")}>
                                 <strong>Square Footage</strong>
-                                {sortConfig.key !== "sqft" ? "↑↓" : ""}
-                                {sortConfig.key === "sqft" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "sqft"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "sqft"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Stories") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>Stories</strong>
-                                {sortConfig.key !== "stories" ? "↑↓" : ""}
-                                {sortConfig.key === "stories" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "stories"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "stories"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Bed Rooms") && (
                               <th onClick={() => requestSort("bedroom")}>
                                 <strong>Bed Rooms</strong>
-                                {sortConfig.key !== "bedroom" ? "↑↓" : ""}
-                                {sortConfig.key === "bedroom" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "bedroom"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "bedroom"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Bath Rooms") && (
                               <th onClick={() => requestSort("bathroom")}>
                                 <strong>Bath Rooms</strong>
-                                {sortConfig.key !== "bathroom" ? "↑↓" : ""}
-                                {sortConfig.key === "bathroom" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "bathroom"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "bathroom"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Garage") && (
                               <th onClick={() => requestSort("garage")}>
                                 <strong>Garage</strong>
-                                {sortConfig.key !== "garage" ? "↑↓" : ""}
-                                {sortConfig.key === "garage" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "garage"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "garage"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Current Base Price") && (
                               <th onClick={() => requestSort("recentprice")}>
                                 <strong>Current Base Price</strong>
-                                {sortConfig.key !== "recentprice" ? "↑↓" : ""}
-                                {sortConfig.key === "recentprice" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "recentprice"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "recentprice"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -777,13 +928,18 @@ const handlBuilderClick = (e) => {
                                 onClick={() => requestSort("recentpricesqft")}
                               >
                                 <strong>Current Price Per SQFT</strong>
-                                {sortConfig.key !== "recentpricesqft"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "recentpricesqft" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "recentpricesqft"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "recentpricesqft"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -803,138 +959,220 @@ const handlBuilderClick = (e) => {
                               </th>
                             )}
                             {checkFieldExist("Product Type") && (
-                              <th onClick={() => requestSort("productType")}>
+                              <th onClick={() => requestSort("product_type")}>
                                 <strong>Product Type</strong>
-                                {sortConfig.key !== "productType" ? "↑↓" : ""}
-                                {sortConfig.key === "productType" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "product_type"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "product_type"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong>Area</strong>
-                                {sortConfig.key !== "area" ? "↑↓" : ""}
-                                {sortConfig.key === "area" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "area"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "area"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Master Plan") && (
                               <th onClick={() => requestSort("masterPlan")}>
                                 <strong>Master Plan</strong>
-                                {sortConfig.key !== "masterPlan" ? "↑↓" : ""}
-                                {sortConfig.key === "masterPlan" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "stmasterPlanatus"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "masterPlan"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Zip Code") && (
                               <th onClick={() => requestSort("zipCode")}>
                                 <strong>Zip Code</strong>
-                                {sortConfig.key !== "zipCode" ? "↑↓" : ""}
-                                {sortConfig.key === "zipCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "zipCode"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "zipCode"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "lotWidth"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "lotWidth"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
-                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
-                                {sortConfig.key === "lotsize" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "lotsize"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "lotsize"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
-                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
-                                {sortConfig.key === "zoning" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "zoning"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "zoning"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong>Age Restricted</strong>
-                                {sortConfig.key !== "age" ? "↑↓" : ""}
-                                {sortConfig.key === "age" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "age"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "age"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
-                                {sortConfig.key !== "stories" ? "↑↓" : ""}
-                                {sortConfig.key === "stories" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "stories"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "stories"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>Date Added</strong>
-                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                {sortConfig.key === "created_at" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "created_at"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "created_at"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("__pkProductID") && (
                               <th onClick={() => requestSort("product_code")}>
                                 <strong>__pkProductID</strong>
-                                {sortConfig.key !== "product_code" ? "↑↓" : ""}
-                                {sortConfig.key === "product_code" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "product_code"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "product_code"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("_fkSubID") && (
                               <th
-                                onClick={() => requestSort("subdivisionCode")}
+                                onClick={() => requestSort("subdivsion_code")}
                               >
                                 <strong>_fkSubID</strong>
-                                {sortConfig.key !== "subdivisionCode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivsion_code"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivsion_code"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -943,13 +1181,18 @@ const handlBuilderClick = (e) => {
                                 onClick={() => requestSort("subdivisionCode")}
                               >
                                 <strong>Price Change Since Open</strong>
-                                {sortConfig.key !== "subdivisionCode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "status"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "status"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                             </th>
                           )}
@@ -958,13 +1201,18 @@ const handlBuilderClick = (e) => {
                                 onClick={() => requestSort("subdivisionCode")}
                               >
                                 <strong>Price Change Last 12 Months</strong>
-                                {sortConfig.key !== "subdivisionCode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivisionCode"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivisionCode"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                             </th>
                   )}
@@ -976,7 +1224,6 @@ const handlBuilderClick = (e) => {
                             productList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -1122,74 +1369,6 @@ const handlBuilderClick = (e) => {
                         </tbody>
                       </table>
                     )}
-                <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {productListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
