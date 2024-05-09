@@ -688,7 +688,7 @@ const SubdivisionList = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Subdivision List</h4>
                       <div
@@ -840,6 +840,74 @@ const SubdivisionList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {BuilderListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -1277,7 +1345,7 @@ const SubdivisionList = () => {
                                   )}
                               </th>
                             )}
-                            {checkFieldExist("website") && (
+                            {checkFieldExist("Website") && (
                               <th>
                                 <strong> Website</strong>
                                 {sortConfig.some(
@@ -2106,74 +2174,6 @@ const SubdivisionList = () => {
                         </tbody>
                       </table>
                     )}
-                 <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {BuilderListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

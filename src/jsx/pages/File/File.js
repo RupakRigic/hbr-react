@@ -247,7 +247,7 @@ const File = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">File List</h4>
                       <div
@@ -288,140 +288,8 @@ const File = () => {
                       </Link>
                     </div>
                   </div>
-                  <div
-                    id="employee-tbl_wrapper"
-                    className="dataTables_wrapper no-footer"
-                  >
-                    {isLoading ? (
-                      <div className="d-flex justify-content-center align-items-center mb-5">
-                        <ClipLoader color="#4474fc" />
-                      </div>
-                    ) : (
-                      <table
-                        id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                      >
-                        <thead>
-                          <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <strong>No.</strong>
-                            </th>
-                            {checkFieldExist("Title") && (
-                              <th onClick={() => requestSort("name")}>
-                                <strong>
-                                  Title
-                                  {sortConfig.key !== "name" ? "↑↓" : ""}
-                                  {sortConfig.key === "name" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {/* {checkFieldExist("Title") && ( */}
-                              <th onClick={() => requestSort("created_at")}>
-                                <strong>
-                                created_at
-                                  {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                  {sortConfig.key === "created_at" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                              <th onClick={() => requestSort("csv")}>
-                                <strong>
-                                csv
-                                  {sortConfig.key !== "csv" ? "↑↓" : ""}
-                                  {sortConfig.key === "csv" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            {/* )}{" "} */}
-                            {checkFieldExist("Download") && (
-                              <th>
-                                <strong>Download</strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Action") && (
-                              <th className="d-flex justify-content-end">
-                                <strong>Action</strong>
-                              </th>
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody style={{ textAlign: "center" }}>
-                          {productList !== null && productList.length > 0 ? (
-                            productList.map((element, index) => (
-                              <tr style={{ textAlign: "center" }}>
-                                <td>{index + 1}</td>
-                                {checkFieldExist("Title") && (
-                                  <td>{element.name}</td>
-                                )}
-                                <td>{element.created_at}</td>
-                                <td>{element.csv}</td>
-                                {checkFieldExist("Download") && (
-                                  <td>
-                                    <a
-                                      href={
-                                        process.env.REACT_APP_IMAGE_URL +
-                                        "Files/" +
-                                        element.csv
-                                      }
-                                    >
-                                      Click Here
-                                    </a>
-                                  </td>
-                                )}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
-                                No data found
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    )}
-                    <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                    <div className="dataTables_info">
                         Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
                         {fileListCount} entries
                       </div>
@@ -488,6 +356,108 @@ const File = () => {
                         </Link>
                       </div>
                     </div>
+                  <div
+                    id="employee-tbl_wrapper"
+                    className="dataTables_wrapper no-footer"
+                  >
+                    {isLoading ? (
+                      <div className="d-flex justify-content-center align-items-center mb-5">
+                        <ClipLoader color="#4474fc" />
+                      </div>
+                    ) : (
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong>No.</strong>
+                            </th>
+                            {checkFieldExist("Title") && (
+                              <th onClick={() => requestSort("name")}>
+                                <strong>
+                                  Title
+                                  {sortConfig.key !== "name" ? "↑↓" : ""}
+                                  {sortConfig.key === "name" && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Download") && (
+                              <th>
+                                <strong>Download</strong>
+                              </th>
+                            )}
+                            {checkFieldExist("Action") && (
+                              <th className="d-flex justify-content-end">
+                                <strong>Action</strong>
+                              </th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {productList !== null && productList.length > 0 ? (
+                            productList.map((element, index) => (
+                              <tr style={{ textAlign: "center" }}>
+                                <td>{index + 1}</td>
+                                {checkFieldExist("Title") && (
+                                  <td>{element.name}</td>
+                                )}
+                                {checkFieldExist("Download") && (
+                                  <td>
+                                    <a
+                                      href={
+                                        process.env.REACT_APP_IMAGE_URL +
+                                        "Files/" +
+                                        element.csv
+                                      }
+                                    >
+                                      Click Here
+                                    </a>
+                                  </td>
+                                )}
+                                {checkFieldExist("Action") && (
+                                  <td>
+                                    <div>
+                                      <Link
+                                        onClick={() =>
+                                          swal({
+                                            title: "Are you sure?",
+
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                          }).then((willDelete) => {
+                                            if (willDelete) {
+                                              handleDelete(element.id);
+                                            }
+                                          })
+                                        }
+                                        className="btn btn-danger shadow btn-xs sharp"
+                                      >
+                                        <i className="fa fa-trash"></i>
+                                      </Link>
+                                    </div>
+                                  </td>
+                                )}
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ textAlign: "center" }}>
+                                No data found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </div>
               </div>

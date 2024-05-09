@@ -27,7 +27,7 @@ const PermitList = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
 
@@ -285,10 +285,16 @@ const PermitList = () => {
   }
 
   const permit = useRef();
-
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getPermitList = async (currentPage) => {
     try {
-      const response = await AdminPermitService.index(currentPage, searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminPermitService.index(currentPage,sortConfigString,searchQuery);
       const responseData = await response.json();
       setPermitList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -449,50 +455,19 @@ const PermitList = () => {
 
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getPermitList(currentPage, sortConfig);
   };
-  const sortedData = () => {
-    return permitList;
-    // if (sortConfig.key !== "") {
-    //   sorted.sort((a, b) => {
-    //     let aValue = a[sortConfig.key];
-    //     let bValue = b[sortConfig.key];
 
-    //     if (sortConfig.key === "builderName") {
-    //       aValue =
-    //         (a.subdivision &&
-    //           a.subdivision.builder &&
-    //           a.subdivision.builder.name) ||
-    //         "";
-    //       bValue =
-    //         (b.subdivision &&
-    //           b.subdivision.builder &&
-    //           b.subdivision.builder.name) ||
-    //         "";
-    //     } else if (sortConfig.key === "subdivisionName") {
-    //       aValue = (a.subdivision && a.subdivision.name) || "";
-    //       bValue = (b.subdivision && b.subdivision.name) || "";
-    //     }
-
-    //     aValue = typeof aValue === "string" ? aValue.toLowerCase() : aValue;
-    //     bValue = typeof bValue === "string" ? bValue.toLowerCase() : bValue;
-
-    //     // Sorting logic
-    //     if (aValue === bValue) return 0;
-    //     return sortConfig.direction === "asc"
-    //       ? aValue < bValue
-    //         ? -1
-    //         : 1
-    //       : aValue > bValue
-    //       ? -1
-    //       : 1;
-    //   });
-    // }
-    // return sorted;
-  };
   const exportToExcelData = async () => {
     try {
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
@@ -533,7 +508,7 @@ const PermitList = () => {
             <div className="card" style={{ overflow: "auto" }}>
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Permit List</h4>
                       <div
@@ -597,6 +572,74 @@ const PermitList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {permitListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -1120,74 +1163,6 @@ const PermitList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {permitListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

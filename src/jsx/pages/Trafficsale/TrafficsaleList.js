@@ -26,7 +26,7 @@ const TrafficsaleList = () => {
   const [TotaltrafficListCount, setTotalTrafficListCount] = useState('');
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,11 +52,11 @@ const TrafficsaleList = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "traffic" });
 
   useEffect(() => {
-    console.log('data trafficsaleList : ',fieldList); // You can now use fieldList in this component
+    console.log('data trafficsaleList : ',fieldList);
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
@@ -267,10 +267,16 @@ const TrafficsaleList = () => {
   }
 
   const trafficsale = useRef();
-
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const gettrafficsaleList = async (currentPage) => {
     try {
-      const response = await AdminTrafficsaleService.index(currentPage,searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminTrafficsaleService.index(currentPage,sortConfigString,searchQuery);
       const responseData = await response.json();
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -336,7 +342,7 @@ const TrafficsaleList = () => {
     setIsLoading(true);
     const query = e.target.value.trim();
     if (query) {
-      debouncedHandleSearch(`?q=${query}`);
+      debouncedHandleSearch(`&q=${query}`);
     } else {
       setSearchQuery("");
     }
@@ -362,7 +368,7 @@ const TrafficsaleList = () => {
       )
       .join("&");
 
-    return queryString ? `?${queryString}` : "";
+    return queryString ? `&${queryString}` : "";
   };
 
   const HandleCancelFilter = (e) => {
@@ -374,110 +380,20 @@ const TrafficsaleList = () => {
 
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
-    }
-    setSortConfig({ key, direction });
-  };
-  const sortedData = () => {
-    const sorted = [...trafficsaleList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
-
-        if (
-          sortConfig.key === "builderName" &&
-          a.subdivision.builder &&
-          b.subdivision.builder
-        ) {
-          aValue = String(a.subdivision.builder.name).toLowerCase();
-          bValue = String(b.subdivision.builder.name).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionName" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.name).toLowerCase();
-          bValue = String(b.subdivision.name).toLowerCase();
-        }
-        if (sortConfig.key === "zipCode" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.zipcode).toLowerCase();
-          bValue = String(b.subdivision.zipcode).toLowerCase();
-        }
-        if (sortConfig.key === "lotWidth" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.lotwidth).toLowerCase();
-          bValue = String(b.subdivision.lotwidth).toLowerCase();
-        }
-        if (sortConfig.key === "lotsize" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.lotsize).toLowerCase();
-          bValue = String(b.subdivision.lotsize).toLowerCase();
-        }
-        if (sortConfig.key === "zoning" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.zoning).toLowerCase();
-          bValue = String(b.subdivision.zoning).toLowerCase();
-        }
-        if (sortConfig.key === "age" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.age).toLowerCase();
-          bValue = String(b.subdivision.age).toLowerCase();
-        }
-        if (sortConfig.key === "stories" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.single).toLowerCase();
-          bValue = String(b.subdivision.single).toLowerCase();
-        }
-        if (sortConfig.key === "masterPlan" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.masterplan_id).toLowerCase();
-          bValue = String(b.subdivision.masterplan_id).toLowerCase();
-        }
-        if (sortConfig.key === "area" && a.subdivision && b.subdivision) {
-          aValue = String(a.subdivision.area).toLowerCase();
-          bValue = String(b.subdivision.area).toLowerCase();
-        }
-        if (
-          sortConfig.key === "productType" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.product_type).toLowerCase();
-          bValue = String(b.subdivision.product_type).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionCode" &&
-          a.subdivision &&
-          b.subdivision
-        ) {
-          aValue = String(a.subdivision.subdivision_code).toLowerCase();
-          bValue = String(b.subdivision.subdivision_code).toLowerCase();
-        }
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    return sorted;
+    setSortConfig(newSortConfig);
+    gettrafficsaleList(currentPage, sortConfig);
   };
+
+
   const getbuilderlist = async () => {
     try {
       const response = await AdminSubdevisionService.index(searchQuery);
@@ -541,7 +457,7 @@ const TrafficsaleList = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-3">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">
                         Weekly Traffic & Sales List
@@ -648,6 +564,74 @@ const TrafficsaleList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {trafficListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -912,11 +896,10 @@ const TrafficsaleList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {trafficsaleList !== null && trafficsaleList.length > 0 ? (
+                            trafficsaleList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -1064,74 +1047,6 @@ const TrafficsaleList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {trafficListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

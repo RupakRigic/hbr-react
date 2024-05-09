@@ -128,10 +128,10 @@ const PriceList = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPage = 10;
+  const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);
@@ -152,10 +152,16 @@ const PriceList = () => {
   }
 
   const product = useRef();
-
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getpriceList = async (pageNumber) => {
     try {
-      const response = await AdminPriceService.index(pageNumber,searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminPriceService.index(pageNumber,sortConfigString,searchQuery);
       const responseData = await response.json();
       setIsLoading(false);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -230,179 +236,17 @@ const PriceList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
-  };
-  const sortedData = () => {
-    const sorted = [...priceList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-
-        if (aValue === null || bValue === null) {
-          aValue = aValue || "";
-          bValue = bValue || "";
-        }
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === "string") {
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortConfig.key === "productName" && a.product && b.product) {
-          aValue = String(a.product.name).toLowerCase();
-          bValue = String(b.product.name).toLowerCase();
-        }
-
-        if (sortConfig.key === "productCode" && a.product && b.product) {
-          aValue = String(a.product.product_code).toLowerCase();
-          bValue = String(b.product.product_code).toLowerCase();
-        }
-        if (
-          sortConfig.key === "builderName" &&
-          a.product.subdivision.builder &&
-          b.product.subdivision.builder
-        ) {
-          aValue = String(a.product.subdivision.builder.name).toLowerCase();
-          bValue = String(b.product.subdivision.builder.name).toLowerCase();
-        }
-        if (sortConfig.key === "sqft" && a.product.sqft && b.product.sqft) {
-          aValue = String(a.product.sqft).toLowerCase();
-          bValue = String(b.product.sqft).toLowerCase();
-        }
-        if (
-          sortConfig.key === "stories" &&
-          a.product.stories &&
-          b.product.stories
-        ) {
-          aValue = String(a.product.stories).toLowerCase();
-          bValue = String(b.product.stories).toLowerCase();
-        }
-        if (
-          sortConfig.key === "garage" &&
-          a.product.garage &&
-          b.product.garage
-        ) {
-          aValue = String(a.product.garage).toLowerCase();
-          bValue = String(b.product.garage).toLowerCase();
-        }
-        if (
-          sortConfig.key === "bathroom" &&
-          a.product.bathroom &&
-          b.product.bathroom
-        ) {
-          aValue = String(a.product.bathroom).toLowerCase();
-          bValue = String(b.product.bathroom).toLowerCase();
-        }
-        if (
-          sortConfig.key === "perSQFT" &&
-          a.product.recentpricesqft &&
-          b.product.recentpricesqft
-        ) {
-          aValue = String(a.product.recentpricesqft).toLowerCase();
-          bValue = String(b.product.recentpricesqft).toLowerCase();
-        }
-        if (
-          sortConfig.key === "productType" &&
-          a.product.subdivision.product_type &&
-          b.product.subdivision.product_type
-        ) {
-          aValue = String(a.product.subdivision.product_type).toLowerCase();
-          bValue = String(b.product.subdivision.product_type).toLowerCase();
-        }
-        if (
-          sortConfig.key === "area" &&
-          a.product.subdivision.area &&
-          b.product.subdivision.area
-        ) {
-          aValue = String(a.product.subdivision.area).toLowerCase();
-          bValue = String(b.product.subdivision.area).toLowerCase();
-        }
-        if (
-          sortConfig.key === "bedroom" &&
-          a.product.bedroom &&
-          b.product.bedroom
-        ) {
-          aValue = String(a.product.bedroom).toLowerCase();
-          bValue = String(b.product.bedroom).toLowerCase();
-        }
-
-        if (
-          sortConfig.key === "lotWidth" &&
-          a.product.subdivision.lotwidth &&
-          b.product.subdivision.lotwidth
-        ) {
-          aValue = String(a.product.subdivision.lotwidth).toLowerCase();
-          bValue = String(b.product.subdivision.lotwidth).toLowerCase();
-        }
-        if (
-          sortConfig.key === "lotsize" &&
-          a.product.subdivision.lotsize &&
-          b.product.subdivision.lotsize
-        ) {
-          aValue = String(a.product.subdivision.lotsize).toLowerCase();
-          bValue = String(b.product.subdivision.lotsize).toLowerCase();
-        }
-        if (
-          sortConfig.key === "zoning" &&
-          a.product.subdivision.zoning &&
-          b.product.subdivision.zoning
-        ) {
-          aValue = String(a.product.subdivision.zoning).toLowerCase();
-          bValue = String(b.product.subdivision.zoning).toLowerCase();
-        }
-        if (
-          sortConfig.key === "ageRestricted" &&
-          a.product.subdivision.age &&
-          b.product.subdivision.age
-        ) {
-          aValue = String(a.product.subdivision.age).toLowerCase();
-          bValue = String(b.product.subdivision.age).toLowerCase();
-        }
-        if (
-          sortConfig.key === "stories" &&
-          a.product.subdivision.stories &&
-          b.product.subdivision.stories
-        ) {
-          aValue = String(a.product.subdivision.stories).toLowerCase();
-          bValue = String(b.product.subdivision.stories).toLowerCase();
-        }
-        if (
-          sortConfig.key === "_fkProductID" &&
-          a.product.product_code &&
-          b.product.product_code
-        ) {
-          aValue = String(a.product.product_code).toLowerCase();
-          bValue = String(b.product.product_code).toLowerCase();
-        }
-        if (
-          sortConfig.key === "subdivisionName" &&
-          a.product.subdivision &&
-          b.product.subdivision
-        ) {
-          aValue = String(a.product.subdivision.name).toLowerCase();
-          bValue = String(b.product.subdivision.name).toLowerCase();
-        }
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          if (sortConfig.direction === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
-        } else {
-          if (sortConfig.direction === "asc") {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        }
-      });
-    }
-    return sorted;
+    setSortConfig(newSortConfig);
+    getpriceList(currentPage, sortConfig);
   };
 
   const handleFileChange = async (e) => {
@@ -495,7 +339,7 @@ const PriceList = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Base Price List</h4>
                       <div
@@ -551,6 +395,74 @@ const PriceList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {productListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                    </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -857,8 +769,8 @@ const PriceList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {priceList !== null && priceList.length > 0 ? (
+                            priceList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
                                 key={element.id}
@@ -1004,74 +916,6 @@ const PriceList = () => {
                         </tbody>
                       </table>
                     )}
-            <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {productListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

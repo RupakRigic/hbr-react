@@ -130,7 +130,7 @@ const UserList = () => {
     role: "",
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState([]);
 
   function prePage() {
     if (currentPage !== 1) {
@@ -147,9 +147,16 @@ const UserList = () => {
   }
 
   const product = useRef();
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
   const getuserList = async () => {
     try {
-      const response = await AdminUserRoleService.index(currentPage,searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminUserRoleService.index(currentPage,sortConfigString,searchQuery);
       const responseData = await response.json();
       setUserList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -215,7 +222,7 @@ const UserList = () => {
     setIsLoading(true);
     const query = e.target.value.trim();
     if (query) {
-      debouncedHandleSearch(`?q=${query}`);
+      debouncedHandleSearch(`&q=${query}`);
     } else {
       setSearchQuery("");
     }
@@ -240,7 +247,7 @@ const UserList = () => {
       )
       .join("&");
 
-    return queryString ? `?${queryString}` : "";
+    return queryString ? `&${queryString}` : "";
   };
 
   const HandleCancelFilter = (e) => {
@@ -250,61 +257,19 @@ const UserList = () => {
   };
   const requestSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
+
+    const newSortConfig = [...sortConfig];
+    const keyIndex = sortConfig.findIndex((item) => item.key === key);
+    if (keyIndex !== -1) {
+      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+      newSortConfig[keyIndex].direction = direction;
+    } else {
+      newSortConfig.push({ key, direction });
     }
-    setSortConfig({ key, direction });
+    setSortConfig(newSortConfig);
+    getuserList(currentPage, sortConfig);
   };
-  const sortedData = () => {
-    const sorted = [...userList];
-    if (sortConfig.key !== "") {
-      sorted.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
 
-        if (sortConfig.key === "role") {
-          aValue = a.roles
-            .map((role) => role.name)
-            .join(", ")
-            .toLowerCase();
-          bValue = b.roles
-            .map((role) => role.name)
-            .join(", ")
-            .toLowerCase();
-        } else {
-          if (aValue === null || bValue === null) {
-            aValue = aValue || "";
-            bValue = bValue || "";
-          }
-          if (typeof aValue === "string") {
-            aValue = aValue.toLowerCase();
-          }
-          if (typeof bValue === "string") {
-            bValue = bValue.toLowerCase();
-          }
-        }
-
-        if (sortConfig.key === "builderName") {
-          aValue = (a.builder && a.builder.name) || "";
-          bValue = (b.builder && b.builder.name) || "";
-        } else if (sortConfig.key === "subdivisionName") {
-          aValue = (a.builder && a.builder.name) || "";
-          bValue = (b.builder && b.builder.name) || "";
-        }
-
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          return sortConfig.direction === "asc"
-            ? aValue - bValue
-            : bValue - aValue;
-        } else {
-          return sortConfig.direction === "asc"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        }
-      });
-    }
-    return sorted;
-  };
 
   return (
     <>
@@ -315,7 +280,7 @@ const UserList = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
+                <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">User List</h4>
                       <div
@@ -398,6 +363,74 @@ const UserList = () => {
                       </Link>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                      <div className="dataTables_info">
+                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        {userListCount} entries
+                      </div>
+                      <div
+                        className="dataTables_paginate paging_simple_numbers justify-content-center"
+                        id="example2_paginate"
+                      >
+                        <Link
+                          className="paginate_button previous disabled"
+                          to="#"
+                          onClick={prePage}
+                        >
+                          <i className="fa-solid fa-angle-left" />
+                        </Link>
+                        <span>
+                          {number.map((n, i) => {
+                            if (number.length > 4) {
+                              if (
+                                i === 0 ||
+                                i === number.length - 1 ||
+                                Math.abs(currentPage - n) <= 1 ||
+                                (i === 1 && n === 2) ||
+                                (i === number.length - 2 &&
+                                  n === number.length - 1)
+                              ) {
+                                return (
+                                  <Link
+                                    className={`paginate_button ${
+                                      currentPage === n ? "current" : ""
+                                    } `}
+                                    key={i}
+                                    onClick={() => changeCPage(n)}
+                                  >
+                                    {n}
+                                  </Link>
+                                );
+                              } else if (i === 1 || i === number.length - 2) {
+                                return <span key={i}>...</span>;
+                              } else {
+                                return null;
+                              }
+                            } else {
+                              return (
+                                <Link
+                                  className={`paginate_button ${
+                                    currentPage === n ? "current" : ""
+                                  } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            }
+                          })}
+                        </span>
+
+                        <Link
+                          className="paginate_button next"
+                          to="#"
+                          onClick={nextPage}
+                        >
+                          <i className="fa-solid fa-angle-right" />
+                        </Link>
+                      </div>
+                    </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -476,11 +509,10 @@ const UserList = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {sortedData() !== null && sortedData().length > 0 ? (
-                            sortedData().map((element, index) => (
+                          {userList !== null && userList.length > 0 ? (
+                            userList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -559,74 +591,7 @@ const UserList = () => {
                         </tbody>
                       </table>
                     )}
-                    <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {userListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                    </div>
+     
                   </div>
                 </div>
               </div>
