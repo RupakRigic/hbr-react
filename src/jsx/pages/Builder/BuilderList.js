@@ -579,10 +579,33 @@ const BuilderTable = () => {
       setSelectedFileError("Please select a CSV file.");
     }
   };
+  const [items, setItems] = useState(['Item 1', 'Item 2', 'Item 3']);
   const handlBuilderClick = (e) => {
     setShow(true);
   };
+  const handleDragStart = (index) => (event) => {
+    event.dataTransfer.setData('index', index);
+  };
 
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const sourceIndex = event.dataTransfer.getData('index');
+    const targetIndex = event.currentTarget.dataset.index;
+
+    // Create a copy of the items array
+    const newItems = [...items];
+    // Remove the dragged item from its original position
+    const [draggedItem] = newItems.splice(sourceIndex, 1);
+    // Insert the dragged item at the drop target position
+    newItems.splice(targetIndex, 0, draggedItem);
+
+    // Update the state with the new order of items
+    setItems(newItems);
+  };
   return (
     <>
       {/* <MainPagetitle
@@ -634,9 +657,15 @@ const BuilderTable = () => {
                             className="btn btn-primary btn-sm me-1"
                           >
                             {" "}
+                            Column Sequencing
+                          </button>
+                          <button
+                            onClick={() => setExportModelShow(true)}
+                            className="btn btn-primary btn-sm me-1"
+                          >
+                            {" "}
                             <i class="fas fa-file-excel"></i>
                           </button>
-
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
