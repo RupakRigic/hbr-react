@@ -1,8 +1,8 @@
 import ky from 'ky';
 class HTTPError extends Error {}
 const client = ky.extend({
-   prefixUrl: "http://127.0.0.1:8000/api/",
-  // prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
+    prefixUrl: "http://127.0.0.1:8000/api/",
+  //prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
   hooks: {
     beforeRequest: [
       (request) => {
