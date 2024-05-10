@@ -286,7 +286,7 @@ const BuilderTable = () => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
 
-  const getbuilderlist = async (pageNumber) => {
+  const getbuilderlist = async (pageNumber,searchQuery) => {
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -315,7 +315,7 @@ const BuilderTable = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist(currentPage);
+      getbuilderlist(currentPage,searchQuery);
     } else {
       navigate("/");
     }
@@ -393,11 +393,11 @@ const BuilderTable = () => {
     }
   };
 
-  const debouncedHandleSearch = useRef(
-    debounce((value) => {
-      setSearchQuery(value);
-    }, 1000)
-  ).current;
+  // const debouncedHandleSearch = useRef(
+  //   debounce((value) => {
+  //     setSearchQuery(value);
+  //   }, 1000)
+  // ).current;
 
   // useEffect(() => {
   //   getbuilderlist();
@@ -411,14 +411,14 @@ const BuilderTable = () => {
   {
     e.preventDefault();
     console.log(555);
-    getbuilderlist(searchQuery);
+    getbuilderlist(currentPage,searchQuery);
   };
 
-  const HandleSearch = (e) => {
-    setIsLoading(true);
-    const query = e.target.value.trim();
-    debouncedHandleSearch(`&q=${query}`);
-  };
+  // const HandleSearch = (e) => {
+  //   setIsLoading(true);
+  //   const query = e.target.value.trim();
+  //   debouncedHandleSearch(`&q=${query}`);
+  // };
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -440,10 +440,25 @@ const BuilderTable = () => {
   };
 
   const HandleCancelFilter = (e) => {
-    setFilterQuery({
-      is_active: "",
-      company_type: "",
-    });
+    setFilterQuery(
+      {
+        name :"",
+        is_active: "",
+        active_communities:"",
+        closing_this_year:"",
+        permits_this_year:"",
+        net_sales_this_year:"",
+        current_avg_base_Price:"",
+        avg_net_sales_per_month_this_year:"",
+        avg_closings_per_month_this_year:"",
+        company_type: "",
+        city:"",
+        zipcode:"",
+        officeaddress1:"",
+        coporate_officeaddress_zipcode:"",
+        stock_market:""
+      });
+      getbuilderlist(currentPage,searchQuery);
   };
   const handleDetailRedirectClick = () => {
     navigate("/subdivisionlist");
@@ -635,7 +650,7 @@ const BuilderTable = () => {
                             borderTopLeftRadius: "0",
                             borderBottomLeftRadius: "0",
                           }}
-                          onChange={HandleSearch}
+                          // onChange={HandleSearch}
                           placeholder="Quick Search"
                         />
                       </div>
@@ -689,7 +704,7 @@ const BuilderTable = () => {
                                   BUILDER NAME:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="name" className="form-control" onChange={HandleFilter}/>
+                                <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                   <label className="form-label">
@@ -714,91 +729,91 @@ const BuilderTable = () => {
                                 ACTIVE COMMUNITIES :{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="active_communities" className="form-control"  onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 CLOSINGS THIS YEAR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="closing_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 PERMITS THIS YEAR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="permits_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 NET SALES THIS YEAR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 CURRENT AVG BASE PRICE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 AVG NET SALES PER MONTH THIS YEAR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 AVG CLOSINGS PER MONTH THIS YEAR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="number" value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 COMPANY TYPE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="name" className="form-control"/>
+                                <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
                                 LV OFFICE CITY:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="city" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.city} name="city" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3 ">
                                 <label className="form-label">
                                 LV OFFICE ZIP:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="zipcode" className="form-control"/>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3 mb-3">
                                 <label className="form-label">
                                 CORPORATE OFFICE STATE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.coporate_officeaddress_1} name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3 mb-3">
                                 <label className="form-label">
                                 CORPORATE OFFICE ZIP:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.coporate_officeaddress_zipcode} name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3 mb-3">
                                 <label className="form-label">
                                 STOCK MARKET:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="stock_market" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
                               </div>
                              </div>
                              </form>
@@ -1593,7 +1608,7 @@ const BuilderTable = () => {
                                   </strong>
                                 </th>
                               )}
-                              {checkFieldExist("Date Of First Closing") && (
+                              {checkFieldExist("Date Of Latest Closing") && (
                                 <th
                                   onClick={() =>
                                     requestSort("date_of_latest_closing")

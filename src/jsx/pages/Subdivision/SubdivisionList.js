@@ -443,9 +443,15 @@ const SubdivisionList = () => {
     }, 1000)
   ).current;
 
-  useEffect(() => {
-    getbuilderlist();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   getbuilderlist();
+  // }, [searchQuery]);
+  const HandleFilterForm = (e) =>
+    {
+      e.preventDefault();
+      console.log(555);
+      getbuilderlist(currentPage,searchQuery);
+    };
 
   const HandleSearch = (e) => {
     setIsLoading(true);
@@ -456,6 +462,7 @@ const SubdivisionList = () => {
   useEffect(() => {
     setSearchQuery(filterString());
   }, [filterQuery]);
+
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -477,12 +484,25 @@ const SubdivisionList = () => {
   };
 
   const HandleCancelFilter = (e) => {
-    setFilterQuery({
-      status: "",
-      product_type: "",
-      reporting: "",
-      builder_id:"",
-    });
+    setFilterQuery(
+      {
+        name :"",
+        is_active: "",
+        active_communities:"",
+        closing_this_year:"",
+        permits_this_year:"",
+        net_sales_this_year:"",
+        current_avg_base_Price:"",
+        avg_net_sales_per_month_this_year:"",
+        avg_closings_per_month_this_year:"",
+        company_type: "",
+        city:"",
+        zipcode:"",
+        officeaddress1:"",
+        coporate_officeaddress_zipcode:"",
+        stock_market:""
+      });
+      getbuilderlist(currentPage,searchQuery);
   };
 
   const [value, setValue] = React.useState("1");
@@ -745,88 +765,161 @@ const SubdivisionList = () => {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
-                          <h5 className="">Filter Options</h5>
-                          <div className="border-top">
-                            <div className="mt-3">
-                              <label className="form-label">
-                                Builder: <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.builder_id}
-                                name="builder_id"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                {builderListDropDown.map((element) => (
-                                  <option value={element.id}>
-                                    {element.name}
-                                  </option>
-                                ))}
-                              </select>
+                        <Dropdown.Menu style={{ width: '1500px' }}>
+                        <h5 className="">Filter Options</h5>
+                              <div className="border-top">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    STATUS:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="status"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Sold Out</option>
+                                    <option value="2">Future</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    REPORTING:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="status"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ACTIVE COMMUNITIES :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                CLOSINGS THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PERMITS THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                NET SALES THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                CURRENT AVG BASE PRICE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AVG NET SALES PER MONTH THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AVG CLOSINGS PER MONTH THIS YEAR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                COMPANY TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LV OFFICE CITY:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.city} name="city" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                                <label className="form-label">
+                                LV OFFICE ZIP:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                CORPORATE OFFICE STATE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.coporate_officeaddress_1} name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                CORPORATE OFFICE ZIP:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.coporate_officeaddress_zipcode} name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                STOCK MARKET:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                             </div>
+                             </form>
                             </div>
-                            <div className="mt-3 mb-1">
-                              <label className="form-label">
-                                Status: <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.status}
-                                name="status"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                <option value="1">Active</option>
-                                <option value="0">Sold Out</option>
-                                <option value="2">Future</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Product Type:{" "}
-                              <span className="text-danger"></span>
-                            </label>
-                            <select
-                              className="default-select form-control"
-                              name="product_type"
-                              value={filterQuery.product_type}
-                              onChange={HandleFilter}
-                            >
-                              <option value="">All</option>
-                              <option value="DET">DET</option>
-                              <option value="ATT">ATT</option>
-                              <option value="HR">HR</option>
-                              <option value="AC">AC</option>
-                            </select>
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Reporting: <span className="text-danger"></span>
-                            </label>
-                            <select
-                              className="default-select form-control"
-                              name="reporting"
-                              value={filterQuery.reporting}
-                              onChange={HandleFilter}
-                            >
-                              <option value="">All</option>
-                              <option value="1">Yes</option>
-                              <option value="0">No</option>
-                            </select>
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-sm"
-                              onClick={HandleCancelFilter}
-                              variant="secondary"
-                            >
-                              Reset
-                            </Button>
-                          </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                              </div>
                         </Dropdown.Menu>
                       </Dropdown>
 
