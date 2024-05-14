@@ -764,48 +764,6 @@ const BuilderTable = () => {
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
-                                CLOSINGS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                PERMITS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                NET SALES THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                CURRENT AVG BASE PRICE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                AVG NET SALES PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                AVG CLOSINGS PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
                                 COMPANY TYPE:{" "}
                                   <span className="text-danger"></span>
                                 </label>

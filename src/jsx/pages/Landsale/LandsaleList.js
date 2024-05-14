@@ -765,6 +765,69 @@ const LandsaleList = () => {
                                 </strong>
                               </th>
                             )}{" "}
+                            {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("noofunit")}>
+                                <strong>
+                                  {" "}
+                                  SIZE
+                                  {sortConfig.some(
+                                  (item) => item.key === "noofunit"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "noofunit"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("price_per")}>
+                                <strong>
+                                  {" "}
+                                  Price Per
+                                  {sortConfig.some(
+                                  (item) => item.key === "price_per"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "price_per"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                              {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("typeofunit")}>
+                                <strong>
+                                  {" "}
+                                  Size MS
+                                  {sortConfig.some(
+                                  (item) => item.key === "typeofunit"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "typeofunit"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
                             {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("date")}>
                                 <strong>
@@ -832,8 +895,22 @@ const LandsaleList = () => {
                                 )}{" "}
                                 {checkFieldExist("Price") && (
                                   <td>
-                                    <PriceComponent price={element.price} />/{" "}
-                                    {element.typeofunit}
+                                    <PriceComponent price={element.price} />{" "}
+                                  </td>
+                                )}{" "}
+                                  {checkFieldExist("Price") && (
+                                  <td>
+                                    {element.noofunit}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Price") && (
+                                  <td>
+                                    <PriceComponent price={element.price_per} />
+                                  </td>
+                                )}{" "}
+                                  {checkFieldExist("Price") && (
+                                  <td>
+                                      {element.typeofunit}
                                   </td>
                                 )}{" "}
                                 {checkFieldExist("Date") && (
