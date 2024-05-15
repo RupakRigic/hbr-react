@@ -24,6 +24,24 @@ import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import multiColumnSort from "multi-column-sort";
 
 const BuilderTable = () => {
+
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+        setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+        setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+};
+
+const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+};
+const [showSort, setShowSort] = useState(false);
+const handleSortClose = () => setShowSort(false);
+
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [searchQuery, setSearchQuery] = useState("");
@@ -132,7 +150,7 @@ const BuilderTable = () => {
     { label: "Logo", key: "Logo" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
-    { label: "Company Type", key: "companytype" },
+    { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
     { label: "LV office Email", key: "email" },
     { label: "LV office address", key: "officeaddress1" },
@@ -141,6 +159,7 @@ const BuilderTable = () => {
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office Address 2", key: "coporate_officeaddress_2" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_office_state" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
@@ -276,6 +295,10 @@ const BuilderTable = () => {
   });
   const [data, setData] = useState([]); // Your data state
   const [sortConfig, setSortConfig] = useState([]); // Your sort configuration state
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
 
   const builder = useRef();
   const [value, setValue] = React.useState("1");
@@ -620,6 +643,11 @@ const BuilderTable = () => {
   const handlBuilderClick = (e) => {
     setShow(true);
   };
+
+  const HandleSortDetailClick = (e) =>
+  {
+      setShowSort(true);
+  }
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData('index', index);
   };
@@ -695,6 +723,13 @@ const BuilderTable = () => {
                             {" "}
                             Column Sequencing
                           </button> */}
+                           <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
                           <button
                             onClick={() => setExportModelShow(true)}
                             className="btn btn-primary btn-sm me-1"
@@ -1881,6 +1916,50 @@ const BuilderTable = () => {
             disabled={loading}
           >
             {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                  {/* {col.key}  */}
+                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>

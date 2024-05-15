@@ -25,6 +25,26 @@ import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
  
 
 const ProductList = () => {
+
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [showSort, setShowSort] = useState(false);
+ const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,16 +85,16 @@ const ProductList = () => {
     { label: 'Price Change Last 12 Months', key: 'fksubid' }, 
   ];
   const columns = [
-    { label: 'Status', key: 'Status' },
-    { label: 'Builder Name', key: 'buildername' },
-    { label: 'Subdivision Name', key: 'subdivname' },
-    { label: 'Product Name', key: 'producutname' },
-    { label: 'Square Footage', key: 'squarefootage' },
+    { label: 'Status', key: 'status' },
+    { label: 'Builder Name', key: 'builderName' },
+    { label: 'Subdivision Name', key: 'subdivisionName' },
+    { label: 'Product Name', key: 'name' },
+    { label: 'Square Footage', key: 'sqft' },
     { label: 'Stories', key: 'stories' },
-    { label: 'Bed Rooms', key: 'bedrooms' },
-    { label: 'Bath Rooms', key: 'bathrooms' },
+    { label: 'Bed Rooms', key: 'bedroom' },
+    { label: 'Bath Rooms', key: 'bathroom' },
     { label: 'Garage', key: 'garage' },
-    { label: 'Current Base Price', key: 'currentbaseprice' },
+    { label: 'Current Base Price', key: 'latestBasePrice' },
     { label: 'Current Price Per SQFT', key: 'currentprice' },
     { label: 'Product Website', key: 'productwebsite' },
     { label: 'Product Type', key: 'producttype' },
@@ -177,6 +197,10 @@ const ProductList = () => {
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -606,7 +630,13 @@ const HandleFilterForm = (e) =>
                     </div>
 
                     <div className="d-flex">
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
                       <button
@@ -1918,6 +1948,48 @@ const HandleFilterForm = (e) =>
           <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

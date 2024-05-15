@@ -26,6 +26,22 @@ import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 
 const SubdivisionList = () => {
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+        setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+        setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+};
+
+const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+};
+const [showSort, setShowSort] = useState(false);
+const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -136,32 +152,32 @@ const SubdivisionList = () => {
     { label: 'Year Net Sold', key: 'year_net_sold' }
   ];
   const columns = [
-    { label: 'Status', key: 'firstname' },
-    { label: 'Reporting', key: 'lastname' },
-    { label: 'Builder', key: 'nickname' },
-    { label: 'Name', key: 'zipcode' },
-    { label: 'Product Type', key: 'city' },
-    { label: 'Area', key: 'with' },
-    { label: 'Masterplan', key: 'without' },
-    { label: 'Zipcode', key: 'reentries' },
-    { label: 'Total Lots', key: 'rakes' },
-    { label: 'Lot Width', key: 'firstname' },
-    { label: 'Lot Size', key: 'lastname' },
-    { label: 'Zoning', key: 'nickname' },
-    { label: 'Age Restricted', key: 'zipcode' },
-    { label: 'All Single Story', key: 'city' },
-    { label: 'Gated', key: 'with' },
-    { label: 'Location', key: 'without' },
-    { label: 'Juridiction', key: 'reentries' },
-    { label: 'Latitude', key: 'rakes' },
-    { label: 'Longitude', key: 'zipcode' },
-    { label: 'Gas Provider', key: 'city' },
-    { label: 'HOA Fee', key: 'with' },
-    { label: 'Masterplan Fee', key: 'without' },
-    { label: 'Parcel Group', key: 'reentries' },
-    { label: 'Phone', key: 'rakes' },
-    { label: 'Website', key: 'with' },
-    { label: 'FK Builder Id', key: 'BuilderID' },
+    { label: 'Status', key: 'is_active' },
+    { label: 'Reporting', key: 'reporting' },
+    { label: 'Builder', key: 'builder_name' },
+    { label: 'Name', key: 'name' },
+    { label: 'Product Type', key: 'product_type' },
+    { label: 'Area', key: 'area' },
+    { label: 'Masterplan', key: 'masteplan_id' },
+    { label: 'Zipcode', key: 'zipcode' },
+    { label: 'Total Lots', key: 'totallots' },
+    { label: 'Lot Width', key: 'lotwidth' },
+    { label: 'Lot Size', key: 'lotsize' },
+    { label: 'Zoning', key: 'zoning' },
+    { label: 'Age Restricted', key: 'age' },
+    { label: 'All Single Story', key: 'single' },
+    { label: 'Gated', key: 'gated' },
+    { label: 'Location', key: 'location' },
+    { label: 'Juridiction', key: 'juridiction' },
+    { label: 'Latitude', key: 'lat' },
+    { label: 'Longitude', key: 'lng' },
+    { label: 'Gas Provider', key: 'gasprovider' },
+    { label: 'HOA Fee', key: 'hoafee' },
+    { label: 'Masterplan Fee', key: 'masterplanfee' },
+    { label: 'Parcel Group', key: 'parcel' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Website', key: 'website' },
+    { label: 'FK Builder Id', key: 'builder_code' },
     { label: 'Total Closings', key: 'total_closings' },
     { label: 'Total Permits', key: 'total_permits' },
     { label: 'Total Net Sales', key: 'total_net_sales' },
@@ -192,7 +208,8 @@ const SubdivisionList = () => {
     { label: 'Sqft Group', key: 'sqft_group' },
     { label: 'Price Group', key: 'price_group' },
     { label: 'Month Net Sold', key: 'month_net_sold' },
-    { label: 'Year Net Sold', key: 'year_net_sold' }
+    { label: 'Year Net Sold', key: 'year_net_sold' },
+    { label: 'Date Added', key: 'created_at' }
   ];
  
   const handleColumnToggle = (column) => {
@@ -341,7 +358,10 @@ const SubdivisionList = () => {
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
-  
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -355,6 +375,10 @@ const SubdivisionList = () => {
       setCurrentPage(currentPage + 1);
     }
   }
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
   const subdivision = useRef();
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -753,6 +777,13 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                    
@@ -2160,6 +2191,48 @@ const SubdivisionList = () => {
             disabled={loading}
           >
             {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>
