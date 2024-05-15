@@ -28,8 +28,7 @@ const TrafficsaleList = () => {
   const HandleFilterForm = (e) =>
     {
       e.preventDefault();
-      console.log(555);
-      getbuilderlist(currentPage,searchQuery);
+      gettrafficsaleList(currentPage,searchQuery);
     };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -254,8 +253,23 @@ const TrafficsaleList = () => {
   }, []);
 
   const [filterQuery, setFilterQuery] = useState({
-    status: "",
-    subdivision_id: "",
+    weekending:"",
+    builder_name:"",
+    subdivision_name:"",
+    weeklytraffic:"",
+    cancelations:"",
+    netsales:"",
+    lotreleased:"",
+    unsoldinventory:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotwidth:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -380,8 +394,23 @@ const TrafficsaleList = () => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      status: "",
-      subdivision_id: "",
+      weekending:"",
+      builder_name:"",
+      subdivision_name:"",
+      weeklytraffic:"",
+      cancelations:"",
+      netsales:"",
+      lotreleased:"",
+      unsoldinventory:"",
+      product_type:"",
+      area:"",
+      masterplan_id:"",
+      zipcode:"",
+      lotwidth:"",
+      lotsize:"",
+      zoning:"",
+      age:"",
+      single:"",
     });
   };
 
@@ -504,66 +533,6 @@ const TrafficsaleList = () => {
                       <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
                       <i className="fa fa-filter" />
                     </button> 
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <h5 className="">Filter Options</h5>
-                          <div className="border-top">
-                            <div className="mt-3 ">
-                              <label className="form-label">
-                                Subdivision:{" "}
-                                <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.subdivision_id}
-                                name="subdivision_id"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                {BuilderList.map((element) => (
-                                  <option value={element.id}>
-                                    {element.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div className="mt-3 mb-3">
-                              <label className="form-label">
-                                Status: <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.status}
-                                name="status"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                <option value="1">Active</option>
-                                <option value="0">De-active</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-sm"
-                              onClick={HandleCancelFilter}
-                              variant="secondary"
-                            >
-                              Reset
-                            </Button>
-                          </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -1271,145 +1240,134 @@ const TrafficsaleList = () => {
                                   WEEK ENDING:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="status"
-                                    onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Sold Out</option>
-                                    <option value="2">Future</option>
-                                  </select>
+                                  <input name="weekending" type="date" className="form-control" value={filterQuery.weekending} onChange={HandleFilter}/>
+
                               </div>
                               <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                   BUILDER NAME:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="reporting"
+                                  <input
+                                    className=" form-control"
+                                    value={filterQuery.builder_name}
+                                    name="builder_name"
                                     onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                  </select>
+                                  />
+                                    
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 SUBDIVISION NAME:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                                <input name="subdivision_name" className="form-control" value={filterQuery.subdivision_name} onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY TRAFFIC :{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input  value={filterQuery.name} name="name" className="form-control"  onChange={HandleFilter}/>
+                                <input  value={filterQuery.weeklytraffic} name="weeklytraffic" className="form-control"  onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY CANCELLATIONS:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="product_type" value={filterQuery.product_type} className="form-control" onChange={HandleFilter}/>
+                                <input name="cancelations" value={filterQuery.cancelations} className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY NET SALES:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="area" value={filterQuery.area} className="form-control" onChange={HandleFilter}/>
+                                <input name="netsales" value={filterQuery.netsales} className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 TOTAL LOTS:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY LOTS RELEASE FOR SALE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY UNSOLD STANDING INVENTORY:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="lotwidth" value={filterQuery.lotwidth} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 PRODUCT TYPE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="lotsize" value={filterQuery.lotsize} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="product_type" value={filterQuery.product_type} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 AREA:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input  value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                                <input  value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 MASTER PLAN:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.age} name="age" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 ">
                                 <label className="form-label">
                                 ZIP CODE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.single} name="single" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 LOT WIDTH:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.gated} name="gated" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 LOT SIZE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.juridiction} name="juridiction" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 ZONING:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.gasprovider} name="gasprovider" className="form-control" onChange={HandleFilter}/>
+                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                AGE RESTRICTED:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.hoafee} name="hoafee" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age"  onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>                                 </div>
                               <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ALL SINGLE STORY:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.masterplanfee} name="masterplanfee" className="form-control" onChange={HandleFilter}/>
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                </select>     
                               </div>
                              </div>
                              

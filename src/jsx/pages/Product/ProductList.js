@@ -1396,7 +1396,7 @@ const HandleFilterForm = (e) =>
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Filter Subdivision{" "}
+            Filter Products{" "}
           </h5>
           <button
             type="button"
