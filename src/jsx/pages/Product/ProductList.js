@@ -22,7 +22,10 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
- 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+
 
 const ProductList = () => {
 
@@ -43,8 +46,10 @@ const ProductList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  
+  const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
+  const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -118,58 +123,114 @@ const ProductList = () => {
   };
   console.log('data',productList);
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns('');
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = productList.map((row) => 
-    newdata.map((nw, i) =>
-    [
-        nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '',
-        nw === "Builder Name" ?  row.subdivision.builder.name : '',
-        nw === "Subdivision Name" ?  row.subdivision.name : '',
-        nw === "Product Name" ?  row.name : '', 
-        nw === "Square Footage" ?  row.sqft : '',
-        nw === "Stories" ?  row.stories : '',
-        nw === "Bed Rooms" ?  row.bedroom : '',
-        nw === "Bath Rooms" ?  row.bathroom : '',
-        nw === "Garage" ?  row.garage : '',
-        nw === "Current Base Price" ?  row.recentprice : '',
-        nw === "Current Price Per SQFT" ?  row.recentpricesqft : '',
-        nw === "Product Website" ?  row.Website : '',
-        nw === "Product Type" ?  row.subdivision.product_type : '',
-        nw === "Area" ?  row.subdivision.area : '',
-        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
-        nw === "Zip Code" ?  row.subdivision.zipcode : '',
-        nw === "Lot Width" ?  row.subdivision.lotwidth : '',
-        nw === "Lot Size" ?  row.subdivision.lotsize : '',
-        nw === "Zoning" ?  row.subdivision.zoning : '',
-        nw === "Age Restrictedr" ? (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : '', 
-        nw === "All Single Story" ?   (row.subdivision.single==1 && "Yes" || row.subdivision.single===0 && "No") : '',
-        nw === "Product ID" ?  row.product_code : '',
-        nw === "Fk Sub ID" ?  row.subdivision.subdivision_code : '',
-    ]
-    ),
-    
-  )
- 
- 
-    downloadExcel({
-      fileName: "Product",
-      sheet: "Product",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllProductListExport.map((row) => {
+      const mappedRow = {};
+      tableHeaders.forEach((header) => {
+        switch (header) {
+          case "Status":
+            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
+            break;
+          case "Builder Name":
+            mappedRow[header] = row.subdivision ? row.subdivision.builder.name : '';
+            break;
+          case "Subdivision Name":
+            mappedRow[header] = row.subdivision ? row.subdivision.name : '';
+            break;
+          case "Product Name":
+            mappedRow[header] = row.name;
+            break;
+          case "Square Footage":
+            mappedRow[header] = row.sqft;
+            break;
+          case "Stories":
+            mappedRow[header] = row.stories;
+            break;
+          case "Bed Rooms":
+            mappedRow[header] = row.bedroom;
+            break;
+          case "Bath Rooms":
+            mappedRow[header] = row.bathroom;
+            break;
+          case "Garage":
+            mappedRow[header] = row.garage;
+            break;
+          case "Current Base Price":
+            mappedRow[header] = row.recentprice;
+            break;
+          case "Current Price Per SQFT":
+            mappedRow[header] = row.recentpricesqft;
+            break;
+          case "Product Website":
+            mappedRow[header] = row.Website;
+            break;
+          case "Product Type":
+            mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
+            break;
+          case "Area":
+            mappedRow[header] = row.subdivision ? row.subdivision.area : '';
+            break;
+          case "Master Plan":
+            mappedRow[header] = row.subdivision ? row.subdivision.masterplan_id : '';
+            break;
+          case "Zip Code":
+            mappedRow[header] = row.subdivision ? row.subdivision.zipcode : '';
+            break;
+          case "Lot Width":
+            mappedRow[header] = row.subdivision ? row.subdivision.lotwidth : '';
+            break;
+          case "Lot Size":
+            mappedRow[header] = row.subdivision ? row.subdivision.lotsize : '';
+            break;
+          case "Zoning":
+            mappedRow[header] = row.subdivision ? row.subdivision.zoning : '';
+            break;
+          case "Age Restricted":
+            mappedRow[header] = (row.subdivision && row.subdivision.age === 1 && "Yes") || (row.subdivision && row.subdivision.age === 0 && "No") || '';
+            break;
+          case "All Single Story":
+            mappedRow[header] = (row.subdivision && row.subdivision.single === 1 && "Yes") || (row.subdivision && row.subdivision.single === 0 && "No") || '';
+            break;
+          case "Product ID":
+            mappedRow[header] = row.product_code;
+            break;
+          case "Fk Sub ID":
+            mappedRow[header] = row.subdivision ? row.subdivision.subdivision_code : '';
+            break;
+          default:
+            mappedRow[header] = '';
+        }
+      });
+      return mappedRow;
     });
-
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Product');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Product.xlsx');
+  };
+  
 
   const [filterQuery, setFilterQuery] = useState({
     status:"",
@@ -292,11 +353,25 @@ const ProductList = () => {
       }
     }
   };
-  
+
+    async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminProductService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+  }
+
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getproductList(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }

@@ -16,7 +16,9 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
- 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 const ClosingList = () => {
 
   
@@ -40,6 +42,7 @@ const ClosingList = () => {
   };
   const [showSort, setShowSort] = useState(false);
  const handleSortClose = () => setShowSort(false);
+ const [AllClosingListExport, setAllClosingListExport] = useState([]);
 
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
@@ -230,56 +233,101 @@ const ClosingList = () => {
   };  
 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns("");
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = ClosingList.map((row) => 
-    newdata.map((nw, i) =>
-    [  
-      nw === "Closing Type" ? row.closing_type  : '',
-      nw === "Closing Date" ? row.closingdate  : '',
-      nw === "Doc" ? row.document  : '',
-      nw === "Builder Name" ? row.subdivision.builder?.name  : '',
-      nw === "Subdivision Name" ? row.subdivision?.name  : '',
-      nw === "Closing Price" ? row.closingprice  : '',
-      nw === "Address" ? row.address  : '',
-      nw === "Parcel Number" ? row.parcel  : '',
-      nw === "Sub Legal Name" ? row.sublegal_name  : '',
-      nw === "Seller Legal Name" ? row.sellerleagal  : '',
-      nw === "Buyer Name" ? row.buyer  : '',
-      nw === "Lender" ? row.lender  : '',
-      nw === "Loan Amount" ? row.loanamount  : '',
-      nw === "Type" ? row.type  : '',
-      nw === "Product Type" ? row.subdivision.product_type  : '',
-      nw === "Area" ? row.subdivision.area  : '',
-      nw === "Master Plan" ? row.subdivision.masterplan_id  : '',
-      nw === "Zip Code" ? row.subdivision.zipcode  : '',
-      nw === "Lot Width" ? row.subdivision.lotwidth  : '',
-      nw === "Lot Size" ? row.subdivision.lotsize  : '',
-      nw === "Zoning" ? row.subdivision.zoning  : '',
-      nw === "Age Restricted" ?  (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : ''  ,
-      nw === "All Single Story" ? (row.subdivision.single === 1 && "Yes" || row.subdivision.single === 0 && "No") : '', 
-      nw === "Fk Sub Id" ? row.subdivision.subdivision_code  : '',  
-    ]
-    ),
-    
-  ) 
-    downloadExcel({
-      fileName: "Closing",
-      sheet: "Closing",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllClosingListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Closing Type":
+            return row.closing_type || '';
+          case "Closing Date":
+            return row.closingdate || '';
+          case "Doc":
+            return row.document || '';
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Closing Price":
+            return row.closingprice || '';
+          case "Address":
+            return row.address || '';
+          case "Parcel Number":
+            return row.parcel || '';
+          case "Sub Legal Name":
+            return row.sublegal_name || '';
+          case "Seller Legal Name":
+            return row.sellerleagal || '';
+          case "Buyer Name":
+            return row.buyer || '';
+          case "Lender":
+            return row.lender || '';
+          case "Loan Amount":
+            return row.loanamount || '';
+          case "Type":
+            return row.type || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
+          case "All Single Story":
+            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
+          case "Fk Sub Id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Closing');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Closing.xlsx');
+  };
+  
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllClosingListExport(allData);
   }
 
   const HandleRole = (e) => {
@@ -408,10 +456,24 @@ const ClosingList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getClosingList(currentPage);
+      fetchAllPages(searchQuery, sortConfig) 
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllClosingListExport(allData);
+  }
 
   const handleDelete = async (e) => {
     try {
@@ -1121,7 +1183,7 @@ const ClosingList = () => {
                                 {checkFieldExist("Loan Amount") && (
                                   <td>{element.loanamount}</td>
                                 )}{" "}
-                                {checkFieldExist("Type") && <td>NA</td>}{" "}
+                                {checkFieldExist("Type") && <td>{element.type}</td>}{" "}
                                 {checkFieldExist("Product Type") && (
                                   <td>{element.subdivision.product_type}</td>
                                 )}{" "}

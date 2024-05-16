@@ -16,6 +16,8 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const TrafficsaleList = () => {
 
@@ -58,6 +60,8 @@ const TrafficsaleList = () => {
 }, [sortConfig]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const [AllTrafficListExport, setAllTrafficistExport] = useState([]);
+
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -150,57 +154,87 @@ const TrafficsaleList = () => {
     setSelectedColumns(updatedColumns);  
   };
   console.log('trafficsaleList : ',trafficsaleList);
+
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns("");
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = trafficsaleList.map((row) => 
-    newdata.map((nw, i) =>
-    [ 
-        nw === "Week Ending" ?  row.weekending : '',
-        nw === "Builder Name" ?  row.subdivision.builder?.name : '',
-        nw === "Subdivision Name" ?  row.subdivision?.name : '',
-        nw === "Weekly Traffic" ?  row.weeklytraffic : '',
-        nw === "Weekly Gross Sales" ?  row.grosssales : '',
-        nw === "Weekly Cancellations" ?  row.cancelations : '',
-        nw === "Weekly Net Sales" ?  row.netsales : '',
-        nw === "Total Lots" ?  row.subdivision.totallots : '',
-        nw === "Weekly Lots Release For Sale" ?  row.lotreleased : '',
-        nw === "Weekly Unsold Standing Inventory" ?  row.unsoldinventory : '',  
-        nw === "Product Type" ?  row.subdivision.product_type : '',
-        nw === "Area" ?  row.subdivision.area : '',
-        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
-        nw === "Zip Code" ?  row.subdivision.zipcode : '',
-        nw === "Lot Width" ?  row.subdivision?.lotwidth : '',
-        nw === "Lot Size" ?  row.subdivision?.lotsize : '',
-        nw === "Zoning" ?  row.subdivision?.zoning : '', 
-        nw === "Age Restricted" ? (row.subdivision?.age === 1 && "Yes" || row.subdivision?.age === 0 && "No") : '', 
-        nw === "All Single Story" ? (row.subdivision?.single === 1 && "Yes" || row.subdivision?.single === 0 && "No") : '',  
-        nw === "Pk Record id" ?  row.id : '',
-        nw === "Fk sub id" ?  row.subdivision.subdivision_code : '',     
-    ]
-    ),
-    
-  )
- 
- 
-    downloadExcel({
-      fileName: "Weekly Traffic & Sales List",
-      sheet: "Weekly Traffic & Sales List",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllTrafficListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Week Ending":
+            return row.weekending || '';
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Weekly Traffic":
+            return row.weeklytraffic || '';
+          case "Weekly Gross Sales":
+            return row.grosssales || '';
+          case "Weekly Cancellations":
+            return row.cancelations || '';
+          case "Weekly Net Sales":
+            return row.netsales || '';
+          case "Total Lots":
+            return row.subdivision?.totallots || '';
+          case "Weekly Lots Release For Sale":
+            return row.lotreleased || '';
+          case "Weekly Unsold Standing Inventory":
+            return row.unsoldinventory || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
+          case "All Single Story":
+            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
+          case "Pk Record id":
+            return row.id || '';
+          case "Fk sub id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Traffic & Sales List');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Weekly_Traffic_Sales_List.xlsx');
+  };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -337,8 +371,21 @@ const TrafficsaleList = () => {
   };
   useEffect((currentPage) => {
     gettrafficsaleList(currentPage);
+    fetchAllPages(searchQuery, sortConfig)
   }, [currentPage]);
 
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminTrafficsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminTrafficsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllTrafficistExport(allData);
+  }
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminTrafficsaleService.destroy(e).json();

@@ -23,6 +23,8 @@ import Modal from "react-bootstrap/Modal";
 import PriceComponent from "../../components/Price/PriceComponent";
 import { Row, Col, Card } from 'react-bootstrap';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 
 const SubdivisionList = () => {
@@ -48,6 +50,7 @@ const handleSortClose = () => setShowSort(false);
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
   const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
+  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -232,89 +235,215 @@ const handleSortClose = () => setShowSort(false);
     return fieldList.includes(fieldName.trim());
   }; 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns('');
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = BuilderList.map((row) => 
-    newdata.map((nw, i) =>
-    [
-      nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '', 
-      nw === "Reporting" ?(row.reporting===1 && "Yes" || row.status===0 && "No") : '', 
-      nw === "Builder" ? row.builder.name : '', 
-      nw === "Name" ? row.name : '', 
-      nw === "Product Type" ? row.product_type : '', 
-      nw === "Area" ? row.area : '', 
-      nw === "Masterplan" ? row.masterplan_id : '', 
-      nw === "Zipcode" ? row.zipcode : '', 
-      nw === "Total Lots" ? row.totallots : '', 
-      nw === "Lot Width" ? row.lotwidth : '', 
-      nw === "Lot Size" ? row.lotsize : '', 
-      nw === "Zoning" ? row.zoning : '', 
-      nw === "Age Restricted" ? (row.age===1 && "Yes" || row.age===0 && "No") : '', 
-      nw === "All Single Story" ? (row.single===1 && "Yes" || row.single===0 && "No") : '', 
-      nw === "Gated" ? (row.gated===1 && "Yes" || row.gated===0 && "No"):'', 
-      nw === "Location" ? row.location : '', 
-      nw === "Juridiction" ? row.juridiction : '', 
-      nw === "Latitude" ? row.lat : '', 
-      nw === "Longitude" ? row.lng : '', 
-      nw === "Gas Provider" ? row.gasprovider : '', 
-      nw === "HOA Fee" ? row.hoafee : '', 
-      nw === "Masterplan Fee" ? row.masterplanfee : '', 
-      nw === "Parcel Group" ? row.parcel : '', 
-      nw === "Phone" ? row.phone : '', 
-      nw === "Website" ?  row.builder.website : '', 
-      nw === "FK Builder Id" ?  row.builder.builder_code : '',
-      nw === 'Total Closings' ? row.total_closings: ' ',
-      nw === 'Total Permits' ? row.total_permits: ' ',
-      nw === 'Total Net Sales' ? row.total_net_sales: ' ',
-      nw === 'Months Open' ? row.months_open: ' ',
-      nw === 'Latest Traffic/Sales Data' ? row.latest_traffic_data: ' ',
-      nw === 'Latest Lots Released' ? row.latest_lots_released: ' ',
-      nw === 'Latest Standing Inventory' ? row.latest_standing_inventory: ' ',
-      nw === 'Unsold Lots' ? row.unsold_lots: ' ',
-      nw === 'Avg Sqft All' ? row.avg_sqft_all: ' ',
-      nw === 'Avg Sqft Active' ? row.avg_sqft_active: ' ',
-      nw === 'Avg Base Price All' ? row.avg_base_price_all: ' ',
-      nw === 'Avg Base Price Active' ? row.avg_base_price_active: ' ',
-      nw === 'Min Sqft All' ? row.min_sqft_all: ' ',
-      nw === 'Min Sqft Active' ? row.min_sqft_active: ' ',
-      nw === 'Max Sqft All' ? row.max_sqft_all: ' ',
-      nw === 'Max Sqft Active' ? row.max_sqft_active: ' ',
-      nw === 'Min Base Price All' ? row.min_base_price_all: ' ',
-      nw === 'Min Sqft Active' ? row.min_sqft_active_current: ' ',
-      nw === 'Max Base Price All' ? row.max_base_price_all: ' ',
-      nw === 'Max Sqft Active Current' ? row.max_sqft_active_current: ' ',
-      nw === 'Avg Net Traffic Per Month This Year' ? row.avg_net_traffic_per_month_this_year: ' ',
-      nw === 'Avg Net Sales Per Month This Year' ? row.avg_net_sales_per_month_this_year: ' ',
-      nw === 'Avg Closings Per Month This Year' ? row.avg_closings_per_month_this_year: ' ',
-      nw === 'Avg Net Sales Per Month Since Open' ? row.avg_net_sales_per_month_since_open: ' ',
-      nw === 'Avg Net Sales Per Month Last 3 Months' ? row.avg_net_sales_per_month_last_three_months: ' ',
-      nw === 'Max Week Ending' ? row.max_week_ending: ' ',
-      nw === 'Min Week Ending' ? row.min_week_ending: ' ',
-      nw === 'Sqft Group' ? row.sqft_group: ' ',
-      nw === 'Price Group' ? row.price_group: ' ',
-      nw === 'Month Net Sold' ? row.month_net_sold: ' ',
-      nw === 'Year Net Sold' ? row.year_net_sold:''
   
-    ]
-    ),
-  )
-    downloadExcel({
-      fileName: "Sub Division List",
-      sheet: "Sub Division List",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+    const tableData = AllBuilderListExport.map((row) => {
+      const mappedRow = {};
+      tableHeaders.forEach((header) => {
+        switch (header) {
+          case "Status":
+            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
+            break;
+          case "Reporting":
+            mappedRow[header] = (row.reporting === 1 && "Yes") || (row.status === 0 && "No");
+            break;
+          case "Builder":
+            mappedRow[header] = row.builder ? row.builder.name : '';
+            break;
+          case "Name":
+            mappedRow[header] = row.name;
+            break;
+          case "Product Type":
+            mappedRow[header] = row.product_type;
+            break;
+          case "Area":
+            mappedRow[header] = row.area;
+            break;
+          case "Masterplan":
+            mappedRow[header] = row.masterplan_id;
+            break;
+          case "Zipcode":
+            mappedRow[header] = row.zipcode;
+            break;
+          case "Total Lots":
+            mappedRow[header] = row.totallots;
+            break;
+          case "Lot Width":
+            mappedRow[header] = row.lotwidth;
+            break;
+          case "Lot Size":
+            mappedRow[header] = row.lotsize;
+            break;
+          case "Zoning":
+            mappedRow[header] = row.zoning;
+            break;
+          case "Age Restricted":
+            mappedRow[header] = (row.age === 1 && "Yes") || (row.age === 0 && "No");
+            break;
+          case "All Single Story":
+            mappedRow[header] = (row.single === 1 && "Yes") || (row.single === 0 && "No");
+            break;
+          case "Gated":
+            mappedRow[header] = (row.gated === 1 && "Yes") || (row.gated === 0 && "No");
+            break;
+          case "Location":
+            mappedRow[header] = row.location;
+            break;
+          case "Juridiction":
+            mappedRow[header] = row.juridiction;
+            break;
+          case "Latitude":
+            mappedRow[header] = row.lat;
+            break;
+          case "Longitude":
+            mappedRow[header] = row.lng;
+            break;
+          case "Gas Provider":
+            mappedRow[header] = row.gasprovider;
+            break;
+          case "HOA Fee":
+            mappedRow[header] = row.hoafee;
+            break;
+          case "Masterplan Fee":
+            mappedRow[header] = row.masterplanfee;
+            break;
+          case "Parcel Group":
+            mappedRow[header] = row.parcel;
+            break;
+          case "Phone":
+            mappedRow[header] = row.phone;
+            break;
+          case "Website":
+            mappedRow[header] = row.builder ? row.builder.website : '';
+            break;
+          case "FK Builder Id":
+            mappedRow[header] = row.builder ? row.builder.builder_code : '';
+            break;
+          case 'Total Closings':
+            mappedRow[header] = row.total_closings;
+            break;
+          case 'Total Permits':
+            mappedRow[header] = row.total_permits;
+            break;
+          case 'Total Net Sales':
+            mappedRow[header] = row.total_net_sales;
+            break;
+          case 'Months Open':
+            mappedRow[header] = row.months_open;
+            break;
+          case 'Latest Traffic/Sales Data':
+            mappedRow[header] = row.latest_traffic_data;
+            break;
+          case 'Latest Lots Released':
+            mappedRow[header] = row.latest_lots_released;
+            break;
+          case 'Latest Standing Inventory':
+            mappedRow[header] = row.latest_standing_inventory;
+            break;
+          case 'Unsold Lots':
+            mappedRow[header] = row.unsold_lots;
+            break;
+          case 'Avg Sqft All':
+            mappedRow[header] = row.avg_sqft_all;
+            break;
+          case 'Avg Sqft Active':
+            mappedRow[header] = row.avg_sqft_active;
+            break;
+          case 'Avg Base Price All':
+            mappedRow[header] = row.avg_base_price_all;
+            break;
+          case 'Avg Base Price Active':
+            mappedRow[header] = row.avg_base_price_active;
+            break;
+          case 'Min Sqft All':
+            mappedRow[header] = row.min_sqft_all;
+            break;
+          case 'Min Sqft Active':
+            mappedRow[header] = row.min_sqft_active;
+            break;
+          case 'Max Sqft All':
+            mappedRow[header] = row.max_sqft_all;
+            break;
+          case 'Max Sqft Active':
+            mappedRow[header] = row.max_sqft_active;
+            break;
+          case 'Min Base Price All':
+            mappedRow[header] = row.min_base_price_all;
+            break;
+          case 'Min Sqft Active':
+            mappedRow[header] = row.min_sqft_active_current;
+            break;
+          case 'Max Base Price All':
+            mappedRow[header] = row.max_base_price_all;
+            break;
+          case 'Max Sqft Active Current':
+            mappedRow[header] = row.max_sqft_active_current;
+            break;
+          case 'Avg Net Traffic Per Month This Year':
+            mappedRow[header] = row.avg_net_traffic_per_month_this_year;
+            break;
+          case 'Avg Net Sales Per Month This Year':
+            mappedRow[header] = row.avg_net_sales_per_month_this_year;
+            break;
+          case 'Avg Closings Per Month This Year':
+            mappedRow[header] = row.avg_closings_per_month_this_year;
+            break;
+          case 'Avg Net Sales Per Month Since Open':
+            mappedRow[header] = row.avg_net_sales_per_month_since_open;
+            break;
+          case 'Avg Net Sales Per Month Last 3 Months':
+            mappedRow[header] = row.avg_net_sales_per_month_last_three_months;
+            break;
+          case 'Max Week Ending':
+            mappedRow[header] = row.max_week_ending;
+            break;
+          case 'Min Week Ending':
+            mappedRow[header] = row.min_week_ending;
+            break;
+          case 'Sqft Group':
+            mappedRow[header] = row.sqft_group;
+            break;
+          case 'Price Group':
+            mappedRow[header] = row.price_group;
+            break;
+          case 'Month Net Sold':
+            mappedRow[header] = row.month_net_sold;
+            break;
+          case 'Year Net Sold':
+            mappedRow[header] = row.year_net_sold;
+            break;
+          default:
+            mappedRow[header] = '';
+        }
+      });
+      return mappedRow;
     });
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sub Division List');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Sub Division List.xlsx');
+  };
   
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
@@ -417,14 +546,30 @@ const handleSortClose = () => setShowSort(false);
     }
   };
   
-
+console.log(AllBuilderListExport)
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+  
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+  }
+
 
   const handleDelete = async (e) => {
     try {

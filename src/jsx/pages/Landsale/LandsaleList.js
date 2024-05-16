@@ -18,6 +18,8 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import TrafficsaleList from "../Trafficsale/TrafficsaleList";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const LandsaleList = () => {
 
@@ -74,6 +76,7 @@ const LandsaleList = () => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
 }, [sortConfig]);
 
+const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -130,6 +133,12 @@ const LandsaleList = () => {
     { label: "Location", key: "Location" },
     { label: "Notes", key: "Notes" },
     { label: "Price", key: "Price" },
+    { label: "Size", key: "Price" },
+    { label: "Size MS", key: "Price" },
+    { label: "Date", key: "Price" },
+
+
+
   ];
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
@@ -141,39 +150,55 @@ const LandsaleList = () => {
 
   const handleDownloadExcel = () => {
     setExportModelShow(false);
-    setSelectedColumns("");
-    console.log("click dataa D : ", selectedColumns);
-    var tableHeaders;
+    setSelectedColumns("");  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => {
-      return element;
+  
+    const tableData = AllLandsaleListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Seller":
+            return row.seller || '';
+          case "Buyer":
+            return row.buyer || '';
+          case "Location":
+            return row.location || '';
+          case "Notes":
+            return row.notes || '';
+          case "Price":
+          return row.price ? `${row.price}/${row.typeofunit}` : '';
+          case "Size":
+            return row.noofunit ? `${row.noofunit}` : 0;
+          case "Price Per":
+          return row.price_per ? `${row.price_per}/${row.typeofunit}` : '';
+          case "Size MS":
+          return row.typeofunit ? `${row.typeofunit}` : '';
+          case "Date":
+          return row.date ? `${row.date}` : '';
+          default:
+            return '';
+        }
+      });
     });
-
-    const tableData = LandsaleList.map((row) =>
-      newdata.map((nw, i) => [
-        nw === "Builder Name" ? row.subdivision?.builder?.name : "",
-        nw === "Subdivision Name" ? row.subdivision?.name : "",
-        nw === "Seller" ? row.seller : "",
-        nw === "Buyer" ? row.buyer : "",
-        nw === "Location" ? row.location : "",
-        nw === "Notes" ? row.notes : "",
-        nw === "Price" ? row.price + "/" + row.typeofunit : "",
-      ])
-    );
-
-    downloadExcel({
-      fileName: "Land sales",
-      sheet: "Land sales",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData,
-      },
-    });
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Land sales');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Land_sales.xlsx');
   };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -296,10 +321,24 @@ const LandsaleList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getLandsaleList(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllLandsaleListExport(allData);
+  }
 
   const handleDelete = async (e) => {
     try {

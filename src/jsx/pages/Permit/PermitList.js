@@ -15,6 +15,9 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 const PermitList = () => {
   const HandleSortDetailClick = (e) =>
@@ -34,8 +37,9 @@ const PermitList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  const [AllPermitListExport, setAllPermitListExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
+  const handleSortClose = () => setShowSort(false);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [Error, setError] = useState("");
@@ -211,65 +215,95 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       : [...selectedColumns, column];
     console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
-  };
+  };  
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns("");
-    var tableHeaders;
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => {
-      return element;
+  
+    const tableData = AllPermitListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Date":
+            return row.date || '';
+          case "Builder Name":
+            return row.subdivision?.builder.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Address Number":
+            return row.address1 || '';
+          case "Address Name":
+            return row.address2 || '';
+          case "Parcel Number":
+            return row.parcel || '';
+          case "Contractor":
+            return row.contractor || '';
+          case "Square Footage":
+            return row.sqft || '';
+          case "Owner":
+            return row.owner || '';
+          case "Lot Number":
+            return row.lotnumber || '';
+          case "Permit Number":
+            return row.permitnumber || '';
+          case "Plan":
+            return row.plan || '';
+          case "Sub Legal Name":
+            return row.subdivision?.name || '';
+          case "Value":
+            return row.value || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return (row.subdivision?.age === 1 ? "Yes" : "No") || '';
+          case "All Single Story":
+            return (row.subdivision?.single === 1 ? "Yes" : "No") || '';
+          case "Permit id":
+            return row.permitnumber || '';
+          case "Fk sub id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
-    const tableData = permitList.map((row) =>
-      newdata.map((nw, i) => [
-        nw === "Date" ? row.date : "",
-        nw === "Builder Name" ? row.subdivision?.builder.name : "",
-        nw === "Subdivision Name" ? row.subdivision?.name : "",
-        nw === "Address Number" ? row.address1 : "",
-        nw === "Address Name" ? row.address2 : "",
-        nw === "Parcel Number" ? row.parcel : "",
-        nw === "Contractor" ? row.contractor : "",
-        nw === "Squre Footage" ? row.sqft : "",
-        nw === "Owner" ? row.owner : "",
-        nw === "Lot Number" ? row.lotnumber : "",
-        nw === "Permit Number" ? row.permitnumber : "",
-        nw === "Plan" ? row.plan : "",
-        nw === "Sub Legal Name" ? row.subdivision?.name : "",
-        nw === "Value" ? row.value : "",
-        nw === "Product Type" ? row.subdivision?.product_type : "",
-        nw === "Area" ? row.subdivision?.area : "",
-        nw === "Master Plan" ? row.subdivision?.masterplan_id : "",
-        nw === "Zip Code" ? row.subdivision?.zipcode : "",
-        nw === "Lot Width" ? row.subdivision?.lotwidth : "",
-        nw === "Lot Size" ? row.subdivision?.lotsize : "",
-        nw === "Zoning" ? row.subdivision?.zoning : "",
-        nw === "Age Restricted"
-          ? (row.subdivision?.age === 1 && "Yes") ||
-            (row.subdivision?.age === 0 && "No")
-          : "",
-        nw === "All Single Story"
-          ? (row.subdivision?.single === 1 && "Yes") ||
-            (row.subdivision?.single === 0 && "No")
-          : "",
-        nw === "Permit id" ? row.permitnumber : "",
-        nw === "Fk sub id" ? row.subdivision?.subdivision_code : "",
-      ])
-    );
-
-    downloadExcel({
-      fileName: "Permit",
-      sheet: "Permit",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData,
-      },
-    });
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Permit');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Permit.xlsx');
   };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -385,23 +419,22 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
   useEffect(() => {
     console.log(currentPage);
     getPermitList(currentPage);
+    fetchAllPages(searchQuery, sortConfig);
   }, [currentPage]);
 
-  const getPermitListCount = async () => {
-    try {
-      const response = await AdminPermitService.index(searchQuery);
-      const responseData = await response.json();
-      setTotalPermitListCount(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminPermitService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminPermitService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
     }
-  };
-  useEffect(() => {
-    getPermitListCount();
-  }, []);
+    setAllPermitListExport(allData);
+  }
+  console.log(AllPermitListExport);
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminPermitService.destroy(e).json();
