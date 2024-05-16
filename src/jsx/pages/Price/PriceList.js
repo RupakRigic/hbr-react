@@ -51,7 +51,7 @@ const PriceList = () => {
   setSelectedColumns(updatedColumns);  
 };
 
-const exportColumns = [
+const exportcolumns = [
   { label: 'Date', key: 'date' },
   { label: 'Builder Name', key: 'BuilderName' }, 
   { label: 'Subdivision Name', key: 'SubdivisionName' },

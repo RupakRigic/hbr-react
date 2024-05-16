@@ -344,6 +344,9 @@ const File = () => {
                       />
                     </div>
                     <div>
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"

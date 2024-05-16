@@ -939,6 +939,71 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                             )}{" "} */}
 
                             {/* {checkFieldExist("Date") && (
+                            )}{" "}
+                            {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("noofunit")}>
+                                <strong>
+                                  {" "}
+                                  SIZE
+                                  {sortConfig.some(
+                                  (item) => item.key === "noofunit"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "noofunit"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("price_per")}>
+                                <strong>
+                                  {" "}
+                                  Price Per
+                                  {sortConfig.some(
+                                  (item) => item.key === "price_per"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "price_per"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                              {checkFieldExist("Price") && (
+                              <th onClick={() => requestSort("typeofunit")}>
+                                <strong>
+                                  {" "}
+                                  Size MS
+                                  {sortConfig.some(
+                                  (item) => item.key === "typeofunit"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "typeofunit"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
+                                </strong>
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("date")}>
                                 <strong>
                                   {" "}

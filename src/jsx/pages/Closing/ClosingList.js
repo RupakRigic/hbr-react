@@ -15,9 +15,11 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel'; 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
- 
+
 const ClosingList = () => {
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
@@ -543,7 +545,14 @@ useEffect(() => {
                     </div>
                     <div>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>                
+                         <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
                     </button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
@@ -689,6 +698,19 @@ useEffect(() => {
                             )}{" "} */}
 
                             {/* {checkFieldExist("Doc") && (
+                            )}{" "}
+                            {checkFieldExist("Closing Date Actual") && (
+                              <th onClick={() => requestSort("closingdate")}>
+                                Closing Date
+                                {sortConfig.key !== "closingdate" ? "↑↓" : ""}
+                                {sortConfig.key === "closingdate" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Doc") && (
                               <th onClick={() => requestSort("document")}>
                                 Doc
                                 {sortConfig.key !== "document" ? "↑↓" : ""}
