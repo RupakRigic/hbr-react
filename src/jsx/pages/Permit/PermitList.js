@@ -15,8 +15,31 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 const PermitList = () => {
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [AllPermitListExport, setAllPermitListExport] = useState([]);
+  const [showSort, setShowSort] = useState(false);
+  const handleSortClose = () => setShowSort(false);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [Error, setError] = useState("");
@@ -24,10 +47,65 @@ const PermitList = () => {
   const [permitList, setPermitList] = useState([]);
   const [permitListCount, setPermitListCount] = useState("");
   const [TotalPermitListCount, setTotalPermitListCount] = useState("");
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [filterQuery, setFilterQuery] = useState({
+    date:"",
+    builder_name:"",
+    subdivision_name:"",
+    address2:"",
+    address1:"",
+    parcel:"",
+    contractor:"",
+    sqft:"",
+    owner:"",
+    lotnumber:"",
+    permitnumber:"",
+    plan:"",
+    sublegalname:"",
+    value:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    
+  });
+  const HandleCancelFilter = (e) => {
+    setFilterQuery({
+      status: "",
+      subdivision_id: "",
+    });
+  };
+  
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
+
+  
+  const filterString = () => {
+    const queryString = Object.keys(filterQuery)
+      .map(
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+      )
+      .join("&");
+
+    return queryString ? `&${queryString}` : "";
+  };
+
+  const HandleFilterForm = (e) =>
+    {
+      e.preventDefault();
+      console.log(555);
+      getPermitList(currentPage,searchQuery);
+    };
+  
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
 
@@ -137,65 +215,95 @@ const PermitList = () => {
       : [...selectedColumns, column];
     console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
-  };
+  };  
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns("");
-    var tableHeaders;
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => {
-      return element;
+  
+    const tableData = AllPermitListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Date":
+            return row.date || '';
+          case "Builder Name":
+            return row.subdivision?.builder.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Address Number":
+            return row.address1 || '';
+          case "Address Name":
+            return row.address2 || '';
+          case "Parcel Number":
+            return row.parcel || '';
+          case "Contractor":
+            return row.contractor || '';
+          case "Square Footage":
+            return row.sqft || '';
+          case "Owner":
+            return row.owner || '';
+          case "Lot Number":
+            return row.lotnumber || '';
+          case "Permit Number":
+            return row.permitnumber || '';
+          case "Plan":
+            return row.plan || '';
+          case "Sub Legal Name":
+            return row.subdivision?.name || '';
+          case "Value":
+            return row.value || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return (row.subdivision?.age === 1 ? "Yes" : "No") || '';
+          case "All Single Story":
+            return (row.subdivision?.single === 1 ? "Yes" : "No") || '';
+          case "Permit id":
+            return row.permitnumber || '';
+          case "Fk sub id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
-    const tableData = permitList.map((row) =>
-      newdata.map((nw, i) => [
-        nw === "Date" ? row.date : "",
-        nw === "Builder Name" ? row.subdivision?.builder.name : "",
-        nw === "Subdivision Name" ? row.subdivision?.name : "",
-        nw === "Address Number" ? row.address1 : "",
-        nw === "Address Name" ? row.address2 : "",
-        nw === "Parcel Number" ? row.parcel : "",
-        nw === "Contractor" ? row.contractor : "",
-        nw === "Squre Footage" ? row.sqft : "",
-        nw === "Owner" ? row.owner : "",
-        nw === "Lot Number" ? row.lotnumber : "",
-        nw === "Permit Number" ? row.permitnumber : "",
-        nw === "Plan" ? row.plan : "",
-        nw === "Sub Legal Name" ? row.subdivision?.name : "",
-        nw === "Value" ? row.value : "",
-        nw === "Product Type" ? row.subdivision?.product_type : "",
-        nw === "Area" ? row.subdivision?.area : "",
-        nw === "Master Plan" ? row.subdivision?.masterplan_id : "",
-        nw === "Zip Code" ? row.subdivision?.zipcode : "",
-        nw === "Lot Width" ? row.subdivision?.lotwidth : "",
-        nw === "Lot Size" ? row.subdivision?.lotsize : "",
-        nw === "Zoning" ? row.subdivision?.zoning : "",
-        nw === "Age Restricted"
-          ? (row.subdivision?.age === 1 && "Yes") ||
-            (row.subdivision?.age === 0 && "No")
-          : "",
-        nw === "All Single Story"
-          ? (row.subdivision?.single === 1 && "Yes") ||
-            (row.subdivision?.single === 0 && "No")
-          : "",
-        nw === "Permit id" ? row.permitnumber : "",
-        nw === "Fk sub id" ? row.subdivision?.subdivision_code : "",
-      ])
-    );
-
-    downloadExcel({
-      fileName: "Permit",
-      sheet: "Permit",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData,
-      },
-    });
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Permit');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Permit.xlsx');
   };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -311,23 +419,22 @@ const PermitList = () => {
   useEffect(() => {
     console.log(currentPage);
     getPermitList(currentPage);
+    fetchAllPages(searchQuery, sortConfig);
   }, [currentPage]);
 
-  const getPermitListCount = async () => {
-    try {
-      const response = await AdminPermitService.index(searchQuery);
-      const responseData = await response.json();
-      setTotalPermitListCount(responseData.length);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminPermitService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminPermitService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
     }
-  };
-  useEffect(() => {
-    getPermitListCount();
-  }, []);
+    setAllPermitListExport(allData);
+  }
+  console.log(AllPermitListExport);
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminPermitService.destroy(e).json();
@@ -453,6 +560,15 @@ const PermitList = () => {
     debouncedHandleSearch(`&=${query}`);
   };
 
+  
+    const HandleFilter = (e) => {
+      const { name, value } = e.target;
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        [name]: value,
+      }));
+    };
+
   const requestSort = (key) => {
     let direction = "asc";
 
@@ -532,13 +648,14 @@ const PermitList = () => {
                       </div>
                     </div>
                     <div>
-                      {/* <button
-                        onClick={exportToExcelData}
-                        className="btn btn-primary btn-sm me-1"
-                      >
-                        {" "}
-                        <i class="fas fa-file-excel"></i>
-                      </button> */}
+
+                                        <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
                       <button
                         onClick={() => setExportModelShow(true)}
                         className="btn btn-primary btn-sm me-1"
@@ -554,6 +671,9 @@ const PermitList = () => {
                         {" "}
                         Field Access
                       </button>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                    </button> 
                       <Button
                         className="btn-sm me-1"
                         variant="secondary"
@@ -661,22 +781,36 @@ const PermitList = () => {
                             {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("date")}>
                                 <strong>Date </strong>
-                                {sortConfig.key !== "date" ? "↑↓" : ""}
-                                {sortConfig.key === "date" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "date"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "date"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong>Builder Name</strong>
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "builderName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "builderName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -685,13 +819,18 @@ const PermitList = () => {
                                 onClick={() => requestSort("subdivisionName")}
                               >
                                 <strong>Subdivision Name</strong>
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivisionName"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivisionName"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -721,233 +860,378 @@ const PermitList = () => {
 
                             <th onClick={() => requestSort("address2")}>
                               <strong>Full Address</strong>
-                              {sortConfig.key !== "address2" ? "↑↓" : ""}
-                              {sortConfig.key === "address2" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
+                              {sortConfig.some(
+                                  (item) => item.key === "address2"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "address2"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
                             </th>
 
                             {checkFieldExist("Parcel Number") && (
-                              <th onClick={() => requestSort("address2")}>
+                              <th onClick={() => requestSort("parcel")}>
                                 <strong>Parcel Number</strong>
-                                {sortConfig.key !== "parcel" ? "↑↓" : ""}
-                                {sortConfig.key === "parcel" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "parcel"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "parcel"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Contractor") && (
                               <th onClick={() => requestSort("contractor")}>
                                 <strong>Contractor</strong>
-                                {sortConfig.key !== "contractor" ? "↑↓" : ""}
-                                {sortConfig.key === "contractor" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "contractor"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "contractor"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Squre Footage") && (
                               <th onClick={() => requestSort("sqft")}>
                                 <strong>Squre Footage</strong>
-                                {sortConfig.key !== "sqft" ? "↑↓" : ""}
-                                {sortConfig.key === "sqft" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "sqft"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "sqft"
+                                    ).direction === "sqft"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Owner") && (
                               <th onClick={() => requestSort("owner")}>
                                 <strong>Owner</strong>
-                                {sortConfig.key !== "owner" ? "↑↓" : ""}
-                                {sortConfig.key === "owner" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "owner"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "owner"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
-                            {checkFieldExist("Date") && (
-                              <th onClick={() => requestSort("Lot Number")}>
+                            {checkFieldExist("Lot Number") && (
+                              <th onClick={() => requestSort("lotnumber")}>
                                 <strong>Lot Number</strong>
-                                {sortConfig.key !== "lotnumber" ? "↑↓" : ""}
-                                {sortConfig.key === "lotnumber" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "lotnumber"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "lotnumber"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Permit Number") && (
                               <th onClick={() => requestSort("permitnumber")}>
                                 <strong>Permit Number</strong>
-                                {sortConfig.key !== "permitnumber" ? "↑↓" : ""}
-                                {sortConfig.key === "permitnumber" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "permitnumber"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "permitnumber"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Plan") && (
                               <th onClick={() => requestSort("plan")}>
                                 <strong>Plan</strong>
-                                {sortConfig.key !== "plan" ? "↑↓" : ""}
-                                {sortConfig.key === "plan" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "plan"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "plan"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Sub Legal Name") && (
-                              <th
-                              // onClick={() => requestSort("plan")}
-                              >
+                              <th>
                                 <strong>Sub Legal Name</strong>
-                                {/* {sortConfig.key !== "plan" ? "↑↓" : ""}
-                              {sortConfig.key === "plan" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )} */}
+                                {sortConfig.some(
+                                  (item) => item.key === "Sublegal_name"
+                                ) ? (
+                                  <span>
+                                    {sortConfig.find(
+                                      (item) => item.key === "Sublegal_name"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
+                                  </span>
+                                ) : (
+                                  <span>↑↓</span>
+                                )}
                               </th>
                             )}
                             {checkFieldExist("Value") && (
-                              <th onClick={() => requestSort("Value")}>
+                              <th onClick={() => requestSort("value")}>
                                 <strong>Value</strong>
-                                {sortConfig.key !== "value" ? "↑↓" : ""}
-                                {sortConfig.key === "value" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "value"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "value"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("productType")}>
                                 <strong>Product Type</strong>
-                                {sortConfig.key !== "productType" ? "↑↓" : ""}
-                                {sortConfig.key === "productType" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "productType"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "productType"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong>Area</strong>
-                                {sortConfig.key !== "Area" ? "↑↓" : ""}
-                                {sortConfig.key === "Area" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "area"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "area"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Master Plan") && (
                               <th onClick={() => requestSort("masterPlan")}>
                                 <strong>Master Plan</strong>
-                                {sortConfig.key !== "masterPlan" ? "↑↓" : ""}
-                                {sortConfig.key === "masterPlan" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "masterPlan"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "masterPlan"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Zip Code") && (
                               <th onClick={() => requestSort("zipCode")}>
                                 <strong>Zip Code</strong>
-                                {sortConfig.key !== "zipCode" ? "↑↓" : ""}
-                                {sortConfig.key === "zipCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "zipCode"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "zipCode"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "lotWidth"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "lotWidth"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
-                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
-                                {sortConfig.key === "lotsize" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "lotsize"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "lotsize"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
-                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
-                                {sortConfig.key === "zoning" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "zoning"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "zoning"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong>Age Restricted</strong>
-                                {sortConfig.key !== "age" ? "↑↓" : ""}
-                                {sortConfig.key === "age" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "age"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "age"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
-                                {sortConfig.key !== "stories" ? "↑↓" : ""}
-                                {sortConfig.key === "stories" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "stories"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "stories"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>Date Added</strong>
-                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                {sortConfig.key === "created_at" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "created_at"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "created_at"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
                             {checkFieldExist("__pkPermitID") && (
-                              <th onClick={() => requestSort("permitnumber ")}>
+                              <th onClick={() => requestSort("permitnumber")}>
                                 <strong>__pkPermitID</strong>
-                                {sortConfig.key !== "permitnumber" ? "↑↓" : ""}
-                                {sortConfig.key === "permitnumber" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "permitnumber"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "permitnumber"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -956,13 +1240,18 @@ const PermitList = () => {
                                 onClick={() => requestSort("subdivisionCode")}
                               >
                                 <strong>_fkSubID </strong>
-                                {sortConfig.key !== "subdivisionCode "
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionCode" && (
+                                {sortConfig.some(
+                                  (item) => item.key === "subdivisionCode"
+                                ) ? (
                                   <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                    {sortConfig.find(
+                                      (item) => item.key === "subdivisionCode"
+                                    ).direction === "asc"
+                                      ? "↑"
+                                      : "↓"}
                                   </span>
+                                ) : (
+                                  <span>↑↓</span>
                                 )}
                               </th>
                             )}
@@ -978,7 +1267,6 @@ const PermitList = () => {
                             permitList.map((element, index) => (
                               <tr
                                 onClick={() => handleRowClick(element.id)}
-                                key={element.id}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
@@ -1119,7 +1407,7 @@ const PermitList = () => {
                                 {checkFieldExist("_fkSubID") && (
                                   <td>
                                     {element.subdivision &&
-                                      element.subdivision?.subdivision}
+                                      element.subdivision?.subdivision_code}
                                   </td>
                                 )}
                                 {checkFieldExist("Action") && (
@@ -1175,6 +1463,53 @@ const PermitList = () => {
         Title="Add Permit"
         parentCallback={handleCallback}
       />
+            <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>
+                                {columns.find(column => column.key === col.key)?.label !== undefined
+        ? columns.find(column => column.key === col.key)?.label
+        : col.key}
+        
+                                        
+                                </span>:<span>{col.direction}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Permit CSV Data</Modal.Title>
@@ -1414,6 +1749,217 @@ const PermitList = () => {
                 Submit
               </button>
             </form>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Permits{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  DATE:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input name="date" type="date"className="form-control" value={filterQuery.date} onChange={HandleFilter}/>
+
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SUBDIVISION NAME :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.subdivision_name} name="subdivision_name" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ADDRESS NUMBER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="address2" value={filterQuery.address2} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ADDRESS NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="address1" value={filterQuery.address1} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PARCEL NUMBER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                CONTRACTOR:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.contractor} name="contractor" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SQUARE FOOTAGE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="sqft" value={filterQuery.sqft} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                OWNER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="lotsize" value={filterQuery.owner} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LOT NUMBER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.lotnumber} name="lotnumber" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PERMIT NUMBER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.permitnumber} name="permitnumber" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                                <label className="form-label">
+                                PLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.plan} name="plan" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                SUB LEGAL NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.sublegalname} name="sublegalname" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                VALUE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.value} name="value" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                PRODUCT TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                MASTERPLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>                               
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY<span className="text-danger">*</span></label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>          
+                              </div>
+                             </div>
+                             
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
           </div>
         </div>
       </Offcanvas>

@@ -16,18 +16,52 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const TrafficsaleList = () => {
+
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [showSort, setShowSort] = useState(false);
+ const handleSortClose = () => setShowSort(false);
   const navigate = useNavigate();
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [trafficListCount, setTrafficListCount] = useState('');
   const [TotaltrafficListCount, setTotalTrafficListCount] = useState('');
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const HandleFilterForm = (e) =>
+    {
+      e.preventDefault();
+      gettrafficsaleList(currentPage,searchQuery);
+    };
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState([]);
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const [AllTrafficListExport, setAllTrafficistExport] = useState([]);
+
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -120,57 +154,87 @@ const TrafficsaleList = () => {
     setSelectedColumns(updatedColumns);  
   };
   console.log('trafficsaleList : ',trafficsaleList);
+
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns("");
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = trafficsaleList.map((row) => 
-    newdata.map((nw, i) =>
-    [ 
-        nw === "Week Ending" ?  row.weekending : '',
-        nw === "Builder Name" ?  row.subdivision.builder?.name : '',
-        nw === "Subdivision Name" ?  row.subdivision?.name : '',
-        nw === "Weekly Traffic" ?  row.weeklytraffic : '',
-        nw === "Weekly Gross Sales" ?  row.grosssales : '',
-        nw === "Weekly Cancellations" ?  row.cancelations : '',
-        nw === "Weekly Net Sales" ?  row.netsales : '',
-        nw === "Total Lots" ?  row.subdivision.totallots : '',
-        nw === "Weekly Lots Release For Sale" ?  row.lotreleased : '',
-        nw === "Weekly Unsold Standing Inventory" ?  row.unsoldinventory : '',  
-        nw === "Product Type" ?  row.subdivision.product_type : '',
-        nw === "Area" ?  row.subdivision.area : '',
-        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
-        nw === "Zip Code" ?  row.subdivision.zipcode : '',
-        nw === "Lot Width" ?  row.subdivision?.lotwidth : '',
-        nw === "Lot Size" ?  row.subdivision?.lotsize : '',
-        nw === "Zoning" ?  row.subdivision?.zoning : '', 
-        nw === "Age Restricted" ? (row.subdivision?.age === 1 && "Yes" || row.subdivision?.age === 0 && "No") : '', 
-        nw === "All Single Story" ? (row.subdivision?.single === 1 && "Yes" || row.subdivision?.single === 0 && "No") : '',  
-        nw === "Pk Record id" ?  row.id : '',
-        nw === "Fk sub id" ?  row.subdivision.subdivision_code : '',     
-    ]
-    ),
-    
-  )
- 
- 
-    downloadExcel({
-      fileName: "Weekly Traffic & Sales List",
-      sheet: "Weekly Traffic & Sales List",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllTrafficListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Week Ending":
+            return row.weekending || '';
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Weekly Traffic":
+            return row.weeklytraffic || '';
+          case "Weekly Gross Sales":
+            return row.grosssales || '';
+          case "Weekly Cancellations":
+            return row.cancelations || '';
+          case "Weekly Net Sales":
+            return row.netsales || '';
+          case "Total Lots":
+            return row.subdivision?.totallots || '';
+          case "Weekly Lots Release For Sale":
+            return row.lotreleased || '';
+          case "Weekly Unsold Standing Inventory":
+            return row.unsoldinventory || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
+          case "All Single Story":
+            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
+          case "Pk Record id":
+            return row.id || '';
+          case "Fk sub id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Traffic & Sales List');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Weekly_Traffic_Sales_List.xlsx');
+  };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -247,8 +311,23 @@ const TrafficsaleList = () => {
   }, []);
 
   const [filterQuery, setFilterQuery] = useState({
-    status: "",
-    subdivision_id: "",
+    weekending:"",
+    builder_name:"",
+    subdivision_name:"",
+    weeklytraffic:"",
+    cancelations:"",
+    netsales:"",
+    lotreleased:"",
+    unsoldinventory:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotwidth:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -292,8 +371,21 @@ const TrafficsaleList = () => {
   };
   useEffect((currentPage) => {
     gettrafficsaleList(currentPage);
+    fetchAllPages(searchQuery, sortConfig)
   }, [currentPage]);
 
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminTrafficsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminTrafficsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllTrafficistExport(allData);
+  }
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminTrafficsaleService.destroy(e).json();
@@ -373,8 +465,23 @@ const TrafficsaleList = () => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      status: "",
-      subdivision_id: "",
+      weekending:"",
+      builder_name:"",
+      subdivision_name:"",
+      weeklytraffic:"",
+      cancelations:"",
+      netsales:"",
+      lotreleased:"",
+      unsoldinventory:"",
+      product_type:"",
+      area:"",
+      masterplan_id:"",
+      zipcode:"",
+      lotwidth:"",
+      lotsize:"",
+      zoning:"",
+      age:"",
+      single:"",
     });
   };
 
@@ -485,6 +592,13 @@ const TrafficsaleList = () => {
                     <div className="d-flex">
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
 
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
                       <button
@@ -494,66 +608,9 @@ const TrafficsaleList = () => {
                         {" "}
                         Field Access
                       </button>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <h5 className="">Filter Options</h5>
-                          <div className="border-top">
-                            <div className="mt-3 ">
-                              <label className="form-label">
-                                Subdivision:{" "}
-                                <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.subdivision_id}
-                                name="subdivision_id"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                {BuilderList.map((element) => (
-                                  <option value={element.id}>
-                                    {element.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div className="mt-3 mb-3">
-                              <label className="form-label">
-                                Status: <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.status}
-                                name="status"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                <option value="1">Active</option>
-                                <option value="0">De-active</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-sm"
-                              onClick={HandleCancelFilter}
-                              variant="secondary"
-                            >
-                              Reset
-                            </Button>
-                          </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                    </button> 
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -1232,7 +1289,187 @@ const TrafficsaleList = () => {
         </div>
       </Offcanvas>
 
-      
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Subdivision{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  WEEK ENDING:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input name="weekending" type="date" className="form-control" value={filterQuery.weekending} onChange={HandleFilter}/>
+
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input
+                                    className=" form-control"
+                                    value={filterQuery.builder_name}
+                                    name="builder_name"
+                                    onChange={HandleFilter}
+                                  />
+                                    
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SUBDIVISION NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="subdivision_name" className="form-control" value={filterQuery.subdivision_name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                WEEKLY TRAFFIC :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.weeklytraffic} name="weeklytraffic" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                WEEKLY CANCELLATIONS:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="cancelations" value={filterQuery.cancelations} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                WEEKLY NET SALES:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="netsales" value={filterQuery.netsales} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                TOTAL LOTS:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                WEEKLY LOTS RELEASE FOR SALE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                WEEKLY UNSOLD STANDING INVENTORY:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PRODUCT TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="product_type" value={filterQuery.product_type} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                MASTER PLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age"  onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>                                 </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                </select>     
+                              </div>
+                             </div>
+                             
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
+          </div>
+        </div>
+      </Offcanvas>
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
@@ -1265,6 +1502,48 @@ const TrafficsaleList = () => {
           <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

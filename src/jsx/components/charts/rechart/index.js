@@ -598,19 +598,34 @@ function RechartJs() {
               <Tab label="Net Sales Per Sub" value="5" />
               <Tab label="Active Subdivisions" value="6" />
             </TabList> */}
-            <div className="col-xl-3 mb-3">
-              <select className="default-select form-control" onChange={handleChange}>
-                <option value="1">Buyer Traffic</option>
-                <option value="2">Net Sales</option>
-                <option value="3">Cancellation%</option>
-                <option value="4">Standing Inventory</option>
-                <option value="5">Net Sales Per Sub</option>
-                <option value="6">Active Subdivisions</option>
-              </select>
-            </div>
+    <div className="row mb-3">
+    <div className="col-md-3">
+    <label className="form-label">Data Type:</label>
+    <select className="default-select form-control" onChange={handleChange}>
+      <option value="1">Land Sales</option>
+      <option value="2">New Home Closings</option>
+      <option value="3">New Home Prices</option>
+      <option value="4">New Home Traffic Sales</option>
+      <option value="5">Resales</option>
+    </select>
+    </div>
+    <div className="col-md-3">
+    <label className="form-label">Series1:</label>
+    <select className="default-select form-control" onChange={handleChange}>
+      <option value="1">2024</option>
+    </select>
+    </div>
+    <div className="col-md-3">
+    <label className="form-label">Series2:</label>
+    <select className="default-select form-control" onChange={handleChange}>
+      <option value="1">2024</option>
+    </select>
+    </div>
+    </div>
+
           </Box>
-            <Row className={value==1?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            <Row>
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -625,7 +640,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -658,9 +673,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-            <Row className={value==2?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            {/* </Row> */}
+            {/* <Row> */}
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -675,7 +690,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -705,9 +720,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-            <Row className={value==3?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            {/* </Row> */}
+            {/* <Row> */}
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -722,7 +737,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -756,8 +771,8 @@ function RechartJs() {
                 </Card>
               </Col>
             </Row>
-            <Row className={value==4?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            <Row>
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -772,7 +787,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -802,9 +817,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-            <Row className={value==5?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            {/* </Row> */}
+            {/* <Row> */}
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -819,7 +834,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -852,9 +867,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-            <Row className={value==6?'cshow':'chide'}>
-              <Col xl={12} lg={12}>
+            {/* </Row> */}
+            {/* <Row> */}
+              <Col xl={4} lg={4}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -869,7 +884,7 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu style={{width:"200px"}}>
                           <label htmlFor="start_date">From:</label>
                           <input
                             type="date"
@@ -908,7 +923,7 @@ function RechartJs() {
 
       {/* {currentDisplay == 1 ? (
           <Row>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -922,7 +937,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -933,7 +948,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -947,7 +962,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -958,7 +973,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -972,7 +987,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -992,7 +1007,7 @@ function RechartJs() {
         )}
         {currentDisplay == 2 ? (
           <Row>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1003,7 +1018,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1014,7 +1029,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1037,7 +1052,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1065,7 +1080,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1093,7 +1108,7 @@ function RechartJs() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1108,7 +1123,7 @@ function RechartJs() {
         )}
         {currentDisplay == 3 ? (
           <Row>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1117,7 +1132,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1126,7 +1141,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12} className="mt-5">
+            <Col xl={4} lg={4} className="mt-5">
               <Card>
                 <Card.Header>
                   <h4 className="card-title">Cancellation%</h4>
@@ -1134,7 +1149,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1143,7 +1158,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>
@@ -1154,7 +1169,7 @@ function RechartJs() {
                 <Card.Body></Card.Body>
               </Card>
             </Col>
-            <Col xl={12} lg={12}>
+            <Col xl={4} lg={4}>
               {" "}
               <Card>
                 <Card.Header>

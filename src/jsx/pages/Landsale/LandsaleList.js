@@ -20,8 +20,31 @@ import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import TrafficsaleList from "../Trafficsale/TrafficsaleList";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkLandsaleUpdate from "./BulkLandsaleUpdate";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const LandsaleList = () => {
+
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [showSort, setShowSort] = useState(false);
+ const handleSortClose = () => setShowSort(false);
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [Error, setError] = useState("");
@@ -50,6 +73,14 @@ const LandsaleList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   // const number = [...Array(npage + 1).keys()].slice(1);
   const [sortConfig, setSortConfig] = useState([]);
+
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+
+const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
+
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [landSaleDetails, setLandSaleDetails] = useState({
     seller: "",
@@ -111,6 +142,12 @@ const LandsaleList = () => {
     { label: "Location", key: "Location" },
     { label: "Notes", key: "Notes" },
     { label: "Price", key: "Price" },
+    { label: "Size", key: "Price" },
+    { label: "Size MS", key: "Price" },
+    { label: "Date", key: "Price" },
+
+
+
   ];
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
@@ -122,39 +159,55 @@ const LandsaleList = () => {
 
   const handleDownloadExcel = () => {
     setExportModelShow(false);
-    setSelectedColumns("");
-    console.log("click dataa D : ", selectedColumns);
-    var tableHeaders;
+    setSelectedColumns("");  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => {
-      return element;
+  
+    const tableData = AllLandsaleListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Seller":
+            return row.seller || '';
+          case "Buyer":
+            return row.buyer || '';
+          case "Location":
+            return row.location || '';
+          case "Notes":
+            return row.notes || '';
+          case "Price":
+          return row.price ? `${row.price}/${row.typeofunit}` : '';
+          case "Size":
+            return row.noofunit ? `${row.noofunit}` : 0;
+          case "Price Per":
+          return row.price_per ? `${row.price_per}/${row.typeofunit}` : '';
+          case "Size MS":
+          return row.typeofunit ? `${row.typeofunit}` : '';
+          case "Date":
+          return row.date ? `${row.date}` : '';
+          default:
+            return '';
+        }
+      });
     });
-
-    const tableData = LandsaleList.map((row) =>
-      newdata.map((nw, i) => [
-        nw === "Builder Name" ? row.subdivision?.builder?.name : "",
-        nw === "Subdivision Name" ? row.subdivision?.name : "",
-        nw === "Seller" ? row.seller : "",
-        nw === "Buyer" ? row.buyer : "",
-        nw === "Location" ? row.location : "",
-        nw === "Notes" ? row.notes : "",
-        nw === "Price" ? row.price + "/" + row.typeofunit : "",
-      ])
-    );
-
-    downloadExcel({
-      fileName: "Land sales",
-      sheet: "Land sales",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData,
-      },
-    });
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Land sales');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Land_sales.xlsx');
   };
+  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -278,10 +331,24 @@ const LandsaleList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getLandsaleList(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllLandsaleListExport(allData);
+  }
 
   const handleDelete = async (e) => {
     try {
@@ -571,6 +638,14 @@ const LandsaleList = () => {
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
                       </button>
+                    
+                      <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
                       <button
                         onClick={() => setExportModelShow(true)}
                         className="btn btn-primary btn-sm me-1"
@@ -1010,8 +1085,22 @@ const LandsaleList = () => {
 
                                 {/* {checkFieldExist("Price") && (
                                   <td>
-                                    <PriceComponent price={element.price} />/{" "}
-                                    {element.typeofunit}
+                                    <PriceComponent price={element.price} />{" "}
+                                  </td>
+                                )}{" "}
+                                  {checkFieldExist("Price") && (
+                                  <td>
+                                    {element.noofunit}
+                                  </td>
+                                )}{" "}
+                                {checkFieldExist("Price") && (
+                                  <td>
+                                    <PriceComponent price={element.price_per} />
+                                  </td>
+                                )}{" "}
+                                  {checkFieldExist("Price") && (
+                                  <td>
+                                      {element.typeofunit}
                                   </td>
                                 )}{" "} */}
 
@@ -1389,6 +1478,48 @@ const LandsaleList = () => {
             </button>
           </Modal.Footer>
         </>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

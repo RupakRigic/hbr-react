@@ -22,9 +22,34 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
- 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+
 
 const ProductList = () => {
+
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  
+  const [AllProductListExport, setAllBuilderExport] = useState([]);
+  const [showSort, setShowSort] = useState(false);
+  const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +59,9 @@ const ProductList = () => {
   const [BuilderList, setBuilderList] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]); 
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   
+
   const headers = [
     { label: 'Status', key: 'Status' },
     { label: 'Builder Name', key: 'buildername' },
@@ -63,16 +90,16 @@ const ProductList = () => {
     { label: 'Price Change Last 12 Months', key: 'fksubid' }, 
   ];
   const columns = [
-    { label: 'Status', key: 'Status' },
-    { label: 'Builder Name', key: 'buildername' },
-    { label: 'Subdivision Name', key: 'subdivname' },
-    { label: 'Product Name', key: 'producutname' },
-    { label: 'Square Footage', key: 'squarefootage' },
+    { label: 'Status', key: 'status' },
+    { label: 'Builder Name', key: 'builderName' },
+    { label: 'Subdivision Name', key: 'subdivisionName' },
+    { label: 'Product Name', key: 'name' },
+    { label: 'Square Footage', key: 'sqft' },
     { label: 'Stories', key: 'stories' },
-    { label: 'Bed Rooms', key: 'bedrooms' },
-    { label: 'Bath Rooms', key: 'bathrooms' },
+    { label: 'Bed Rooms', key: 'bedroom' },
+    { label: 'Bath Rooms', key: 'bathroom' },
     { label: 'Garage', key: 'garage' },
-    { label: 'Current Base Price', key: 'currentbaseprice' },
+    { label: 'Current Base Price', key: 'latestBasePrice' },
     { label: 'Current Price Per SQFT', key: 'currentprice' },
     { label: 'Product Website', key: 'productwebsite' },
     { label: 'Product Type', key: 'producttype' },
@@ -96,69 +123,145 @@ const ProductList = () => {
   };
   console.log('data',productList);
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns('');
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = productList.map((row) => 
-    newdata.map((nw, i) =>
-    [
-        nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '',
-        nw === "Builder Name" ?  row.subdivision.builder.name : '',
-        nw === "Subdivision Name" ?  row.subdivision.name : '',
-        nw === "Product Name" ?  row.name : '', 
-        nw === "Square Footage" ?  row.sqft : '',
-        nw === "Stories" ?  row.stories : '',
-        nw === "Bed Rooms" ?  row.bedroom : '',
-        nw === "Bath Rooms" ?  row.bathroom : '',
-        nw === "Garage" ?  row.garage : '',
-        nw === "Current Base Price" ?  row.recentprice : '',
-        nw === "Current Price Per SQFT" ?  row.recentpricesqft : '',
-        nw === "Product Website" ?  row.Website : '',
-        nw === "Product Type" ?  row.subdivision.product_type : '',
-        nw === "Area" ?  row.subdivision.area : '',
-        nw === "Master Plan" ?  row.subdivision.masterplan_id : '',
-        nw === "Zip Code" ?  row.subdivision.zipcode : '',
-        nw === "Lot Width" ?  row.subdivision.lotwidth : '',
-        nw === "Lot Size" ?  row.subdivision.lotsize : '',
-        nw === "Zoning" ?  row.subdivision.zoning : '',
-        nw === "Age Restrictedr" ? (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : '', 
-        nw === "All Single Story" ?   (row.subdivision.single==1 && "Yes" || row.subdivision.single===0 && "No") : '',
-        nw === "Product ID" ?  row.product_code : '',
-        nw === "Fk Sub ID" ?  row.subdivision.subdivision_code : '',
-    ]
-    ),
-    
-  )
- 
- 
-    downloadExcel({
-      fileName: "Product",
-      sheet: "Product",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllProductListExport.map((row) => {
+      const mappedRow = {};
+      tableHeaders.forEach((header) => {
+        switch (header) {
+          case "Status":
+            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
+            break;
+          case "Builder Name":
+            mappedRow[header] = row.subdivision ? row.subdivision.builder.name : '';
+            break;
+          case "Subdivision Name":
+            mappedRow[header] = row.subdivision ? row.subdivision.name : '';
+            break;
+          case "Product Name":
+            mappedRow[header] = row.name;
+            break;
+          case "Square Footage":
+            mappedRow[header] = row.sqft;
+            break;
+          case "Stories":
+            mappedRow[header] = row.stories;
+            break;
+          case "Bed Rooms":
+            mappedRow[header] = row.bedroom;
+            break;
+          case "Bath Rooms":
+            mappedRow[header] = row.bathroom;
+            break;
+          case "Garage":
+            mappedRow[header] = row.garage;
+            break;
+          case "Current Base Price":
+            mappedRow[header] = row.recentprice;
+            break;
+          case "Current Price Per SQFT":
+            mappedRow[header] = row.recentpricesqft;
+            break;
+          case "Product Website":
+            mappedRow[header] = row.Website;
+            break;
+          case "Product Type":
+            mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
+            break;
+          case "Area":
+            mappedRow[header] = row.subdivision ? row.subdivision.area : '';
+            break;
+          case "Master Plan":
+            mappedRow[header] = row.subdivision ? row.subdivision.masterplan_id : '';
+            break;
+          case "Zip Code":
+            mappedRow[header] = row.subdivision ? row.subdivision.zipcode : '';
+            break;
+          case "Lot Width":
+            mappedRow[header] = row.subdivision ? row.subdivision.lotwidth : '';
+            break;
+          case "Lot Size":
+            mappedRow[header] = row.subdivision ? row.subdivision.lotsize : '';
+            break;
+          case "Zoning":
+            mappedRow[header] = row.subdivision ? row.subdivision.zoning : '';
+            break;
+          case "Age Restricted":
+            mappedRow[header] = (row.subdivision && row.subdivision.age === 1 && "Yes") || (row.subdivision && row.subdivision.age === 0 && "No") || '';
+            break;
+          case "All Single Story":
+            mappedRow[header] = (row.subdivision && row.subdivision.single === 1 && "Yes") || (row.subdivision && row.subdivision.single === 0 && "No") || '';
+            break;
+          case "Product ID":
+            mappedRow[header] = row.product_code;
+            break;
+          case "Fk Sub ID":
+            mappedRow[header] = row.subdivision ? row.subdivision.subdivision_code : '';
+            break;
+          default:
+            mappedRow[header] = '';
+        }
+      });
+      return mappedRow;
     });
-
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Product');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Product.xlsx');
+  };
+  
 
   const [filterQuery, setFilterQuery] = useState({
-    status: "",
-    subdivision_id: "",
+    status:"",
+    builder_name:"",
+    name:"",
+    sqft:"",
+    stories:"",
+    bedroom:"",
+    bathroom:"",
+    garage:"",
+    current_base_price:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
   });
+
   const [isLoading, setIsLoading] = useState(true);
 
   const product = useRef();
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -250,11 +353,25 @@ const ProductList = () => {
       }
     }
   };
-  
+
+    async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminProductService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+  }
+
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getproductList(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
@@ -407,8 +524,23 @@ const ProductList = () => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      status: "",
-      subdivision_id: "",
+      status:"",
+      builder_name:"",
+      name:"",
+      sqft:"",
+      stories:"",
+      bedroom:"",
+      bathroom:"",
+      garage:"",
+      current_base_price:"",
+      product_type:"",
+      area:"",
+      masterplan_id:"",
+      zipcode:"",
+      lotsize:"",
+      zoning:"",
+      age:"",
+      single:"",
     });
   };
   const handlePriceClick = () => {
@@ -527,6 +659,14 @@ const handleUploadClick = async () => {
 const handlBuilderClick = (e) => {
   setShow(true);
 };
+
+const HandleFilterForm = (e) =>
+  {
+    e.preventDefault();
+    console.log(555);
+    getproductList(currentPage,searchQuery);
+  };
+
   return (
     <>
       <MainPagetitle
@@ -565,7 +705,13 @@ const handlBuilderClick = (e) => {
                     </div>
 
                     <div className="d-flex">
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
                       <button
@@ -575,74 +721,9 @@ const handlBuilderClick = (e) => {
                         {" "}
                         Field Access
                       </button>
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >                       
-                        Import
-                      </Button>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <h5 className="">Filter Options</h5>
-                          <div className="border-top">
-                            <div className="mt-3">
-                              <label className="form-label">
-                                Subdivision:{" "}
-                                <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.subdivision_id}
-                                name="subdivision_id"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                {BuilderList.map((element) => (
-                                  <option value={element.id}>
-                                    {element.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div className="mt-3 mb-3">
-                              <label className="form-label">
-                                Status: <span className="text-danger"></span>
-                              </label>
-                              <select
-                                className="default-select form-control"
-                                value={filterQuery.status}
-                                name="status"
-                                onChange={HandleFilter}
-                              >
-                                {/* <option data-display="Select">Please select</option> */}
-                                <option value="">All</option>
-                                <option value="1">Active</option>
-                                <option value="0">Sold Out</option>
-                                <option value="2">Future</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-sm"
-                              onClick={HandleCancelFilter}
-                              variant="secondary"
-                            >
-                              Reset
-                            </Button>
-                          </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                    </button>   
 
                       <Link
                         to={"#"}
@@ -906,14 +987,14 @@ const handlBuilderClick = (e) => {
                               </th>
                             )}
                             {checkFieldExist("Current Base Price") && (
-                              <th onClick={() => requestSort("recentprice")}>
+                              <th onClick={() => requestSort("latestBasePrice")}>
                                 <strong>Current Base Price</strong>
                                 {sortConfig.some(
-                                  (item) => item.key === "recentprice"
+                                  (item) => item.key === "latestBasePrice"
                                 ) ? (
                                   <span>
                                     {sortConfig.find(
-                                      (item) => item.key === "recentprice"
+                                      (item) => item.key === "latestBasePrice"
                                     ).direction === "asc"
                                       ? "↑"
                                       : "↓"}
@@ -925,15 +1006,15 @@ const handlBuilderClick = (e) => {
                             )}
                             {checkFieldExist("Current Price Per SQFT") && (
                               <th
-                                onClick={() => requestSort("recentpricesqft")}
+                                onClick={() => requestSort("curren_price_per_sqft")}
                               >
                                 <strong>Current Price Per SQFT</strong>
                                 {sortConfig.some(
-                                  (item) => item.key === "recentpricesqft"
+                                  (item) => item.key === "curren_price_per_sqft"
                                 ) ? (
                                   <span>
                                     {sortConfig.find(
-                                      (item) => item.key === "recentpricesqft"
+                                      (item) => item.key === "curren_price_per_sqft"
                                     ).direction === "asc"
                                       ? "↑"
                                       : "↓"}
@@ -942,7 +1023,7 @@ const handlBuilderClick = (e) => {
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
+                            )}  
                             {checkFieldExist("Product Website") && (
                               <th
                               // onClick={() => requestSort("recentpricesqft")}
@@ -1178,7 +1259,7 @@ const handlBuilderClick = (e) => {
                             )}
                           {checkFieldExist("Price Change Since Open") && (
                               <th
-                                onClick={() => requestSort("subdivisionCode")}
+                                onClick={() => requestSort("price_change_since_open")}
                               >
                                 <strong>Price Change Since Open</strong>
                                 {sortConfig.some(
@@ -1264,17 +1345,18 @@ const handlBuilderClick = (e) => {
                                 {checkFieldExist("Current Base Price") && (
                                   <td>
                                     <PriceComponent
-                                      price={element.recentprice}
+                                      price={element.latest_base_price}
                                     />
                                   </td>
                                 )}
                                 {checkFieldExist("Current Price Per SQFT") && (
                                   <td>
                                     <PriceComponent
-                                      price={element.recentpricesqft}
+                                      price={element.current_price_per_sqft}
                                     />
                                   </td>
                                 )}
+    
                                 {checkFieldExist("Product Website") && <td></td>}
                                 {checkFieldExist("Product Type") && (
                                   <td>{element.subdivision.product_type}</td>
@@ -1322,11 +1404,15 @@ const handlBuilderClick = (e) => {
                                     {element.subdivision.subdivision_code}
                                   </td>
                                 )}
-                              {checkFieldExist("Price Change Since Open") && (
-                                <td>0</td>
-                              )}
+                                {checkFieldExist("Price Change Since Open") && (
+                                  <td>
+                                    {element.price_changes_since_open+'%'}
+                                  </td>
+                                )}
                             {checkFieldExist("Price Change Last 12 Months") && (
-                                <td>0</td>
+                                    <td>
+                                     {element.price_changes_last_12_Month+'%'}
+                                   </td>
                               )}
                                 {checkFieldExist("Action") && (
                                   <td>
@@ -1406,6 +1492,197 @@ const handlBuilderClick = (e) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Products{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  PLAN STATUS:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.status}
+                                    name="status"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Sold Out</option>
+                                    <option value="2">Future</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SUBDIVISION NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="subdivision_name" className="form-control" value={filterQuery.subdivision_name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PRODUCT NAME :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.name} name="name" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SQUARE FOOTAGE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                STORIES:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                BEDROOMS:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                BATH ROOMS:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                GARAGE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                CURRENT BASE PRICE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="current_base_price" value={filterQuery.current_base_price} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PRODUCT TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                                <label className="form-label">
+                                MASTER PLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>                                </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY<span className="text-danger">*</span></label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>          
+                              </div>
+                             </div>
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
+          </div>
+        </div>
+      </Offcanvas>
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
@@ -1746,6 +2023,48 @@ const handlBuilderClick = (e) => {
           <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );

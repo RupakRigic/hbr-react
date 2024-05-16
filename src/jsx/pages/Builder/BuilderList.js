@@ -22,8 +22,28 @@ import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import multiColumnSort from "multi-column-sort";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const BuilderTable = () => {
+
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+        setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+        setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+};
+
+const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+};
+const [showSort, setShowSort] = useState(false);
+const handleSortClose = () => setShowSort(false);
+
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,6 +71,8 @@ const BuilderTable = () => {
   const handleClose = () => setShow(false);
 
   const [BuilderList, setBuilderList] = useState([]);
+  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
+
   const [BuilderListCount, setBuilderListCount] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -132,15 +154,16 @@ const BuilderTable = () => {
     { label: "Logo", key: "Logo" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
-    { label: "Company Type", key: "companytype" },
+    { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
     { label: "LV office Email", key: "email" },
     { label: "LV office address", key: "officeaddress1" },
     { label: "LV office City", key: "city" },
-    { label: "LV office Zip", key: "zipcode" },
+    { label: "LV office Zip", key: "zipCode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office Address 2", key: "coporate_officeaddress_2" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_office_state" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
@@ -185,69 +208,134 @@ const BuilderTable = () => {
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns("");
-    var tableHeaders;
+    
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => {
-      return element;
+  
+    const tableData = AllBuilderListExport.map((row) => {
+      const mappedRow = {};
+      tableHeaders.forEach((header) => {
+        switch (header) {
+          case "Logo":
+            mappedRow[header] = imageUrl + row.logo;
+            break;
+          case "Website":
+            mappedRow[header] = row.website;
+            break;
+          case "Builder Name":
+            mappedRow[header] = row.name;
+            break;
+          case "Company Type":
+            mappedRow[header] = row.company_type;
+            break;
+          case "LV office Phone":
+            mappedRow[header] = row.phone;
+            break;
+          case "LV office Email":
+            mappedRow[header] = row.email;
+            break;
+          case "LV office address":
+            mappedRow[header] = row.officeaddress1;
+            break;
+          case "LV office City":
+            mappedRow[header] = row.city;
+            break;
+          case "LV office Zip code":
+            mappedRow[header] = row.zipcode;
+            break;
+          case "Current Division President":
+            mappedRow[header] = row.current_division_president;
+            break;
+          case "Current Land Acquisitions":
+            mappedRow[header] = row.current_land_aquisitions;
+            break;
+          case "Corporate Office Address":
+            mappedRow[header] = row.coporate_officeaddress_1;
+            break;
+          case "Corporate Office City":
+            mappedRow[header] = row.coporate_officeaddress_city;
+            break;
+          case "Corporate Office State":
+            mappedRow[header] = row.coporate_officeaddress_2;
+            break;
+          case "Corporate Office Zip":
+            mappedRow[header] = row.coporate_officeaddress_zipcode;
+            break;
+          case "Stock Market":
+            mappedRow[header] = row.stock_market;
+            break;
+          case "Stock Symbol":
+            mappedRow[header] = row.stock_symbol;
+            break;
+          case "Active Communities":
+            mappedRow[header] = row.active_communities;
+            break;
+          case "Closing This Year":
+            mappedRow[header] = row.closing_this_year;
+            break;
+          case "Permits This Year":
+            mappedRow[header] = row.permits_this_year;
+            break;
+          case "Net Sales this year":
+            mappedRow[header] = row.net_sales_this_year;
+            break;
+          case "Current Avg Base Price":
+            mappedRow[header] = row.current_avg_base_Price;
+            break;
+          case "Median Closing Price This Year":
+            mappedRow[header] = row.median_closing_price_this_year;
+            break;
+          case "Median Closing Price Last Year":
+            mappedRow[header] = row.median_closing_price_last_year;
+            break;
+          case "Avg Net Sales Per Month This Year":
+            mappedRow[header] = row.avg_net_sales_per_month_this_year;
+            break;
+          case "Avg Closings Per Month This Year":
+            mappedRow[header] = row.avg_closings_per_month_this_year;
+            break;
+          case "Total Closings":
+            mappedRow[header] = row.total_closings;
+            break;
+          case "Total Permits":
+            mappedRow[header] = row.total_permits;
+            break;
+          case "Total Net Sales":
+            mappedRow[header] = row.total_net_sales;
+            break;
+          case "Date Of First Closing":
+            mappedRow[header] = row.date_of_first_closing;
+            break;
+          case "Date Of Latest Closing":
+            mappedRow[header] = row.date_of_latest_closing;
+            break;
+          default:
+            mappedRow[header] = "";
+        }
+      });
+      return mappedRow;
     });
-
-    const tableData = BuilderList.map((row) =>
-      newdata.map((nw, i) => [
-        nw === "Logo" ? imageUrl + row.logo : "",
-        nw === "Website" ? row.website : "",
-        nw === "Builder Name" ? row.name : "",
-        nw === "Company Type" ? row.company_type : "",
-        nw === "LV office Phone" ? row.phone : "",
-        nw === "LV office Email" ? row.email : "",
-        nw === "LV office address" ? row.officeaddress1 : "",
-        nw === "LV office City" ? row.city : "",
-        nw === "LV office Zip code" ? row.zipcode : "",
-        nw === "Current Division President"
-          ? row.current_division_president
-          : "",
-        nw === "Current Land Acquisitions" ? row.current_land_aquisitions : "",
-        nw === "Corporate Office Address" ? row.coporate_officeaddress_1 : "",
-        nw === "Corporate Office City" ? row.coporate_officeaddress_city : "",
-        nw === "Corporate Office State" ? row.coporate_officeaddress_2 : "",
-        nw === "Corporate Office Zip" ? row.coporate_officeaddress_zipcode : "",
-        nw === "Stock Market" ? row.stock_market : "",
-        nw === "Stock Symbol" ? row.stock_symbol : "",
-        nw === "Active Communities" ? row.active_communities : " ",
-        nw === "Closing This Year" ? row.closing_this_year : " ",
-        nw === "Permits This Year" ? row.permits_this_year : " ",
-        nw === "Net Sales this year" ? row.net_sales_this_year : " ",
-        nw === "Current Avg Base Price" ? row.current_avg_base_Price : " ",
-        nw === "Median Closing Price This Year "
-          ? row.median_closing_price_this_year
-          : " ",
-        nw === "Median Closing Price Last Year"
-          ? row.median_closing_price_last_year
-          : " ",
-        nw === "Avg Net Sales Per Month This Year "
-          ? row.avg_net_sales_per_month_this_year
-          : " ",
-        nw === "Avg Closings Per Month This Year"
-          ? row.avg_closings_per_month_this_year
-          : " ",
-        nw === "Total Closings" ? row.total_closings : " ",
-        nw === "Total Permits" ? row.total_permits : " ",
-        nw === "Total Net Sales" ? row.total_net_sales : " ",
-        nw === "Date Of First Closing" ? row.date_of_first_closing : " ",
-        nw === "Date Of Latest Closing" ? row.date_of_latest_closing : " ",
-      ])
-    );
-    downloadExcel({
-      fileName: "Builders",
-      sheet: "Builders",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData,
-      },
-    });
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+  
+    // Applying font style to header
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Builders');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Builders.xlsx');
   };
 
   const [BuilderDetails, SetBuilderDetails] = useState({
@@ -276,6 +364,10 @@ const BuilderTable = () => {
   });
   const [data, setData] = useState([]); // Your data state
   const [sortConfig, setSortConfig] = useState([]); // Your sort configuration state
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
 
   const builder = useRef();
   const [value, setValue] = React.useState("1");
@@ -317,11 +409,26 @@ const BuilderTable = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage,searchQuery);
+      fetchAllPages(searchQuery,sortConfig)
     } else {
       navigate("/");
     }
   }, [currentPage]);
-
+  
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+  
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+  }
+  
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -620,6 +727,11 @@ const BuilderTable = () => {
   const handlBuilderClick = (e) => {
     setShow(true);
   };
+
+  const HandleSortDetailClick = (e) =>
+  {
+      setShowSort(true);
+  }
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData('index', index);
   };
@@ -695,6 +807,13 @@ const BuilderTable = () => {
                             {" "}
                             Column Sequencing
                           </button> */}
+                           <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
                           <button
                             onClick={() => setExportModelShow(true)}
                             className="btn btn-primary btn-sm me-1"
@@ -761,48 +880,6 @@ const BuilderTable = () => {
                                   <span className="text-danger"></span>
                                 </label>
                                 <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                CLOSINGS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                PERMITS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                NET SALES THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                CURRENT AVG BASE PRICE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                AVG NET SALES PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                AVG CLOSINGS PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-4 mt-3">
                                 <label className="form-label">
@@ -1923,6 +2000,50 @@ const BuilderTable = () => {
             disabled={loading}
           >
             {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                  {/* {col.key}  */}
+                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>

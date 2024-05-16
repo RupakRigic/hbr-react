@@ -7,7 +7,6 @@ import swal from "sweetalert";
 import PriceOffcanvas from "./PriceOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import Button from "react-bootstrap/Button";
-import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
@@ -15,8 +14,180 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import { Offcanvas, Form, Row } from "react-bootstrap";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';  
 
 const PriceList = () => {
+  
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [showSort, setShowSort] = useState(false);
+ const handleSortClose = () => setShowSort(false);
+ const [exportmodelshow, setExportModelShow] = useState(false)
+ const [AllPriceListExport, setAllPriceListExport] = useState([]);
+ console.log(AllPriceListExport);
+
+ const handleColumnToggle = (column) => {
+  const updatedColumns = selectedColumns.includes(column)
+    ? selectedColumns.filter((col) => col !== column)
+    : [...selectedColumns, column];
+    console.log(updatedColumns);
+  setSelectedColumns(updatedColumns);  
+};
+
+const exportColumns = [
+  { label: 'Date', key: 'date' },
+  { label: 'Builder Name', key: 'BuilderName' }, 
+  { label: 'Subdivision Name', key: 'SubdivisionName' },
+  { label: 'Product Name', key: 'name' },
+  { label: 'Squre Footage', key: 'sqft' },
+  { label: 'Stories', key: 'stories' },
+  { label: 'Bedrooms', key: 'bedroom' },
+  { label: 'Bathrooms', key: 'bathrooms' },
+  { label: 'Garage', key: 'garrage' },
+  { label: 'Base Price', key: 'basePrice' },
+  { label: 'Price Per SQFT', key: 'recentpricesqft' },
+  { label: 'Product Type', key: 'productType' },
+  { label: 'Area', key: 'area' },
+  { label: 'Master Plan', key: 'masterplan_id' },
+  { label: 'Zip Code', key: 'zipcode' },
+  { label: 'Lot Width', key: 'lotwidth' },
+  { label: 'Lot Size', key: 'lotsize' },
+  { label: 'Zoning', key: 'zoning' },
+  { label: 'Age Restricted', key: 'age' },
+  { label: 'All Single Story', key: 'single' },
+  { label: '__pkPriceID', key: 'id' }, 
+  { label: '_fkProductID ', key: 'product_code' }, 
+];
+const headers = [
+  { label: 'Date', key: 'date' },
+  { label: 'Builder Name', key: 'BuilderName' }, 
+  { label: 'Subdivision Name', key: 'SubdivisionName' },
+  { label: 'Product Name', key: 'name' },
+  { label: 'Squre Footage', key: 'sqft' },
+  { label: 'Stories', key: 'stories' },
+  { label: 'Bedrooms', key: 'bedroom' },
+  { label: 'Bathrooms', key: 'bathrooms' },
+  { label: 'Garage', key: 'garrage' },
+  { label: 'Base Price', key: 'basePrice' },
+  { label: 'Price Per SQFT', key: 'recentpricesqft' },
+  { label: 'Product Type', key: 'productType' },
+  { label: 'Area', key: 'area' },
+  { label: 'Master Plan', key: 'masterplan_id' },
+  { label: 'Zip Code', key: 'zipcode' },
+  { label: 'Lot Width', key: 'lotwidth' },
+  { label: 'Lot Size', key: 'lotsize' },
+  { label: 'Zoning', key: 'zoning' },
+  { label: 'Age Restricted', key: 'age' },
+  { label: 'All Single Story', key: 'single' },
+  { label: '__pkPriceID', key: 'id' }, 
+  { label: '_fkProductID ', key: 'product_code' }, 
+   
+];
+
+const handleDownloadExcel = () => {
+  setExportModelShow(false);
+  setSelectedColumns("");
+
+  let tableHeaders;
+  if (selectedColumns.length > 0) {
+    tableHeaders = selectedColumns;
+  } else {
+    tableHeaders = headers.map((c) => c.label);
+  }
+  console.log(AllPriceListExport);
+
+  const tableData = AllPriceListExport.map((row) => {
+    return tableHeaders.map((header) => {
+      switch (header) {
+        case "Date":
+          return row.created_at || '';
+        case "Builder Name":
+          return row.product.subdivision &&
+           row.product.subdivision.builder?.name; 
+          case "Subdivision Name":
+            return row.product.subdivision &&
+            row.product.subdivision?.name;
+        case "Product Name":
+          return row.name || '';
+        case "Square Footage":
+          return row.product.sqft
+        case "Stories":
+          return row.product.stories || '';
+        case "Bedrooms":
+          return row.product.bedroom || '';
+        case "Bathrooms":
+          return row.product.bathrooms || '';
+        case "Garage":
+          return row.product.garage || '';
+        case "Base Price":
+          return row.baseprice || '';
+        case "Price Per SQFT":
+          return row.product.recentpricesqft || '';
+        case "Product Type":
+          return row.product.subdivision.product_type || '';
+        case "Area":
+          return row.product.subdivision.area || '';
+        case "Master Plan":
+          return row.product.subdivision.masterplan_id || '';
+        case "Zip Code":
+          return row.product.subdivision.zipcode || '';
+        case "Lot Width":
+          return row.product.subdivision.lotwidth || '';
+        case "Lot Size":
+          return row.product.subdivision.lotsize || '';
+        case "Zoning":
+          return row.product.subdivision.zoning || '';
+        case "Age Restricted":
+          return row.product.subdivision.age === 1 ? "Yes" : row.product.subdivision.age === 0 ? "No" : '';
+        case "All Single Story":
+          return row.product.subdivision.single === 1 ? "Yes" : row.product.subdivision.single === 0 ? "No" : '';
+        case "__pkPriceID":
+          return row.id || '';
+        case "_fkProductID":
+          return row.product.product_code || '';
+        default:
+          return '';
+      }
+    });
+  });
+
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+
+  const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+  for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+    const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+    if (!cell.s) cell.s = {};
+    cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+  }
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Price List');
+
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  saveAs(data, 'Price_List.xlsx');
+};
+
+
+
+  const [selectedColumns, setSelectedColumns] = useState([]);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [priceList, setPriceList] = useState([]);
@@ -135,6 +306,10 @@ const PriceList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -185,10 +360,24 @@ const PriceList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getpriceList(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
   }, []);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminPriceService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminPriceService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllPriceListExport(allData);
+  }
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminPriceService.destroy(e).json();
@@ -415,6 +604,15 @@ useEffect(() => {
                       Set Columns Order
                     </button>
                     <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                      
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>
+                    <button onClick={() => setExportModelShow(true)}className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -1040,6 +1238,82 @@ useEffect(() => {
             {loading ? "Loading.." : "Import"}
           </Button>
         </Modal.Footer>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+        <>
+          <Modal.Header>
+          <Modal.Title>Export</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => setExportModelShow(false)}
+          ></button>
+          </Modal.Header>
+          <Modal.Body>
+          <Row>
+            <ul className='list-unstyled'>
+            {exportColumns.map((col) => (
+              <li key={col.label}>
+              <label className='form-check'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleColumnToggle(col.label)}
+                />
+                {col.label}
+              </label>
+              </li>
+            ))}
+            </ul>
+          </Row>
+          </Modal.Body>
+          <Modal.Footer>
+          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+          </Modal.Footer>
+        </>
       </Modal>
       <Offcanvas
         show={manageAccessOffcanvas}

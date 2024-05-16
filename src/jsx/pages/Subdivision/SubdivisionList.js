@@ -23,21 +23,40 @@ import Modal from "react-bootstrap/Modal";
 import PriceComponent from "../../components/Price/PriceComponent";
 import { Row, Col, Card } from 'react-bootstrap';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 
 const SubdivisionList = () => {
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+        setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+        setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+};
+
+const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+};
+const [showSort, setShowSort] = useState(false);
+const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
   const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
+  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedColumns, setSelectedColumns] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPage = 10;
+  const recordsPage = 25;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);
@@ -47,12 +66,29 @@ const SubdivisionList = () => {
     status: "",
     product_type: "",
     reporting: "",
-    builder_id:""
+    builder_name:"",
+    name:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotwidth:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
+    gated:"",
+    juridiction:"",
+    gasprovider:"",
+    hoafee:"",
+    masterplan_id:""
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
@@ -119,32 +155,32 @@ const SubdivisionList = () => {
     { label: 'Year Net Sold', key: 'year_net_sold' }
   ];
   const columns = [
-    { label: 'Status', key: 'firstname' },
-    { label: 'Reporting', key: 'lastname' },
-    { label: 'Builder', key: 'nickname' },
-    { label: 'Name', key: 'zipcode' },
-    { label: 'Product Type', key: 'city' },
-    { label: 'Area', key: 'with' },
-    { label: 'Masterplan', key: 'without' },
-    { label: 'Zipcode', key: 'reentries' },
-    { label: 'Total Lots', key: 'rakes' },
-    { label: 'Lot Width', key: 'firstname' },
-    { label: 'Lot Size', key: 'lastname' },
-    { label: 'Zoning', key: 'nickname' },
-    { label: 'Age Restricted', key: 'zipcode' },
-    { label: 'All Single Story', key: 'city' },
-    { label: 'Gated', key: 'with' },
-    { label: 'Location', key: 'without' },
-    { label: 'Juridiction', key: 'reentries' },
-    { label: 'Latitude', key: 'rakes' },
-    { label: 'Longitude', key: 'zipcode' },
-    { label: 'Gas Provider', key: 'city' },
-    { label: 'HOA Fee', key: 'with' },
-    { label: 'Masterplan Fee', key: 'without' },
-    { label: 'Parcel Group', key: 'reentries' },
-    { label: 'Phone', key: 'rakes' },
-    { label: 'Website', key: 'with' },
-    { label: 'FK Builder Id', key: 'BuilderID' },
+    { label: 'Status', key: 'is_active' },
+    { label: 'Reporting', key: 'reporting' },
+    { label: 'Builder', key: 'builder_name' },
+    { label: 'Name', key: 'name' },
+    { label: 'Product Type', key: 'product_type' },
+    { label: 'Area', key: 'area' },
+    { label: 'Masterplan', key: 'masteplan_id' },
+    { label: 'Zipcode', key: 'zipcode' },
+    { label: 'Total Lots', key: 'totallots' },
+    { label: 'Lot Width', key: 'lotwidth' },
+    { label: 'Lot Size', key: 'lotsize' },
+    { label: 'Zoning', key: 'zoning' },
+    { label: 'Age Restricted', key: 'age' },
+    { label: 'All Single Story', key: 'single' },
+    { label: 'Gated', key: 'gated' },
+    { label: 'Location', key: 'location' },
+    { label: 'Juridiction', key: 'juridiction' },
+    { label: 'Latitude', key: 'lat' },
+    { label: 'Longitude', key: 'lng' },
+    { label: 'Gas Provider', key: 'gasprovider' },
+    { label: 'HOA Fee', key: 'hoafee' },
+    { label: 'Masterplan Fee', key: 'masterplanfee' },
+    { label: 'Parcel Group', key: 'parcel' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Website', key: 'website' },
+    { label: 'FK Builder Id', key: 'builder_code' },
     { label: 'Total Closings', key: 'total_closings' },
     { label: 'Total Permits', key: 'total_permits' },
     { label: 'Total Net Sales', key: 'total_net_sales' },
@@ -175,7 +211,8 @@ const SubdivisionList = () => {
     { label: 'Sqft Group', key: 'sqft_group' },
     { label: 'Price Group', key: 'price_group' },
     { label: 'Month Net Sold', key: 'month_net_sold' },
-    { label: 'Year Net Sold', key: 'year_net_sold' }
+    { label: 'Year Net Sold', key: 'year_net_sold' },
+    { label: 'Date Added', key: 'created_at' }
   ];
  
   const handleColumnToggle = (column) => {
@@ -198,89 +235,215 @@ const SubdivisionList = () => {
     return fieldList.includes(fieldName.trim());
   }; 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns('');
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = BuilderList.map((row) => 
-    newdata.map((nw, i) =>
-    [
-      nw === "Status" ? (row.status===1 && "Active" || row.status===0 && "Sold Out" || row.status===2 && "Future") : '', 
-      nw === "Reporting" ?(row.reporting===1 && "Yes" || row.status===0 && "No") : '', 
-      nw === "Builder" ? row.builder.name : '', 
-      nw === "Name" ? row.name : '', 
-      nw === "Product Type" ? row.product_type : '', 
-      nw === "Area" ? row.area : '', 
-      nw === "Masterplan" ? row.masterplan_id : '', 
-      nw === "Zipcode" ? row.zipcode : '', 
-      nw === "Total Lots" ? row.totallots : '', 
-      nw === "Lot Width" ? row.lotwidth : '', 
-      nw === "Lot Size" ? row.lotsize : '', 
-      nw === "Zoning" ? row.zoning : '', 
-      nw === "Age Restricted" ? (row.age===1 && "Yes" || row.age===0 && "No") : '', 
-      nw === "All Single Story" ? (row.single===1 && "Yes" || row.single===0 && "No") : '', 
-      nw === "Gated" ? (row.gated===1 && "Yes" || row.gated===0 && "No"):'', 
-      nw === "Location" ? row.location : '', 
-      nw === "Juridiction" ? row.juridiction : '', 
-      nw === "Latitude" ? row.lat : '', 
-      nw === "Longitude" ? row.lng : '', 
-      nw === "Gas Provider" ? row.gasprovider : '', 
-      nw === "HOA Fee" ? row.hoafee : '', 
-      nw === "Masterplan Fee" ? row.masterplanfee : '', 
-      nw === "Parcel Group" ? row.parcel : '', 
-      nw === "Phone" ? row.phone : '', 
-      nw === "Website" ?  row.builder.website : '', 
-      nw === "FK Builder Id" ?  row.builder.builder_code : '',
-      nw === 'Total Closings' ? row.total_closings: ' ',
-      nw === 'Total Permits' ? row.total_permits: ' ',
-      nw === 'Total Net Sales' ? row.total_net_sales: ' ',
-      nw === 'Months Open' ? row.months_open: ' ',
-      nw === 'Latest Traffic/Sales Data' ? row.latest_traffic_data: ' ',
-      nw === 'Latest Lots Released' ? row.latest_lots_released: ' ',
-      nw === 'Latest Standing Inventory' ? row.latest_standing_inventory: ' ',
-      nw === 'Unsold Lots' ? row.unsold_lots: ' ',
-      nw === 'Avg Sqft All' ? row.avg_sqft_all: ' ',
-      nw === 'Avg Sqft Active' ? row.avg_sqft_active: ' ',
-      nw === 'Avg Base Price All' ? row.avg_base_price_all: ' ',
-      nw === 'Avg Base Price Active' ? row.avg_base_price_active: ' ',
-      nw === 'Min Sqft All' ? row.min_sqft_all: ' ',
-      nw === 'Min Sqft Active' ? row.min_sqft_active: ' ',
-      nw === 'Max Sqft All' ? row.max_sqft_all: ' ',
-      nw === 'Max Sqft Active' ? row.max_sqft_active: ' ',
-      nw === 'Min Base Price All' ? row.min_base_price_all: ' ',
-      nw === 'Min Sqft Active' ? row.min_sqft_active_current: ' ',
-      nw === 'Max Base Price All' ? row.max_base_price_all: ' ',
-      nw === 'Max Sqft Active Current' ? row.max_sqft_active_current: ' ',
-      nw === 'Avg Net Traffic Per Month This Year' ? row.avg_net_traffic_per_month_this_year: ' ',
-      nw === 'Avg Net Sales Per Month This Year' ? row.avg_net_sales_per_month_this_year: ' ',
-      nw === 'Avg Closings Per Month This Year' ? row.avg_closings_per_month_this_year: ' ',
-      nw === 'Avg Net Sales Per Month Since Open' ? row.avg_net_sales_per_month_since_open: ' ',
-      nw === 'Avg Net Sales Per Month Last 3 Months' ? row.avg_net_sales_per_month_last_three_months: ' ',
-      nw === 'Max Week Ending' ? row.max_week_ending: ' ',
-      nw === 'Min Week Ending' ? row.min_week_ending: ' ',
-      nw === 'Sqft Group' ? row.sqft_group: ' ',
-      nw === 'Price Group' ? row.price_group: ' ',
-      nw === 'Month Net Sold' ? row.month_net_sold: ' ',
-      nw === 'Year Net Sold' ? row.year_net_sold:''
   
-    ]
-    ),
-  )
-    downloadExcel({
-      fileName: "Sub Division List",
-      sheet: "Sub Division List",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+    const tableData = AllBuilderListExport.map((row) => {
+      const mappedRow = {};
+      tableHeaders.forEach((header) => {
+        switch (header) {
+          case "Status":
+            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
+            break;
+          case "Reporting":
+            mappedRow[header] = (row.reporting === 1 && "Yes") || (row.status === 0 && "No");
+            break;
+          case "Builder":
+            mappedRow[header] = row.builder ? row.builder.name : '';
+            break;
+          case "Name":
+            mappedRow[header] = row.name;
+            break;
+          case "Product Type":
+            mappedRow[header] = row.product_type;
+            break;
+          case "Area":
+            mappedRow[header] = row.area;
+            break;
+          case "Masterplan":
+            mappedRow[header] = row.masterplan_id;
+            break;
+          case "Zipcode":
+            mappedRow[header] = row.zipcode;
+            break;
+          case "Total Lots":
+            mappedRow[header] = row.totallots;
+            break;
+          case "Lot Width":
+            mappedRow[header] = row.lotwidth;
+            break;
+          case "Lot Size":
+            mappedRow[header] = row.lotsize;
+            break;
+          case "Zoning":
+            mappedRow[header] = row.zoning;
+            break;
+          case "Age Restricted":
+            mappedRow[header] = (row.age === 1 && "Yes") || (row.age === 0 && "No");
+            break;
+          case "All Single Story":
+            mappedRow[header] = (row.single === 1 && "Yes") || (row.single === 0 && "No");
+            break;
+          case "Gated":
+            mappedRow[header] = (row.gated === 1 && "Yes") || (row.gated === 0 && "No");
+            break;
+          case "Location":
+            mappedRow[header] = row.location;
+            break;
+          case "Juridiction":
+            mappedRow[header] = row.juridiction;
+            break;
+          case "Latitude":
+            mappedRow[header] = row.lat;
+            break;
+          case "Longitude":
+            mappedRow[header] = row.lng;
+            break;
+          case "Gas Provider":
+            mappedRow[header] = row.gasprovider;
+            break;
+          case "HOA Fee":
+            mappedRow[header] = row.hoafee;
+            break;
+          case "Masterplan Fee":
+            mappedRow[header] = row.masterplanfee;
+            break;
+          case "Parcel Group":
+            mappedRow[header] = row.parcel;
+            break;
+          case "Phone":
+            mappedRow[header] = row.phone;
+            break;
+          case "Website":
+            mappedRow[header] = row.builder ? row.builder.website : '';
+            break;
+          case "FK Builder Id":
+            mappedRow[header] = row.builder ? row.builder.builder_code : '';
+            break;
+          case 'Total Closings':
+            mappedRow[header] = row.total_closings;
+            break;
+          case 'Total Permits':
+            mappedRow[header] = row.total_permits;
+            break;
+          case 'Total Net Sales':
+            mappedRow[header] = row.total_net_sales;
+            break;
+          case 'Months Open':
+            mappedRow[header] = row.months_open;
+            break;
+          case 'Latest Traffic/Sales Data':
+            mappedRow[header] = row.latest_traffic_data;
+            break;
+          case 'Latest Lots Released':
+            mappedRow[header] = row.latest_lots_released;
+            break;
+          case 'Latest Standing Inventory':
+            mappedRow[header] = row.latest_standing_inventory;
+            break;
+          case 'Unsold Lots':
+            mappedRow[header] = row.unsold_lots;
+            break;
+          case 'Avg Sqft All':
+            mappedRow[header] = row.avg_sqft_all;
+            break;
+          case 'Avg Sqft Active':
+            mappedRow[header] = row.avg_sqft_active;
+            break;
+          case 'Avg Base Price All':
+            mappedRow[header] = row.avg_base_price_all;
+            break;
+          case 'Avg Base Price Active':
+            mappedRow[header] = row.avg_base_price_active;
+            break;
+          case 'Min Sqft All':
+            mappedRow[header] = row.min_sqft_all;
+            break;
+          case 'Min Sqft Active':
+            mappedRow[header] = row.min_sqft_active;
+            break;
+          case 'Max Sqft All':
+            mappedRow[header] = row.max_sqft_all;
+            break;
+          case 'Max Sqft Active':
+            mappedRow[header] = row.max_sqft_active;
+            break;
+          case 'Min Base Price All':
+            mappedRow[header] = row.min_base_price_all;
+            break;
+          case 'Min Sqft Active':
+            mappedRow[header] = row.min_sqft_active_current;
+            break;
+          case 'Max Base Price All':
+            mappedRow[header] = row.max_base_price_all;
+            break;
+          case 'Max Sqft Active Current':
+            mappedRow[header] = row.max_sqft_active_current;
+            break;
+          case 'Avg Net Traffic Per Month This Year':
+            mappedRow[header] = row.avg_net_traffic_per_month_this_year;
+            break;
+          case 'Avg Net Sales Per Month This Year':
+            mappedRow[header] = row.avg_net_sales_per_month_this_year;
+            break;
+          case 'Avg Closings Per Month This Year':
+            mappedRow[header] = row.avg_closings_per_month_this_year;
+            break;
+          case 'Avg Net Sales Per Month Since Open':
+            mappedRow[header] = row.avg_net_sales_per_month_since_open;
+            break;
+          case 'Avg Net Sales Per Month Last 3 Months':
+            mappedRow[header] = row.avg_net_sales_per_month_last_three_months;
+            break;
+          case 'Max Week Ending':
+            mappedRow[header] = row.max_week_ending;
+            break;
+          case 'Min Week Ending':
+            mappedRow[header] = row.min_week_ending;
+            break;
+          case 'Sqft Group':
+            mappedRow[header] = row.sqft_group;
+            break;
+          case 'Price Group':
+            mappedRow[header] = row.price_group;
+            break;
+          case 'Month Net Sold':
+            mappedRow[header] = row.month_net_sold;
+            break;
+          case 'Year Net Sold':
+            mappedRow[header] = row.year_net_sold;
+            break;
+          default:
+            mappedRow[header] = '';
+        }
+      });
+      return mappedRow;
     });
-  }
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+  
+    // Optionally apply styles to the headers
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sub Division List');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Sub Division List.xlsx');
+  };
   
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
@@ -324,7 +487,10 @@ const SubdivisionList = () => {
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
-  
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -338,6 +504,10 @@ const SubdivisionList = () => {
       setCurrentPage(currentPage + 1);
     }
   }
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
   const subdivision = useRef();
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -376,14 +546,30 @@ const SubdivisionList = () => {
     }
   };
   
-
+console.log(AllBuilderListExport)
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+  
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+  }
+
 
   const handleDelete = async (e) => {
     try {
@@ -486,21 +672,25 @@ const SubdivisionList = () => {
   const HandleCancelFilter = (e) => {
     setFilterQuery(
       {
-        name :"",
-        is_active: "",
-        active_communities:"",
-        closing_this_year:"",
-        permits_this_year:"",
-        net_sales_this_year:"",
-        current_avg_base_Price:"",
-        avg_net_sales_per_month_this_year:"",
-        avg_closings_per_month_this_year:"",
-        company_type: "",
-        city:"",
+        status: "",
+        product_type: "",
+        reporting: "",
+        builder_name:"",
+        name:"",
+        product_type:"",
+        area:"",
+        masterplan_id:"",
         zipcode:"",
-        officeaddress1:"",
-        coporate_officeaddress_zipcode:"",
-        stock_market:""
+        lotwidth:"",
+        lotsize:"",
+        zoning:"",
+        age:"",
+        single:"",
+        gated:"",
+        juridiction:"",
+        gasprovider:"",
+        hoafee:"",
+        masterplan_id:""
       });
       getbuilderlist(currentPage,searchQuery);
   };
@@ -732,6 +922,13 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                     <div className="d-flex">
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                    
@@ -749,6 +946,9 @@ const SubdivisionList = () => {
                         {" "}
                         Field Access
                       </button>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                    </button>   
                       <Button
                         className="btn-sm me-1"
                         variant="secondary"
@@ -756,173 +956,6 @@ const SubdivisionList = () => {
                       >
                         Import
                       </Button>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{ width: '1500px' }}>
-                        <h5 className="">Filter Options</h5>
-                              <div className="border-top">
-                            <form onSubmit={HandleFilterForm}>
-                              <div className="row">
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                    STATUS:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="status"
-                                    onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Sold Out</option>
-                                    <option value="2">Future</option>
-                                  </select>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                    REPORTING:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="status"
-                                    onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                  </select>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                  BUILDER NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                ACTIVE COMMUNITIES :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                CLOSINGS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                PERMITS THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                NET SALES THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                CURRENT AVG BASE PRICE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                AVG NET SALES PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                AVG CLOSINGS PER MONTH THIS YEAR:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                COMPANY TYPE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                LV OFFICE CITY:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.city} name="city" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 ">
-                                <label className="form-label">
-                                LV OFFICE ZIP:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                CORPORATE OFFICE STATE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.coporate_officeaddress_1} name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                CORPORATE OFFICE ZIP:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.coporate_officeaddress_zipcode} name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                STOCK MARKET:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                             </div>
-                             </form>
-                            </div>
-                              <div className="d-flex justify-content-between">                 
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>    
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>       
-                              </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
-
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -2279,6 +2312,8 @@ const SubdivisionList = () => {
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
+
+      
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Permit CSV Data</Modal.Title>
@@ -2301,6 +2336,48 @@ const SubdivisionList = () => {
             disabled={loading}
           >
             {loading ? "Loading.." : "Import"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>
@@ -3190,6 +3267,207 @@ const SubdivisionList = () => {
                 Submit
               </button>
             </form>
+          </div>
+        </div>
+      </Offcanvas>
+
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Subdivision{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    STATUS:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="status"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Sold Out</option>
+                                    <option value="2">Future</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    REPORTING:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="reporting"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                NAME :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.name} name="name" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                              <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type <span className="text-danger"></span></label>
+                                    <select className="default-select form-control" name="product_type" onChange={HandleFilter} >
+                                        <option value="">Select Product Type</option>
+                                         <option value="DET">DET</option>
+                                        <option value="ATT">ATT</option>
+                                        <option value="HR">HR</option>
+                                        <option value="AC">AC</option>
+                                    </select> 
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="area" value={filterQuery.area} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                MASTERPLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="number" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="lotsize" value={filterQuery.lotsize} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>    
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY<span className="text-danger">*</span></label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>    
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput28" className="form-label">GATED<span className="text-danger">*</span></label>
+                                    <select className="default-select form-control" 
+                                    onChange={HandleFilter} 
+                                    value={filterQuery.gated}
+                                    name="gated"
+                                    > 
+                                        <option value="">Select Gate</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>                                </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                JURISDICTION:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.juridiction} name="juridiction" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                GAS PROVIDER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.gasprovider} name="gasprovider" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                HOA FEE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.hoafee} name="hoafee" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                MASTERPLAN FEE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplanfee} name="masterplanfee" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                             </div>
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
           </div>
         </div>
       </Offcanvas>
