@@ -9,6 +9,7 @@ import { Offcanvas, Form } from "react-bootstrap";
 import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 const File = () => {
   const [Error, setError] = useState("");
@@ -36,6 +37,10 @@ const File = () => {
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "csv" });
   const [data, setData] = useState(productList);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
   
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -62,6 +67,7 @@ const File = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -236,7 +242,38 @@ const File = () => {
   //   return sorted;
   // };
   
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
 
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
 
   return (
     <>
@@ -269,8 +306,19 @@ const File = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -374,78 +422,62 @@ const File = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
-                            {checkFieldExist("Title") && (
-                              <th onClick={() => requestSort("name")}>
-                                <strong>
-                                  Title
-                                  {sortConfig.key !== "name" ? "↑↓" : ""}
-                                  {sortConfig.key === "name" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id == "title" ? requestSort("name") : ""}>
+                                <strong>{column.label}{column.id == "title" && sortConfig.key !== "name" ? "↑↓" : ""}{column.id == "title" && sortConfig.key === "name" && (<span>
+                                  {sortConfig.direction === "asc"
+                                    ? "↑"
+                                    : "↓"}
+                                </span>)}</strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Download") && (
-                              <th>
-                                <strong>Download</strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Action") && (
-                              <th className="d-flex justify-content-end">
-                                <strong>Action</strong>
-                              </th>
-                            )}
+                            ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {productList !== null && productList.length > 0 ? (
                             productList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
-                                <td>{index + 1}</td>
-                                {checkFieldExist("Title") && (
-                                  <td>{element.name}</td>
-                                )}
-                                {checkFieldExist("Download") && (
-                                  <td>
-                                    <a
-                                      href={
-                                        process.env.REACT_APP_IMAGE_URL +
-                                        "Files/" +
-                                        element.csv
+                                <td style={{ textAlign: "center" }}>{index + 1}</td>
+                                  {columns.map((column) => (
+                                    <>
+                                      {column.id == "title" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
                                       }
-                                    >
-                                      Click Here
-                                    </a>
-                                  </td>
-                                )}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
+                                      {column.id == "download" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>
+                                          <a
+                                            href={
+                                            process.env.REACT_APP_IMAGE_URL +
+                                            "Files/" +
+                                            element.csv
                                             }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                          >
+                                            Click Here
+                                          </a>
+                                        </td>
+                                      }
+                                      {column.id == "action" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                              }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }})
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </td>
+                                      }
+                                    </>
+                                  ))}
                               </tr>
                             ))
                           ) : (

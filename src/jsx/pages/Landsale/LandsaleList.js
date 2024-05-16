@@ -18,6 +18,8 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import TrafficsaleList from "../Trafficsale/TrafficsaleList";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkLandsaleUpdate from "./BulkLandsaleUpdate";
 
 const LandsaleList = () => {
   const [show, setShow] = useState(false);
@@ -77,6 +79,13 @@ const LandsaleList = () => {
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "landsale" });
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  console.log("columns",columns);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  console.log("selectedLandSales",selectedLandSales);
+
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -94,7 +103,7 @@ const LandsaleList = () => {
     { label: "Notes", key: "Notes" },
     { label: "Price", key: "Price" },
   ];
-  const columns = [
+  const sortColumns = [
     { label: "Builder Name", key: "Builder_Name" },
     { label: "Subdivision Name", key: "Subdivision_Name" },
     { label: "Seller", key: "Seller" },
@@ -238,6 +247,7 @@ const LandsaleList = () => {
   }
 
   const landsale = useRef();
+  const bulklandsale = useRef();
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
@@ -312,11 +322,12 @@ const LandsaleList = () => {
   }, []);
 
   const getsubdivisionlist = async () => {
+    debugger
     try {
       let response = await AdminSubdevisionService.index();
       let responseData = await response.json();
 
-      setSubdivisionList(responseData);
+      setSubdivisionList(responseData.data);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -325,10 +336,6 @@ const LandsaleList = () => {
       }
     }
   };
-  useEffect(() => {
-    getsubdivisionlist();
-  }, []);
-
   useEffect(() => {
     getsubdivisionlist();
   }, []);
@@ -473,6 +480,48 @@ const LandsaleList = () => {
     setShow(true);
   };
   console.log(sortConfig);
+
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+
   return (
     <>
       <MainPagetitle
@@ -508,9 +557,20 @@ const LandsaleList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
                       {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
                       <button
                         onClick={() => setExportModelShow(true)}
                         className="btn btn-primary btn-sm me-1"
@@ -540,6 +600,14 @@ const LandsaleList = () => {
                         onClick={() => landsale.current.showEmployeModal()}
                       >
                         + Add Land Sale
+                      </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulklandsale.current.showEmployeModal()}
+                      >
+                        Bulk Edit
                       </Link>
                     </div>
                   </div>
@@ -627,9 +695,32 @@ const LandsaleList = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === LandsaleList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(LandsaleList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
+                            <th>
                               <strong> No. </strong>
                             </th>
-                            {checkFieldExist("Builder Name") && (
+
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                                <strong>
+                                  {column.label}
+                                </strong>
+                              </th>
+                            ))}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
                                 {sortConfig.some(
@@ -646,8 +737,9 @@ const LandsaleList = () => {
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Subdivision Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -666,8 +758,9 @@ const LandsaleList = () => {
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Seller") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Seller") && (
                               <th onClick={() => requestSort("seller")}>
                                 <strong>
                                   Seller
@@ -686,8 +779,9 @@ const LandsaleList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Buyer") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Buyer") && (
                               <th onClick={() => requestSort("buyer")}>
                                 <strong>
                                   {" "}
@@ -707,8 +801,9 @@ const LandsaleList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Location") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Location") && (
                               <th onClick={() => requestSort("location")}>
                                 <strong>
                                   {" "}
@@ -728,8 +823,9 @@ const LandsaleList = () => {
                                 )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Notes") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Notes") && (
                               <th onClick={() => requestSort("notes")}>
                                 <strong>
                                   Notes
@@ -743,8 +839,9 @@ const LandsaleList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Price") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Price") && (
                               <th onClick={() => requestSort("price")}>
                                 <strong>
                                   {" "}
@@ -764,8 +861,9 @@ const LandsaleList = () => {
                                 )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Date") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("date")}>
                                 <strong>
                                   {" "}
@@ -785,63 +883,145 @@ const LandsaleList = () => {
                                 )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Action") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Action") && (
                               <th>
                                 {" "}
                                 <strong>Action</strong>
                               </th>
-                            )}
+                            )} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {LandsaleList !== null && LandsaleList.length > 0 ? (
                             LandsaleList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
+                                onClick={(e) => {
+                                  if(e.target.type !== "checkbox"){
+                                    handleRowClick(element.id);
+                                  }
+                                }}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
                                 }}
                               >
-                                {" "}
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Builder Name") && (
+                                {columns.map((column) => (
+                                  <>
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.builder?.name}</td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                    }
+                                    {column.id == "seller" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.seller}</td>
+                                    }
+                                    {column.id == "buyer" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.buyer}</td>
+                                    }
+                                    {column.id == "location" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
+                                    }
+                                    {column.id == "notes" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
+                                    }
+                                    {column.id == "price" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price} />/{" "}
+                                      {element.typeofunit}</td>
+                                    }
+                                    {column.id == "date" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
+                                    }
+                                    {column.id == "action" && 
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div className="d-flex justify-content-center">
+                                          <Link
+                                            to={`/landsaleupdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </div>
+                                      </td>
+                                    }
+                                  </>
+                                ))}
+
+                                {/* {checkFieldExist("Builder Name") && (
                                   <td>
                                     {element.subdivision &&
                                       element.subdivision.builder?.name}
                                   </td>
-                                )}{" "}
-                                {checkFieldExist("Subdivision Name") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Subdivision Name") && (
                                   <td>
                                     {element.subdivision &&
                                       element.subdivision?.name}
                                   </td>
-                                )}{" "}
-                                {checkFieldExist("Seller") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Seller") && (
                                   <td>{element.seller}</td>
-                                )}{" "}
-                                {checkFieldExist("Buyer") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Buyer") && (
                                   <td>{element.buyer}</td>
-                                )}{" "}
-                                {checkFieldExist("Location") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Location") && (
                                   <td>{element.location}</td>
-                                )}{" "}
-                                {checkFieldExist("Notes") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Notes") && (
                                   <td>{element.notes}</td>
-                                )}{" "}
-                                {checkFieldExist("Price") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Price") && (
                                   <td>
                                     <PriceComponent price={element.price} />/{" "}
                                     {element.typeofunit}
                                   </td>
-                                )}{" "}
-                                {checkFieldExist("Date") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Date") && (
                                   <td>
                                     <DateComponent date={element.date} />
                                   </td>
-                                )}{" "}
-                                {checkFieldExist("Action") && (
+                                )}{" "} */}
+
+                                {/* {checkFieldExist("Action") && (
                                   <td>
                                     <div className="d-flex justify-content-center">
                                       <Link
@@ -870,7 +1050,8 @@ const LandsaleList = () => {
                                       </Link>
                                     </div>
                                   </td>
-                                )}
+                                )} */}
+
                               </tr>
                             ))
                           ) : (
@@ -894,6 +1075,12 @@ const LandsaleList = () => {
         ref={landsale}
         Title="Add Landsale"
         parentCallback={handleCallback}
+      />
+      <BulkLandsaleUpdate
+        ref={bulklandsale}
+        Title="Bulk Edit Land Sales"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
 
       <Modal show={show} onHide={handleClose}>
@@ -1177,7 +1364,7 @@ const LandsaleList = () => {
           <Modal.Body>
             <Row>
               <ul className="list-unstyled">
-                {columns.map((col) => (
+                {sortColumns.map((col) => (
                   <li key={col.label}>
                     <label className="form-check">
                       <input

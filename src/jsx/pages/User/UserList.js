@@ -12,11 +12,14 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkUserUpdateOffcanvas from "./BulkUserUpdateOffcanvas";
 
 const UserList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
+  console.log("userList",userList);
   const [userListCount, setUserCount] = useState('');
   const [TotaluserListCount, setTotalUserCount] = useState('');
 
@@ -42,6 +45,12 @@ const UserList = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "users" });
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  console.log("userselect",selectedUsers);
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -147,6 +156,7 @@ const UserList = () => {
   }
 
   const product = useRef();
+  const bulkproduct = useRef();
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
@@ -270,6 +280,46 @@ const UserList = () => {
     getuserList(currentPage, sortConfig);
   };
 
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedUsers((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedUsers((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
 
   return (
     <>
@@ -302,8 +352,19 @@ const UserList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div className="d-flex">
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -360,6 +421,14 @@ const UserList = () => {
                         onClick={() => product.current.showEmployeModal()}
                       >
                         + Add User
+                      </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkproduct.current.showEmployeModal()}
+                      >
+                        Bulk Edit
                       </Link>
                     </div>
                   </div>
@@ -446,10 +515,31 @@ const UserList = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                            <input
+                              type="checkbox"
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              checked={selectedUsers.length === userList.length}
+                              onChange={(e) =>
+                                e.target.checked
+                                  ? setSelectedUsers(userList.map((user) => user.id))
+                                  : setSelectedUsers([])
+                              }
+                            />
+                          </th>
                             <th>
                               <strong>No.</strong>
                             </th>
-                            {checkFieldExist("Name") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                                <strong>
+                                  {column.label}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Name") && (
                               <th onClick={() => requestSort("name")}>
                                 <strong>
                                   Name
@@ -505,80 +595,87 @@ const UserList = () => {
                                 )}
                               </th>
                             )}
-                            {checkFieldExist("Action  ") && <th>Action</th>}
+                            {checkFieldExist("Action  ") && (
+                              <th>
+                                Action
+                              </th>
+                            )} */}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {userList !== null && userList.length > 0 ? (
                             userList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
+                                onClick={(e) => {
+                                  if(e.target.type !== "checkbox"){
+                                    handleRowClick(element.id);
+                                  }
+                                }}
                                 style={{
                                   textAlign: "center",
                                   cursor: "pointer",
                                 }}
                               >
-                                <td>{index + 1}</td>
-                                {checkFieldExist("Name") && (
-                                  <td>{element.name}</td>
-                                )}
-                                {checkFieldExist("Email") && (
-                                  <td>{element.email}</td>
-                                )}
-
-                                {element.roles.length > 0
-                                  ? element.roles.map((role) => (
-                                      <React.Fragment key={role.id}>
-                                        {checkFieldExist("Role") && (
-                                          <td>{role.name}</td>
-                                        )}
-                                      </React.Fragment>
-                                    ))
-                                  : checkFieldExist("Builder") && <td>Admin</td>}
-
-                                {element.builder ? (
-                                  <>
-                                    {checkFieldExist("Builder") && (
-                                      <td>{element.builder.name}</td>
-                                    )}
-                                  </>
-                                ) : (
-                                  checkFieldExist("Builder") && <td>NA</td>
-                                )}
-  {checkFieldExist("Action") && (
                                 <td>
-                                  <div className="d-flex justify-content-center">
-                                    <Link
-                                      to={`/userupdate/${element.id}`}
-                                      className="btn btn-primary shadow btn-xs sharp me-1"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </Link>
-                                    {element.roles.length > 0
-                                      ? element.roles.map((role) => (
-                                          <Link
-                                            onClick={() =>
-                                              swal({
-                                                title: "Are you sure?",
-
-                                                icon: "warning",
-                                                buttons: true,
-                                                dangerMode: true,
-                                              }).then((willDelete) => {
-                                                if (willDelete) {
-                                                  handleDelete(element.id);
-                                                }
-                                              })
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                        ))
-                                      : ""}
-                                  </div>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedUsers.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
                                 </td>
-                                )}
+                                <td>{index + 1}</td>
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                  }
+                                  {column.id == "email" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.email}</td>
+                                  }
+                                  {column.id == "role" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
+                                  }
+                                  {column.id == "builder" && 
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder.name : "NA"}</td>
+                                  }
+                                  {column.id == "action" && 
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/userupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        {element.roles.length > 0
+                                          ? element.roles.map((role) => (
+                                            <Link
+                                              onClick={() =>
+                                                swal({
+                                                  title: "Are you sure?",
+                                                  icon: "warning",
+                                                  buttons: true,
+                                                  dangerMode: true,
+                                                }).then((willDelete) => {
+                                                  if (willDelete) {
+                                                    handleDelete(element.id);
+                                                  }
+                                                })
+                                              }
+                                              className="btn btn-danger shadow btn-xs sharp"
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Link>
+                                          ))
+                                          : ""}
+                                      </div>
+                                    </td>
+                                  }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
@@ -602,6 +699,12 @@ const UserList = () => {
       <UserOffcanvas
         ref={product}
         Title="Add User"
+        parentCallback={handleCallback}
+      />
+      <BulkUserUpdateOffcanvas
+        ref={bulkproduct}
+        Title="Bulk Edit Users"
+        userSelectedUsers={selectedUsers}
         parentCallback={handleCallback}
       />
       <Offcanvas

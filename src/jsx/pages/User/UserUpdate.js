@@ -56,7 +56,7 @@ const UserUpdate = () => {
     try {
       const response = await AdminBuilderService.index();
       const responseData = await response.json();
-      setBuilderList(responseData);
+      setBuilderList(responseData.data);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();

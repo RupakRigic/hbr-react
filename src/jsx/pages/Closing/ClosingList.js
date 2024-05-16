@@ -16,6 +16,7 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
  
 const ClosingList = () => {
   const [Error, setError] = useState(""); 
@@ -57,6 +58,11 @@ const ClosingList = () => {
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "closing" });
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  console.log(columns);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+
   useEffect(() => {
     console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -93,7 +99,7 @@ const ClosingList = () => {
     { label: 'Fk Sub Id', key: 'fkSubID' }, 
      
   ];
-  const columns = [
+  const sortcolumns = [
     { label: 'Closing Type', key: 'Closing_Type' },  
     { label: 'Closing Date', key: 'Closing_Date' }, 
     { label: 'Doc', key: 'Doc' }, 
@@ -197,6 +203,7 @@ const ClosingList = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -456,6 +463,40 @@ const ClosingList = () => {
         }
     }
 }
+
+const handleOpenDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(true);
+};
+
+const handleCloseDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(false);
+};
+
+const handleSaveDialog = () => {
+  setColumns(draggedColumns);
+  setOpenDialog(false);
+};
+
+const handleColumnOrderChange = (result) => {
+  if (!result.destination) {
+    return;
+  }
+  const newColumns = Array.from(draggedColumns);
+  const [movedColumn] = newColumns.splice(result.source.index, 1);
+  newColumns.splice(result.destination.index, 0, movedColumn);
+  setDraggedColumns(newColumns);
+};
+
+useEffect(() => {
+  const mappedColumns = fieldList.map((data) => ({
+    id: data.charAt(0).toLowerCase() + data.slice(1),
+    label: data
+  }));
+  setColumns(mappedColumns);
+}, [fieldList]);
+
   return (
     <>
       <MainPagetitle
@@ -491,10 +532,20 @@ const ClosingList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-
+                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                      Set Columns Order
+                    </button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
 
@@ -606,7 +657,14 @@ const ClosingList = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
-                            {checkFieldExist("Closing Type") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                                <strong>
+                                  {column.label}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Closing Type") && (
                               <th onClick={() => requestSort("closing_type")}>
                                 Closing Type
                              {sortConfig.key !== "closing_type" ? "↑↓" : ""}
@@ -616,8 +674,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Closing Date") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Closing Date") && (
                               <th onClick={() => requestSort("closingdate")}>
                                 Closing Date
                                 {sortConfig.key !== "closingdate" ? "↑↓" : ""}
@@ -627,8 +686,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Doc") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Doc") && (
                               <th onClick={() => requestSort("document")}>
                                 Doc
                                 {sortConfig.key !== "document" ? "↑↓" : ""}
@@ -638,8 +698,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Builder Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
                                 {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -649,8 +710,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Subdivision Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -664,8 +726,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Closing Price") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Closing Price") && (
                               <th onClick={() => requestSort("closingprice")}>
                                 Closing Price
                                 {sortConfig.key !== "closingprice" ? "↑↓" : ""}
@@ -675,8 +738,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Address") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Address") && (
                               <th onClick={() => requestSort("address")}>
                                 Address
                                 {sortConfig.key !== "address" ? "↑↓" : ""}
@@ -686,8 +750,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Parcel Number") && 
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Parcel Number") && 
                             <th onClick={() => requestSort("parcel")}>
                               Parcel Number                              
                               {sortConfig.key !== "parcel" ? "↑↓" : ""}
@@ -697,8 +762,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                             </th>
-                            }
-                            {checkFieldExist("Sub Legal Name") && (
+                            } */}
+
+                            {/* {checkFieldExist("Sub Legal Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -712,8 +778,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Seller Legal Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Seller Legal Name") && (
                               <th onClick={() => requestSort("sellerleagal")}>
                                 Seller Legal Name
                                 {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
@@ -723,8 +790,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Buyer Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Buyer Name") && (
                               <th onClick={() => requestSort("buyer")}>
                                 Buyer Name
                                 {sortConfig.key !== "buyer" ? "↑↓" : ""}
@@ -734,8 +802,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lender") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lender") && (
                               <th>
                                 Lender
                                 {sortConfig.key !== "subdivisionName"
@@ -747,8 +816,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Loan Amount") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Loan Amount") && (
                               <th onClick={() => requestSort("loanamount")}>
                                 Loan Amount
                                 {sortConfig.key !== "loanamount" ? "↑↓" : ""}
@@ -758,8 +828,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Type") && (
                               <th>
                                 Type
                                 {sortConfig.key !== "subdivisionName"
@@ -771,8 +842,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Product Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th>
                                 Product Type{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -784,8 +856,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Area") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th>
                                 Area
                                 {sortConfig.key !== "subdivisionName"
@@ -797,8 +870,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Master Plan") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th>
                                 Master Plan
                                 {sortConfig.key !== "subdivisionName"
@@ -810,8 +884,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zip Code") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th>
                                 Zip Code{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -823,8 +898,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Width") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th>
                                 Lot Width{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -836,8 +912,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Size") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th>
                                 Lot Size{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -849,8 +926,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zoning") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th>
                                 Zoning{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -862,8 +940,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Age Restricted") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th>
                                 Age Restricted{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -875,8 +954,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("All Single Story") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th>
                                 All Single Story{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -888,8 +968,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Date Added") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th>
                                 Date Added{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -901,8 +982,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("__pkRecordID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("__pkRecordID") && (
                               <th>
                                 __pkRecordID
                                 {sortConfig.key !== "subdivisionName"
@@ -914,8 +996,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("_fkSubID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("_fkSubID") && (
                               <th>
                                 _fkSubID
                                 {sortConfig.key !== "subdivisionName"
@@ -927,8 +1010,10 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Action") && <th>Action</th>}
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
+                            
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -942,137 +1027,119 @@ const ClosingList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Closing Type") && <td>{element.closing_type}</td>}{" "}
-                                {checkFieldExist("Closing Date") && (
-                                  <td>
-                                    <DateComponent date={element.closingdate} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Doc") && (
-                                  <td>{element.document}</td>
-                                )}{" "}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.builder?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Closing Price") && (
-                                  <td>
-                                    {" "}
-                                    <PriceComponent
-                                      price={element.closingprice}
-                                    />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Address") && (
-                                  <td>{element.address}</td>
-                                )}{" "}
-                                {checkFieldExist("Parcel Number") && (
-                                  <td>{element.parcel}</td>
-                                )}{" "}
-                                {checkFieldExist("Sub Legal Name") && (
-                                  <td>
-                                    {element.sublegal_name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Seller Legal Name") && (
-                                  <td>{element.sellerleagal}</td>
-                                )}{" "}
-                                {checkFieldExist("Buyer Name") && (
-                                  <td>{element.buyer}</td>
-                                )}{" "}
-                                {checkFieldExist("Lender") && (
-                                  <td>{element.lender}</td>
-                                )}{" "}
-                                {checkFieldExist("Loan Amount") && (
-                                  <td>{element.loanamount}</td>
-                                )}{" "}
-                                {checkFieldExist("Type") && <td>NA</td>}{" "}
-                                {checkFieldExist("Product Type") && (
-                                  <td>{element.subdivision.product_type}</td>
-                                )}{" "}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.subdivision.area}</td>
-                                )}{" "}
-                                {checkFieldExist("Master Plan") && (
-                                  <td>{element.subdivision.masterplan_id}</td>
-                                )}{" "}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>{element.subdivision.zipcode}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>{element.subdivision.lotwidth}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>{element.subdivision.lotsize}</td>
-                                )}{" "}
-                                {checkFieldExist("Zoning") && (
-                                  <td>{element.subdivision.zoning}</td>
-                                )}{" "}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.subdivision.age == "1"
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.subdivision.single == "1"
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("__pkRecordID") && (
-                                  <td>{element.id}</td>
-                                )}{" "}
-                                {checkFieldExist("_fkSubID") && (
-                                  <td>
-                                    {element.subdivision.subdivision_code}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/closingsaleupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "closing Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.closing_type}</td>
+                                  }
+                                  {column.id == "closing Date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.closingdate} /></td>
+                                  }
+                                  {column.id == "doc" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.document}</td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                      element.subdivision.builder?.name}</td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                      element.subdivision?.name}</td>
+                                  }
+                                  {column.id == "closing Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.closingprice} /></td>
+                                  }
+                                  {column.id == "address" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address}</td>
+                                  }
+                                  {column.id == "parcel Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                  }
+                                  {column.id == "sub Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
+                                  }
+                                  {column.id == "seller Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sellerleagal}</td>
+                                  }
+                                  {column.id == "buyer Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.buyer}</td>
+                                  }
+                                  {column.id == "lender" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lender}</td>
+                                  }
+                                  {column.id == "loan Amount" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.loanamount}</td>
+                                  }
+                                  {column.id == "type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>NA</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.age == "1" ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.single == "1" ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                  }
+                                  {column.id == "__pkRecordID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/closingsaleupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
@@ -1315,7 +1382,7 @@ const ClosingList = () => {
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
-            {columns.map((col) => (
+            {sortcolumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input

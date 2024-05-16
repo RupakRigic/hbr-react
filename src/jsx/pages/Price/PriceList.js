@@ -14,6 +14,7 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 const PriceList = () => {
   const [Error, setError] = useState("");
@@ -45,6 +46,11 @@ const PriceList = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [productListCount, setProductListCount] = useState('');
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  console.log("columns",columns);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -326,6 +332,40 @@ const PriceList = () => {
         }
     }
 }
+
+const handleOpenDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(true);
+};
+
+const handleCloseDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(false);
+};
+
+const handleSaveDialog = () => {
+  setColumns(draggedColumns);
+  setOpenDialog(false);
+};
+
+const handleColumnOrderChange = (result) => {
+  if (!result.destination) {
+    return;
+  }
+  const newColumns = Array.from(draggedColumns);
+  const [movedColumn] = newColumns.splice(result.source.index, 1);
+  newColumns.splice(result.destination.index, 0, movedColumn);
+  setDraggedColumns(newColumns);
+};
+
+useEffect(() => {
+  const mappedColumns = fieldList.map((data) => ({
+    id: data.charAt(0).toLowerCase() + data.slice(1),
+    label: data
+  }));
+  setColumns(mappedColumns);
+}, [fieldList]);
+
   return (
     <>
       <MainPagetitle
@@ -361,8 +401,19 @@ const PriceList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
+                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                      Set Columns Order
+                    </button>
                     <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -481,7 +532,14 @@ const PriceList = () => {
                             <th>
                               <strong>No.</strong>
                             </th>
-                            {checkFieldExist("Date") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                                <strong>
+                                  {column.label}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>
                                   Date
@@ -495,8 +553,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Builder Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
                                 {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -506,8 +565,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Subdivision Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -521,8 +581,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Product Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Product Name") && (
                               <th onClick={() => requestSort("productName")}>
                                 <strong>
                                   Product Name
@@ -536,8 +597,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Squre Footage") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Squre Footage") && (
                               <th onClick={() => requestSort("sqft")}>
                                 <strong>
                                   Squre Footage
@@ -551,8 +613,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Stories") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Stories") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>
                                   Stories
@@ -566,8 +629,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Bedrooms") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Bedrooms") && (
                               <th onClick={() => requestSort("bedroom")}>
                                 <strong>
                                   Bedrooms
@@ -581,8 +645,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Bathroom") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Bathroom") && (
                               <th onClick={() => requestSort("bathroom")}>
                                 <strong>
                                   Bathroom
@@ -596,8 +661,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Garage") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Garage") && (
                               <th onClick={() => requestSort("garage")}>
                                 <strong>
                                   Garage
@@ -611,8 +677,9 @@ const PriceList = () => {
                                   )}
                                 </strong>
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Base Price") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Base Price") && (
                               <th onClick={() => requestSort("baseprice")}>
                                 <strong>Base Price</strong>
                                 {sortConfig.key !== "baseprice" ? "↑↓" : ""}
@@ -622,8 +689,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Price Per SQFT") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Price Per SQFT") && (
                               <th onClick={() => requestSort("perSQFT")}>
                                 <strong>Price Per SQFT</strong>
                                 {sortConfig.key !== "perSQFT" ? "↑↓" : ""}
@@ -633,8 +701,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Product Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("productType")}>
                                 <strong>Product Type</strong>
                                 {sortConfig.key !== "productType" ? "↑↓" : ""}
@@ -644,8 +713,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Area") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong>Area</strong>
                                 {sortConfig.key !== "area" ? "↑↓" : ""}
@@ -655,36 +725,25 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Master Plan") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th
-                              // onClick={() => requestSort("masterplan_id")}
                               >
                                 <strong>Master Plan</strong>
-                                {/* {sortConfig.key !== "masterplan_id" ? "↑↓" : ""}
-                              {sortConfig.key === "masterplan_id" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )} */}
+                               
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zip Code") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th
-                              //  onClick={() => requestSort("zipcode")}
                               >
                                 <strong>Zip Code</strong>
-                                {/* {sortConfig.key !== "zipcode"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "zipcode" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )} */}
+                                
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Width") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
                                 {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
@@ -694,8 +753,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Size") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
                                 {sortConfig.key !== "lotsize" ? "↑↓" : ""}
@@ -705,8 +765,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zoning") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
                                 {sortConfig.key !== "zoning" ? "↑↓" : ""}
@@ -716,23 +777,17 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Age Restricted") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th
-                              // onClick={() => requestSort("ageRestricted")}
                               >
                                 <strong>Age Restricted</strong>
-                                {/* {sortConfig.key !== "ageRestricted"
-                                ? "↑↓"
-                                : ""}
-                              {sortConfig.key === "ageRestricted" && (
-                                <span>
-                                  {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                </span>
-                              )} */}
+                                
                               </th>
-                            )}{" "}
-                            {checkFieldExist("All Single Story") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
                                 {sortConfig.key !== "stories" ? "↑↓" : ""}
@@ -742,8 +797,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("__pkPriceID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("__pkPriceID") && (
                               <th onClick={() => requestSort("id")}>
                                 <strong>__pkPriceID </strong>
                                 {sortConfig.key !== "id" ? "↑↓" : ""}
@@ -753,8 +809,9 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("_fkProductID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("_fkProductID") && (
                               <th onClick={() => requestSort("_fkProductID")}>
                                 <strong>_fkProductID </strong>
                                 {sortConfig.key !== "_fkProductID" ? "↑↓" : ""}
@@ -764,8 +821,10 @@ const PriceList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Action") && <th>Action</th>}
+                            )} */}
+
+                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -780,130 +839,107 @@ const PriceList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Date") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.product.subdivision &&
-                                      element.product.subdivision.builder?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.product.subdivision &&
-                                      element.product.subdivision?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Product Name") && (
-                                  <td>{element.product.name}</td>
-                                )}{" "}
-                                {checkFieldExist("Squre Footage") && (
-                                  <td>{element.product.sqft}</td>
-                                )}{" "}
-                                {checkFieldExist("Stories") && (
-                                  <td>{element.product.stories}</td>
-                                )}{" "}
-                                {checkFieldExist("Bedrooms") && (
-                                  <td>{element.product.bedroom}</td>
-                                )}{" "}
-                                {checkFieldExist("Bathroom") && (
-                                  <td>{element.product.bathroom}</td>
-                                )}{" "}
-                                {checkFieldExist("Garage") && (
-                                  <td>{element.product.garage}</td>
-                                )}{" "}
-                                {checkFieldExist("Base Price") && (
-                                  <td>
-                                    <PriceComponent price={element.baseprice} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Price Per SQFT") && (
-                                  <td>
-                                    <PriceComponent
-                                      price={element.product.recentpricesqft}
-                                    />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Product Type") && (
-                                  <td>
-                                    {element.product.subdivision.product_type}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.product.subdivision.area}</td>
-                                )}{" "}
-                                {checkFieldExist("Master Plan") && (
-                                  <td>
-                                    {element.product.subdivision.masterplan_id}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>{element.product.subdivision.zipcode}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>
-                                    {element.product.subdivision.lotwidth}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>{element.product.subdivision.lotsize}</td>
-                                )}{" "}
-                                {checkFieldExist("Zoning") && (
-                                  <td>{element.product.subdivision.zoning}</td>
-                                )}{" "}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.product.subdivision.age == 1
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.product.subdivision.single == 1
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("__pkPriceID") && (
-                                  <td>{element.id}</td>
-                                )}{" "}
-                                {checkFieldExist("_fkProductID") && (
-                                  <td>{element.product.product_code}</td>
-                                )}{" "}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/priceupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision &&
+                                      element.product.subdivision.builder?.name}</td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision &&
+                                      element.product.subdivision?.name}</td>
+                                  }
+                                  {column.id == "product Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.name}</td>
+                                  }
+                                  {column.id == "squre Footage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.sqft}</td>
+                                  }
+                                  {column.id == "stories" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.stories}</td>
+                                  }
+                                  {column.id == "bedrooms" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.bedroom}</td>
+                                  }
+                                  {column.id == "bathroom" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.bathroom}</td>
+                                  }
+                                  {column.id == "garage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.garage}</td>
+                                  }
+                                  {column.id == "base Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.baseprice} /></td>
+                                  }
+                                  {column.id == "price Per SQFT" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.product.recentpricesqft} /></td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.area}</td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.masterplan_id}</td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.zipcode}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.age == 1 ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.single == 1 ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "__pkPriceID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                  }
+                                  {column.id == "_fkProductID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.product_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/priceupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
