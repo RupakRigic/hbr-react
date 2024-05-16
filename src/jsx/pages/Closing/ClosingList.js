@@ -16,9 +16,35 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
- 
+
 const ClosingList = () => {
+
+  
+  
+  const HandleSortDetailClick = (e) =>
+    {
+        setShowSort(true);
+    }
+    const handleSortCheckboxChange = (e, key) => {
+      if (e.target.checked) {
+          setSelectedCheckboxes(prev => [...prev, key]);
+      } else {
+          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      }
+  };
+  
+  const handleRemoveSelected = () => {
+      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+      setSortConfig(newSortConfig);
+      setSelectedCheckboxes([]);
+  };
+  const [showSort, setShowSort] = useState(false);
+ const handleSortClose = () => setShowSort(false);
+ const [AllClosingListExport, setAllClosingListExport] = useState([]);
+
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
   const [closingListCount, setClosingListCount] = useState('');
@@ -49,6 +75,85 @@ const ClosingList = () => {
     loanamount: "",
     document: "",
   });
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [filterQuery, setFilterQuery] = useState({
+   closing_type:"",
+    closingdate:"",
+    document:"",
+   builder_name:"",
+   subdivision_name:"",
+  closingprice:"",
+  address:"",
+   parcel:"",
+   sublegal_name:"",
+   seller:"",
+   buyer:"",
+   lender:"",
+   loanamount:"",
+   area:"",
+   masterplan_id:"",
+   zipcode:"",
+   lotwidth:"",
+   lotsize:"",
+  zoning:"",
+   age:"",
+   single:""
+})
+  const HandleCancelFilter = (e) => {
+    setFilterQuery({
+      closing_type:"",
+      closingdate:"",
+      document:"",
+     builder_name:"",
+     subdivision_name:"",
+    closingprice:"",
+    address:"",
+     parcel:"",
+  sublegal_name:"",
+  seller:"",
+   buyer:"",
+     lender:"",
+  loanamount:"",
+   area:"",
+   masterplan_id:"",
+   zipcode:"",
+   lotwidth:"",
+  lotsize:"",
+   zoning:"",
+   age:"",
+   single:"",
+    });
+  };
+  const HandleFilterForm = (e) =>
+    {
+      e.preventDefault();
+      console.log(555);
+      getClosingList(currentPage,searchQuery);
+    };
+  
+    const HandleFilter = (e) => {
+      const { name, value } = e.target;
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        [name]: value,
+      }));
+    };
+
+    useEffect(() => {
+      setSearchQuery(filterString());
+    }, [filterQuery]);
+  
+    
+    const filterString = () => {
+      const queryString = Object.keys(filterQuery)
+        .map(
+          (key) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+        )
+        .join("&");
+  
+      return queryString ? `&${queryString}` : "";
+    };
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -134,56 +239,101 @@ const ClosingList = () => {
   };  
 
   const handleDownloadExcel = () => {
-    setExportModelShow(false)
-    setSelectedColumns('')
-    var tableHeaders;
+    setExportModelShow(false);
+    setSelectedColumns("");
+  
+    let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-    var newdata = tableHeaders.map((element) => { return element })
- 
-    const tableData = ClosingList.map((row) => 
-    newdata.map((nw, i) =>
-    [  
-      nw === "Closing Type" ? row.closing_type  : '',
-      nw === "Closing Date" ? row.closingdate  : '',
-      nw === "Doc" ? row.document  : '',
-      nw === "Builder Name" ? row.subdivision.builder?.name  : '',
-      nw === "Subdivision Name" ? row.subdivision?.name  : '',
-      nw === "Closing Price" ? row.closingprice  : '',
-      nw === "Address" ? row.address  : '',
-      nw === "Parcel Number" ? row.parcel  : '',
-      nw === "Sub Legal Name" ? row.sublegal_name  : '',
-      nw === "Seller Legal Name" ? row.sellerleagal  : '',
-      nw === "Buyer Name" ? row.buyer  : '',
-      nw === "Lender" ? row.lender  : '',
-      nw === "Loan Amount" ? row.loanamount  : '',
-      nw === "Type" ? row.type  : '',
-      nw === "Product Type" ? row.subdivision.product_type  : '',
-      nw === "Area" ? row.subdivision.area  : '',
-      nw === "Master Plan" ? row.subdivision.masterplan_id  : '',
-      nw === "Zip Code" ? row.subdivision.zipcode  : '',
-      nw === "Lot Width" ? row.subdivision.lotwidth  : '',
-      nw === "Lot Size" ? row.subdivision.lotsize  : '',
-      nw === "Zoning" ? row.subdivision.zoning  : '',
-      nw === "Age Restricted" ?  (row.subdivision.age === 1 && "Yes" || row.subdivision.age === 0 && "No") : ''  ,
-      nw === "All Single Story" ? (row.subdivision.single === 1 && "Yes" || row.subdivision.single === 0 && "No") : '', 
-      nw === "Fk Sub Id" ? row.subdivision.subdivision_code  : '',  
-    ]
-    ),
-    
-  ) 
-    downloadExcel({
-      fileName: "Closing",
-      sheet: "Closing",
-      tablePayload: {
-        header: tableHeaders,
-        body: tableData
-      },
+  
+    const tableData = AllClosingListExport.map((row) => {
+      return tableHeaders.map((header) => {
+        switch (header) {
+          case "Closing Type":
+            return row.closing_type || '';
+          case "Closing Date":
+            return row.closingdate || '';
+          case "Doc":
+            return row.document || '';
+          case "Builder Name":
+            return row.subdivision?.builder?.name || '';
+          case "Subdivision Name":
+            return row.subdivision?.name || '';
+          case "Closing Price":
+            return row.closingprice || '';
+          case "Address":
+            return row.address || '';
+          case "Parcel Number":
+            return row.parcel || '';
+          case "Sub Legal Name":
+            return row.sublegal_name || '';
+          case "Seller Legal Name":
+            return row.sellerleagal || '';
+          case "Buyer Name":
+            return row.buyer || '';
+          case "Lender":
+            return row.lender || '';
+          case "Loan Amount":
+            return row.loanamount || '';
+          case "Type":
+            return row.type || '';
+          case "Product Type":
+            return row.subdivision?.product_type || '';
+          case "Area":
+            return row.subdivision?.area || '';
+          case "Master Plan":
+            return row.subdivision?.masterplan_id || '';
+          case "Zip Code":
+            return row.subdivision?.zipcode || '';
+          case "Lot Width":
+            return row.subdivision?.lotwidth || '';
+          case "Lot Size":
+            return row.subdivision?.lotsize || '';
+          case "Zoning":
+            return row.subdivision?.zoning || '';
+          case "Age Restricted":
+            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
+          case "All Single Story":
+            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
+          case "Fk Sub Id":
+            return row.subdivision?.subdivision_code || '';
+          default:
+            return '';
+        }
+      });
     });
-
+  
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+  
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+      if (!cell.s) cell.s = {};
+      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+    }
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Closing');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'Closing.xlsx');
+  };
+  
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllClosingListExport(allData);
   }
 
   const HandleRole = (e) => {
@@ -264,6 +414,11 @@ const ClosingList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
 
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -308,10 +463,24 @@ const ClosingList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getClosingList(currentPage);
+      fetchAllPages(searchQuery, sortConfig) 
     } else {
       navigate("/");
     }
   }, [currentPage]);
+
+  async function fetchAllPages(searchQuery, sortConfig) {
+    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllClosingListExport(allData);
+  }
 
   const handleDelete = async (e) => {
     try {
@@ -543,7 +712,13 @@ useEffect(() => {
                     </div>
                     <div>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                    <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                     </Button>                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
                     </button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
@@ -563,6 +738,9 @@ useEffect(() => {
                       >
                         Import
                       </Button>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                    </button> 
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -686,9 +864,19 @@ useEffect(() => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Doc") && (
+                            )}{" "}
+                            {checkFieldExist("Closing Date Actual") && (
+                              <th onClick={() => requestSort("closingdate")}>
+                                Closing Date
+                                {sortConfig.key !== "closingdate" ? "↑↓" : ""}
+                                {sortConfig.key === "closingdate" && (
+                                  <span>
+                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                                  </span>
+                                )}
+                              </th>
+                            )}{" "}
+                            {checkFieldExist("Doc") && (
                               <th onClick={() => requestSort("document")}>
                                 Doc
                                 {sortConfig.key !== "document" ? "↑↓" : ""}
@@ -1164,6 +1352,48 @@ useEffect(() => {
         Title="Add Closing"
         parentCallback={handleCallback}
       />
+       <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
+      </Modal>
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Permit CSV Data</Modal.Title>
@@ -1365,6 +1595,219 @@ useEffect(() => {
                 Submit
               </button>
             </form>
+          </div>
+        </div>
+      </Offcanvas>
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Closings{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  CLOSING TYPE:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input
+                                    className=" form-control"
+                                    value={filterQuery.is_active}
+                                    name="closing_type"
+                                    onChange={HandleFilter}
+                                  />
+                         
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                  CLOSING DATE:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <input
+                                    className="form-control"
+                                    type="date"
+                                    value={filterQuery.closingdate}
+                                    name="closingdate"
+                                    onChange={HandleFilter}
+                                  />
+                                 
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                DOC:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="document" className="form-control" value={filterQuery.document} onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                BUILDER NAME :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.builder_name} name="builder_name" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SUBDIVISION NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="subdivision_name" value={filterQuery.subdivision_name} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                CLOSING PRICE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ADDRESS:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.address} name="address" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                PARCEL NUMBER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SUB LEGAL NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="sublegal_name" value={filterQuery.sublegal_name} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                SELLER LEGAL NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="seller" value={filterQuery.seller} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                BUYER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LENDER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                                <label className="form-label">
+                                LOAN AMOUNT:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                PRODUCT TYPE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                MASTER PLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age"  onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>                                </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                </select>                                 </div>
+                             </div>
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
           </div>
         </div>
       </Offcanvas>
