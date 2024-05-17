@@ -16,7 +16,7 @@ const WeeklyDataOffcanvas = forwardRef((props, ref) => {
         try {
             let response = await AdminSubdevisionService.index()
             let responseData = await response.json()
-            setBuilderList(responseData)
+            setBuilderList(responseData.data)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();

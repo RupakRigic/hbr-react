@@ -1,6 +1,6 @@
 import clientAuth from "../../clientAuth"
 export default {
-    index: (userData) => clientAuth.get(`admin/weekly/index/${userData}`),
+    index: (userData,builderId) => clientAuth.get(`admin/weekly/index/${userData}/${builderId}`),
     update: (id, userData) => clientAuth.post(`admin/weekly/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/weekly/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/weekly/store`, { json: userData }),

@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import MainPagetitle from "../../layouts/MainPagetitle";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 const WeeklyDataIndex = () => {
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
@@ -48,7 +49,8 @@ const WeeklyDataIndex = () => {
   const getWeeklyList = async () => {
     try {
       const response = await AdminWeeklyDataService.index(
-        localStorage.getItem("enddate")
+        localStorage.getItem("enddate"),
+        localStorage.getItem("builderId")
       );
       const responseData = await response.json();
       console.log(responseData);
@@ -58,16 +60,19 @@ const WeeklyDataIndex = () => {
           element.weekly_data[0].gross_sales -
           element.weekly_data[0].cancelations,
       }));
-
+  
       setBuilderList(updatedData);
     } catch (error) {
+      console.log(444);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
+      } else {
+        setError("An unexpected error occurred");
       }
     }
   };
+  
   useEffect(() => {
     getWeeklyList();
   }, []);
@@ -93,6 +98,7 @@ const WeeklyDataIndex = () => {
       [name]: value,
     });
   };
+
 
   const handleStatusChange = async (event,id) => {
     const { name, value } = event.target;
@@ -410,31 +416,9 @@ const WeeklyDataIndex = () => {
                                     }}
                                     onChange={handleChange}
                                   />{" "}
-                                          <ToastContainer />
-
-                                </td>
+                                      
                               </td>
-                              {/* <td style={{ textAlign: "center" }}>
-                                <div>
-                                  <Link
-                                    onClick={() =>
-                                      swal({
-                                        title: "Are you sure?",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                      }).then((willDelete) => {
-                                        if (willDelete) {
-                                          handleDelete(element.id);
-                                        }
-                                      })
-                                    }
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                  >
-                                    <i className="fa fa-trash"></i>
-                                  </Link>
-                                </div>
-                              </td> */}
+                              </td>
                             </tr>
                            
                           );
