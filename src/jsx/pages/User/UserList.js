@@ -568,16 +568,20 @@ const UserList = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "builder" ? "builderName" : column.id) : ""}>
                                 <strong>
                                   {column.label}
-                                  {column.id != "action" && sortConfig.key !== column.id ? "↑↓" : ""}
-                                  {column.id != "action" && sortConfig.key === column.id && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === column.id
+                                    ) ? (
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === column.id
+                                          ).direction === "asc" ? "↑" : "↓"
+                                        }
+                                      </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>

@@ -744,15 +744,24 @@ const toCamelCase = (str) => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id)))) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                                column.id == "date" ? "created_at" : 
+                                (column.id == "squre Footage" ? "sqft" : 
+                                (column.id == "bedrooms" ? "bedroom" : 
+                                (column.id == "base Price" ? "baseprice" : 
+                                (column.id == "price Per SQFT" ? "perSQFT" : 
+                                (column.id == "lot Size" ? "lotsize" : 
+                                (column.id == "all Single Story" ? "stories" : 
+                                (column.id == "__pkPriceID" ? "id" : 
+                                (column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id)))))))))) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === (column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id))))
+                                    (item) => item.key === toCamelCase(column.id)
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id))))
+                                        (item) => item.key === toCamelCase(column.id)
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : (

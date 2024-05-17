@@ -769,7 +769,18 @@ const toCamelCase = (str) => {
                             {" "}
                             <th>No.</th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "weeklyTraffic" ? "weeklytraffic" : (column.id == "weeklyGrossSales" ? "grosssales" : (column.id == "weeklyCancellations" ? "cancelations" : (column.id == "weeklyNetSales" ? "netsales" : (column.id == "ageRestricted" ? "age" : (column.id == "allSingleStory" ? "stories" : (column.id == "dateAdded" ? "created_at" : (column.id == ("totalLots" || "weeklyLotsReleaseForSale" || "weeklyUnsoldStandingInventory") ? "lotreleased" : toCamelCase(column.id))))))))) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                                column.id == "week Ending" ? "weekending" :
+                                (column.id == "weekly Traffic" ? "weeklytraffic" : 
+                                (column.id == "weekly Gross Sales" ? "grosssales" : 
+                                (column.id == "weekly Cancellations" ? "cancelations" : 
+                                (column.id == "weekly Net Sales" ? "netsales" : 
+                                (column.id == "age Restricted" ? "age" : 
+                                (column.id == "all Single Story" ? "stories" : 
+                                (column.id == "date Added" ? "created_at" : 
+                                (column.id == "lot Size" ? "lotsize" : 
+                                (column.id == "_fkSubID" ? "subdivisionCode" : 
+                                (column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id)))))))))))) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(

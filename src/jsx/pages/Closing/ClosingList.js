@@ -749,7 +749,14 @@ const toCamelCase = (str) => {
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(toCamelCase(column.id)) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
+                                column.id == "closing Type" ? "closing_type" : 
+                                (column.id == "closing Price" ? "closingprice" : 
+                                (column.id == "Parcel Number" ? "parcel" : 
+                                (column.id == "sub Legal Name" ? "subdivisionName" : 
+                                (column.id == "seller Legal Name" ? "sellerleagal" : 
+                                (column.id == "buyer Name" ? "buyer" : 
+                                (column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)))))))) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
