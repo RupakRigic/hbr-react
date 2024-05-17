@@ -18,6 +18,7 @@ import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 const TrafficsaleList = () => {
 
@@ -89,6 +90,10 @@ const TrafficsaleList = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "traffic" });
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+
   useEffect(() => {
     console.log('data trafficsaleList : ',fieldList);
   }, [fieldList]);
@@ -123,7 +128,7 @@ const TrafficsaleList = () => {
     { label: 'Fk Sub id', key: 'fkSubID' },
      
   ];
-  const columns = [
+  const excelcolumns = [
     { label: 'Week Ending', key: 'WeekEnding' },
     { label: 'Builder Name', key: 'BuilderName' }, 
     { label: 'Subdivision Name', key: 'SubdivisionName' },
@@ -551,6 +556,53 @@ const TrafficsaleList = () => {
         }
     }
 }
+
+const handleOpenDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(true);
+};
+
+const handleCloseDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(false);
+};
+
+const handleSaveDialog = () => {
+  setColumns(draggedColumns);
+  setOpenDialog(false);
+};
+
+const handleColumnOrderChange = (result) => {
+  if (!result.destination) {
+    return;
+  }
+  const newColumns = Array.from(draggedColumns);
+  const [movedColumn] = newColumns.splice(result.source.index, 1);
+  newColumns.splice(result.destination.index, 0, movedColumn);
+  setDraggedColumns(newColumns);
+};
+
+useEffect(() => {
+  const mappedColumns = fieldList.map((data) => ({
+    id: data.charAt(0).toLowerCase() + data.slice(1),
+    label: data
+  }));
+  setColumns(mappedColumns);
+}, [fieldList]);
+
+const toCamelCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) => {
+      if (index === 0) {
+        return word;
+      }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+  .join('');
+}
+
   return (
     <>
       <MainPagetitle
@@ -588,10 +640,20 @@ const TrafficsaleList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div className="d-flex">
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-
+                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                      Set Columns Order
+                    </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
@@ -706,7 +768,25 @@ const TrafficsaleList = () => {
                           <tr style={{ textAlign: "center" }}>
                             {" "}
                             <th>No.</th>
-                            {checkFieldExist("Week Ending") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "weeklyTraffic" ? "weeklytraffic" : (column.id == "weeklyGrossSales" ? "grosssales" : (column.id == "weeklyCancellations" ? "cancelations" : (column.id == "weeklyNetSales" ? "netsales" : (column.id == "ageRestricted" ? "age" : (column.id == "allSingleStory" ? "stories" : (column.id == "dateAdded" ? "created_at" : (column.id == ("totalLots" || "weeklyLotsReleaseForSale" || "weeklyUnsoldStandingInventory") ? "lotreleased" : toCamelCase(column.id))))))))) : ""}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Week Ending") && (
                               <th onClick={() => requestSort("weekending")}>
                                 Week Ending
                                 {sortConfig.key !== "weekending" ? "↑↓" : ""}
@@ -716,8 +796,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist(" Builder Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist(" Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
                                 {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -727,8 +808,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist(" Subdivision Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist(" Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -742,8 +824,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist(" Weekly Traffic") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist(" Weekly Traffic") && (
                               <th onClick={() => requestSort("weeklytraffic")}>
                                 Weekly Traffic
                                 {sortConfig.key !== "weeklytraffic" ? "↑↓" : ""}
@@ -753,8 +836,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist(" Weekly Gross Sales") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist(" Weekly Gross Sales") && (
                               <th onClick={() => requestSort("grosssales")}>
                                 Weekly Gross Sales
                                 {sortConfig.key !== "grosssales" ? "↑↓" : ""}
@@ -764,8 +848,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Weekly Cancellations") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Weekly Cancellations") && (
                               <th onClick={() => requestSort("cancelations")}>
                                 Weekly Cancellations
                                 {sortConfig.key !== "cancelations" ? "↑↓" : ""}
@@ -775,8 +860,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Weekly Net Sales") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Weekly Net Sales") && (
                               <th onClick={() => requestSort("netsales")}>
                                 Weekly Net Sales
                                 {sortConfig.key !== "netsales" ? "↑↓" : ""}
@@ -786,8 +872,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Total Lots") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Total Lots") && (
                               <th onClick={() => requestSort("lotreleased")}>
                                 Total Lots
                                 {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
@@ -797,8 +884,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Weekly Lots Release For Sale") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Weekly Lots Release For Sale") && (
                               <th onClick={() => requestSort("lotreleased")}>
                                 Weekly Lots Release For Sale
                                 {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
@@ -808,8 +896,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Weekly Unsold Standing Inventory") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Weekly Unsold Standing Inventory") && (
                               <th onClick={() => requestSort("lotreleased")}>
                                 Weekly Unsold Standing Inventory
                                 {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
@@ -819,8 +908,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Product Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("productType")}>
                                 Product Type{" "}
                                 {sortConfig.key !== "productType" ? "↑↓" : ""}
@@ -830,8 +920,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Area") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 Area
                                 {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
@@ -841,8 +932,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Master Plan") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th onClick={() => requestSort("masterPlan")}>
                                 Master Plan{" "}
                                 {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
@@ -852,8 +944,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zip Code") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th onClick={() => requestSort("zipCode")}>
                                 Zip Code{" "}
                                 {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
@@ -863,8 +956,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Width") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
                                 {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
@@ -874,8 +968,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Size") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
                                 {sortConfig.key !== "lotsize" ? "↑↓" : ""}
@@ -885,8 +980,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zoning") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
                                 {sortConfig.key !== "zoning" ? "↑↓" : ""}
@@ -896,8 +992,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Age Restricted") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong>Age Restricted</strong>
                                 {sortConfig.key !== "age" ? "↑↓" : ""}
@@ -907,8 +1004,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("All Single Story") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
                                 {sortConfig.key !== "stories" ? "↑↓" : ""}
@@ -918,8 +1016,9 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Date Added") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>Date Added</strong>
                                 {sortConfig.key !== "created_at" ? "↑↓" : ""}
@@ -929,14 +1028,15 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("__pkRecordID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("__pkRecordID") && (
                               <th>
                                 __pkRecordID{" "}
-                                {/* viewable to admin users only */}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("_fkSubID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("_fkSubID") && (
                               <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
@@ -948,8 +1048,10 @@ const TrafficsaleList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Action") && <th>Action</th>}
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -963,135 +1065,115 @@ const TrafficsaleList = () => {
                                 }}
                               >
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Week Ending") && (
-                                  <td>
-                                    <DateComponent date={element.weekending} />
-                                  </td>
-                                )}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.builder?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Weekly Traffic") && (
-                                  <td>{element.weeklytraffic}</td>
-                                )}{" "}
-                                {checkFieldExist("Weekly Gross Sales") && (
-                                  <td>{element.grosssales}</td>
-                                )}{" "}
-                                {checkFieldExist("Weekly Cancellations") && (
-                                  <td>{element.cancelations}</td>
-                                )}{" "}
-                                {checkFieldExist("Weekly Net Sales") && (
-                                  <td>{element.netsales}</td>
-                                )}
-                                 {checkFieldExist("Total Lots") && (
-                                <td>{element.subdivision.totallots}</td> )}
-                                {checkFieldExist("Weekly Lots Release For Sale") && (
-                                  <td>{element.lotreleased}</td>
-                                )}{" "}
-                                {checkFieldExist("Weekly Unsold Standing Inventory") && (
-                                  <td>{element.unsoldinventory}</td>
-                                )}{" "}
-                                {checkFieldExist("Product Type") && (
-                                  <td>{element.subdivision.product_type}</td>
-                                )}{" "}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.subdivision.area}</td>
-                                )}
-                                  {checkFieldExist("Area") && (
-                                <td>{element.subdivision.masterplan_id}</td> )}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>{element.subdivision.zipcode}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.lotwidth}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.lotsize}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Zoning") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.zoning}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.subdivision &&
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.weekending} /></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.builder?.name}</td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                  }
+                                  {column.id == "weekly Traffic" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.weeklytraffic}</td>
+                                  }
+                                  {column.id == "weekly Gross Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.grosssales}</td>
+                                  }
+                                  {column.id == "weekly Cancellations" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.cancelations}</td>
+                                  }
+                                  {column.id == "weekly Net Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.netsales}</td>
+                                  }
+                                  {column.id == "total Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.totallots}</td>
+                                  }
+                                  {column.id == "weekly Lots Release For Sale" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotreleased}</td>
+                                  }
+                                  {column.id == "weekly Unsold Standing Inventory" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.unsoldinventory}</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
                                       element.subdivision.age === 1 &&
                                       "Yes"}
                                     {element.subdivision &&
                                       element.subdivision.age === 0 &&
-                                      "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.subdivision &&
+                                      "No"}</td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
                                       element.subdivision.single === 1 &&
                                       "Yes"}
                                     {element.subdivision &&
                                       element.subdivision.single === 0 &&
-                                      "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("__pkRecordID") && (
-                                  <td>{element.id}</td>
-                                )}{" "}
-                                {checkFieldExist("_fkSubID") && (
-                                  <td>  
-                                    {element.subdivision.subdivision_code}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/trafficsaleupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                      "No"}</td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                  }
+                                  {column.id == "__pkRecordID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/trafficsaleupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (

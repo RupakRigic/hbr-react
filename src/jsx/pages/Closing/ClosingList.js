@@ -568,6 +568,19 @@ useEffect(() => {
   setColumns(mappedColumns);
 }, [fieldList]);
 
+const toCamelCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) => {
+      if (index === 0) {
+        return word;
+      }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+  .join('');
+}
+
   return (
     <>
       <MainPagetitle
@@ -614,6 +627,9 @@ useEffect(() => {
                     </div>
                     <div>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                      Set Columns Order
+                    </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
@@ -621,9 +637,6 @@ useEffect(() => {
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>                
-                         <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                      Set Columns Order
-                    </button>
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
 
@@ -736,9 +749,20 @@ useEffect(() => {
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
                                 </strong>
                               </th>
                             ))}

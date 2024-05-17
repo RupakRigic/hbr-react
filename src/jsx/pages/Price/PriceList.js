@@ -555,6 +555,19 @@ useEffect(() => {
   setColumns(mappedColumns);
 }, [fieldList]);
 
+const toCamelCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) => {
+      if (index === 0) {
+        return word;
+      }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+  .join('');
+}
+
   return (
     <>
       <MainPagetitle
@@ -731,9 +744,20 @@ useEffect(() => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id)))) : ""}>
                                 <strong>
                                   {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === (column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id))))
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === (column.id == "date" ? "created_at" : (column.id == "squre Footage" ? "sqft" : (column.id == "price Per SQFT" ? "perSQFT" : toCamelCase(column.id))))
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
                                 </strong>
                               </th>
                             ))}

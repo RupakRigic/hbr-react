@@ -98,6 +98,7 @@ const UserList = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -567,9 +568,17 @@ const UserList = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id) : ""}>
                                 <strong>
                                   {column.label}
+                                  {column.id != "action" && sortConfig.key !== column.id ? "↑↓" : ""}
+                                  {column.id != "action" && sortConfig.key === column.id && (
+                                    <span>
+                                      {sortConfig.direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
                                 </strong>
                               </th>
                             ))}
