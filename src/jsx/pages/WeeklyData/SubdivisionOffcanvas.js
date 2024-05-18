@@ -55,7 +55,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
         try {
             const response = await AdminBuilderService.index();
             const responseData = await response.json();
-            setBuilderList(responseData)
+            setBuilderList(responseData.data)
         } catch (error) {
             console.log(error)
             if (error.name === 'HTTPError') {

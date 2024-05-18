@@ -6,6 +6,8 @@ import RechartJs from "../../components/charts/rechart";
 import MainPagetitle from '../../layouts/MainPagetitle';
 import './WeeklyData.css'
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
+import { Form } from "react-bootstrap";
+
 const BuilderTable = () => {
     const [Error, setError] = useState('');
     var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL
@@ -29,6 +31,7 @@ const BuilderTable = () => {
     const handleSelectChange=(event)=>{
         setSelectedEndDate(event.target.value);
         localStorage.setItem('enddate', event.target.value);
+        
     }
     const getWeekEndDate = async () => {
         try {
@@ -42,6 +45,36 @@ const BuilderTable = () => {
             }
         }
     }
+    const handleBuilderCode = code => {
+        
+        setBuilderCode(code.target.value);
+        console.log(code.target.value);
+        localStorage.setItem('builderId',code.target.value);
+
+    }
+    const [BuilderList, setBuilderList] = useState([]);
+    const [BuilderCode, setBuilderCode] = useState('');
+    
+    const getbuilderlist = async () => {
+    
+      try {
+    
+          const response = await AdminBuilderService.index();
+          const responseData = await response.json();
+          setBuilderList(responseData.data)
+    
+      } catch (error) {
+          console.log(error)
+          if (error.name === 'HTTPError') {
+              const errorJson = await error.response.json();
+    
+              setError(errorJson.message)
+          }
+      }
+    }
+    useEffect(() => {
+      getbuilderlist();
+    }, [])
     return (
         <>
             <MainPagetitle mainTitle="Data Reporting" pageTitle="Data Reporting" parentTitle="Home" />
@@ -56,12 +89,20 @@ const BuilderTable = () => {
                                     </div> 
                                    <div className='dataTables_wrapper no-footer'>
                                     <p className='text-center'>Select Week ending date and click continue</p>
-                                    <div className="d-flex justify-content-center">
-                                  
+                                    <div className="d-flex justify-content-center mb-5">
                                     <select onChange={handleSelectChange}>
                                     { weekEndDates && weekEndDates.map((item) =>
                                        
                                         <option>{item}</option>
+                                    )}
+                                    </select>
+                                    </div>
+
+                                    <div className="d-flex justify-content-center">
+                                    <select onChange={handleBuilderCode}>
+                                    { BuilderList && BuilderList.map((element) =>
+                                       
+                                       <option value={element.id}>{element.name}</option>
                                     )}
                                     </select>
                                     </div>
