@@ -11,5 +11,7 @@ export default {
     accessField: () => clientAuth.get(`admin/closing/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/closing/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/closing/export`),
+    bulkupdate: (id, userData) => clientAuth.put(`admin/closing/bulkupdate/${id}`, { json: userData }),
+
 
 };

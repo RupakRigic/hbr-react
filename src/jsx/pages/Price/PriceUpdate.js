@@ -41,8 +41,10 @@
         let response = await AdminProductService.index();
         let responseData = await response.json();
 
-        setProductList(responseData);
+        setProductList(responseData.data);
+        console.log(responseData.data);
         } catch (error) {
+        console.log(error);
         if (error.name === "HTTPError") {
             const errorJson = await error.response.json();
 

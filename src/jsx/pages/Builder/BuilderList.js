@@ -24,6 +24,7 @@ import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import multiColumnSort from "multi-column-sort";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import BulkBuilderUpdate from "./BulkBuilderUpdate";
 
 const BuilderTable = () => {
 
@@ -36,6 +37,16 @@ const BuilderTable = () => {
     }
 };
 
+const [selectedLandSales, setSelectedLandSales] = useState([]);
+const bulkBuilder = useRef();
+
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
+};
 const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
     setSortConfig(newSortConfig);
@@ -953,6 +964,14 @@ const handleSortClose = () => setShowSort(false);
                           >
                             + Add Builder
                           </Link>
+                          <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkBuilder.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                         </div>
                       )}
                     </div>
@@ -1040,6 +1059,20 @@ const handleSortClose = () => setShowSort(false);
                         >
                           <thead>
                             <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === BuilderList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                               <th>
                                 <strong>No.</strong>
                               </th>
@@ -1754,13 +1787,26 @@ const handleSortClose = () => setShowSort(false);
                             {BuilderList !== null && BuilderList.length > 0 ? (
                               BuilderList.map((element, index) => (
                                 <tr
-                                  onClick={() => handleRowClick(element.id)}
-                                  key={index} 
-                                  style={{
-                                    textAlign: "center",
-                                    cursor: "pointer",
-                                  }}
+                                onClick={(e) => {
+                                  if(e.target.type !== "checkbox"){
+                                    handleRowClick(element.id);
+                                  }
+                                }}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
                                 >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                              </td>
                                   <td>{index + 1}</td>
                                   {checkFieldExist("logo") && (
                                     <td>
@@ -1972,11 +2018,19 @@ const handleSortClose = () => setShowSort(false);
       {SyestemUserRole == "Data Uploader" || SyestemUserRole == "User" ? (
         ""
       ) : (
+        <>
         <BuilderOffcanvas
           ref={builder}
           Title="Add Builder"
           parentCallback={handleCallback}
         />
+        <BulkBuilderUpdate
+        ref={bulkBuilder}
+        Title="Bulk Edit Subdivision sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
+       </>
       )}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

@@ -1,17 +1,26 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form } from "react-bootstrap";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import swal from "sweetalert";
+import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
+import { isEmptyArray } from 'formik';
 import Select from "react-select";
-const SubdivisionUpdate = () => {
-  const [BuilderList, setBuilderList] = useState([]);
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
+
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
+    const { selectedLandSales } = props;
+    // const [selectedLandSales, setSelectedLandSales] = useState(props.selectedLandSales);
+    console.log("bulkselectedLandSales",selectedLandSales);
+    const [SubdivisionCode, setSubdivisionCode] = useState('');
+    const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [ClosingList, SetClosingList] = useState([]);
+    const [addProduct, setAddProduct] = useState(false);
+    const [BuilderList, setBuilderList] = useState([]);
   const [BuilderCode, setBuilderCode] = useState([]);
 
   const [Error, setError] = useState("");
   const [Subdivision, setSubdivision] = useState([]);
-  const params = useParams();
   const [status, setStatus] = useState("1");
   const [productType, setProductType] = useState("DET");
   const [reporting, setReporting] = useState("1");
@@ -21,12 +30,9 @@ const SubdivisionUpdate = () => {
   const [juridiction, setJuridiction] = useState("");
   const [masterplan, setMasterPlan] = useState("");
   const [gate, setGate] = useState('');
-
-  const navigate = useNavigate();
   const handleStatus = (e) => {
     setStatus(e.target.value);
   };
-
   const handleProductType = (e) => {
     setProductType(e.target.value);
   };
@@ -53,137 +59,169 @@ const SubdivisionUpdate = () => {
     setGate(e.target.value);
 }
 
-  const GetSubdivision = async (id) => {
-    try {
-      let responseData = await AdminSubdevisionService.show(id).json();
-      setSubdivision(responseData);
-      const response = await AdminBuilderService.index();
-      const responseData1 = await response.json();
-      setBuilderList(responseData1.data);
-
-      let builderdata = responseData1.filter(function (item) {
-        return item.id === responseData.builder_id;
-      });
-
-      setStatus(responseData.status)
-      setProductType(responseData.product_type)
-      setReporting(responseData.reporting)
-      setProductType(responseData.product_type)
-      setSingle(responseData.single)
-      setAge(responseData.age)
-      setArea(responseData.area)
-      setJuridiction(responseData.juridiction)
-      setMasterPlan(responseData.masterplan_id)
-      setBuilderCode(builderdata);
-      setGate(responseData.gated);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      GetSubdivision(params.id);
-    } else {
-      navigate("/");
-    }
-  }, []);
-  const handleBuilderCode = (code) => {
-    setBuilderCode(code);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      var userData = {
-        builder_id: BuilderCode.id ? BuilderCode.id : Subdivision.builder_id,
-        subdivision_code: event.target.subdivision_code.value,
-        name: event.target.name.value,
-        status: status,
-        reporting: reporting,
-        product_type: productType,
-        phone: event.target.phone.value,
-        opensince: event.target.opensince.value,
-        age: age,
-        single: single,
-        firstpermitdate: event.target.firstpermitdate.value,
-        masterplan_id:masterplan,
-        lat: event.target.lat.value,
-        lng: event.target.lng.value,
-        area:area,
-        juridiction: juridiction,
-        zipcode: event.target.zipcode.value,
-        parcel: event.target.parcel.value,
-        crossstreet: event.target.crossstreet.value,
-        totallots: event.target.totallots.value,
-        unsoldlots: event.target.unsoldlots.value,
-        lotreleased: event.target.lotreleased.value,
-        lotwidth: event.target.lotwidth.value,
-        stadinginventory: event.target.stadinginventory.value,
-        lotsize: event.target.lotsize.value,
-        permits: event.target.permits.value,
-        netsales: event.target.netsales.value,
-        closing: event.target.closing.value,
-        monthsopen: event.target.monthsopen.value,
-        gated: gate,
-        sqftgroup: event.target.sqftgroup.value,
-        dollargroup: event.target.dollargroup.value,
-        masterplanfee: event.target.masterplanfee.value,
-        lastweeklydata: event.target.lastweeklydata.value,
-        dateadded: event.target.dateadded.value,
-        zoning: event.target.zoning.value,
-        gasprovider: event.target.gasprovider.value,
-      };
-      const data = await AdminSubdevisionService.update(
-        params.id,
-        userData
-      ).json();
-      if (data.status === true) {
-        swal("Subdivision Update Succesfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/subdivisionlist");
-          }
-        });
-      } else {
-        var error;
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-
-          setError(
-            errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-          );
+    const params = useParams();
+    useImperativeHandle(ref, () => ({
+        showEmployeModal() {
+            setAddProduct(true)
         }
-      }
-    } catch (error) {
-      console.log(error)
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
+    }));
+    const navigate = useNavigate();
 
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
-      }
+    const GetSubdivision = async (id) => {
+        try {
+          let responseData = await AdminSubdevisionService.show(id).json();
+          setSubdivision(responseData);
+          const response = await AdminBuilderService.index();
+          const responseData1 = await response.json();
+          setBuilderList(responseData1.data);
+    
+          let builderdata = responseData1.filter(function (item) {
+            return item.id === responseData.builder_id;
+          });
+    
+          setStatus(responseData.status)
+          setProductType(responseData.product_type)
+          setReporting(responseData.reporting)
+          setProductType(responseData.product_type)
+          setSingle(responseData.single)
+          setAge(responseData.age)
+          setArea(responseData.area)
+          setJuridiction(responseData.juridiction)
+          setMasterPlan(responseData.masterplan_id)
+          setBuilderCode(builderdata);
+          setGate(responseData.gated);
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+    
+            setError(errorJson.message);
+          }
+        }
+      };
+      useEffect(() => {
+        if (localStorage.getItem("usertoken")) {
+          GetSubdivision(params.id);
+        } else {
+          navigate("/");
+        }
+      }, []);
+
+      const handleBuilderCode = (code) => {
+        setBuilderCode(code);
+      };
+
+    // const GetSubdivision = async (id) => {
+    //     try {
+    //         let responseData1 = await AdminClosingService.show(id).json()
+    //         SetClosingList(responseData1);
+    //         const response = await AdminSubdevisionService.index()
+    //         const responseData = await response.json()
+    //         let getdata = responseData.filter(function (item) {
+    //             return item.id === responseData1.subdivision_id;
+    //         });
+    //         setSubdivisionCode(getdata)
+    //         SetSubdivisionList(responseData.data);
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message)
+    //         }
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     if (localStorage.getItem('usertoken')) {
+    //         GetSubdivision(selectedLandSales);
+    //     }
+    //     else {
+    //         navigate('/');
+    //     }
+    // }, [])
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if(selectedLandSales.length === 0)
+            {
+                setError('No selected records'); return false
+            } 
+        try {
+            var userData = {
+                builder_id: BuilderCode.id ? BuilderCode.id : Subdivision.builder_id,
+                subdivision_code: event.target.subdivision_code.value,
+                name: event.target.name.value,
+                status: status,
+                reporting: reporting,
+                product_type: productType,
+                phone: event.target.phone.value,
+                opensince: event.target.opensince.value,
+                age: age,
+                single: single,
+                firstpermitdate: event.target.firstpermitdate.value,
+                masterplan_id:masterplan,
+                lat: event.target.lat.value,
+                lng: event.target.lng.value,
+                area:area,
+                juridiction: juridiction,
+                zipcode: event.target.zipcode.value,
+                parcel: event.target.parcel.value,
+                crossstreet: event.target.crossstreet.value,
+                totallots: event.target.totallots.value,
+                unsoldlots: event.target.unsoldlots.value,
+                lotreleased: event.target.lotreleased.value,
+                lotwidth: event.target.lotwidth.value,
+                stadinginventory: event.target.stadinginventory.value,
+                lotsize: event.target.lotsize.value,
+                permits: event.target.permits.value,
+                netsales: event.target.netsales.value,
+                closing: event.target.closing.value,
+                monthsopen: event.target.monthsopen.value,
+                gated: gate,
+                sqftgroup: event.target.sqftgroup.value,
+                dollargroup: event.target.dollargroup.value,
+                masterplanfee: event.target.masterplanfee.value,
+                lastweeklydata: event.target.lastweeklydata.value,
+                dateadded: event.target.dateadded.value,
+                zoning: event.target.zoning.value,
+                gasprovider: event.target.gasprovider.value,
+              };
+            console.log(userData);
+            const data = await AdminSubdevisionService.bulkupdate(selectedLandSales, userData).json();
+            if (data.status === true) {
+                swal("Subdivision Updated Succesfully").then((willDelete) => {
+                    if (willDelete) {
+                        setAddProduct(false);
+                        navigate('/subdivisionlist');
+                    }
+                })
+                props.parentCallback();
+
+            }
+        }
+        catch (error) {
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+            }
+        }
     }
 
-    // nav("#");
-  };
+    return (
+        <>
+            <Offcanvas show={addProduct} onHide={() => setAddProduct(false)} className="offcanvas-end customeoff" placement='end'>
+                <div className="offcanvas-header">
+                    <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
+                    <button type="button" className="btn-close"
+                        onClick={() => setAddProduct(false)}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div className="offcanvas-body">
+                    <div className="container-fluid">
 
-  return (
-    <Fragment>
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-lg-12">
-            <div className="card">
-              <div className="card-header">
-                <h4 className="card-title">Edit Subdivision</h4>
-              </div>
-              <div className="card-body">
-                <div className="form-validation">
-                  <form onSubmit={handleSubmit}>
+              
+                    <form onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-xl-6 mb-3">
                         <label className="form-label">
@@ -895,14 +933,11 @@ const SubdivisionUpdate = () => {
                       </Link>
                     </div>
                   </form>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Fragment>
-  );
-};
+            </Offcanvas>
+        </>
+    );
+});
 
-export default SubdivisionUpdate;
+export default BulkLandsaleUpdate;

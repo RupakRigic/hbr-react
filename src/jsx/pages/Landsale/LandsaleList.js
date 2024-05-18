@@ -389,7 +389,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
   }, []);
 
   const getsubdivisionlist = async () => {
-    debugger
+    
     try {
       let response = await AdminSubdevisionService.index();
       let responseData = await response.json();

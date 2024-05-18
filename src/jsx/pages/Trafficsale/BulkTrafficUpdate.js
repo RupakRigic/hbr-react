@@ -1,87 +1,105 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form } from 'react-bootstrap';
-
-import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
+import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
+import { isEmptyArray } from 'formik';
 import Select from "react-select";
-const TrafficsaleUpdate = () => {
+
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
+    const { selectedLandSales } = props;
+    // const [selectedLandSales, setSelectedLandSales] = useState(props.selectedLandSales);
+    console.log("bulkselectedLandSales",selectedLandSales);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [Error, setError] = useState('');
-    const [isActive, setIsActive] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [ClosingList, SetClosingList] = useState([]);
+    const [addProduct, setAddProduct] = useState(false);
     const [TrafficsaleList, SetTrafficsaleList] = useState([]);
-    const params = useParams();
-    const navigate = useNavigate()
+    const [isActive, setIsActive] = useState('');
     const isActiveData = [
         { value: '0', label: 'De-active' },
         { value: '1', label: 'Active' }
 
     ]
-    const GetSubdivision = async (id) => {
-        try {
-
-            let responseData1 = await AdminTrafficsaleService.show(id).json()
-            SetTrafficsaleList(responseData1);
-            let Isactivedata = isActiveData.filter(function (item) {
-
-                return item.value === responseData1.status.toString();
-
-            });
-
-            setIsActive(Isactivedata)
-            let response = await AdminSubdevisionService.index()
-            let responseData = await response.json()
-
-            let getdata = responseData.filter(function (item) {
-
-                return item.id === responseData1.subdivision_id;
-
-            });
-
-            setSubdivisionCode(getdata)
-            SetSubdivisionList(responseData);
-
-
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-
-                setError(errorJson.message)
-            }
-        }
-    }
-
-    
-
-    useEffect(() => {
-        if (localStorage.getItem('usertoken')) {
-
-            GetSubdivision(params.id);
-
-        }
-        else {
-            navigate('/');
-        }
-
-    }, [])
-    const handleSubdivisionCode = code => {
-
-        setSubdivisionCode(code);
-
-    }
     const handleActive = e => {
 
         setIsActive(e);
 
     }
+    const params = useParams();
+    useImperativeHandle(ref, () => ({
+        showEmployeModal() {
+            setAddProduct(true)
+        }
+    }));
+    const navigate = useNavigate();
+
+    const getsubdivisionlist = async () => {
+        
+        try {
+          let response = await AdminSubdevisionService.index();
+          let responseData = await response.json();
+    
+          SetSubdivisionList(responseData.data);
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+    
+            setError(errorJson.message);
+          }
+        }
+      };
+      useEffect(() => {
+        getsubdivisionlist();
+      }, []);
+
+    // const GetSubdivision = async (id) => {
+    //     try {
+    //         let responseData1 = await AdminClosingService.show(id).json()
+    //         SetClosingList(responseData1);
+    //         const response = await AdminSubdevisionService.index()
+    //         const responseData = await response.json()
+    //         let getdata = responseData.filter(function (item) {
+    //             return item.id === responseData1.subdivision_id;
+    //         });
+    //         setSubdivisionCode(getdata)
+    //         SetSubdivisionList(responseData.data);
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message)
+    //         }
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     if (localStorage.getItem('usertoken')) {
+    //         GetSubdivision(selectedLandSales);
+    //     }
+    //     else {
+    //         navigate('/');
+    //     }
+    // }, [])
+
+
+
+    const handleSubdivisionCode = code => {
+
+        setSubdivisionCode(code);
+
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        if(selectedLandSales.length === 0)
+            {
+                setError('No selected records'); return false
+            } 
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode.id ? SubdivisionCode.id : TrafficsaleList.subdivision_id,
+                "subdivision_id": SubdivisionCode.id,
                 "weekending": event.target.weekending.value,
                 "weeklytraffic": event.target.weeklytraffic.value,
                 "grosssales": event.target.grosssales.value,
@@ -91,41 +109,43 @@ const TrafficsaleUpdate = () => {
                 "unsoldinventory": event.target.unsoldinventory.value,
                 "status": isActive.value ? isActive.value : TrafficsaleList.status,
             }
-            const data = await AdminTrafficsaleService.update(params.id, userData).json();
+            console.log(userData);
+            const data = await AdminTrafficsaleService.bulkupdate(selectedLandSales, userData).json();
             if (data.status === true) {
-
-                swal("Trafficsale Update Succesfully").then((willDelete) => {
+                swal("Weekly Traffic & sale Update Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/trafficsalelist')
+                        setAddProduct(false);
+                        navigate('/trafficsalelist');
                     }
                 })
+                props.parentCallback();
 
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
         }
-
-
     }
-    return (
-        <Fragment>
 
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <h4 className="card-title">Edit Weekly Traffic & sale</h4>
-                            </div>
-                            <div className="card-body">
-                                <div className="form-validation">
-                              
-                                  <form onSubmit={handleSubmit}>
+    return (
+        <>
+            <Offcanvas show={addProduct} onHide={() => setAddProduct(false)} className="offcanvas-end customeoff" placement='end'>
+                <div className="offcanvas-header">
+                    <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
+                    <button type="button" className="btn-close"
+                        onClick={() => setAddProduct(false)}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div className="offcanvas-body">
+                    <div className="container-fluid">
+
+              
+                    <form onSubmit={handleSubmit}>
                                         <div className="row">
                                             <div className="col-xl-6 mb-3">
                                                 <label className="form-label">Subdivision<span className="text-danger">*</span></label>
@@ -201,16 +221,11 @@ const TrafficsaleUpdate = () => {
 
                                         </div>
                                     </form>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-
-
                 </div>
-            </div >
-        </Fragment >
+            </Offcanvas>
+        </>
     );
-};
+});
 
-export default TrafficsaleUpdate;
+export default BulkLandsaleUpdate;

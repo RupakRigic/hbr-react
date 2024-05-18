@@ -19,6 +19,8 @@ import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkClosingUpdate from "./BulkClosingUpdate";
+
 
 const ClosingList = () => {
 
@@ -87,6 +89,7 @@ const ClosingList = () => {
   const [columns, setColumns] = useState([]);
   console.log(columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
 
   useEffect(() => {
     console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
@@ -339,6 +342,7 @@ const ClosingList = () => {
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+  const bulkClosing = useRef();
 
   const getClosingList = async (currentPage) => {
     try {
@@ -559,6 +563,14 @@ const handleColumnOrderChange = (result) => {
   newColumns.splice(result.destination.index, 0, movedColumn);
   setDraggedColumns(newColumns);
 };
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
+};
+
 
 useEffect(() => {
   const mappedColumns = fieldList.map((data) => ({
@@ -662,6 +674,14 @@ const toCamelCase = (str) => {
                       >
                         + Add Closing
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkClosing.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -747,6 +767,20 @@ const toCamelCase = (str) => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === ClosingList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(ClosingList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>No.</th>
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
@@ -1142,12 +1176,26 @@ const toCamelCase = (str) => {
                           {ClosingList !== null && ClosingList.length > 0 ? (
                             ClosingList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
@@ -1285,6 +1333,12 @@ const toCamelCase = (str) => {
         ref={closingsale}
         Title="Add Closing"
         parentCallback={handleCallback}
+      />
+      <BulkClosingUpdate
+        ref={bulkClosing}
+        Title="Bulk Edit Closings"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

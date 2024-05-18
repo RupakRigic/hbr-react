@@ -19,6 +19,8 @@ import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkTrafficUpdate from "./BulkTrafficUpdate";
+
 
 const TrafficsaleList = () => {
 
@@ -39,6 +41,17 @@ const TrafficsaleList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkTrafficsale = useRef();
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+  
+
   const [showSort, setShowSort] = useState(false);
  const handleSortClose = () => setShowSort(false);
   const navigate = useNavigate();
@@ -681,6 +694,14 @@ const toCamelCase = (str) => {
                       >
                         + Add Weekly Traffic & Sale
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkTrafficsale.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -767,6 +788,20 @@ const toCamelCase = (str) => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             {" "}
+                            <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === trafficsaleList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(trafficsaleList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>No.</th>
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
@@ -1069,12 +1104,26 @@ const toCamelCase = (str) => {
                           {trafficsaleList !== null && trafficsaleList.length > 0 ? (
                             trafficsaleList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                 <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
@@ -1208,6 +1257,12 @@ const toCamelCase = (str) => {
         ref={trafficsale}
         Title="Add Weekly Traffic & Sale"
         parentCallback={handleCallback}
+      />
+      <BulkTrafficUpdate
+        ref={bulkTrafficsale}
+        Title="Bulk Edit Weekly Trafic sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
       <Offcanvas
         show={showOffcanvas}

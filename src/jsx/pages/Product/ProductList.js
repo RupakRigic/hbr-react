@@ -25,6 +25,7 @@ import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkProductUpdate from "./BulkProductUpdate";
 
 
 
@@ -47,6 +48,17 @@ const ProductList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkProduct = useRef();
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+  
   
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
@@ -553,7 +565,6 @@ const ProductList = () => {
     navigate("/pricelist");
   };
   const requestSort = (key) => {
-    debugger
     let direction = "asc";
 
     const newSortConfig = [...sortConfig];
@@ -797,6 +808,14 @@ const HandleFilterForm = (e) =>
                       >
                         + Add Product
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkProduct.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -882,6 +901,20 @@ const HandleFilterForm = (e) =>
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === productList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(productList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -1429,12 +1462,26 @@ const HandleFilterForm = (e) =>
                           {productList !== null && productList.length > 0 ? (
                             productList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                              <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                              </td>
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
@@ -1581,9 +1628,16 @@ const HandleFilterForm = (e) =>
         Title="Add Product"
         parentCallback={handleCallback}
       />
+
+    <BulkProductUpdate
+        ref={bulkProduct}
+        Title="Bulk Edit Product sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Permit CSV Data</Modal.Title>
+          <Modal.Title>Import Product CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">

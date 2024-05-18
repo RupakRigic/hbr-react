@@ -17,6 +17,8 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { Offcanvas, Form, Row } from "react-bootstrap";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';  
+import BulkPriceUpdate from "./BulkPriceUpdate";
+
 
 const PriceList = () => {
   
@@ -222,6 +224,7 @@ const handleDownloadExcel = () => {
   const [columns, setColumns] = useState([]);
   console.log("columns",columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -336,6 +339,8 @@ const handleDownloadExcel = () => {
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+  const bulkPrice = useRef();
+
   const getpriceList = async (pageNumber) => {
     try {
       let sortConfigString = "";
@@ -547,6 +552,15 @@ const handleColumnOrderChange = (result) => {
   setDraggedColumns(newColumns);
 };
 
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
+};
+
+
 useEffect(() => {
   const mappedColumns = fieldList.map((data) => ({
     id: data.charAt(0).toLowerCase() + data.slice(1),
@@ -655,11 +669,19 @@ const toCamelCase = (str) => {
                       >
                         + Add Base Price
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkPrice.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                       <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                        Showing {lastIndex - recordsPage  } to {lastIndex} of{" "}
                         {productListCount} entries
                       </div>
                       <div
@@ -740,6 +762,20 @@ const toCamelCase = (str) => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === priceList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(priceList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -1062,13 +1098,26 @@ const toCamelCase = (str) => {
                           {priceList !== null && priceList.length > 0 ? (
                             priceList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                key={element.id}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
@@ -1194,6 +1243,12 @@ const toCamelCase = (str) => {
         ref={product}
         Title="Add Base Price"
         parentCallback={handleCallback}
+      />
+        <BulkPriceUpdate
+        ref={bulkPrice}
+        Title="Bulk Edit Closing"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
       <Offcanvas
         show={showOffcanvas}

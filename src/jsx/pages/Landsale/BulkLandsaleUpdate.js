@@ -23,7 +23,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const navigate = useNavigate();
 
     const getsubdivisionlist = async () => {
-        debugger
+        
         try {
           let response = await AdminSubdevisionService.index();
           let responseData = await response.json();
@@ -41,33 +41,33 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         getsubdivisionlist();
       }, []);
 
-    const GetSubdivision = async (id) => {
-        try {
-            let responseData1 = await AdminLandsaleService.show(id).json()
-            SetLandsaleList(responseData1);
-            const response = await AdminSubdevisionService.index()
-            const responseData = await response.json()
-            let getdata = responseData.filter(function (item) {
-                return item.id === responseData1.subdivision_id;
-            });
-            setSubdivisionCode(getdata)
-            SetSubdivisionList(responseData.data);
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message)
-            }
-        }
-    }
+    // const GetSubdivision = async (id) => {
+    //     try {
+    //         let responseData1 = await AdminLandsaleService.show(id).json()
+    //         SetLandsaleList(responseData1);
+    //         const response = await AdminSubdevisionService.index()
+    //         const responseData = await response.json()
+    //         let getdata = responseData.filter(function (item) {
+    //             return item.id === responseData1.subdivision_id;
+    //         });
+    //         setSubdivisionCode(getdata)
+    //         SetSubdivisionList(responseData.data);
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message)
+    //         }
+    //     }
+    // }
 
-    useEffect(() => {
-        if (localStorage.getItem('usertoken')) {
-            GetSubdivision(selectedLandSales);
-        }
-        else {
-            navigate('/');
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (localStorage.getItem('usertoken')) {
+    //         GetSubdivision(selectedLandSales);
+    //     }
+    //     else {
+    //         navigate('/');
+    //     }
+    // }, [])
 
 
 
@@ -76,7 +76,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }
 
     const handleSubmit = async (event) => {
-        debugger
+        
         event.preventDefault();
         try {
             var userData = {
@@ -96,18 +96,19 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode.id ? SubdivisionCode.id : LandsaleList.subdivision_id,
+                "subdivision_id": SubdivisionCode,
             }
-            const data = await AdminLandsaleService.update(selectedLandSales, userData).json();
+            console.log(userData);
+            const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
             if (data.status === true) {
                 swal("Landsale Update Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddProduct(false);
-                        GetSubdivision(selectedLandSales);
                         navigate('/landsalelist');
-                        window.location.reload();
                     }
                 })
+                props.parentCallback();
+
             }
         }
         catch (error) {

@@ -15,6 +15,7 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkUserUpdateOffcanvas from "./BulkUserUpdateOffcanvas";
 import Modal from "react-bootstrap/Modal";
+import Select from "react-select";
 
 const UserList = () => {
 

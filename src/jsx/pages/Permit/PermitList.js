@@ -17,6 +17,7 @@ import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import BulkPermitUpdate from "./BulkPermitUpdate";
 
 
 const PermitList = () => {
@@ -31,6 +32,17 @@ const PermitList = () => {
           setSelectedCheckboxes(prev => prev.filter(item => item !== key));
       }
   };
+
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkPermit = useRef();
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+  
   
   const handleRemoveSelected = () => {
       const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
@@ -690,6 +702,14 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                       >
                         + Add Permit
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkPermit.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -775,6 +795,20 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === permitList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(permitList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -1266,12 +1300,26 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                           {permitList != null && permitList.length > 0 ? (
                             permitList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
                                 {checkFieldExist("Date") && (
                                   <td>
@@ -1462,6 +1510,12 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         ref={permit}
         Title="Add Permit"
         parentCallback={handleCallback}
+      />
+        <BulkPermitUpdate
+        ref={bulkPermit}
+        Title="Bulk Edit Permit sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
             <Modal show={showSort} onHide={HandleSortDetailClick}>
         <Modal.Header handleSortClose>

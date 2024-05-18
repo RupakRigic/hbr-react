@@ -25,6 +25,7 @@ import { Row, Col, Card } from 'react-bootstrap';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import BulkSubdivisionUpdate from "./BulkSubdivisionUpdate";
 
 
 const SubdivisionList = () => {
@@ -41,6 +42,17 @@ const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
     setSortConfig(newSortConfig);
     setSelectedCheckboxes([]);
+};
+
+const [selectedLandSales, setSelectedLandSales] = useState([]);
+const bulkSubdivision = useRef();
+
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
 };
 const [showSort, setShowSort] = useState(false);
 const handleSortClose = () => setShowSort(false);
@@ -964,6 +976,14 @@ console.log(AllBuilderListExport)
                       >
                         + Add Subdivision
                       </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkSubdivision.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -1049,6 +1069,20 @@ console.log(AllBuilderListExport)
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === BuilderList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong> No.</strong>
                             </th>
@@ -2116,13 +2150,26 @@ console.log(AllBuilderListExport)
                           {BuilderList !== null && BuilderList.length > 0 ? (
                             BuilderList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                key={element.id}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                              </td>
                                 <td>{index + 1}</td>
                                 {checkFieldExist("Status") && (
                                   <td>
@@ -2312,7 +2359,12 @@ console.log(AllBuilderListExport)
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
-
+    <BulkSubdivisionUpdate
+        ref={bulkSubdivision}
+        Title="Bulk Edit Subdivision sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
       
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

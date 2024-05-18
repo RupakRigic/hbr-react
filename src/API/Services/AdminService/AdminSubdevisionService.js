@@ -13,5 +13,6 @@ export default {
     getByBuilderId: (id) => clientAuth.get(`admin/subdivision/showbybuilderid/${id}`),
     import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
     put: (id, userData) => clientAuth.put(`admin/subdivision/soldout/${id}`, { json: userData }),
+    bulkupdate: (id, userData) => clientAuth.put(`admin/subdivision/bulkupdate/${id}`, { json: userData }),
 
 };
