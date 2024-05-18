@@ -271,6 +271,7 @@ const TrafficsaleList = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {

@@ -26,6 +26,7 @@ import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import BulkSubdivisionUpdate from "./BulkSubdivisionUpdate";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 
 const SubdivisionList = () => {
@@ -107,6 +108,11 @@ const handleSortClose = () => setShowSort(false);
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "subdivisions" });
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+
   const headers = [
     { label: 'Status', key: 'firstname' },
     { label: 'Reporting', key: 'lastname' },
@@ -166,7 +172,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Month Net Sold', key: 'month_net_sold' },
     { label: 'Year Net Sold', key: 'year_net_sold' }
   ];
-  const columns = [
+  const excelcolumns = [
     { label: 'Status', key: 'is_active' },
     { label: 'Reporting', key: 'reporting' },
     { label: 'Builder', key: 'builder_name' },
@@ -788,6 +794,7 @@ console.log(AllBuilderListExport)
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -895,6 +902,52 @@ console.log(AllBuilderListExport)
   const handlBuilderClick = (e) => {
     setShow(true);
   };
+
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+  
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+  
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+  
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+  
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+          return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+    .join('');
+  }
   
 
   return (
@@ -932,8 +985,19 @@ console.log(AllBuilderListExport)
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div className="d-flex">
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
@@ -1086,7 +1150,72 @@ console.log(AllBuilderListExport)
                             <th>
                               <strong> No.</strong>
                             </th>
-                            {checkFieldExist("Status") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" ? "" : requestSort(
+                                column.id == "builder" ? "builderName" : 
+                                column.id == "product Type" ? "product_type" : 
+                                column.id == "masterplan" ? "masterplan_id" : 
+                                column.id == "total Lots" ? "totallots" : 
+                                column.id == "lot Width" ? "lotwidth" : 
+                                column.id == "lot Size" ? "lotsize" : 
+                                column.id == "age Restricted" ? "age" : 
+                                column.id == "all Single Story" ? "single" : 
+                                column.id == "latitude" ? "lat" : 
+                                column.id == "longitude" ? "lng" : 
+                                column.id == "gas Provider" ? "gasprovider" : 
+                                column.id == "hOA Fee" ? "hoafee" : 
+                                column.id == "masterplan Fee" ? "masterplanfee" : 
+                                column.id == "parcel Group" ? "parcel" : 
+                                column.id == "date Added" ? "created_at" : 
+                                column.id == "__pkSubID" ? "subdivision_code" : 
+                                column.id == "_fkBuilderID" ? "builder_code" : 
+                                column.id == "total Closings" ? "total_closings" : 
+                                column.id == "total Permits" ? "total_permits" : 
+                                column.id == "total Net Sales" ? "total_net_sales" : 
+                                column.id == "months Open" ? "months_open" : 
+                                column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
+                                column.id == "latest Lots Released" ? "latest_lots_released" : 
+                                column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
+                                column.id == "unsold Lots" ? "unsold_lots" : 
+                                column.id == "avg Sqft All" ? "avg_sqft_all" : 
+                                column.id == "avg Sqft Active" ? "avg_sqft_active" : 
+                                column.id == "avg Base Price All" ? "avg_base_price_all" : 
+                                column.id == "avg Base Price Active" ? "avg_base_price_active" : 
+                                column.id == "min Sqft All" ? "min_sqft_all" : 
+                                column.id == "max Sqft All" ? "max_sqft_all" : 
+                                column.id == "max Sqft Active" ? "max_sqft_active_current" : 
+                                column.id == "min Base Price All" ? "min_base_price_all" : 
+                                column.id == "min Sqft Active" ? "min_sqft_active_current" : 
+                                column.id == "max Base Price All" ? "max_base_price_all" : 
+                                column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
+                                column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
+                                column.id == "max Week Ending" ? "max_week_ending" : 
+                                column.id == "min Week Ending" ? "min_week_ending" : 
+                                column.id == "sqft Group" ? "sqft_group" : 
+                                column.id == "price Group" ? "price_group" : 
+                                column.id == "month Net Sold" ? "month_net_sold" : 
+                                column.id == "year Net Sold" ? "year_net_sold" : 
+                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)))}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong> Status</strong>
                                 {sortConfig.some(
@@ -1103,8 +1232,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Reporting") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Reporting") && (
                               <th onClick={() => requestSort("reporting")}>
                                 <strong> Reporting</strong>
                                 {sortConfig.some(
@@ -1121,8 +1251,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Builder") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Builder") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong> Builder</strong>
                                 {sortConfig.some(
@@ -1139,8 +1270,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Name") && (
                               <th onClick={() => requestSort("name")}>
                                 <strong> Name</strong>
                                 {sortConfig.some(
@@ -1157,8 +1289,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Product Type") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("product_type")}>
                                 <strong> Product Type</strong>
                                 {sortConfig.some(
@@ -1175,8 +1308,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Area") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong> Area</strong>
                                 {sortConfig.some(
@@ -1193,8 +1327,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Product Type") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("masterplan_id")}>
                                 <strong> Masterplan</strong>
                                 {sortConfig.some(
@@ -1211,8 +1346,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Zipcode") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zipcode") && (
                               <th onClick={() => requestSort("zipcode")}>
                                 <strong> Zipcode</strong>
                                 {sortConfig.some(
@@ -1229,8 +1365,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Total Lots") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Total Lots") && (
                               <th onClick={() => requestSort("totallots")}>
                                 <strong> Total Lots</strong>
                                 {sortConfig.some(
@@ -1247,8 +1384,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Width") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotwidth")}>
                                 <strong>Lot Width</strong>
                                 {sortConfig.some(
@@ -1265,8 +1403,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Size") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong> Lot Size</strong>
                                 {sortConfig.some(
@@ -1283,8 +1422,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Zoning") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong> Zoning</strong>
                                 {sortConfig.some(
@@ -1301,8 +1441,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Age Restricted") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong> Age Restricted</strong>
                                 {sortConfig.some(
@@ -1319,8 +1460,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("All Single Story") && (
+                            )} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("single")}>
                                 <strong> All Single Story</strong>
                                 {sortConfig.some(
@@ -1337,8 +1479,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Gated") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Gated") && (
                               <th onClick={() => requestSort("gated")}>
                                 <strong> Gated</strong>
                                 {sortConfig.some(
@@ -1355,13 +1498,15 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Location") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Location") && (
                               <th>
                                 <strong> Location</strong>
                               </th>
-                            )}
-                            {checkFieldExist("Juridiction") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Juridiction") && (
                               <th onClick={() => requestSort("juridiction")}>
                                 <strong> Juridiction</strong>
                                 {sortConfig.some(
@@ -1378,8 +1523,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Latitude") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Latitude") && (
                               <th onClick={() => requestSort("lat")}>
                                 <strong>Latitude</strong>
                                 {sortConfig.some(
@@ -1396,8 +1542,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Longitude") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Longitude") && (
                               <th onClick={() => requestSort("lng")}>
                                 <strong> Longitude</strong>
                                 {sortConfig.some(
@@ -1414,8 +1561,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Gas Provider") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Gas Provider") && (
                               <th onClick={() => requestSort("gasprovider")}>
                                 <strong> Gas Provider</strong>
                                 {sortConfig.some(
@@ -1432,8 +1580,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("HOA Fee") && (
+                            )} */}
+
+                            {/* {checkFieldExist("HOA Fee") && (
                               <th onClick={() => requestSort("hoafee")}>
                                 <strong> HOA Fee</strong>
                                 {sortConfig.some(
@@ -1450,8 +1599,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Masterplan Fee") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Masterplan Fee") && (
                               <th onClick={() => requestSort("masterplanfee")}>
                                 <strong> Masterplan Fee</strong>
                                 {sortConfig.some(
@@ -1468,8 +1618,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Parcel Group") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Parcel Group") && (
                               <th onClick={() => requestSort("parcel")}>
                                 <strong> Parcel Group</strong>
                                 {sortConfig.some(
@@ -1486,8 +1637,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Phone") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Phone") && (
                               <th onClick={() => requestSort("phone")}>
                                 <strong> Phone</strong>
                                 {sortConfig.some(
@@ -1504,8 +1656,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Website") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Website") && (
                               <th>
                                 <strong> Website</strong>
                                 {sortConfig.some(
@@ -1522,8 +1675,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Date Added") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong> Date Added</strong>
                                 {sortConfig.some(
@@ -1540,8 +1694,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("__pkSubID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("__pkSubID") && (
                               <th
                                 onClick={() => requestSort("subdivision_code")}
                               >
@@ -1560,8 +1715,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("_fkBuilderID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("_fkBuilderID") && (
                               <th onClick={() => requestSort("builder_code")}>
                                 <strong> _fkBuilderID </strong>
                                 {sortConfig.some(
@@ -1578,8 +1734,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                            {checkFieldExist("Total Closings") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Total Closings") && (
                             <th onClick={() => requestSort("total_closings")}>
                                 <strong> Total Closings </strong>
                                 {sortConfig.some(
@@ -1596,8 +1753,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                            {checkFieldExist("Total Permits") && (                     
+                              )} */}
+
+                            {/* {checkFieldExist("Total Permits") && (                     
                               <th onClick={() => requestSort("total_permits")}>
                                 <strong> Total Permits </strong>
                                 {sortConfig.some(
@@ -1614,8 +1772,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                              {checkFieldExist("Total Net Sales") && (
+                            )} */}
+
+                              {/* {checkFieldExist("Total Net Sales") && (
                               <th onClick={() => requestSort("total_net_sales")}>
                                 <strong> Total Net Sales </strong>
                                 {sortConfig.some(
@@ -1632,8 +1791,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Months Open") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Months Open") && (
                               <th onClick={() => requestSort("months_open")}>
                                 <strong> Months Open </strong>
                                 {sortConfig.some(
@@ -1650,8 +1810,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                              {checkFieldExist("Latest Traffic/Sales Data") && (
+                            )} */}
+
+                              {/* {checkFieldExist("Latest Traffic/Sales Data") && (
                               <th onClick={() => requestSort("latest_traffic_data")}>
                                 <strong> Latest Traffic/Sales Data </strong>
                                 {sortConfig.some(
@@ -1668,8 +1829,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                             )}
-                              {checkFieldExist("Latest Lots Released") && (
+                             )} */}
+
+                              {/* {checkFieldExist("Latest Lots Released") && (
                               <th onClick={() => requestSort("latest_lots_released")}>
                                 <strong> Latest Lots Released </strong>
                                 {sortConfig.some(
@@ -1686,8 +1848,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Latest Standing Inventory") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Latest Standing Inventory") && (
                               <th onClick={() => requestSort("latest_standing_inventory")}>
                                 <strong> Latest Standing Inventory </strong>
                                 {sortConfig.some(
@@ -1704,8 +1867,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Unsold Lots") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Unsold Lots") && (
                               <th onClick={() => requestSort("unsold_lots")}>
                                 <strong> Unsold Lots </strong>
                                 {sortConfig.some(
@@ -1722,8 +1886,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Avg Sqft All") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Avg Sqft All") && (
                               <th onClick={() => requestSort("avg_sqft_all")}>
                                 <strong> Avg Sqft All </strong>
                                 {sortConfig.some(
@@ -1740,8 +1905,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Avg Sqft Active") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Avg Sqft Active") && (
                               <th onClick={() => requestSort("avg_sqft_active")}>
                                 <strong> Avg Sqft Active </strong>
                                 {sortConfig.some(
@@ -1758,8 +1924,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                            )}
-                              {checkFieldExist("Avg Base Price All") && (
+                            )} */}
+
+                              {/* {checkFieldExist("Avg Base Price All") && (
                               <th onClick={() => requestSort("avg_base_price_all")}>
                                 <strong> Avg Base Price All </strong>
                                 {sortConfig.some(
@@ -1776,8 +1943,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Avg Base Price Active") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Avg Base Price Active") && (
                               <th onClick={() => requestSort("avg_base_price_active")}>
                                 <strong> Avg Base Price Active </strong>
                                 {sortConfig.some(
@@ -1794,8 +1962,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Min Sqft All") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Min Sqft All") && (
                               <th onClick={() => requestSort("min_sqft_all")}>
                                 <strong> Min Sqft All </strong>
                                 {sortConfig.some(
@@ -1812,8 +1981,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Min Sqft Active") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active")}>
                                 <strong> Min Sqft Active </strong>
                                 {sortConfig.some(
@@ -1830,8 +2000,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Max Sqft All") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Max Sqft All") && (
                               <th onClick={() => requestSort("max_sqft_all")}>
                                 <strong> Max Sqft All </strong>
                                 {sortConfig.some(
@@ -1848,8 +2019,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Max Sqft Active") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active")}>
                                 <strong> Max Sqft Active </strong>
                                 {sortConfig.some(
@@ -1866,8 +2038,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                                   )}
-                              {checkFieldExist("Min Base Price All") && (
+                                   )} */}
+
+                              {/* {checkFieldExist("Min Base Price All") && (
                               <th onClick={() => requestSort("min_base_price_all")}>
                                 <strong> Min Base Price All </strong>
                                 {sortConfig.some(
@@ -1884,8 +2057,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Min Sqft Active") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Min Sqft Active") && (
                               <th onClick={() => requestSort("min_sqft_active_current")}>
                                 <strong> Min Sqft Active </strong>
                                 {sortConfig.some(
@@ -1902,8 +2076,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Max Base Price All") && (
+                              )} */}
+                              
+                              {/* {checkFieldExist("Max Base Price All") && (
                               <th onClick={() => requestSort("max_base_price_all")}>
                                 <strong> Max Base Price All </strong>
                                 {sortConfig.some(
@@ -1920,8 +2095,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Max Sqft Active") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Max Sqft Active") && (
                               <th onClick={() => requestSort("max_sqft_active_current")}>
                                 <strong> Max Sqft Active </strong>
                                 {sortConfig.some(
@@ -1938,8 +2114,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Avg Net Traffic Per Month This Year") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Avg Net Traffic Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_traffic_per_month_this_year")}>
                                 <strong> Avg Net Traffic Per Month This Year </strong>
                                 {sortConfig.some(
@@ -1956,8 +2133,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Avg Net Sales Per Month This Year") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Avg Net Sales Per Month This Year") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_this_year")}>
                                 <strong> Avg Net Sales Per Month This Year </strong>
                                 {sortConfig.some(
@@ -1974,8 +2152,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                             )}
-                              {checkFieldExist("Avg Closings Per Month This Year") && (
+                             )} */}
+
+                              {/* {checkFieldExist("Avg Closings Per Month This Year") && (
                               <th onClick={() => requestSort("avg_closings_per_month_this_year")}>
                                 <strong> Avg Closings Per Month This Year </strong>
                                 {sortConfig.some(
@@ -1992,8 +2171,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Avg Net Sales Per Month Since Open") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Avg Net Sales Per Month Since Open") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_since_open")}>
                                 <strong> Avg Net Sales Per Month Since Open </strong>
                                 {sortConfig.some(
@@ -2010,8 +2190,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Avg Net Sales Per Month Last 3 Months") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Avg Net Sales Per Month Last 3 Months") && (
                               <th onClick={() => requestSort("avg_net_sales_per_month_last_three_months")}>
                                 <strong> Avg Net Sales Per Month Last 3 Months </strong>
                                 {sortConfig.some(
@@ -2028,8 +2209,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Max Week Ending") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Max Week Ending") && (
                               <th onClick={() => requestSort("max_week_ending")}>
                                 <strong> Max Week Ending </strong>
                                 {sortConfig.some(
@@ -2046,8 +2228,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Min Week Ending") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Min Week Ending") && (
                               <th onClick={() => requestSort("min_week_ending")}>
                                 <strong> Min Week Ending </strong>
                                 {sortConfig.some(
@@ -2064,8 +2247,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                                )}
-                              {checkFieldExist("Sqft Group") && (
+                                )} */}
+
+                              {/* {checkFieldExist("Sqft Group") && (
                               <th onClick={() => requestSort("sqft_group")}>
                                 <strong> Sqft Group </strong>
                                 {sortConfig.some(
@@ -2082,8 +2266,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                               )}
-                              {checkFieldExist("Price Group") && (
+                               )} */}
+
+                              {/* {checkFieldExist("Price Group") && (
                               <th onClick={() => requestSort("price_group")}>
                                 <strong> Price Group </strong>
                                 {sortConfig.some(
@@ -2100,8 +2285,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Month Net Sold") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Month Net Sold") && (
                               <th onClick={() => requestSort("month_net_sold")}>
                                 <strong> Month Net Sold </strong>
                                 {sortConfig.some(
@@ -2118,8 +2304,9 @@ console.log(AllBuilderListExport)
                                     <span>↑↓</span>
                                   )}
                               </th>
-                              )}
-                              {checkFieldExist("Year Net Sold") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Year Net Sold") && (
                               <th onClick={() => requestSort("year_net_sold")}>
                                 <strong> Year Net Sold </strong>
                                 {sortConfig.some(
@@ -2137,13 +2324,15 @@ console.log(AllBuilderListExport)
                                   )}
                               </th>
                               
-                            )}
-                            {checkFieldExist("Action") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Action") && (
                               <th>
                                 {" "}
                                 <strong> Action </strong>
                               </th>
-                            )}
+                            )} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -2171,170 +2360,234 @@ console.log(AllBuilderListExport)
                                   />
                               </td>
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Status") && (
-                                  <td>
-                                    {element.status === 1 && "Active"}
-                                    {element.status === 0 && "Sold Out"}
-                                    {element.status === 2 && "Future"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Reporting") && (
-                                  <td>
-                                    {element.reporting === 1 && "Yes"}
-                                    {element.reporting === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Builder") && (
-                                  <td>{element.builder.name}</td>
-                                )}
-                                {checkFieldExist("Name") && (
-                                  <td>{element.name}</td>
-                                )}
-                                {checkFieldExist("Product Type") && (
-                                  <td>{element.product_type}</td>
-                                )}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.area}</td>
-                                )}
-                                {checkFieldExist("Masterplan") && (
-                                  <td>{element.masterplan_id}</td>
-                                )}
-                                {checkFieldExist("Zipcode") && (
-                                  <td>{element.zipcode}</td>
-                                )}
-                                {checkFieldExist("Total Lots") && (
-                                  <td>{element.totallots}</td>
-                                )}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>{element.lotwidth}</td>
-                                )}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>{element.lotsize}</td>
-                                )}
-                                {checkFieldExist("Zoning") && (
-                                  <td>{element.zoning}</td>
-                                )}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.age === 1 && "Yes"}
-                                    {element.age === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.single === 1 && "Yes"}
-                                    {element.single === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Gated") && (
-                                  <td>
-                                    {element.gated === 1 && "Yes"}
-                                    {element.gated === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Location") && (
-                                  <td>{element.location}</td>
-                                )}
-                                {checkFieldExist("Juridiction") && (
-                                  <td>{element.juridiction}</td>
-                                )}
-                                {checkFieldExist("Latitude") && (
-                                  <td>{element.lat}</td>
-                                )}
-                                {checkFieldExist("Longitude") && (
-                                  <td>{element.lng}</td>
-                                )}
-                                {checkFieldExist("Gas Provider") && (
-                                  <td>{element.gasprovider}</td>
-                                )}
-                                {checkFieldExist("HOA Fee") && (
-                                  <td>{element.hoafee}</td>
-                                )}
-                                {checkFieldExist("Masterplan Fee") && (
-                                  <td>{element.masterplanfee}</td>
-                                )}
-                                {checkFieldExist("Parcel Group") && (
-                                  <td>{element.parcel}</td>
-                                )}
-                                {checkFieldExist("Phone") && (
-                                  <td>{element.phone}</td>
-                                )}
-                                {checkFieldExist("Website") && (
-                                  <td>{element.builder.website}</td>
-                                )}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.dateadded} />
-                                  </td>
-                                )}
-                                {checkFieldExist("__pkSubID") && (
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "status" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.status === 1 && "Active"}
+                                      {element.status === 0 && "Sold Out"}
+                                      {element.status === 2 && "Future"}
+                                    </td>
+                                  }
+                                  {column.id == "reporting" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.reporting === 1 && "Yes"}
+                                      {element.reporting === 0 && "No"} 
+                                    </td>
+                                  }
+                                  {column.id == "builder" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.name}</td>
+                                  }
+                                  {column.id == "name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
+                                  }
+                                  {column.id == "masterplan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
+                                  }
+                                  {column.id == "zipcode" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
+                                  }
+                                  {column.id == "total Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.totallots}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.age === 1 && "Yes"}
+                                      {element.age === 0 && "No"}
+                                    </td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.single === 1 && "Yes"}
+                                      {element.single === 0 && "No"}
+                                    </td>
+                                  }
+                                  {column.id == "gated" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.gated === 1 && "Yes"}
+                                      {element.gated === 0 && "No"}
+                                    </td>
+                                  }
+                                  {column.id == "location" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
+                                  }
+                                  {column.id == "juridiction" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
+                                  }
+                                  {column.id == "latitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
+                                  }
+                                  {column.id == "longitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
+                                  }
+                                  {column.id == "gas Provider" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.gasprovider}</td>
+                                  }
+                                  {column.id == "hOA Fee" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
+                                  }
+                                  {column.id == "masterplan Fee" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
+                                  }
+                                  {column.id == "parcel Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                  }
+                                  {column.id == "phone" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
+                                  }
+                                  {column.id == "website" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.website}</td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
+                                  }
+                                  {column.id == "__pkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
+                                  }
+                                  {column.id == "_fkBuilderID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div>
+                                        <Link
+                                          to={`/subdivisionUpdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  {column.id == "total Closings" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
+                                  }
+                                  {column.id == "total Permits" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
+                                  }
+                                  {column.id == "total Net Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
+                                  }
+                                  {column.id == "months Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.months_open}</td>
+                                  }
+                                  {column.id == "latest Traffic/Sales Data" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.latest_traffic_data} /></td>
+                                  }
+                                  {column.id == "latest Lots Released" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_lots_released}</td>
+                                  }
+                                  {column.id == "latest Standing Inventory" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_standing_inventory}</td>
+                                  }
+                                  {column.id == "unsold Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.unsold_lots}</td>
+                                  }
+                                  {column.id == "avg Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_all}</td>
+                                  }
+                                  {column.id == "avg Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_active}</td>
+                                  }
+                                  {column.id == "avg Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
+                                  }
+                                  {column.id == "avg Base Price Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
+                                  }
+                                  {column.id == "min Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_all}</td>
+                                  }
+                                  {column.id == "max Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_all}</td>
+                                  }
+                                  {column.id == "min Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
+                                  }
+                                  {column.id == "min Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_active}</td>
+                                  }
+                                  {column.id == "max Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
+                                  }
+                                  {column.id == "max Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
+                                  }
+                                  {column.id == "avg Net Traffic Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
+                                  }
+                                  {column.id == "avg Closings Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month Since Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_since_open}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_last_three_months}</td>
+                                  }
+                                  {column.id == "max Week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
+                                  }
+                                  {column.id == "min Week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
+                                  }
+                                  {column.id == "sqft Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
+                                  }
+                                  {column.id == "price Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.price_group}</td>
+                                  }
+                                  {column.id == "month Net Sold" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
+                                  }
+                                  {column.id == "year Net Sold" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
+                                  }
+
+
+                                  </>
+                                ))}
+
+                                {/* {checkFieldExist("__pkSubID") && (
                                   <td>{element.subdivision_code}</td>
-                                )}
-                                {checkFieldExist("_fkBuilderID") && (
-                                  <td>{element.builder.builder_code}</td>
-                                )}
-                                <td>{element.total_closings}</td>
-                                <td>{element.total_permits}</td>
-                                <td>{element.total_net_sales}</td>
-                                <td>{element.months_open}</td>
-                                <td>
-                                  <DateComponent date={element.latest_traffic_data} />
-                                 </td>
-                                <td>{element.latest_lots_released}</td>
-                                <td>{element.latest_standing_inventory}</td>
-                                <td>{element.unsold_lots}</td>
-                                <td>{element.avg_sqft_all}</td>
-                                <td>{element.avg_sqft_active}</td>
-                               <td>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
-                                <td>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
-                                <td>{element.min_sqft_all}</td>
-                                <td>{element.min_sqft_active}</td>
-                                <td>{element.max_sqft_all}</td>
-                                <td>{element.max_sqft_active}</td>
-                                <td>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
-                                <td>{element.min_sqft_active_current}</td>
-                                <td>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
-                                <td>{element.max_sqft_active_current}</td>
-                                <td>{element.avg_net_traffic_per_month_this_year}</td>
-                                <td>{element.avg_net_sales_per_month_this_year}</td>
-                                <td>{element.avg_closings_per_month_this_year}</td>
-                                <td>{element.avg_net_sales_per_month_since_open}</td>
-                                <td>{element.avg_net_sales_per_month_last_three_months}</td>
-                                <td>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
-                                <td>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
-                                <td>{element.sqft_group}</td>
-                                <td>{element.price_group}</td>
-                                <td>{element.month_net_sold}</td>
-                                <td>{element.year_net_sold}</td>
-                                {checkFieldExist("Action") && (
-                                  <td style={{ textAlign: "center" }}>
-                                    <div>
-                                      <Link
-                                        to={`/subdivisionUpdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                )} */}
+                                {/* <td>{element.min_sqft_active_current}</td> */}
+                                {/* <td>{element.max_sqft_active_current}</td> */}
                               </tr>
                             ))
                           ) : (

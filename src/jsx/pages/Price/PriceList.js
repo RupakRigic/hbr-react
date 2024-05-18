@@ -249,6 +249,7 @@ const handleDownloadExcel = () => {
       const data = await AdminPriceService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {

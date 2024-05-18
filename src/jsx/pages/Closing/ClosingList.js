@@ -87,7 +87,6 @@ const ClosingList = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
-  console.log(columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
 
