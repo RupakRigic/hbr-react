@@ -2234,7 +2234,7 @@ const handleSortClose = () => setShowSort(false);
                                 />
                                 <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
                                   {/* {col.key}  */}
-                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                  <span>{excelcolumns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
                                     
                                 </label>
                             </div>
