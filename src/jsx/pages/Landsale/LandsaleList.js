@@ -24,7 +24,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 const LandsaleList = () => {
-
+  const [excelLoading, setExcelLoading] = useState(true);
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -52,8 +52,12 @@ const LandsaleList = () => {
   const [LandsaleList, setLandsaleList] = useState([]);
   const [landSaleListCount, setlandSaleListCount] = useState("");
   const [TotalLandsaleListCount, setTotallandSaleListCount] = useState("");
-
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   const [exportmodelshow, setExportModelShow] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -134,7 +138,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     { label: "Notes", key: "Notes" },
     { label: "Price", key: "Price" },
   ];
-  const sortColumns = [
+  const exportColumns = [
     { label: "Builder Name", key: "Builder_Name" },
     { label: "Subdivision Name", key: "Subdivision_Name" },
     { label: "Seller", key: "Seller" },
@@ -149,12 +153,24 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
 
 
   ];
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
     console.log("load upadate:  ", updatedColumns);
     setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
   const handleDownloadExcel = () => {
@@ -206,6 +222,9 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Land_sales.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
   
 
@@ -349,6 +368,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
       allData = allData.concat(pageData.data);
     }
     setAllLandsaleListExport(allData);
+    setExcelLoading(false);
   }
 
   const handleDelete = async (e) => {
@@ -660,12 +680,12 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
-                      <button
-                        onClick={() => setExportModelShow(true)}
-                        className="btn btn-primary btn-sm me-1"
-                      >
-                        {" "}
-                        <i class="fas fa-file-excel"></i>
+                      <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                        {excelLoading ? 
+                          <div class="spinner-border spinner-border-sm" role="status" /> 
+                          :
+                          <i class="fas fa-file-excel" />
+                        }
                       </button>
 
                       <button
@@ -1539,18 +1559,30 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
             <button
               className="btn-close"
               aria-label="Close"
-              onClick={() => setExportModelShow(false)}
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
             ></button>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <ul className="list-unstyled">
-                {sortColumns.map((col) => (
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
+                      Select All
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
                   <li key={col.label}>
                     <label className="form-check">
                       <input
                         type="checkbox"
                         className="form-check-input"
+                        checked={selectedColumns.includes(col.label)}
                         onChange={() => handleColumnToggle(col.label)}
                       />
                       {col.label}

@@ -148,7 +148,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <form onSubmit={handleSubmit}>
                                         <div className="row">
                                             <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Subdivision<span className="text-danger">*</span></label>
+                                                <label className="form-label">Subdivision</label>
                                                 <Form.Group controlId="tournamentList">
 
                                                     <Select
@@ -163,37 +163,37 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Week Ending <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Week Ending</label>
                                                 <input type="date" defaultValue={TrafficsaleList.weekending} name='weekending' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic</label>
                                                 <input type="number" defaultValue={TrafficsaleList.weeklytraffic} name='weeklytraffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales</label>
                                                 <input type="number" defaultValue={TrafficsaleList.grosssales} name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations</label>
                                                 <input type="number" defaultValue={TrafficsaleList.cancelations} name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales</label>
                                                 <input type="number" defaultValue={TrafficsaleList.netsales} name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released</label>
                                                 <input type="number" defaultValue={TrafficsaleList.lotreleased} name='lotreleased' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory</label>
                                                 <input type="number" defaultValue={TrafficsaleList.unsoldinventory} name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">

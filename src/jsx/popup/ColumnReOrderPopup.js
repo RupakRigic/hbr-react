@@ -27,7 +27,7 @@ const ColumnReOrderPopup = ({ open, handleCloseDialog, handleSaveDialog, dragged
                                                         {...provided.dragHandleProps}
                                                     >
                                                         <TableCell>
-                                                            {column.label}
+                                                            {column.id == "bath Rooms" ? "Bathrooms" : column.id == "squre Footage" ? "Square Footage" : column.label}
                                                         </TableCell>
                                                     </TableRow>
                                                 )}

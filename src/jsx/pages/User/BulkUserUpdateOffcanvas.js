@@ -142,7 +142,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Name <span className="text-danger">*</span>
+                          Name
                         </label>
                         <input
                           type="text"
@@ -172,7 +172,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
 
                       <div className="col-xl-6 mb-3">
                         <label className="form-label">
-                          Role<span className="text-danger">*</span>
+                          Role
                         </label>
                         <Form.Group controlId="tournamentList">
                         <Select
@@ -186,7 +186,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                       </div>
                       <div className="col-xl-6 mb-3">
                         <label className="form-label">
-                          Builder<span className="text-danger">*</span>
+                          Builder
                         </label>
                         <Form.Group controlId="tournamentList">
                           <Select

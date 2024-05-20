@@ -21,6 +21,13 @@ import BulkPriceUpdate from "./BulkPriceUpdate";
 
 
 const PriceList = () => {
+  const [excelLoading, setExcelLoading] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   
   const HandleSortDetailClick = (e) =>
     {
@@ -32,6 +39,25 @@ const PriceList = () => {
       } else {
           setSelectedCheckboxes(prev => prev.filter(item => item !== key));
       }
+  };
+
+  const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${month}/${day}/${year}`;
+  };
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
   };
   
   const handleRemoveSelected = () => {
@@ -50,7 +76,8 @@ const PriceList = () => {
     ? selectedColumns.filter((col) => col !== column)
     : [...selectedColumns, column];
     console.log(updatedColumns);
-  setSelectedColumns(updatedColumns);  
+  setSelectedColumns(updatedColumns); 
+  setSelectAll(updatedColumns.length === exportColumns.length); 
 };
 
 const exportColumns = [
@@ -58,7 +85,7 @@ const exportColumns = [
   { label: 'Builder Name', key: 'BuilderName' }, 
   { label: 'Subdivision Name', key: 'SubdivisionName' },
   { label: 'Product Name', key: 'name' },
-  { label: 'Squre Footage', key: 'sqft' },
+  { label: 'Square Footage', key: 'sqft' },
   { label: 'Stories', key: 'stories' },
   { label: 'Bedrooms', key: 'bedroom' },
   { label: 'Bathrooms', key: 'bathrooms' },
@@ -82,7 +109,7 @@ const headers = [
   { label: 'Builder Name', key: 'BuilderName' }, 
   { label: 'Subdivision Name', key: 'SubdivisionName' },
   { label: 'Product Name', key: 'name' },
-  { label: 'Squre Footage', key: 'sqft' },
+  { label: 'Square Footage', key: 'sqft' },
   { label: 'Stories', key: 'stories' },
   { label: 'Bedrooms', key: 'bedroom' },
   { label: 'Bathrooms', key: 'bathrooms' },
@@ -113,19 +140,19 @@ const handleDownloadExcel = () => {
   } else {
     tableHeaders = headers.map((c) => c.label);
   }
-  console.log(AllPriceListExport);
+  console.log("AllPriceListExport",AllPriceListExport);
 
   const tableData = AllPriceListExport.map((row) => {
     return tableHeaders.map((header) => {
       switch (header) {
         case "Date":
-          return row.created_at || '';
+          return row.created_at ? formatDate(row.created_at) : "" || '';
         case "Builder Name":
           return row.product.subdivision &&
-           row.product.subdivision.builder?.name; 
-          case "Subdivision Name":
-            return row.product.subdivision &&
-            row.product.subdivision?.name;
+          row.product.subdivision.builder?.name; 
+        case "Subdivision Name":
+          return row.product.subdivision &&
+          row.product.subdivision?.name;
         case "Product Name":
           return row.name || '';
         case "Square Footage":
@@ -185,11 +212,14 @@ const handleDownloadExcel = () => {
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
   saveAs(data, 'Price_List.xlsx');
+
+  resetSelection();
+  setExportModelShow(false);
 };
 
 
 
-  const [selectedColumns, setSelectedColumns] = useState([]);
+  // const [selectedColumns, setSelectedColumns] = useState([]);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [priceList, setPriceList] = useState([]);
@@ -383,6 +413,7 @@ const handleDownloadExcel = () => {
       allData = allData.concat(pageData.data);
     }
     setAllPriceListExport(allData);
+    setExcelLoading(false);
   }
   const handleDelete = async (e) => {
     try {
@@ -640,7 +671,13 @@ const toCamelCase = (str) => {
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
-                    <button onClick={() => setExportModelShow(true)}className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button onClick={() => !excelLoading ? setExportModelShow(true) : ""}className="btn btn-primary btn-sm me-1">
+                      {excelLoading ? 
+                        <div class="spinner-border spinner-border-sm" role="status" /> 
+                        :
+                        <i class="fas fa-file-excel" />
+                      }
+                    </button>
                       <button
                         className="btn btn-primary btn-sm me-1"
                         onClick={() => setManageAccessOffcanvas(true)}
@@ -792,7 +829,7 @@ const toCamelCase = (str) => {
                                 (column.id == "__pkPriceID" ? "id" : 
                                 (column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id)))))))))) : ""}>
                                 <strong>
-                                  {column.label}
+                                  {column.id == "squre Footage" ? "Square Footage" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === toCamelCase(column.id)
                                     ) ? (
@@ -1378,21 +1415,33 @@ const toCamelCase = (str) => {
           <button
             className="btn-close"
             aria-label="Close"
-            onClick={() => setExportModelShow(false)}
+            onClick={() => { resetSelection(); setExportModelShow(false); }}
           ></button>
           </Modal.Header>
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
+              <li>
+                <label className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={selectAll}
+                    onChange={handleSelectAllToggle}
+                  />
+                    Select All
+                </label>
+              </li>
             {exportColumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input
                   type="checkbox"
                   className='form-check-input'
+                  checked={selectedColumns.includes(col.label)}
                   onChange={() => handleColumnToggle(col.label)}
                 />
-                {col.label}
+                {col.label == "Squre Footage" ? "Square Footage" : col.label}
               </label>
               </li>
             ))}
@@ -1462,7 +1511,7 @@ const toCamelCase = (str) => {
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name}
+                            {element.field_name == "Squre Footage" ? "Square Footage" : element.field_name}
                           </label>
                         </div>
                       </div>

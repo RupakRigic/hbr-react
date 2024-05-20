@@ -155,19 +155,19 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller</label>
                                     <input type="text" name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Buyer <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Buyer</label>
                                     <input type="text" name='buyer' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput4" className="form-label">Location <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput4" className="form-label">Location</label>
                                     <input type="text" name='location' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Date <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Date</label>
                                     <input type="date" name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 

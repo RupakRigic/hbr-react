@@ -22,6 +22,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 
 const PermitList = () => {
+  const [excelLoading, setExcelLoading] = useState(true);
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -119,7 +120,12 @@ const PermitList = () => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
 }, [sortConfig]);
 const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   const [exportmodelshow, setExportModelShow] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -199,7 +205,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
   ];
-  const excelcolumns = [
+  const exportColumns = [
     { label: "Date", key: "Date" },
     { label: "Builder Name", key: "BuilderName" },
     { label: "Subdivision Name", key: "SubdivisionName" },
@@ -226,12 +232,24 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
   ];
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
     console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
   };  
   const handleDownloadExcel = () => {
     setExportModelShow(false);
@@ -319,6 +337,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Permit.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
   
 
@@ -451,6 +472,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       allData = allData.concat(pageData.data);
     }
     setAllPermitListExport(allData);
+    setExcelLoading(false);
   }
   console.log(AllPermitListExport);
   const handleDelete = async (e) => {
@@ -731,12 +753,12 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
-                      <button
-                        onClick={() => setExportModelShow(true)}
-                        className="btn btn-primary btn-sm me-1"
-                      >
-                        {" "}
-                        <i class="fas fa-file-excel"></i>
+                      <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                        {excelLoading ? 
+                          <div class="spinner-border spinner-border-sm" role="status" /> 
+                          :
+                          <i class="fas fa-file-excel" />
+                        }
                       </button>
 
                       <button
@@ -2061,7 +2083,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                               </select>                               
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY<span className="text-danger">*</span></label>
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
                                     <select className="default-select form-control" name="single" onChange={HandleFilter} >
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
@@ -2099,18 +2121,30 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
             <button
               className="btn-close"
               aria-label="Close"
-              onClick={() => setExportModelShow(false)}
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
             ></button>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <ul className="list-unstyled">
-                {columns.map((col) => (
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
+                      Select All
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
                   <li key={col.label}>
                     <label className="form-check">
                       <input
                         type="checkbox"
                         className="form-check-input"
+                        checked={selectedColumns.includes(col.label)}
                         onChange={() => handleColumnToggle(col.label)}
                       />
                       {col.label}
