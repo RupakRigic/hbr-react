@@ -141,7 +141,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <div className="row">
                       <div className="col-xl-6 mb-3">
                         <label className="form-label">
-                          Subdivision<span className="text-danger">*</span>
+                          Subdivision
                         </label>
                         <Form.Group controlId="tournamentList">
                           <Select
@@ -159,7 +159,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Product Code <span className="text-danger">*</span>
+                          Product Code
                         </label>
                         <input
                           type="text"
@@ -176,7 +176,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Name <span className="text-danger">*</span>
+                          Name
                         </label>
                         <input
                           type="text"
@@ -209,7 +209,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Status <span className="text-danger">*</span>
+                          Status
                         </label>
                         <select
                           className="default-select form-control"
@@ -229,7 +229,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Garage <span className="text-danger">*</span>
+                          Garage
                         </label>
                         <input
                           type="number"
@@ -246,7 +246,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           {" "}
-                          Price Change <span className="text-danger">*</span>
+                          Price Change
                         </label>
                         <input
                           type="number"
@@ -263,7 +263,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           htmlFor="exampleFormControlInput10"
                           className="form-label"
                         >
-                          Bathroom<span className="text-danger">*</span>
+                          Bathroom
                         </label>
                         <input
                           type="number"
@@ -279,7 +279,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           htmlFor="exampleFormControlInput11"
                           className="form-label"
                         >
-                          Recent Price<span className="text-danger">*</span>
+                          Recent Price
                         </label>
                         <input
                           type="number"
@@ -295,7 +295,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           htmlFor="exampleFormControlInput12"
                           className="form-label"
                         >
-                          Bedroom<span className="text-danger">*</span>
+                          Bedroom
                         </label>
                         <input
                           type="number"
@@ -313,7 +313,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           className="form-label"
                         >
                           Recent Price SQFT
-                          <span className="text-danger">*</span>
+                          
                         </label>
                         <input
                           type="number"
@@ -329,7 +329,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           htmlFor="exampleFormControlInput17"
                           className="form-label"
                         >
-                          SQFT<span className="text-danger">*</span>
+                          SQFT
                         </label>
                         <input
                           type="number"

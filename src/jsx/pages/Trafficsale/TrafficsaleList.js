@@ -24,7 +24,7 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 
 const TrafficsaleList = () => {
-
+  const [excelLoading, setExcelLoading] = useState(true);
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -137,7 +137,12 @@ useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
 }, [sortConfig]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   const [AllTrafficListExport, setAllTrafficistExport] = useState([]);
 
   const [exportmodelshow, setExportModelShow] = useState(false)
@@ -205,7 +210,7 @@ useEffect(() => {
     { label: 'Fk Sub id', key: 'fkSubID' },
      
   ];
-  const excelcolumns = [
+  const exportColumns = [
     { label: 'Week Ending', key: 'WeekEnding' },
     { label: 'Builder Name', key: 'BuilderName' }, 
     { label: 'Subdivision Name', key: 'SubdivisionName' },
@@ -228,12 +233,24 @@ useEffect(() => {
     { label: 'Pk Record id', key: 'pkRecordID' },
     { label: 'Fk Sub id', key: 'fkSubID' }, 
   ];
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
       console.log(updatedColumns);
     setSelectedColumns(updatedColumns);  
+    setSelectAll(updatedColumns.length === exportColumns.length); 
   };
   console.log('trafficsaleList : ',trafficsaleList);
 
@@ -315,6 +332,9 @@ useEffect(() => {
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Weekly_Traffic_Sales_List.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
   
 
@@ -468,6 +488,7 @@ useEffect(() => {
       allData = allData.concat(pageData.data);
     }
     setAllTrafficistExport(allData);
+    setExcelLoading(false);
   }
   const handleDelete = async (e) => {
     try {
@@ -739,7 +760,13 @@ const toCamelCase = (str) => {
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
-                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> 
+                      {excelLoading ? 
+                        <div class="spinner-border spinner-border-sm" role="status" /> 
+                        :
+                        <i class="fas fa-file-excel" />
+                      }
+                    </button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -1701,18 +1728,30 @@ const toCamelCase = (str) => {
           <button
             className="btn-close"
             aria-label="Close"
-            onClick={() => setExportModelShow(false)}
+            onClick={() => { resetSelection(); setExportModelShow(false); }}
           ></button>
           </Modal.Header>
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
-            {columns.map((col) => (
+              <li>
+                <label className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={selectAll}
+                    onChange={handleSelectAllToggle}
+                  />
+                    Select All
+                </label>
+              </li>
+            {exportColumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input
                   type="checkbox"
                   className='form-check-input'
+                  checked={selectedColumns.includes(col.label)}
                   onChange={() => handleColumnToggle(col.label)}
                 />
                 {col.label}

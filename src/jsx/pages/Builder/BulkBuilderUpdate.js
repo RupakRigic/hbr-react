@@ -184,7 +184,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <form onSubmit={handleSubmit}>
                                         <div className="row">
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code</label>
                                                 <input type="text" name="code"
 
                                                     defaultValue={Builder.builder_code}
@@ -192,7 +192,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                                     className="form-control" id="exampleFormControlInput1" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Name <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Name</label>
                                                 <input type="text" name='name' defaultValue={Builder.name} className="form-control" id="exampleFormControlInput2" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
@@ -239,7 +239,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Company Type <span className="text-danger">*</span></label>
+                                                <label className="form-label">Company Type</label>
                                                 {/* <select className="default-select form-control" onChange={handleCompanyType} >
 
                                                     <option value="public">Public</option>

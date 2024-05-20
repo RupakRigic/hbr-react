@@ -31,7 +31,7 @@ import Select from "react-select";
 
 
 const ProductList = () => {
-
+  const [excelLoading, setExcelLoading] = useState(true);
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -72,7 +72,12 @@ const ProductList = () => {
 
   const [BuilderList, setBuilderList] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]); 
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   
 
@@ -103,7 +108,7 @@ const ProductList = () => {
     { label: 'Price Change Since Open', key: 'productid' },
     { label: 'Price Change Last 12 Months', key: 'fksubid' }, 
   ];
-  const excelcolumns = [
+  const exportColumns = [
     { label: 'Status', key: 'status' },
     { label: 'Builder Name', key: 'builderName' },
     { label: 'Subdivision Name', key: 'subdivisionName' },
@@ -128,12 +133,24 @@ const ProductList = () => {
     { label: 'Product ID', key: 'productid' },
     { label: 'Fk Sub ID', key: 'fksubid' }, 
   ];
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
       console.log(updatedColumns);
     setSelectedColumns(updatedColumns);  
+    setSelectAll(updatedColumns.length === exportColumns.length);
   };
   console.log('data',productList);
   const handleDownloadExcel = () => {
@@ -243,6 +260,9 @@ const ProductList = () => {
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Product.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
   
 
@@ -313,7 +333,6 @@ const ProductList = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
-  console.log("columns",columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
   useEffect(() => {
@@ -384,6 +403,7 @@ const ProductList = () => {
       allData = allData.concat(pageData.data);
     }
     setAllBuilderExport(allData);
+    setExcelLoading(false);
   }
 
 
@@ -794,7 +814,13 @@ const HandleFilterForm = (e) =>
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
-                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1"> 
+                      {excelLoading ? 
+                        <div class="spinner-border spinner-border-sm" role="status" /> 
+                        :
+                        <i class="fas fa-file-excel" />
+                      }
+                    </button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"
@@ -943,7 +969,7 @@ const HandleFilterForm = (e) =>
                               (column.id == "price Change Since Open" ? "price_change_since_open" : 
                               (column.id == "price Change Last 12 Months" ? "subdivisionCode" : toCamelCase(column.id)))))))))))))))) : ""}>
                                 <strong>
-                                  {column.label}
+                                  {column.id == "bath Rooms" ? "Bathrooms" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === toCamelCase(column.id)
                                     ) ? (
@@ -1832,7 +1858,7 @@ const HandleFilterForm = (e) =>
                                         <option value="0">No</option>
                               </select>                                </div>
                               <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY<span className="text-danger">*</span></label>
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
                                     <select className="default-select form-control" name="single" onChange={HandleFilter} >
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
@@ -2154,7 +2180,7 @@ const HandleFilterForm = (e) =>
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name}
+                            {element.field_name == "Bath Rooms" ? "Bathrooms" : element.field_name}
                           </label>
                         </div>
                       </div>
@@ -2176,21 +2202,33 @@ const HandleFilterForm = (e) =>
           <button
             className="btn-close"
             aria-label="Close"
-            onClick={() => setExportModelShow(false)}
+            onClick={() => { resetSelection(); setExportModelShow(false); }}
           ></button>
           </Modal.Header>
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
-            {columns.map((col) => (
+              <li>
+                <label className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={selectAll}
+                    onChange={handleSelectAllToggle}
+                  />
+                    Select All
+                </label>
+              </li>
+            {exportColumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input
                   type="checkbox"
                   className='form-check-input'
+                  checked={selectedColumns.includes(col.label)}
                   onChange={() => handleColumnToggle(col.label)}
                 />
-                {col.label}
+                {col.label == "Bath Rooms" ? "Bathrooms" : col.label}
               </label>
               </li>
             ))}

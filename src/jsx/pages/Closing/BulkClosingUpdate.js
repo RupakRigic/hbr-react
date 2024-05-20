@@ -133,7 +133,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Subdivision<span className="text-danger">*</span></label>
+                                    <label className="form-label">Subdivision</label>
                                     <Form.Group controlId="tournamentList">
 
                                         <Form.Select
@@ -151,11 +151,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller Leagal <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller Leagal</label>
                                     <input type="text" name='sellerleagal' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Address <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Address</label>
                                     <textarea rows="2" name='address' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-6 mb-3">
@@ -170,18 +170,18 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Closing Date <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Closing Date</label>
                                     <input type="date" name='closingdate' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Closing Price <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Closing Price</label>
                                     <input type="number" name='closingprice' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
 
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput10" className="form-label">Loan Amount<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput10" className="form-label">Loan Amount</label>
                                     <input type="number" name='loanamount' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
 

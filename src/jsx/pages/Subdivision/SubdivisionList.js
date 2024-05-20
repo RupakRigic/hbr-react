@@ -31,7 +31,7 @@ import Select from "react-select";
 
 
 const SubdivisionList = () => {
-
+  const [excelLoading, setExcelLoading] = useState(true);
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
         setSelectedCheckboxes(prev => [...prev, key]);
@@ -67,7 +67,12 @@ const handleSortClose = () => setShowSort(false);
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [exportmodelshow, setExportModelShow] = useState(false)
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 25;
@@ -173,7 +178,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Month Net Sold', key: 'month_net_sold' },
     { label: 'Year Net Sold', key: 'year_net_sold' }
   ];
-  const excelcolumns = [
+  const exportColumns = [
     { label: 'Status', key: 'is_active' },
     { label: 'Reporting', key: 'reporting' },
     { label: 'Builder', key: 'builder_name' },
@@ -233,6 +238,16 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Year Net Sold', key: 'year_net_sold' },
     { label: 'Date Added', key: 'created_at' }
   ];
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
  
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
@@ -240,6 +255,7 @@ const handleSortClose = () => setShowSort(false);
       : [...selectedColumns, column];
       console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
   //   newdata.map((nw, i) =>
   //   [nw === "Name" ? row.firstname : '', nw === "Surname" ? row.lastname : '', nw === "Nickname" ? row.nickname : '', nw === "ZipCode" ? row.zipcode : '', nw === "City" ? row.city : '', nw === "Registrations with check-in" ? row.with : '', nw === "Registrations without check-in" ? row.without : '', nw === "Cumulated Buy-in bounty Re-entries" ? row.reentries : '', nw === "Cumulated rakes" ? row.rakes : '']
   // )
@@ -342,6 +358,9 @@ const handleSortClose = () => setShowSort(false);
             break;
           case "Website":
             mappedRow[header] = row.builder ? row.builder.website : '';
+            break;
+          case "Date Added":
+            mappedRow[header] = row.dateadded;
             break;
           case "FK Builder Id":
             mappedRow[header] = row.builder ? row.builder.builder_code : '';
@@ -462,6 +481,9 @@ const handleSortClose = () => setShowSort(false);
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Sub Division List.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
   
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
@@ -587,6 +609,7 @@ console.log(AllBuilderListExport)
       allData = allData.concat(pageData.data);
     }
     setAllBuilderExport(allData);
+    setExcelLoading(false);
   }
 
 
@@ -1013,7 +1036,13 @@ console.log(AllBuilderListExport)
                           >
                             <i class="fa-solid fa-sort"></i>
                           </Button>
-                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
+                    <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1"> 
+                      {excelLoading ? 
+                        <div class="spinner-border spinner-border-sm" role="status" /> 
+                        :
+                        <i class="fas fa-file-excel" />
+                      }
+                    </button>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                    
                     <Link
@@ -3812,18 +3841,30 @@ console.log(AllBuilderListExport)
           <button
             className="btn-close"
             aria-label="Close"
-            onClick={() => setExportModelShow(false)}
+            onClick={() => { resetSelection(); setExportModelShow(false); }}
           ></button>
           </Modal.Header>
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
-            {columns.map((col) => (
+              <li>
+                <label className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={selectAll}
+                    onChange={handleSelectAllToggle}
+                  />
+                    Select All
+                </label>
+              </li>
+            {exportColumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input
                   type="checkbox"
                   className='form-check-input'
+                  checked={selectedColumns.includes(col.label)}
                   onChange={() => handleColumnToggle(col.label)}
                 />
                 {col.label}

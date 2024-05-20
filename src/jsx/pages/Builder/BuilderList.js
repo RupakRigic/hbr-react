@@ -28,7 +28,7 @@ import BulkBuilderUpdate from "./BulkBuilderUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 const BuilderTable = () => {
-
+  const [excelLoading, setExcelLoading] = useState(true);
 
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
@@ -106,7 +106,12 @@ const handleSortClose = () => setShowSort(false);
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "builders" });
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
   const [exportmodelshow, setExportModelShow] = useState(false);
   const [columnSeq, setcolumnSeq] = useState(false);
   const [calculationField, setCalculationField] = useState(false);
@@ -169,7 +174,7 @@ const handleSortClose = () => setShowSort(false);
     { label: "Date Of First Closing", key: "date_of_first_closing" },
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
-  const excelcolumns = [
+  const exportColumns = [
     { label: "Logo", key: "Logo" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
@@ -216,12 +221,23 @@ const handleSortClose = () => setShowSort(false);
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
 
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
     console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
   const handleDownloadExcel = () => {
@@ -355,6 +371,9 @@ const handleSortClose = () => setShowSort(false);
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Builders.xlsx');
+
+    resetSelection();
+    setExportModelShow(false);
   };
 
   const [BuilderDetails, SetBuilderDetails] = useState({
@@ -446,6 +465,7 @@ const handleSortClose = () => setShowSort(false);
       allData = allData.concat(pageData.data);
     }
     setAllBuilderExport(allData);
+    setExcelLoading(false);
   }
   
   function prePage() {
@@ -892,12 +912,12 @@ const handleSortClose = () => setShowSort(false);
                           >
                             <i class="fa-solid fa-sort"></i>
                           </Button>
-                          <button
-                            onClick={() => setExportModelShow(true)}
-                            className="btn btn-primary btn-sm me-1"
-                          >
-                            {" "}
-                            <i class="fas fa-file-excel"></i>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                            {excelLoading ? 
+                              <div class="spinner-border spinner-border-sm" role="status" /> 
+                              :
+                              <i class="fas fa-file-excel" />
+                            }
                           </button>
                           <button
                             className="btn btn-primary btn-sm me-1"
@@ -2234,7 +2254,7 @@ const handleSortClose = () => setShowSort(false);
                                 />
                                 <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
                                   {/* {col.key}  */}
-                                  <span>{excelcolumns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                  <span>{exportColumns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
                                     
                                 </label>
                             </div>
@@ -2725,18 +2745,30 @@ const handleSortClose = () => setShowSort(false);
             <button
               className="btn-close"
               aria-label="Close"
-              onClick={() => setExportModelShow(false)}
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
             ></button>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <ul className="list-unstyled">
-                {columns.map((col) => (
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
+                      Select All
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
                   <li key={col.label}>
                     <label className="form-check">
                       <input
                         type="checkbox"
                         className="form-check-input"
+                        checked={selectedColumns.includes(col.label)}
                         onChange={() => handleColumnToggle(col.label)}
                       />
                       {col.label}

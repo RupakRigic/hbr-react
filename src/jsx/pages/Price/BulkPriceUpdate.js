@@ -101,7 +101,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                         <div className="row">
                         <div className="col-xl-6 mb-3">
                             <label className="form-label">
-                            Product<span className="text-danger">*</span>
+                            Product
                             </label>
                             <Form.Group controlId="tournamentList">
                             <Form.Select
@@ -129,7 +129,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                             className="form-label"
                             >
                             {" "}
-                            Base Price: <span className="text-danger">*</span>
+                            Base Price:
                             </label>
                             <input
                             type="number"
