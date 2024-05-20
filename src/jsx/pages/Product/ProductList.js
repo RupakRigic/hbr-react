@@ -26,6 +26,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkProductUpdate from "./BulkProductUpdate";
+import Select from "react-select";
 
 
 
@@ -247,7 +248,7 @@ const ProductList = () => {
 
   const [filterQuery, setFilterQuery] = useState({
     status:"",
-    builder_name:"",
+    subdivision_name:"",
     name:"",
     sqft:"",
     stories:"",
@@ -526,6 +527,12 @@ const ProductList = () => {
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       [name]: value,
+    }));
+  };
+  const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      subdivision_name: selectedOption.name,
     }));
   };
 
@@ -1703,18 +1710,21 @@ const HandleFilterForm = (e) =>
                                   </select>
                               </div>
                               <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                  BUILDER NAME:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 SUBDIVISION NAME:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input name="subdivision_name" className="form-control" value={filterQuery.subdivision_name} onChange={HandleFilter}/>
+                                <Form.Group controlId="tournamentList">
+                          <Select
+                            options={BuilderList}
+                            onChange={HandleSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={BuilderList.name}
+                            name="subdivision_name"
+                          ></Select>
+                        </Form.Group>  
+
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
@@ -1763,7 +1773,7 @@ const HandleFilterForm = (e) =>
                                 CURRENT BASE PRICE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="current_base_price" value={filterQuery.current_base_price} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="text" value={filterQuery.current_base_price} name="current_base_price" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">

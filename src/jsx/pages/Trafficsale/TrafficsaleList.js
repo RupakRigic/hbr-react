@@ -10,7 +10,6 @@ import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
-import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
@@ -20,7 +19,9 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkTrafficUpdate from "./BulkTrafficUpdate";
-
+import Select from "react-select";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 
 const TrafficsaleList = () => {
 
@@ -41,6 +42,69 @@ const TrafficsaleList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+
+  const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      builder_name: selectedOption.name,
+    }));
+  };
+  const HandleSubSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      subdivision_name: selectedOption.name,
+    }));
+  };
+
+  
+  
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        setBuilderDropDown(data);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
+
+  console.log(SubdivisionList);
+
+  const getSubdivisionList = async () => {
+
+    try {
+
+        let response = await AdminSubdevisionService.index()
+        let responseData = await response.json()
+
+        SetSubdivisionList(responseData.data)
+
+    } catch (error) {
+        if (error.name === 'HTTPError') {
+            const errorJson = await error.response.json();
+
+            setError(errorJson.message)
+        }
+    }
+}
+useEffect(() => {
+    if (localStorage.getItem('usertoken')) {
+
+        getSubdivisionList();
+
+    }
+    else {
+        navigate('/');
+    }
+
+  
+}, [])
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkTrafficsale = useRef();
   const handleEditCheckboxChange = (e, userId) => {
@@ -1471,25 +1535,36 @@ const toCamelCase = (str) => {
 
                               </div>
                               <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                  BUILDER NAME:{" "}
+                              <label className="form-label">
+                                BUILDER NAME:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <input
-                                    className=" form-control"
-                                    value={filterQuery.builder_name}
-                                    name="builder_name"
-                                    onChange={HandleFilter}
-                                  />
-                                    
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={builderDropDown}
+                            onChange={HandleSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={builderDropDown.name}
+                            name="builder_name"
+                          ></Select>
+                        </Form.Group>
                               </div>
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">
+                              <label className="form-label">
                                 SUBDIVISION NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="subdivision_name" className="form-control" value={filterQuery.subdivision_name} onChange={HandleFilter}/>
-                              </div>
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={SubdivisionList}
+                            onChange={HandleSubSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={SubdivisionList.name}
+                            name="subdivision_name"
+                          ></Select>
+                        </Form.Group>                                    </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 WEEKLY TRAFFIC :{" "}
