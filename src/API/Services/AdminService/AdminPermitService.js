@@ -11,6 +11,6 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/permit/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/permit/export`),
     import: (userData) => clientAuth.post(`admin/permit/import`, { json: userData }),
-
+    bulkupdate: (id, userData) => clientAuth.put(`admin/permit/bulkupdate/${id}`, { json: userData }),
 
 };

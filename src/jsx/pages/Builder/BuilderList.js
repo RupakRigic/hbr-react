@@ -24,6 +24,8 @@ import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import multiColumnSort from "multi-column-sort";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import BulkBuilderUpdate from "./BulkBuilderUpdate";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 const BuilderTable = () => {
 
@@ -36,6 +38,16 @@ const BuilderTable = () => {
     }
 };
 
+const [selectedLandSales, setSelectedLandSales] = useState([]);
+const bulkBuilder = useRef();
+
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
+};
 const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
     setSortConfig(newSortConfig);
@@ -71,6 +83,7 @@ const handleSortClose = () => setShowSort(false);
   const handleClose = () => setShow(false);
 
   const [BuilderList, setBuilderList] = useState([]);
+  console.log("BuilderList",BuilderList);
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [BuilderListCount, setBuilderListCount] = useState("");
@@ -97,6 +110,12 @@ const handleSortClose = () => setShowSort(false);
   const [exportmodelshow, setExportModelShow] = useState(false);
   const [columnSeq, setcolumnSeq] = useState(false);
   const [calculationField, setCalculationField] = useState(false);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  console.log("columns",columns);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+
   useEffect(() => {
     console.log(fieldList);
   }, [fieldList]);
@@ -150,7 +169,7 @@ const handleSortClose = () => setShowSort(false);
     { label: "Date Of First Closing", key: "date_of_first_closing" },
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
-  const columns = [
+  const excelcolumns = [
     { label: "Logo", key: "Logo" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
@@ -608,6 +627,7 @@ const handleSortClose = () => setShowSort(false);
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -755,6 +775,53 @@ const handleSortClose = () => setShowSort(false);
     // Update the state with the new order of items
     setcolSeq(newItems);
   };
+
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+  
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+  
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+  
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+  
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+          return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+    .join('');
+  }
+  
   return (
     <>
       {/* <MainPagetitle
@@ -791,6 +858,14 @@ const handleSortClose = () => setShowSort(false);
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
 
                     <div className="mt-3">
@@ -799,6 +874,9 @@ const handleSortClose = () => setShowSort(false);
                         ""
                       ) : (
                         <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                            Set Columns Order
+                          </button>
                           {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                           {/* <button
                             onClick={() => setcolumnSeq(true)}
@@ -953,6 +1031,14 @@ const handleSortClose = () => setShowSort(false);
                           >
                             + Add Builder
                           </Link>
+                          <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkBuilder.current.showEmployeModal()}
+                      >
+                        Bulk Edit
+                      </Link>
                         </div>
                       )}
                     </div>
@@ -1040,15 +1126,61 @@ const handleSortClose = () => setShowSort(false);
                         >
                           <thead>
                             <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === BuilderList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                               <th>
                                 <strong>No.</strong>
                               </th>
-                              {checkFieldExist("logo") && (
+                              {columns.map((column) => (
+                                <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "logo") ? "" : requestSort(
+                                  column.id == "active Communities" ? "active_communities" : 
+                                  column.id == "closing This Year" ? "closing_this_year" : 
+                                  column.id == "permits This Year" ? "permits_this_year" : 
+                                  column.id == "net Sales this year" ? "net_sales_this_year" : 
+                                  column.id == "current Avg Base Price" ? "current_avg_base_Price" : 
+                                  column.id == "median Closing Price This Year" ? "median_closing_price_this_year" : 
+                                  column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" : 
+                                  column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                  column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                  column.id == "total Closings" ? "total_closings" : 
+                                  column.id == "total Permits" ? "total_permits" : 
+                                  column.id == "total Net Sales" ? "total_net_sales" : 
+                                  column.id == "date Of First Closing" ? "date_of_first_closing" : 
+                                  column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))}>
+                                  <strong>
+                                    {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
+                                    {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>)
+                                  }
+                                  </strong>
+                                </th>
+                              ))}
+                              {/* {checkFieldExist("logo") && (
                                 <th>
                                   <strong>Logo</strong>
                                 </th>
-                              )}
-                              {checkFieldExist("website") && (
+                              )} */}
+
+                              {/* {checkFieldExist("website") && (
                                 <th onClick={() => requestSort("website")}>
                                   <strong>Website</strong>
                                   {sortConfig.some(
@@ -1065,8 +1197,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("name") && (
+                              )} */}
+
+                              {/* {checkFieldExist("name") && (
                                 <th onClick={() => requestSort("name")}>
                                   <strong>Builder Name</strong>
                                   {sortConfig.some(
@@ -1083,8 +1216,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("company_type") && (
+                              )} */}
+
+                              {/* {checkFieldExist("company_type") && (
                                 <th onClick={() => requestSort("company_type")}>
                                   <strong>Company Type</strong>
                                   {sortConfig.some(
@@ -1101,13 +1235,15 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("email") && (
+                              )} */}
+
+                              {/* {checkFieldExist("email") && (
                                 <th>
                                   <strong>Email</strong>
                                 </th>
-                              )}
-                              {checkFieldExist("phone") && (
+                              )} */}
+
+                              {/* {checkFieldExist("phone") && (
                                 <th onClick={() => requestSort("phone")}>
                                   <strong>LV Office Phone</strong>
                                   {sortConfig.some(
@@ -1124,8 +1260,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("officeaddress1") && (
+                              )} */}
+
+                              {/* {checkFieldExist("officeaddress1") && (
                                 <th onClick={() => requestSort("officeaddress1")}>
                                   <strong>LV Office Address</strong>
                                   {sortConfig.some(
@@ -1142,8 +1279,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("city") && (
+                              )} */}
+
+                              {/* {checkFieldExist("city") && (
                                 <th onClick={() => requestSort("city")}>
                                   <strong>
                                     LV Office City
@@ -1162,8 +1300,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("zipcode") && (
+                              )} */}
+
+                              {/* {checkFieldExist("zipcode") && (
                                 <th onClick={() => requestSort("zipcode")}>
                                   <strong>LV Office Zip</strong>
                                   {sortConfig.some(
@@ -1180,8 +1319,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("current_division_president") && (
+                              )} */}
+
+                              {/* {checkFieldExist("current_division_president") && (
                                 <th
                                   onClick={() =>
                                     requestSort("current_division_president")
@@ -1202,8 +1342,9 @@ const handleSortClose = () => setShowSort(false);
                                     <span>↑↓</span>
                                   )}
                                 </th>
-                              )}
-                              {checkFieldExist("current_land_aquisitions") && (
+                              )} */}
+
+                              {/* {checkFieldExist("current_land_aquisitions") && (
                                 <th
                                   onClick={() =>
                                     requestSort("current_land_aquisitions")
@@ -1226,8 +1367,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("coporate_officeaddress_1") && (
+                              )} */}
+
+                              {/* {checkFieldExist("coporate_officeaddress_1") && (
                                 <th
                                   onClick={() =>
                                     requestSort("coporate_officeaddress_1")
@@ -1250,8 +1392,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("coporate_officeaddress_city") && (
+                              )} */}
+
+                              {/* {checkFieldExist("coporate_officeaddress_city") && (
                                 <th
                                   onClick={() =>
                                     requestSort("coporate_officeaddress_city")
@@ -1274,8 +1417,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("coporate_officeaddress_2") && (
+                              )} */}
+
+                              {/* {checkFieldExist("coporate_officeaddress_2") && (
                                 <th
                                   onClick={() =>
                                     requestSort("coporate_officeaddress_2")
@@ -1298,8 +1442,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist(
+                              )} */}
+
+                              {/* {checkFieldExist(
                                 "coporate_officeaddress_zipcode"
                               ) && (
                                 <th
@@ -1324,8 +1469,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("stock_market") && (
+                              )} */}
+
+                              {/* {checkFieldExist("stock_market") && (
                                 <th onClick={() => requestSort("stock_market")}>
                                   <strong>
                                     Stock Market
@@ -1344,8 +1490,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("stock_symbol") && (
+                              )} */}
+
+                              {/* {checkFieldExist("stock_symbol") && (
                                 <th onClick={() => requestSort("stock_symbol")}>
                                   <strong>
                                     Stock Symbol
@@ -1364,13 +1511,15 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("icon") && (
+                              )} */}
+
+                              {/* {checkFieldExist("icon") && (
                                 <th>
                                   <strong>Icon</strong>
                                 </th>
-                              )}
-                              {checkFieldExist("builder_code") && (
+                              )} */}
+
+                              {/* {checkFieldExist("builder_code") && (
                                 <th onClick={() => requestSort("builder_code")}>
                                   <strong>
                                     __pkBuilderID
@@ -1389,8 +1538,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("created_at") && (
+                              )} */}
+
+                              {/* {checkFieldExist("created_at") && (
                                 <th onClick={() => requestSort("created_at")}>
                                   <strong>
                                     Date Added
@@ -1409,8 +1559,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Active Communities") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Active Communities") && (
                                 <th
                                   onClick={() =>
                                     requestSort("active_communities")
@@ -1433,8 +1584,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Closing This Year") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Closing This Year") && (
                                 <th
                                   onClick={() => requestSort("closing_this_year")}
                                 >
@@ -1455,8 +1607,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Permits This Year") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Permits This Year") && (
                                 <th
                                   onClick={() => requestSort("permits_this_year")}
                                 >
@@ -1477,8 +1630,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Net Sales this year") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Net Sales this year") && (
                                 <th onClick={() => requestSort("net_sales_this_year")}>
                                   <strong>
                                     Net Sales this year
@@ -1497,8 +1651,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Current Avg Base Price") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Current Avg Base Price") && (
                                 <th
                                   onClick={() =>
                                     requestSort("current_avg_base_Price")
@@ -1521,8 +1676,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist(
+                              )} */}
+
+                              {/* {checkFieldExist(
                                 "Median Closing Price This Year"
                               ) && (
                                 <th
@@ -1547,8 +1703,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist(
+                              )} */}
+
+                              {/* {checkFieldExist(
                                 "Median Closing Price Last Year"
                               ) && (
                                 <th
@@ -1573,8 +1730,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist(
+                              )} */}
+
+                              {/* {checkFieldExist(
                                 "Avg Net Sales Per Month This Year"
                               ) && (
                                 <th
@@ -1601,8 +1759,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist(
+                              )} */}
+
+                              {/* {checkFieldExist(
                                 "Avg Closings Per Month This Year"
                               ) && (
                                 <th
@@ -1629,8 +1788,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}{" "}
-                              {checkFieldExist("Total Closings") && (
+                              )}{" "} */}
+
+                              {/* {checkFieldExist("Total Closings") && (
                                 <th onClick={() => requestSort("total_closings")}>
                                   <strong>
                                     Total Closings
@@ -1649,8 +1809,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}{" "}
-                              {checkFieldExist("Total Permits") && (
+                              )}{" "} */}
+
+                              {/* {checkFieldExist("Total Permits") && (
                                 <th onClick={() => requestSort("total_permits")}>
                                   <strong>
                                     Total Permits
@@ -1669,8 +1830,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}{" "}
-                              {checkFieldExist("Total Net Sales") && (
+                              )}{" "} */}
+
+                              {/* {checkFieldExist("Total Net Sales") && (
                                 <th
                                   onClick={() => requestSort("total_net_sales")}
                                 >
@@ -1691,8 +1853,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Date Of First Closing") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Date Of First Closing") && (
                                 <th
                                   onClick={() =>
                                     requestSort("date_of_first_closing")
@@ -1715,8 +1878,9 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {checkFieldExist("Date Of Latest Closing") && (
+                              )} */}
+
+                              {/* {checkFieldExist("Date Of Latest Closing") && (
                                 <th
                                   onClick={() =>
                                     requestSort("date_of_latest_closing")
@@ -1739,186 +1903,223 @@ const handleSortClose = () => setShowSort(false);
                                   )}
                                   </strong>
                                 </th>
-                              )}
-                              {SyestemUserRole === "Data Uploader" ||
+                              )} */}
+
+                              {/* {SyestemUserRole === "Data Uploader" ||
                               SyestemUserRole === "User" ? (
                                 ""
                               ) : (
                                 <th>
                                   <strong>Action</strong>
                                 </th>
-                              )}
+                              )} */}
+
                             </tr>
                           </thead>
                           <tbody>
                             {BuilderList !== null && BuilderList.length > 0 ? (
                               BuilderList.map((element, index) => (
                                 <tr
-                                  onClick={() => handleRowClick(element.id)}
-                                  key={index} 
-                                  style={{
-                                    textAlign: "center",
-                                    cursor: "pointer",
-                                  }}
+                                onClick={(e) => {
+                                  if(e.target.type !== "checkbox"){
+                                    handleRowClick(element.id);
+                                  }
+                                }}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
                                 >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                              </td>
                                   <td>{index + 1}</td>
-                                  {checkFieldExist("logo") && (
-                                    <td>
-                                      <div>
-                                        <img
-                                          src={
-                                            element.logo
-                                              ? imageUrl + element.logo
-                                              : ""
-                                          }
-                                          className="rounded-lg me-2"
-                                          width="70"
-                                          alt=""
-                                        />
-                                      </div>
-                                    </td>
-                                  )}
-                                  {checkFieldExist("website") && (
-                                    <td>{element.website}</td>
-                                  )}
-                                  {checkFieldExist("name") && (
-                                    <td>{element.name}</td>
-                                  )}
-                                  {checkFieldExist("company_type") && (
-                                    <td>{element.company_type}</td>
-                                  )}
-                                  {checkFieldExist("phone") && (
-                                    <td>{element.phone}</td>
-                                  )}
-                                  {checkFieldExist("email") && (
-                                    <td>{element.email}</td>
-                                  )}
-                                  {checkFieldExist("officeaddress1") && (
-                                    <td>{element.officeaddress1}</td>
-                                  )}
+                                  {columns.map((column) => (
+                                    <>
+                                      {column.id == "builder_code" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.builder_code}</td>
+                                      }
+                                      {column.id == "name" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                      }
+                                      {column.id == "logo" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>
+                                          <div>
+                                            <img
+                                              src={
+                                                element.logo
+                                                ? imageUrl + element.logo
+                                                : ""
+                                              }
+                                              className="rounded-lg me-2"
+                                              width="70"
+                                              alt=""
+                                            />
+                                          </div>
+                                        </td>
+                                      }
+                                      {column.id == "website" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
+                                      }
+                                      {column.id == "phone" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
+                                      }
+                                      {column.id == "fax" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.fax}</td>
+                                      }
+                                      {column.id == "officeaddress1" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
+                                      }
+                                      {column.id == "officeaddress2" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
+                                      }
+                                      {column.id == "city" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.city}</td>
+                                      }
+                                      {column.id == "zipcode" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
+                                      }
+                                      {column.id == "company_type" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.company_type}</td>
+                                      }
+                                      {column.id == "is_active" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.is_active}</td>
+                                      }
+                                      {column.id == "stock_market" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_market}</td>
+                                      }
+                                      {column.id == "current_division_president" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_division_president}</td>
+                                      }
+                                      {column.id == "stock_symbol" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_symbol}</td>
+                                      }
+                                      {column.id == "current_land_aquisitions" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_land_aquisitions}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_1" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_2" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_city" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_city}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_zipcode" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_zipcode}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_lat" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lat}</td>
+                                      }
+                                      {column.id == "coporate_officeaddress_lng" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lng}</td>
+                                      }
+                                      {column.id == "active Communities" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.active_communities}</td>
+                                      }
+                                      {column.id == "closing This Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.closing_this_year}</td>
+                                      }
+                                      {column.id == "permits This Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.permits_this_year}</td>
+                                      }
+                                      {column.id == "net Sales this year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.net_sales_this_year}</td>
+                                      }
+                                      {column.id == "current Avg Base Price" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_avg_base_Price}</td>
+                                      }
+                                      {column.id == "median Closing Price This Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.median_closing_price_this_year}</td>
+                                      }
+                                      {column.id == "median Closing Price Last Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.median_closing_price_last_year}</td>
+                                      }
+                                      {column.id == "avg Net Sales Per Month This Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
+                                      }
+                                      {column.id == "avg Closings Per Month This Year" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
+                                      }
+                                      {column.id == "total Closings" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
+                                      }
+                                      {column.id == "total Permits" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
+                                      }
+                                      {column.id == "total Net Sales" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
+                                      }
+                                      {column.id == "date Of First Closing" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date_of_first_closing} /></td>
+                                      }
+                                      {column.id == "date Of Latest Closing" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date_of_latest_closing} /></td>
+                                      }
+                                      {column.id == "action" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>
+                                          {SyestemUserRole === "Data Uploader" ||
+                                    SyestemUserRole === "User" ? (
+                                      ""
+                                    ) : (
+                                          <div className="d-flex justify-content-center">
+                                            <Link
+                                              to={`/builderUpdate/${element.id}`}
+                                              className="btn btn-primary shadow btn-xs sharp me-1"
+                                            >
+                                              <i className="fas fa-pencil-alt"></i>
+                                            </Link>
+                                            <Link
+                                              onClick={() =>
+                                                swal({
+                                                  title: "Are you sure?",
+                                                  icon: "warning",
+                                                  buttons: true,
+                                                  dangerMode: true,
+                                                }).then((willDelete) => {
+                                                  if (willDelete) {
+                                                    handleDelete(element.id);
+                                                  }
+                                                })
+                                              }
+                                              className="btn btn-danger shadow btn-xs sharp"
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Link>
+                                          </div>
+                                    )}
+                                        </td>
+                                      }
 
-                                  {checkFieldExist("city") && (
-                                    <td>{element.city}</td>
-                                  )}
-                                  {checkFieldExist("zipcode") && (
-                                    <td>{element.zipcode}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "current_division_president"
-                                  ) && (
-                                    <td>{element.current_division_president}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "current_land_aquisitions"
-                                  ) && (
-                                    <td>{element.current_land_aquisitions}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "coporate_officeaddress_1"
-                                  ) && (
-                                    <td>{element.coporate_officeaddress_1}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "coporate_officeaddress_city"
-                                  ) && (
-                                    <td>{element.coporate_officeaddress_city}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "coporate_officeaddress_2"
-                                  ) && (
-                                    <td>{element.coporate_officeaddress_2}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "coporate_officeaddress_zipcode"
-                                  ) && (
-                                    <td>
-                                      {element.coporate_officeaddress_zipcode}
-                                    </td>
-                                  )}
-                                  {checkFieldExist("stock_market") && (
-                                    <td>{element.stock_market}</td>
-                                  )}
-                                  {checkFieldExist("stock_symbol") && (
-                                    <td>{element.stock_symbol}</td>
-                                  )}
-                                  {checkFieldExist("icon") && (
+                                    </>
+                                  ))}
+                                  
+
+                                  {/* {checkFieldExist("email") && (
+                                    <td>{element.email}</td>
+                                  )} */}
+
+                                  {/* {checkFieldExist("icon") && (
                                     <td>{element.icon}</td>
-                                  )}
-                                  {checkFieldExist("builder_code") && (
-                                    <td>{element.builder_code}</td>
-                                  )}
-                                  {checkFieldExist("created_at") && (
+                                  )} */}
+
+                                  {/* {checkFieldExist("created_at") && (
                                     <td>
                                       <DateComponent date={element.created_at} />
                                     </td>
-                                  )}
-                                  {checkFieldExist("Active Communities") && (
-                                    <td>{element.active_communities}</td>
-                                  )}
-                                  {checkFieldExist("Closing This Year") && (
-                                    <td>{element.closing_this_year}</td>
-                                  )}
-                                  {checkFieldExist("Permits This Year") && (
-                                    <td>{element.permits_this_year}</td>
-                                  )}
-                                  {checkFieldExist("Net Sales this year") && (
-                                    <td>{element.net_sales_this_year}</td>
-                                  )}
-                                  {checkFieldExist("Current Avg Base Price") && (
-                                    <td>{element.current_avg_base_Price}</td>
-                                  )}
-                                  {checkFieldExist(
-                                    "Median Closing Price This Year"
-                                  ) && (
-                                    <td>
-                                      {element.median_closing_price_this_year}
-                                    </td>
-                                  )}
-                                  {checkFieldExist(
-                                    "Median Closing Price Last Year"
-                                  ) && (
-                                    <td>
-                                      {element.median_closing_price_last_year}
-                                    </td>
-                                  )}
-                                  {checkFieldExist(
-                                    "Avg Net Sales Per Month This Year"
-                                  ) && (
-                                    <td>
-                                      {element.avg_net_sales_per_month_this_year}
-                                    </td>
-                                  )}
-                                  {checkFieldExist(
-                                    "Avg Closings Per Month This Year"
-                                  ) && (
-                                    <td>
-                                      {element.avg_closings_per_month_this_year}
-                                    </td>
-                                  )}
-                                  {checkFieldExist("Total Closings") && (
-                                    <td>{element.total_closings}</td>
-                                  )}
-                                  {checkFieldExist("Total Permits") && (
-                                    <td>{element.total_permits}</td>
-                                  )}
-                                  {checkFieldExist("Total Net Sales") && (
-                                    <td>{element.total_net_sales}</td>
-                                  )}
-                                  {checkFieldExist("Date Of First Closing") && (
-                                    <td>
-                                      <DateComponent
-                                        date={element.date_of_first_closing}
-                                      />
-                                    </td>
-                                  )}
-                                  {checkFieldExist("Date Of Latest Closing") && (
-                                    <td>
-                                      <DateComponent
-                                        date={element.date_of_latest_closing}
-                                      />
-                                    </td>
-                                  )}
-                                  <td>
+                                  )} */}
+
+                                  
+
+                                  {/* <td>
                                     {SyestemUserRole === "Data Uploader" ||
                                     SyestemUserRole === "User" ? (
                                       ""
@@ -1949,7 +2150,8 @@ const handleSortClose = () => setShowSort(false);
                                         </Link>
                                       </div>
                                     )}
-                                  </td>
+                                  </td> */}
+
                                 </tr>
                               ))
                             ) : (
@@ -1972,11 +2174,19 @@ const handleSortClose = () => setShowSort(false);
       {SyestemUserRole == "Data Uploader" || SyestemUserRole == "User" ? (
         ""
       ) : (
+        <>
         <BuilderOffcanvas
           ref={builder}
           Title="Add Builder"
           parentCallback={handleCallback}
         />
+        <BulkBuilderUpdate
+        ref={bulkBuilder}
+        Title="Bulk Edit Subdivision sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
+       </>
       )}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -2024,7 +2234,7 @@ const handleSortClose = () => setShowSort(false);
                                 />
                                 <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
                                   {/* {col.key}  */}
-                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                  <span>{excelcolumns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
                                     
                                 </label>
                             </div>

@@ -15,14 +15,22 @@ import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
+import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel'; 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkClosingUpdate from "./BulkClosingUpdate";
+
 
 const ClosingList = () => {
 
-  
-  
+
+  const [sortConfig, setSortConfig] = useState([]);
+  const [showSort, setShowSort] = useState(false);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  const [AllClosingListExport, setAllClosingListExport] = useState([]);
+
+
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -35,15 +43,9 @@ const ClosingList = () => {
       }
   };
   
-  const handleRemoveSelected = () => {
-      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-      setSortConfig(newSortConfig);
-      setSelectedCheckboxes([]);
-  };
-  const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
- const [AllClosingListExport, setAllClosingListExport] = useState([]);
 
+  
+      
   const [Error, setError] = useState(""); 
   const [ClosingList, setClosingList] = useState([]);
   const [closingListCount, setClosingListCount] = useState('');
@@ -74,85 +76,6 @@ const ClosingList = () => {
     loanamount: "",
     document: "",
   });
-  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
-  const [filterQuery, setFilterQuery] = useState({
-   closing_type:"",
-    closingdate:"",
-    document:"",
-   builder_name:"",
-   subdivision_name:"",
-  closingprice:"",
-  address:"",
-   parcel:"",
-   sublegal_name:"",
-   seller:"",
-   buyer:"",
-   lender:"",
-   loanamount:"",
-   area:"",
-   masterplan_id:"",
-   zipcode:"",
-   lotwidth:"",
-   lotsize:"",
-  zoning:"",
-   age:"",
-   single:""
-})
-  const HandleCancelFilter = (e) => {
-    setFilterQuery({
-      closing_type:"",
-      closingdate:"",
-      document:"",
-     builder_name:"",
-     subdivision_name:"",
-    closingprice:"",
-    address:"",
-     parcel:"",
-  sublegal_name:"",
-  seller:"",
-   buyer:"",
-     lender:"",
-  loanamount:"",
-   area:"",
-   masterplan_id:"",
-   zipcode:"",
-   lotwidth:"",
-  lotsize:"",
-   zoning:"",
-   age:"",
-   single:"",
-    });
-  };
-  const HandleFilterForm = (e) =>
-    {
-      e.preventDefault();
-      console.log(555);
-      getClosingList(currentPage,searchQuery);
-    };
-  
-    const HandleFilter = (e) => {
-      const { name, value } = e.target;
-      setFilterQuery((prevFilterQuery) => ({
-        ...prevFilterQuery,
-        [name]: value,
-      }));
-    };
-
-    useEffect(() => {
-      setSearchQuery(filterString());
-    }, [filterQuery]);
-  
-    
-    const filterString = () => {
-      const queryString = Object.keys(filterQuery)
-        .map(
-          (key) =>
-            `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
-        )
-        .join("&");
-  
-      return queryString ? `&${queryString}` : "";
-    };
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -161,6 +84,11 @@ const ClosingList = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "closing" });
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
 
   useEffect(() => {
     console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
@@ -198,7 +126,7 @@ const ClosingList = () => {
     { label: 'Fk Sub Id', key: 'fkSubID' }, 
      
   ];
-  const columns = [
+  const sortcolumns = [
     { label: 'Closing Type', key: 'Closing_Type' },  
     { label: 'Closing Date', key: 'Closing_Date' }, 
     { label: 'Doc', key: 'Doc' }, 
@@ -316,19 +244,7 @@ const ClosingList = () => {
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Closing.xlsx');
   };
-  
-  async function fetchAllPages(searchQuery, sortConfig) {
-    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
-    for (let page = 2; page <= totalPages; page++) {
-      const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
-    }
-    setAllClosingListExport(allData);
-  }
+
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -347,6 +263,7 @@ const ClosingList = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -405,12 +322,6 @@ const ClosingList = () => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState([]);
-
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
 
   function prePage() {
     if (currentPage !== 1) {
@@ -430,6 +341,7 @@ const ClosingList = () => {
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+  const bulkClosing = useRef();
 
   const getClosingList = async (currentPage) => {
     try {
@@ -456,7 +368,7 @@ const ClosingList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getClosingList(currentPage);
-      fetchAllPages(searchQuery, sortConfig) 
+      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
@@ -625,6 +537,61 @@ const ClosingList = () => {
         }
     }
 }
+
+const handleOpenDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(true);
+};
+
+const handleCloseDialog = () => {
+  setDraggedColumns(columns);
+  setOpenDialog(false);
+};
+
+const handleSaveDialog = () => {
+  setColumns(draggedColumns);
+  setOpenDialog(false);
+};
+
+const handleColumnOrderChange = (result) => {
+  if (!result.destination) {
+    return;
+  }
+  const newColumns = Array.from(draggedColumns);
+  const [movedColumn] = newColumns.splice(result.source.index, 1);
+  newColumns.splice(result.destination.index, 0, movedColumn);
+  setDraggedColumns(newColumns);
+};
+const handleEditCheckboxChange = (e, userId) => {
+  if (e.target.checked) {
+    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+  } else {
+    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+  }
+};
+
+
+useEffect(() => {
+  const mappedColumns = fieldList.map((data) => ({
+    id: data.charAt(0).toLowerCase() + data.slice(1),
+    label: data
+  }));
+  setColumns(mappedColumns);
+}, [fieldList]);
+
+const toCamelCase = (str) => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) => {
+      if (index === 0) {
+        return word;
+      }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+  .join('');
+}
+
   return (
     <>
       <MainPagetitle
@@ -660,16 +627,27 @@ const ClosingList = () => {
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
+                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                      Set Columns Order
+                    </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
                           >
                             <i class="fa-solid fa-sort"></i>
-                     </Button>
+                     </Button>                
                     <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
 
 
@@ -687,9 +665,6 @@ const ClosingList = () => {
                       >
                         Import
                       </Button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                      <i className="fa fa-filter" />
-                    </button> 
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -697,6 +672,14 @@ const ClosingList = () => {
                         onClick={() => closingsale.current.showEmployeModal()}
                       >
                         + Add Closing
+                      </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkClosing.current.showEmployeModal()}
+                      >
+                        Bulk Edit
                       </Link>
                     </div>
                   </div>
@@ -783,8 +766,47 @@ const ClosingList = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === ClosingList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(ClosingList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>No.</th>
-                            {checkFieldExist("Closing Type") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
+                                column.id == "closing Type" ? "closing_type" : 
+                                (column.id == "closing Price" ? "closingprice" : 
+                                (column.id == "Parcel Number" ? "parcel" : 
+                                (column.id == "sub Legal Name" ? "subdivisionName" : 
+                                (column.id == "seller Legal Name" ? "sellerleagal" : 
+                                (column.id == "buyer Name" ? "buyer" : 
+                                (column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)))))))) : ""}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Closing Type") && (
                               <th onClick={() => requestSort("closing_type")}>
                                 Closing Type
                              {sortConfig.key !== "closing_type" ? "↑↓" : ""}
@@ -794,8 +816,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Closing Date") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Closing Date") && (
                               <th onClick={() => requestSort("closingdate")}>
                                 Closing Date
                                 {sortConfig.key !== "closingdate" ? "↑↓" : ""}
@@ -805,6 +828,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Doc") && (
                             )}{" "}
                             {checkFieldExist("Closing Date Actual") && (
                               <th onClick={() => requestSort("closingdate")}>
@@ -827,8 +853,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Builder Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 Builder Name
                                 {sortConfig.key !== "builderName" ? "↑↓" : ""}
@@ -838,8 +865,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Subdivision Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -853,8 +881,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Closing Price") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Closing Price") && (
                               <th onClick={() => requestSort("closingprice")}>
                                 Closing Price
                                 {sortConfig.key !== "closingprice" ? "↑↓" : ""}
@@ -864,8 +893,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Address") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Address") && (
                               <th onClick={() => requestSort("address")}>
                                 Address
                                 {sortConfig.key !== "address" ? "↑↓" : ""}
@@ -875,8 +905,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Parcel Number") && 
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Parcel Number") && 
                             <th onClick={() => requestSort("parcel")}>
                               Parcel Number                              
                               {sortConfig.key !== "parcel" ? "↑↓" : ""}
@@ -886,8 +917,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                             </th>
-                            }
-                            {checkFieldExist("Sub Legal Name") && (
+                            } */}
+
+                            {/* {checkFieldExist("Sub Legal Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -901,8 +933,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Seller Legal Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Seller Legal Name") && (
                               <th onClick={() => requestSort("sellerleagal")}>
                                 Seller Legal Name
                                 {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
@@ -912,8 +945,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Buyer Name") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Buyer Name") && (
                               <th onClick={() => requestSort("buyer")}>
                                 Buyer Name
                                 {sortConfig.key !== "buyer" ? "↑↓" : ""}
@@ -923,8 +957,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lender") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lender") && (
                               <th>
                                 Lender
                                 {sortConfig.key !== "subdivisionName"
@@ -936,8 +971,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Loan Amount") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Loan Amount") && (
                               <th onClick={() => requestSort("loanamount")}>
                                 Loan Amount
                                 {sortConfig.key !== "loanamount" ? "↑↓" : ""}
@@ -947,8 +983,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Type") && (
                               <th>
                                 Type
                                 {sortConfig.key !== "subdivisionName"
@@ -960,8 +997,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Product Type") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th>
                                 Product Type{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -973,8 +1011,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Area") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th>
                                 Area
                                 {sortConfig.key !== "subdivisionName"
@@ -986,8 +1025,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Master Plan") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th>
                                 Master Plan
                                 {sortConfig.key !== "subdivisionName"
@@ -999,8 +1039,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zip Code") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th>
                                 Zip Code{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1012,8 +1053,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Width") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th>
                                 Lot Width{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1025,8 +1067,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Lot Size") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th>
                                 Lot Size{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1038,8 +1081,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Zoning") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th>
                                 Zoning{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1051,8 +1095,9 @@ const ClosingList = () => {
                                   </span>
                                 )}{" "}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Age Restricted") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th>
                                 Age Restricted{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1064,8 +1109,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("All Single Story") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th>
                                 All Single Story{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1077,8 +1123,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Date Added") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th>
                                 Date Added{" "}
                                 {sortConfig.key !== "subdivisionName"
@@ -1090,8 +1137,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("__pkRecordID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("__pkRecordID") && (
                               <th>
                                 __pkRecordID
                                 {sortConfig.key !== "subdivisionName"
@@ -1103,8 +1151,9 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("_fkSubID") && (
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("_fkSubID") && (
                               <th>
                                 _fkSubID
                                 {sortConfig.key !== "subdivisionName"
@@ -1116,152 +1165,150 @@ const ClosingList = () => {
                                   </span>
                                 )}
                               </th>
-                            )}{" "}
-                            {checkFieldExist("Action") && <th>Action</th>}
+                            )}{" "} */}
+
+                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
+                            
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {ClosingList !== null && ClosingList.length > 0 ? (
                             ClosingList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Closing Type") && <td>{element.closing_type}</td>}{" "}
-                                {checkFieldExist("Closing Date") && (
-                                  <td>
-                                    <DateComponent date={element.closingdate} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Doc") && (
-                                  <td>{element.document}</td>
-                                )}{" "}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.builder?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Closing Price") && (
-                                  <td>
-                                    {" "}
-                                    <PriceComponent
-                                      price={element.closingprice}
-                                    />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Address") && (
-                                  <td>{element.address}</td>
-                                )}{" "}
-                                {checkFieldExist("Parcel Number") && (
-                                  <td>{element.parcel}</td>
-                                )}{" "}
-                                {checkFieldExist("Sub Legal Name") && (
-                                  <td>
-                                    {element.sublegal_name}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Seller Legal Name") && (
-                                  <td>{element.sellerleagal}</td>
-                                )}{" "}
-                                {checkFieldExist("Buyer Name") && (
-                                  <td>{element.buyer}</td>
-                                )}{" "}
-                                {checkFieldExist("Lender") && (
-                                  <td>{element.lender}</td>
-                                )}{" "}
-                                {checkFieldExist("Loan Amount") && (
-                                  <td>{element.loanamount}</td>
-                                )}{" "}
-                                {checkFieldExist("Type") && <td>{element.type}</td>}{" "}
-                                {checkFieldExist("Product Type") && (
-                                  <td>{element.subdivision.product_type}</td>
-                                )}{" "}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.subdivision.area}</td>
-                                )}{" "}
-                                {checkFieldExist("Master Plan") && (
-                                  <td>{element.subdivision.masterplan_id}</td>
-                                )}{" "}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>{element.subdivision.zipcode}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>{element.subdivision.lotwidth}</td>
-                                )}{" "}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>{element.subdivision.lotsize}</td>
-                                )}{" "}
-                                {checkFieldExist("Zoning") && (
-                                  <td>{element.subdivision.zoning}</td>
-                                )}{" "}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.subdivision.age == "1"
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.subdivision.single == "1"
-                                      ? "Yes"
-                                      : "No"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("__pkRecordID") && (
-                                  <td>{element.id}</td>
-                                )}{" "}
-                                {checkFieldExist("_fkSubID") && (
-                                  <td>
-                                    {element.subdivision.subdivision_code}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/closingsaleupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "closing Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.closing_type}</td>
+                                  }
+                                  {column.id == "closing Date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.closingdate} /></td>
+                                  }
+                                  {column.id == "doc" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.document}</td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                      element.subdivision.builder?.name}</td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                      element.subdivision?.name}</td>
+                                  }
+                                  {column.id == "closing Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.closingprice} /></td>
+                                  }
+                                  {column.id == "address" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address}</td>
+                                  }
+                                  {column.id == "parcel Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                  }
+                                  {column.id == "sub Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
+                                  }
+                                  {column.id == "seller Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sellerleagal}</td>
+                                  }
+                                  {column.id == "buyer Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.buyer}</td>
+                                  }
+                                  {column.id == "lender" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lender}</td>
+                                  }
+                                  {column.id == "loan Amount" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.loanamount}</td>
+                                  }
+                                  {column.id == "type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>NA</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.age == "1" ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.single == "1" ? "Yes" : "No"}</td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                  }
+                                  {column.id == "__pkRecordID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/closingsaleupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
@@ -1286,48 +1333,12 @@ const ClosingList = () => {
         Title="Add Closing"
         parentCallback={handleCallback}
       />
-       <Modal show={showSort} onHide={HandleSortDetailClick}>
-        <Modal.Header handleSortClose>
-          <Modal.Title>Sorted Fields</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortClose}>
-            cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleRemoveSelected}
-          >
-           Clear Sort
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <BulkClosingUpdate
+        ref={bulkClosing}
+        Title="Bulk Edit Closings"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Permit CSV Data</Modal.Title>
@@ -1532,219 +1543,6 @@ const ClosingList = () => {
           </div>
         </div>
       </Offcanvas>
-      <Offcanvas
-        show={manageFilterOffcanvas}
-        onHide={setManageFilterOffcanvas}
-        className="offcanvas-end customeoff"
-        placement="end"
-      >
-        <div className="offcanvas-header border-bottom">
-          <h5 className="modal-title" id="#gridSystemModal">
-            Filter Closings{" "}
-          </h5>
-          <button
-            type="button"
-            className="btn-close"
-            onClick={() => setManageFilterOffcanvas(false)}
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-          <div className="">
-                            <form onSubmit={HandleFilterForm}>
-                              <div className="row">
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                  CLOSING TYPE:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <input
-                                    className=" form-control"
-                                    value={filterQuery.is_active}
-                                    name="closing_type"
-                                    onChange={HandleFilter}
-                                  />
-                         
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                  CLOSING DATE:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <input
-                                    className="form-control"
-                                    type="date"
-                                    value={filterQuery.closingdate}
-                                    name="closingdate"
-                                    onChange={HandleFilter}
-                                  />
-                                 
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                DOC:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="document" className="form-control" value={filterQuery.document} onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                BUILDER NAME :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.builder_name} name="builder_name" className="form-control"  onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                SUBDIVISION NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="subdivision_name" value={filterQuery.subdivision_name} className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                CLOSING PRICE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                ADDRESS:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.address} name="address" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                PARCEL NUMBER:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                SUB LEGAL NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="sublegal_name" value={filterQuery.sublegal_name} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                SELLER LEGAL NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="seller" value={filterQuery.seller} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                BUYER NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                LENDER:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 ">
-                                <label className="form-label">
-                                LOAN AMOUNT:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                PRODUCT TYPE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                AREA:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                MASTER PLAN:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ZIP CODE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                LOT WIDTH:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                LOT SIZE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ZONING:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
-                              <select className="default-select form-control" name="age"  onChange={HandleFilter} >
-                                    <option value="">Select age Restricted</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                              </select>                                </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
-                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
-                                        <option value="">Select Story</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                </select>                                 </div>
-                             </div>
-                             </form>
-                            </div>
-                              <div className="d-flex justify-content-between">                 
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>    
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>       
-                            </div>
-          </div>
-        </div>
-      </Offcanvas>
 
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
@@ -1759,7 +1557,7 @@ const ClosingList = () => {
           <Modal.Body>
           <Row>
             <ul className='list-unstyled'>
-            {columns.map((col) => (
+            {sortcolumns.map((col) => (
               <li key={col.label}>
               <label className='form-check'>
                 <input

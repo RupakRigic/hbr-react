@@ -11,5 +11,6 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/price/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/price/export`),
     import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
+    bulkupdate: (id, userData) => clientAuth.put(`admin/price/bulkupdate/${id}`, { json: userData }),
 
 };

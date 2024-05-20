@@ -24,6 +24,8 @@ import Modal from "react-bootstrap/Modal";
 import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import BulkProductUpdate from "./BulkProductUpdate";
 
 
 
@@ -46,6 +48,17 @@ const ProductList = () => {
       setSortConfig(newSortConfig);
       setSelectedCheckboxes([]);
   };
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkProduct = useRef();
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+  
   
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
@@ -89,7 +102,7 @@ const ProductList = () => {
     { label: 'Price Change Since Open', key: 'productid' },
     { label: 'Price Change Last 12 Months', key: 'fksubid' }, 
   ];
-  const columns = [
+  const excelcolumns = [
     { label: 'Status', key: 'status' },
     { label: 'Builder Name', key: 'builderName' },
     { label: 'Subdivision Name', key: 'subdivisionName' },
@@ -296,6 +309,11 @@ const ProductList = () => {
   const [selectedFileError, setSelectedFileError] = useState("");
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  console.log("columns",columns);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
 
   useEffect(() => {
     console.log('data',fieldList);
@@ -667,6 +685,52 @@ const HandleFilterForm = (e) =>
     getproductList(currentPage,searchQuery);
   };
 
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+  
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+  
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+  
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+  
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+          return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+    .join('');
+  }
+
   return (
     <>
       <MainPagetitle
@@ -702,10 +766,21 @@ const HandleFilterForm = (e) =>
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
 
                     <div className="d-flex">
-                    <Button
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
+                      <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
@@ -732,6 +807,14 @@ const HandleFilterForm = (e) =>
                         onClick={() => product.current.showEmployeModal()}
                       >
                         + Add Product
+                      </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkProduct.current.showEmployeModal()}
+                      >
+                        Bulk Edit
                       </Link>
                     </div>
                   </div>
@@ -818,10 +901,58 @@ const HandleFilterForm = (e) =>
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === productList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(productList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
-                            {checkFieldExist("Plan Status") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                                column.id == "plan Status" ? "status" : 
+                              (column.id == "product Name" ? "name" : 
+                              (column.id == "square Footage" ? "sqft" : 
+                              (column.id == "bed Rooms" ? "bedroom" : 
+                              (column.id == "bath Rooms" ? "bathroom" : 
+                              (column.id == "current Base Price" ? "latestBasePrice" : 
+                              (column.id == "current Price Per SQFT" ? "curren_price_per_sqft" : 
+                              (column.id == "product Type" ? "product_type" : 
+                              (column.id == "age Restricted" ? "age" : 
+                              (column.id == "all Single Story" ? "stories" : 
+                              (column.id == "date Added" ? "created_at" : 
+                              (column.id == "__pkProductID" ? "product_code" : 
+                              (column.id == "_fkSubID" ? "subdivsion_code" : 
+                              (column.id == "price Change Since Open" ? "price_change_since_open" : 
+                              (column.id == "price Change Last 12 Months" ? "subdivisionCode" : toCamelCase(column.id)))))))))))))))) : ""}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
+                                </strong>
+                              </th>
+                            ))}
+
+                            {/* {checkFieldExist("Plan Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong>Plan Status</strong>
                                 {sortConfig.some(
@@ -838,8 +969,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Builder Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong>Builder Name</strong>
                                 {sortConfig.some(
@@ -856,8 +988,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Subdivision Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -877,8 +1010,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Product Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Product Name") && (
                               <th onClick={() => requestSort("name")}>
                                 <strong>Product Name</strong>
                                 {sortConfig.some(
@@ -895,8 +1029,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Square Footage") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Square Footage") && (
                               <th onClick={() => requestSort("sqft")}>
                                 <strong>Square Footage</strong>
                                 {sortConfig.some(
@@ -913,8 +1048,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Stories") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Stories") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>Stories</strong>
                                 {sortConfig.some(
@@ -931,8 +1067,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Bed Rooms") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Bed Rooms") && (
                               <th onClick={() => requestSort("bedroom")}>
                                 <strong>Bed Rooms</strong>
                                 {sortConfig.some(
@@ -949,8 +1086,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Bath Rooms") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Bath Rooms") && (
                               <th onClick={() => requestSort("bathroom")}>
                                 <strong>Bath Rooms</strong>
                                 {sortConfig.some(
@@ -967,8 +1105,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Garage") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Garage") && (
                               <th onClick={() => requestSort("garage")}>
                                 <strong>Garage</strong>
                                 {sortConfig.some(
@@ -985,8 +1124,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Current Base Price") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Current Base Price") && (
                               <th onClick={() => requestSort("latestBasePrice")}>
                                 <strong>Current Base Price</strong>
                                 {sortConfig.some(
@@ -1003,8 +1143,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Current Price Per SQFT") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Current Price Per SQFT") && (
                               <th
                                 onClick={() => requestSort("curren_price_per_sqft")}
                               >
@@ -1023,12 +1164,13 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}  
-                            {checkFieldExist("Product Website") && (
-                              <th
-                              // onClick={() => requestSort("recentpricesqft")}
-                              >
-                                <strong>Product Website</strong>
+                            )}   */}
+
+                            {/* {checkFieldExist("Product Website") && ( */}
+                              {/* <th */}
+                              {/* // onClick={() => requestSort("recentpricesqft")} */}
+                              {/* > */}
+                                {/* <strong>Product Website</strong> */}
                                 {/* {sortConfig.key !== "recentpricesqft"
                                 ? "↑↓"
                                 : ""}
@@ -1037,9 +1179,10 @@ const HandleFilterForm = (e) =>
                                   {sortConfig.direction === "asc" ? "↑" : "↓"}
                                 </span>
                               )} */}
-                              </th>
-                            )}
-                            {checkFieldExist("Product Type") && (
+                              {/* </th> */}
+                            {/* )} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("product_type")}>
                                 <strong>Product Type</strong>
                                 {sortConfig.some(
@@ -1056,8 +1199,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Area") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong>Area</strong>
                                 {sortConfig.some(
@@ -1074,8 +1218,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Master Plan") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th onClick={() => requestSort("masterPlan")}>
                                 <strong>Master Plan</strong>
                                 {sortConfig.some(
@@ -1092,8 +1237,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Zip Code") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th onClick={() => requestSort("zipCode")}>
                                 <strong>Zip Code</strong>
                                 {sortConfig.some(
@@ -1110,8 +1256,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Width") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
                                 {sortConfig.some(
@@ -1128,8 +1275,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Size") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
                                 {sortConfig.some(
@@ -1146,8 +1294,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Zoning") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
                                 {sortConfig.some(
@@ -1164,8 +1313,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Age Restricted") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong>Age Restricted</strong>
                                 {sortConfig.some(
@@ -1182,8 +1332,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("All Single Story") && (
+                            )} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
                                 {sortConfig.some(
@@ -1200,8 +1351,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Date Added") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>Date Added</strong>
                                 {sortConfig.some(
@@ -1218,8 +1370,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("__pkProductID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("__pkProductID") && (
                               <th onClick={() => requestSort("product_code")}>
                                 <strong>__pkProductID</strong>
                                 {sortConfig.some(
@@ -1236,8 +1389,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("_fkSubID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("_fkSubID") && (
                               <th
                                 onClick={() => requestSort("subdivsion_code")}
                               >
@@ -1256,8 +1410,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                          {checkFieldExist("Price Change Since Open") && (
+                            )} */}
+
+                          {/* {checkFieldExist("Price Change Since Open") && (
                               <th
                                 onClick={() => requestSort("price_change_since_open")}
                               >
@@ -1276,8 +1431,9 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                             </th>
-                          )}
-                      {checkFieldExist("Price Change Last 12 Months") && (
+                          )} */}
+
+                      {/* {checkFieldExist("Price Change Last 12 Months") && (
                               <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
@@ -1296,153 +1452,158 @@ const HandleFilterForm = (e) =>
                                   <span>↑↓</span>
                                 )}
                             </th>
-                  )}
-                            {checkFieldExist("Action") && <th>Action</th>}
+                  )} */}
+
+                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {productList !== null && productList.length > 0 ? (
                             productList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
+                              <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                              </td>
                                 <td>{index + 1}</td>
-                                {checkFieldExist("Plan Status") && (
-                                  <td>
-                                    {element.status === 1 && "Active"}
-                                    {element.status === 0 && "Sold Out"}
-                                    {element.status === 2 && "Future"}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>{element.subdivision.builder.name}</td>
-                                )}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>{element.subdivision.name}</td>
-                                )}
-                                {checkFieldExist("Product Name") && (
-                                  <td>{element.name}</td>
-                                )}
-                                {checkFieldExist("Square Footage") && (
-                                  <td>{element.sqft}</td>
-                                )}
-                                {checkFieldExist("Stories") && (
-                                  <td>{element.stories}</td>
-                                )}
-                                {checkFieldExist("Bed Rooms") && (
-                                  <td>{element.bedroom}</td>
-                                )}
-                                {checkFieldExist("Bath Rooms") && (
-                                  <td>{element.bathroom}</td>
-                                )}
-                                {checkFieldExist("Garage") && (
-                                  <td>{element.garage}</td>
-                                )}
-                                {checkFieldExist("Current Base Price") && (
-                                  <td>
-                                    <PriceComponent
-                                      price={element.latest_base_price}
-                                    />
-                                  </td>
-                                )}
-                                {checkFieldExist("Current Price Per SQFT") && (
-                                  <td>
-                                    <PriceComponent
-                                      price={element.current_price_per_sqft}
-                                    />
-                                  </td>
-                                )}
-    
-                                {checkFieldExist("Product Website") && <td></td>}
-                                {checkFieldExist("Product Type") && (
-                                  <td>{element.subdivision.product_type}</td>
-                                )}
-                                {checkFieldExist("Area") && (
-                                  <td>{element.subdivision.area}</td>
-                                )}
-                                {checkFieldExist("Master Plan") && (
-                                  <td>{element.subdivision.masterplan_id}</td>
-                                )}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>{element.subdivision.zipcode}</td>
-                                )}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>{element.subdivision.lotwidth}</td>
-                                )}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>{element.subdivision.lotsize}</td>
-                                )}
-                                {checkFieldExist("Zoning") && (
-                                  <td>{element.subdivision.zoning}</td>
-                                )}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.subdivision.age === 1 && "Yes"}
-                                    {element.subdivision.age === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.subdivision.single === 1 && "Yes"}
-                                    {element.subdivision.single === 0 && "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}
-                                {checkFieldExist("__pkProductID") && (
-                                  <td>{element.product_code}</td>
-                                )}
-                                {checkFieldExist("_fkSubID") && (
-                                  <td>
-                                    {element.subdivision.subdivision_code}
-                                  </td>
-                                )}
-                                {checkFieldExist("Price Change Since Open") && (
-                                  <td>
-                                    {element.price_changes_since_open+'%'}
-                                  </td>
-                                )}
-                            {checkFieldExist("Price Change Last 12 Months") && (
-                                    <td>
-                                     {element.price_changes_last_12_Month+'%'}
-                                   </td>
-                              )}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/productupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
+                                {columns.map((column) => (
+                                  <>
+                                    {column.id == "plan Status" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.status === 1 && "Active"}
+                                        {element.status === 0 && "Sold Out"}
+                                        {element.status === 2 && "Future"}
+                                      </td>
+                                    }
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.builder.name}</td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.name}</td>
+                                    }
+                                    {column.id == "product Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                    }
+                                    {column.id == "square Footage" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sqft}</td>
+                                    }
+                                    {column.id == "stories" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.stories}</td>
+                                    }
+                                    {column.id == "bed Rooms" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.bedroom}</td>
+                                    }
+                                    {column.id == "bath Rooms" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.bathroom}</td>
+                                    }
+                                    {column.id == "garage" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.garage}</td>
+                                    }
+                                    {column.id == "current Base Price" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.latest_base_price} /></td>
+                                    }
+                                    {column.id == "current Price Per SQFT" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.current_price_per_sqft} /></td>
+                                    }
+                                    {column.id == "product Website" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "product Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                    }
+                                    {column.id == "master Plan" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                    }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                    }
+                                    {column.id == "lot Width" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                    }
+                                    {column.id == "lot Size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                    }
+                                    {column.id == "zoning" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                    }
+                                    {column.id == "age Restricted" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.subdivision.age === 1 && "Yes"}
+                                        {element.subdivision.age === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "all Single Story" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.subdivision.single === 1 && "Yes"}
+                                        {element.subdivision.single === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "date Added" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                    }
+                                    {column.id == "__pkProductID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.product_code}</td>
+                                    }
+                                    {column.id == "_fkSubID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                    }
+                                    {column.id == "price Change Since Open" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_since_open+'%'}</td>
+                                    }
+                                    {column.id == "price Change Last 12 Months" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_last_12_Month+'%'}</td>
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div className="d-flex justify-content-center">
+                                          <Link
+                                            to={`/productupdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
                                             }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </div>
+                                      </td>
+                                    }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
@@ -1467,9 +1628,16 @@ const HandleFilterForm = (e) =>
         Title="Add Product"
         parentCallback={handleCallback}
       />
+
+    <BulkProductUpdate
+        ref={bulkProduct}
+        Title="Bulk Edit Product sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
+      />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Permit CSV Data</Modal.Title>
+          <Modal.Title>Import Product CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">

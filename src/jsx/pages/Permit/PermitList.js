@@ -17,6 +17,8 @@ import axios from "axios";
 import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import BulkPermitUpdate from "./BulkPermitUpdate";
+import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 
 
 const PermitList = () => {
@@ -31,6 +33,17 @@ const PermitList = () => {
           setSelectedCheckboxes(prev => prev.filter(item => item !== key));
       }
   };
+
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkPermit = useRef();
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+  
   
   const handleRemoveSelected = () => {
       const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
@@ -147,6 +160,10 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "permits" });
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+
   useEffect(() => {
     console.log("list field : ", fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -182,7 +199,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
   ];
-  const columns = [
+  const excelcolumns = [
     { label: "Date", key: "Date" },
     { label: "Builder Name", key: "BuilderName" },
     { label: "Subdivision Name", key: "SubdivisionName" },
@@ -320,6 +337,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       const data = await AdminPermitService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -615,6 +633,52 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     }
   };
 
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
+  
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
+  
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+  
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+  
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+  
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+          return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+    .join('');
+  }
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -646,8 +710,19 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                           placeholder="Quick Search"
                         />
                       </div>
+                      <ColumnReOrderPopup
+                        open={openDialog}
+                        fieldList={fieldList}
+                        handleCloseDialog={handleCloseDialog}
+                        handleSaveDialog={handleSaveDialog}
+                        draggedColumns={draggedColumns}
+                        handleColumnOrderChange={handleColumnOrderChange}
+                      />
                     </div>
                     <div>
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                        Set Columns Order
+                      </button>
 
                                         <Button
                             className="btn-sm me-1"
@@ -689,6 +764,14 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                         onClick={() => permit.current.showEmployeModal()}
                       >
                         + Add Permit
+                      </Link>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkPermit.current.showEmployeModal()}
+                      >
+                        Bulk Edit
                       </Link>
                     </div>
                   </div>
@@ -775,10 +858,52 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
+                          <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === permitList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(permitList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
-                            {checkFieldExist("Date") && (
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
+                                column.id == "parcel Number" ? "parcel" : 
+                                (column.id == "squre Footage" ? "sqft" : 
+                                (column.id == "lot Number" ? "lotnumber" : 
+                                (column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" : 
+                                (column.id == "sub Legal Name" ? "Sublegal_name" : 
+                                (column.id == "lot Size" ? "lotsize" : 
+                                (column.id == "age Restricted" ? "age" : 
+                                (column.id == "all Single Story" ? "stories" : 
+                                (column.id == "date Added" ? "created_at" : 
+                                (column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id))))))))))) : ""}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === toCamelCase(column.id)
+                                    ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === toCamelCase(column.id)
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                    ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
+                                </strong>
+                              </th>
+                            ))}
+                            {/* {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("date")}>
                                 <strong>Date </strong>
                                 {sortConfig.some(
@@ -795,8 +920,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Builder Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Builder Name") && (
                               <th onClick={() => requestSort("builderName")}>
                                 <strong>Builder Name</strong>
                                 {sortConfig.some(
@@ -813,8 +939,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Subdivision Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Subdivision Name") && (
                               <th
                                 onClick={() => requestSort("subdivisionName")}
                               >
@@ -833,7 +960,8 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
+                            )} */}
+
 
                             {/* {checkFieldExist("Date") && (
                               <th onClick={() => requestSort("Address Name")}>
@@ -858,7 +986,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                               </th>
                             )} */}
 
-                            <th onClick={() => requestSort("address2")}>
+                            {/* <th onClick={() => requestSort("address2")}>
                               <strong>Full Address</strong>
                               {sortConfig.some(
                                   (item) => item.key === "address2"
@@ -873,9 +1001,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                 ) : (
                                   <span>↑↓</span>
                                 )}
-                            </th>
+                            </th> */}
 
-                            {checkFieldExist("Parcel Number") && (
+                            {/* {checkFieldExist("Parcel Number") && (
                               <th onClick={() => requestSort("parcel")}>
                                 <strong>Parcel Number</strong>
                                 {sortConfig.some(
@@ -892,8 +1020,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Contractor") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Contractor") && (
                               <th onClick={() => requestSort("contractor")}>
                                 <strong>Contractor</strong>
                                 {sortConfig.some(
@@ -910,8 +1039,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Squre Footage") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Squre Footage") && (
                               <th onClick={() => requestSort("sqft")}>
                                 <strong>Squre Footage</strong>
                                 {sortConfig.some(
@@ -928,8 +1058,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Owner") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Owner") && (
                               <th onClick={() => requestSort("owner")}>
                                 <strong>Owner</strong>
                                 {sortConfig.some(
@@ -946,8 +1077,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Number") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Number") && (
                               <th onClick={() => requestSort("lotnumber")}>
                                 <strong>Lot Number</strong>
                                 {sortConfig.some(
@@ -964,8 +1096,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Permit Number") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Permit Number") && (
                               <th onClick={() => requestSort("permitnumber")}>
                                 <strong>Permit Number</strong>
                                 {sortConfig.some(
@@ -982,8 +1115,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Plan") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Plan") && (
                               <th onClick={() => requestSort("plan")}>
                                 <strong>Plan</strong>
                                 {sortConfig.some(
@@ -1000,8 +1134,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Sub Legal Name") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Sub Legal Name") && (
                               <th>
                                 <strong>Sub Legal Name</strong>
                                 {sortConfig.some(
@@ -1018,8 +1153,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Value") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Value") && (
                               <th onClick={() => requestSort("value")}>
                                 <strong>Value</strong>
                                 {sortConfig.some(
@@ -1036,8 +1172,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Product Type") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Product Type") && (
                               <th onClick={() => requestSort("productType")}>
                                 <strong>Product Type</strong>
                                 {sortConfig.some(
@@ -1054,8 +1191,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Area") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Area") && (
                               <th onClick={() => requestSort("area")}>
                                 <strong>Area</strong>
                                 {sortConfig.some(
@@ -1072,8 +1210,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Master Plan") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Master Plan") && (
                               <th onClick={() => requestSort("masterPlan")}>
                                 <strong>Master Plan</strong>
                                 {sortConfig.some(
@@ -1090,8 +1229,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Zip Code") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zip Code") && (
                               <th onClick={() => requestSort("zipCode")}>
                                 <strong>Zip Code</strong>
                                 {sortConfig.some(
@@ -1108,8 +1248,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Width") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Width") && (
                               <th onClick={() => requestSort("lotWidth")}>
                                 <strong>Lot Width</strong>
                                 {sortConfig.some(
@@ -1126,8 +1267,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Lot Size") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Lot Size") && (
                               <th onClick={() => requestSort("lotsize")}>
                                 <strong>Lot Size</strong>
                                 {sortConfig.some(
@@ -1144,8 +1286,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Zoning") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Zoning") && (
                               <th onClick={() => requestSort("zoning")}>
                                 <strong>Zoning</strong>
                                 {sortConfig.some(
@@ -1162,8 +1305,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Age Restricted") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Age Restricted") && (
                               <th onClick={() => requestSort("age")}>
                                 <strong>Age Restricted</strong>
                                 {sortConfig.some(
@@ -1180,8 +1324,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("All Single Story") && (
+                            )} */}
+
+                            {/* {checkFieldExist("All Single Story") && (
                               <th onClick={() => requestSort("stories")}>
                                 <strong>All Single Story</strong>
                                 {sortConfig.some(
@@ -1198,8 +1343,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Date Added") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Date Added") && (
                               <th onClick={() => requestSort("created_at")}>
                                 <strong>Date Added</strong>
                                 {sortConfig.some(
@@ -1216,8 +1362,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("__pkPermitID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("__pkPermitID") && (
                               <th onClick={() => requestSort("permitnumber")}>
                                 <strong>__pkPermitID</strong>
                                 {sortConfig.some(
@@ -1234,8 +1381,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("_fkSubID") && (
+                            )} */}
+
+                            {/* {checkFieldExist("_fkSubID") && (
                               <th
                                 onClick={() => requestSort("subdivisionCode")}
                               >
@@ -1254,191 +1402,165 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                   <span>↑↓</span>
                                 )}
                               </th>
-                            )}
-                            {checkFieldExist("Action") && (
+                            )} */}
+
+                            {/* {checkFieldExist("Action") && (
                               <th>
                                 <strong>Action</strong>
                               </th>
-                            )}
+                            )} */}
+
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {permitList != null && permitList.length > 0 ? (
                             permitList.map((element, index) => (
                               <tr
-                                onClick={() => handleRowClick(element.id)}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
+                              onClick={(e) => {
+                                if(e.target.type !== "checkbox"){
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
                               >
-                                <td>{index + 1}</td>
-                                {checkFieldExist("Date") && (
-                                  <td>
-                                    <DateComponent date={element.date} />
-                                  </td>
-                                )}
-                                {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.builder?.name}
-                                  </td>
-                                )}
-                                {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}
                                 <td>
-                                  {element.address2 + " " + element.address1}
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                  />
                                 </td>
-                                {/* {checkFieldExist("Address Number") && (
-                                  <td>{element.address2}</td>
-                                )}
-                                {checkFieldExist("Address Name") && (
-                                  <td>{element.address1}</td>
-                                )} */}
-                                {checkFieldExist("Parcel Number") && (
-                                  <td>{element.parcel}</td>
-                                )}
-                                {checkFieldExist("Contractor") && (
-                                  <td>{element.contractor}</td>
-                                )}
-                                {checkFieldExist("Squre Footage") && (
-                                  <td>{element.sqft}</td>
-                                )}
-                                {checkFieldExist("Owner") && (
-                                  <td>{element.owner}</td>
-                                )}
-                                {checkFieldExist("Lot Number") && (
-                                  <td>{element.lotnumber}</td>
-                                )}
-                                {checkFieldExist("Permit Number") && (
-                                  <td>{element.permitnumber}</td>
-                                )}
-                                {checkFieldExist("Plan") && (
-                                  <td>
-                                    {element.plan === "" ||
-                                    element.plan === null
-                                      ? "NA"
-                                      : element.plan}
-                                  </td>
-                                )}
-                                {checkFieldExist("Sub Legal Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}
-                                {checkFieldExist("Value") && (
-                                  <td>{element.value}</td>
-                                )}
-                                {checkFieldExist("Product Type") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.product_type}
-                                  </td>
-                                )}
-                                {checkFieldExist("Area") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.area}
-                                  </td>
-                                )}
-                                {checkFieldExist("Master Plan") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.masterplan_id}
-                                  </td>
-                                )}
-                                {checkFieldExist("Zip Code") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.zipcode}
-                                  </td>
-                                )}
-                                {checkFieldExist("Lot Width") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.lotwidth}
-                                  </td>
-                                )}
-                                {checkFieldExist("Lot Size") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.lotsize}
-                                  </td>
-                                )}
-                                {checkFieldExist("Zoning") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.zoning}
-                                  </td>
-                                )}
-                                {checkFieldExist("Age Restricted") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.age === 1 &&
-                                      "Yes"}
-                                    {element.subdivision &&
-                                      element.subdivision.age === 0 &&
-                                      "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("All Single Story") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.single === 1 &&
-                                      "Yes"}
-                                    {element.subdivision &&
-                                      element.subdivision.single === 0 &&
-                                      "No"}
-                                  </td>
-                                )}
-                                {checkFieldExist("Date Added") && (
-                                  <td>
-                                    <DateComponent date={element.created_at} />
-                                  </td>
-                                )}
-                                {checkFieldExist("__pkPermitID") && (
-                                  <td>{element.permitnumber}</td>
-                                )}
-                                {checkFieldExist("_fkSubID") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.subdivision_code}
-                                  </td>
-                                )}
-                                {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/permitupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )}
+                                <td>{index + 1}</td>
+                                {columns.map((column) => (
+                                  <>
+                                  {column.id == "date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.builder?.name}</td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                  }
+                                  {column.id == "address Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address1}</td>
+                                  }
+                                  {column.id == "address Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address2}</td>
+                                  }
+                                  {column.id == "parcel Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                  }
+                                  {column.id == "contractor" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.contractor}</td>
+                                  }
+                                  {column.id == "squre Footage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sqft}</td>
+                                  }
+                                  {column.id == "owner" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.owner}</td>
+                                  }
+                                  {column.id == "lot Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotnumber}</td>
+                                  }
+                                  {column.id == "permit Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.permitnumber}</td>
+                                  }
+                                  {column.id == "plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.plan === "" || element.plan === null ? "NA" : element.plan}</td>
+                                  }
+                                  {column.id == "sub Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                  }
+                                  {column.id == "value" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.value}</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.product_type}</td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.area}</td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.masterplan_id}</td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zipcode}</td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zoning}</td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.subdivision && element.subdivision.age === 1 && "Yes"}
+                                      {element.subdivision && element.subdivision.age === 0 && "No"}
+                                    </td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.subdivision && element.subdivision.single === 1 && "Yes"}
+                                      {element.subdivision && element.subdivision.single === 0 && "No"}
+                                    </td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                  }
+                                  {column.id == "__pkPermitID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.permitnumber}</td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.subdivision_code}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          to={`/permitupdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
+                                  
+                                  </>
+                                ))}
+                                
+
+                                {/* <td>
+                                  {element.address2 + " " + element.address1}
+                                </td> */}
+
                               </tr>
                             ))
                           ) : (
@@ -1462,6 +1584,12 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         ref={permit}
         Title="Add Permit"
         parentCallback={handleCallback}
+      />
+        <BulkPermitUpdate
+        ref={bulkPermit}
+        Title="Bulk Edit Permit sale"
+        parentCallback={handleCallback}
+        selectedLandSales={selectedLandSales}
       />
             <Modal show={showSort} onHide={HandleSortDetailClick}>
         <Modal.Header handleSortClose>
