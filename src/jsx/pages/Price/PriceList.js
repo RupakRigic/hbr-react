@@ -661,9 +661,7 @@ const toCamelCase = (str) => {
                     <div>
                     <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
-                    </button>
-                    <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button>
-                      
+                    </button>                      
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"

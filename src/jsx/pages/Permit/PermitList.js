@@ -19,10 +19,13 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import BulkPermitUpdate from "./BulkPermitUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
-
+import Select from "react-select";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 
 const PermitList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
+  const [SubdivisionList, SetSubdivisionList] = useState([]);
+
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -34,6 +37,54 @@ const PermitList = () => {
           setSelectedCheckboxes(prev => prev.filter(item => item !== key));
       }
   };
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+
+  
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        setBuilderDropDown(data);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
+
+  console.log(SubdivisionList);
+
+  const getSubdivisionList = async () => {
+
+    try {
+
+        let response = await AdminSubdevisionService.index()
+        let responseData = await response.json()
+
+        SetSubdivisionList(responseData.data)
+
+    } catch (error) {
+        if (error.name === 'HTTPError') {
+            const errorJson = await error.response.json();
+
+            setError(errorJson.message)
+        }
+    }
+}
+useEffect(() => {
+    if (localStorage.getItem('usertoken')) {
+
+        getSubdivisionList();
+
+    }
+    else {
+        navigate('/');
+    }
+
+  
+}, [])
 
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkPermit = useRef();
@@ -176,6 +227,18 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
+  };
+  const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      builder_name: selectedOption.name,
+    }));
+  };
+  const HandleSubSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      subdivision_name: selectedOption.name,
+    }));
   };
 
   const headers = [
@@ -1935,19 +1998,36 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
 
                               </div>
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                  BUILDER NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              <label className="form-label">
+                                BUILDER NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={builderDropDown}
+                            onChange={HandleSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={builderDropDown.name}
+                            name="builder_name"
+                          ></Select>
+                        </Form.Group>
                               </div>
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                SUBDIVISION NAME :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.subdivision_name} name="subdivision_name" className="form-control"  onChange={HandleFilter}/>
-                              </div>
+                              <label className="form-label">
+                                SUBDIVISION NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={SubdivisionList}
+                            onChange={HandleSubSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={SubdivisionList.name}
+                            name="subdivision_name"
+                          ></Select>
+                        </Form.Group>                              </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 ADDRESS NUMBER:{" "}
@@ -1981,14 +2061,14 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                 SQUARE FOOTAGE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="sqft" value={filterQuery.sqft} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="text" value={filterQuery.sqft} name="sqft" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 OWNER:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="lotsize" value={filterQuery.owner} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="text" value={filterQuery.owner} name="owner" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">

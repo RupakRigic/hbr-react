@@ -27,6 +27,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import BulkSubdivisionUpdate from "./BulkSubdivisionUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import Select from "react-select";
 
 
 const SubdivisionList = () => {
@@ -648,9 +649,9 @@ console.log(AllBuilderListExport)
   };
   const getbuilderDoplist = async () => {
     try {
-      const response = await AdminBuilderService.index();
+      const response = await AdminBuilderService.builderDropDown();
       const responseData = await response.json();
-      setBuilderListDropDown(responseData.data);
+      setBuilderListDropDown(responseData);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -696,6 +697,13 @@ console.log(AllBuilderListExport)
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       [name]: value,
+    }));
+  };
+
+  const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      builder_name: selectedOption.name,
     }));
   };
 
@@ -3663,11 +3671,28 @@ console.log(AllBuilderListExport)
                                   </select>
                               </div>
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">
+                                {/* <label className="form-label">
                                   BUILDER NAME:{" "}
                                   <span className="text-danger"></span>
                                 </label>
+
                                 <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              */}
+                                <label className="form-label">
+                                BUILDER NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={builderListDropDown}
+                            onChange={HandleSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={builderListDropDown.name}
+                            name="builder_name"
+                          ></Select>
+                        </Form.Group>
+                             
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
@@ -3712,14 +3737,14 @@ console.log(AllBuilderListExport)
                                 LOT WIDTH:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="number" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter}/>
+                                <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 LOT SIZE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input type="lotsize" value={filterQuery.lotsize} name="avg_closings_per_month_this_year" className="form-control" onChange={HandleFilter}/>
+                                <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
@@ -3758,7 +3783,6 @@ console.log(AllBuilderListExport)
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 JURISDICTION:{" "}
-                                  <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.juridiction} name="juridiction" className="form-control" onChange={HandleFilter}/>
                               </div>
