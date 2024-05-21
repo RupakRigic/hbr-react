@@ -841,6 +841,54 @@ const handleSortClose = () => setShowSort(false);
       })
     .join('');
   }
+
+  const applyFilters = () => {
+    let filtered = AllBuilderListExport;
+
+    const applyNumberFilter = (items, query, key) => {
+        if (query) {
+            let operator = '=';
+            let value = query;
+
+            if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+                operator = query[0];
+                value = query.slice(1);
+            }
+
+            const numberValue = parseFloat(value);
+            if (!isNaN(numberValue)) {
+                return items.filter(item => {
+                    const itemValue = parseFloat(item[key]);
+                    if (operator === '>') return itemValue > numberValue;
+                    if (operator === '<') return itemValue < numberValue;
+                    return itemValue === numberValue;
+                });
+            }
+        }
+        return items;
+    };
+
+    filtered = applyNumberFilter(filtered, filterQuery.closing_this_year, 'closing_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.permits_this_year, 'permits_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.net_sales_this_year, 'net_sales_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.current_avg_base_Price, 'current_avg_base_Price');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
+
+    setBuilderList(filtered);
+  };
+  
+  useEffect(() => {
+    applyFilters();
+  }, [filterQuery]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+  };
   
   return (
     <>
@@ -1024,22 +1072,56 @@ const handleSortClose = () => setShowSort(false);
                              </div>
                              </form>
                             </div>
-                              <div className="d-flex justify-content-between">                 
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>    
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>       
+                            <div className="d-flex justify-content-between">                 
+                              <Button
+                                className="btn-sm"
+                                onClick={HandleCancelFilter}
+                                variant="secondary"
+                              >
+                                Reset
+                              </Button>    
+                              <Button
+                                className="btn-sm"
+                                onClick={HandleFilterForm}
+                                variant="primary"
+                              >
+                                Filter
+                              </Button>       
+                            </div>
+                            <br/>
+                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
+                            <>
+                            <h5 className="">Calculation Filter Options</h5>
+                            <div className="border-top">
+                              <div className="row">
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">CLOSINGS THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={handleInputChange}/>
+                                </div>
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">PERMITS THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={handleInputChange}/>
+                                </div>
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">NET SALES THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={handleInputChange}/>
+                                </div>
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">CURRENT AVG BASE PRICE:{" "}</label>
+                                  <input style={{marginTop : "20px"}} value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={handleInputChange}/>
+                                </div>
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
+                                  <br/>
+                                  <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange}/>
+                                </div>
+                                <div className="col-md-4 mt-3 mb-3">
+                                  <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange}/>
+                                </div>
                               </div>
+                            </div></>}
+                              
                             </Dropdown.Menu>
                           </Dropdown>
 

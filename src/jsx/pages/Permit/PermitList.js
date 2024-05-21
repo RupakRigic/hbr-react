@@ -114,6 +114,8 @@ useEffect(() => {
   const [TotalPermitListCount, setTotalPermitListCount] = useState("");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
+    startDate:"",
+    endDate:"",
     date:"",
     builder_name:"",
     subdivision_name:"",
@@ -762,7 +764,33 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
           return word.charAt(0).toUpperCase() + word.slice(1);
       })
     .join('');
-  }
+  };
+
+  const applyFilters = () => {
+    let filtered = AllPermitListExport;
+
+    const applyDateRangeFilter = (items, startDateQuery, endDateQuery, key) => {
+        if (startDateQuery && endDateQuery) {
+            const startDate = new Date(startDateQuery);
+            const endDate = new Date(endDateQuery);
+
+            return items.filter(item => {
+                const itemDate = new Date(item[key]);
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+        }
+        return items;
+    };
+
+    filtered = applyDateRangeFilter(filtered, filterQuery.startDate, filterQuery.endDate, 'date');
+
+    setPermitList(filtered);
+};
+
+useEffect(() => {
+  applyFilters();
+}, [filterQuery]);
+
 
   return (
     <>
@@ -1990,13 +2018,33 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                             <form onSubmit={HandleFilterForm}>
                               <div className="row">
                               <div className="col-md-3 mt-3">
+                                <label className="form-label">From:{" "}</label>
+                                <input
+                                    name="startDate"
+                                    type="date"
+                                    className="form-control"
+                                    value={filterQuery.startDate}
+                                    onChange={HandleFilter}
+                                />
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">To:{" "}</label>
+                                <input
+                                    name="endDate"
+                                    type="date"
+                                    className="form-control"
+                                    value={filterQuery.endDate}
+                                    onChange={HandleFilter}
+                                />
+                              </div>
+                              {/* <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                   DATE:{" "}
                                     <span className="text-danger"></span>
                                   </label>
                                   <input name="date" type="date"className="form-control" value={filterQuery.date} onChange={HandleFilter}/>
 
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3">
                               <label className="form-label">
                                 BUILDER NAME:{" "}
