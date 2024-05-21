@@ -320,6 +320,9 @@ const ProductList = () => {
     zoning:"",
     age:"",
     single:"",
+    current_price_per_sqft:"",
+    price_changes_since_open:"",
+    price_changes_last_12_Month:"",
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -565,9 +568,9 @@ const ProductList = () => {
     }, 1000)
   ).current;
 
-  useEffect(() => {
-    getproductList();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   getproductList();
+  // }, [searchQuery]);
 
   const HandleSearch = (e) => {
     setIsLoading(true);
@@ -622,6 +625,9 @@ const ProductList = () => {
       zoning:"",
       age:"",
       single:"",
+      current_price_per_sqft:"",
+      price_changes_since_open:"",
+      price_changes_last_12_Month:"",
     });
   };
   const handlePriceClick = () => {
@@ -793,6 +799,52 @@ const HandleFilterForm = (e) =>
       })
     .join('');
   }
+
+  const applyFilters = () => {
+    debugger
+    let filtered = AllProductListExport;
+
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
+
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+            operator = query[0];
+            value = query.slice(1);
+        }
+
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
+            return items.filter(item => {
+                const itemValue = parseFloat(item[key]);
+                if (operator === '>') return itemValue > numberValue;
+                if (operator === '<') return itemValue < numberValue;
+                return itemValue === numberValue;
+            });
+        }
+      }
+      return items;
+    };
+
+    filtered = applyNumberFilter(filtered, filterQuery.current_price_per_sqft, 'current_price_per_sqft');
+    filtered = applyNumberFilter(filtered, filterQuery.price_changes_since_open, 'price_changes_since_open');
+    filtered = applyNumberFilter(filtered, filterQuery.price_changes_last_12_Month, 'price_changes_last_12_Month');
+debugger
+    setProductList(filtered);
+  };
+  
+  useEffect(() => {
+    applyFilters();
+  }, [filterQuery]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+  };
 
   return (
     <>
@@ -1920,6 +1972,26 @@ const HandleFilterForm = (e) =>
                                   Filter
                                 </Button>       
                             </div>
+                            <br />
+                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
+                            <>
+                            <h5 className="">Calculation Filter Options</h5>
+                            <div className="border-top">
+                              <div className="row">
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">CURRENT PRICE PER SQFT:{" "}</label>
+                                  <input style={{marginTop: "20px"}} value={filterQuery.current_price_per_sqft} name="current_price_per_sqft" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">PRICE CHANGE SINCE OPEN:{" "}</label>
+                                  <input value={filterQuery.price_changes_since_open} name="price_changes_since_open" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">PRICE CHANGE LAST 12 MONTHS:{" "}</label>
+                                  <input value={filterQuery.price_changes_last_12_Month} name="price_changes_last_12_Month" className="form-control" onChange={handleInputChange} />
+                                </div>
+                              </div>
+                            </div></>}
           </div>
         </div>
       </Offcanvas>

@@ -414,6 +414,8 @@ useEffect(() => {
   }, []);
 
   const [filterQuery, setFilterQuery] = useState({
+    startDate:"",
+    endDate:"",
     weekending:"",
     builder_name:"",
     subdivision_name:"",
@@ -431,6 +433,7 @@ useEffect(() => {
     zoning:"",
     age:"",
     single:"",
+    grosssales:"",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -569,6 +572,8 @@ useEffect(() => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
+      startDate:"",
+      endDate:"",
       weekending:"",
       builder_name:"",
       subdivision_name:"",
@@ -586,6 +591,7 @@ useEffect(() => {
       zoning:"",
       age:"",
       single:"",
+      grosssales:"",
     });
   };
 
@@ -701,6 +707,64 @@ const toCamelCase = (str) => {
     })
   .join('');
 }
+
+const applyFilters = () => {
+  let filtered = AllTrafficListExport;
+
+  const applyNumberFilter = (items, query, key) => {
+    if (query) {
+      let operator = '=';
+      let value = query;
+
+      if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+          operator = query[0];
+          value = query.slice(1);
+      }
+
+      const numberValue = parseFloat(value);
+      if (!isNaN(numberValue)) {
+          return items.filter(item => {
+              const itemValue = parseFloat(item[key]);
+              if (operator === '>') return itemValue > numberValue;
+              if (operator === '<') return itemValue < numberValue;
+              return itemValue === numberValue;
+          });
+      }
+    }
+    return items;
+  };
+
+  filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
+
+  const applyDateRangeFilter = (items, startDateQuery, endDateQuery, key) => {
+      if (startDateQuery && endDateQuery) {
+          const startDate = new Date(startDateQuery);
+          const endDate = new Date(endDateQuery);
+
+          return items.filter(item => {
+              const itemDate = new Date(item[key]);
+              return itemDate >= startDate && itemDate <= endDate;
+          });
+      }
+      return items;
+  };
+
+  filtered = applyDateRangeFilter(filtered, filterQuery.startDate, filterQuery.endDate, 'weekending');
+
+  setTrafficsaleList(filtered);
+};
+
+useEffect(() => {
+applyFilters();
+}, [filterQuery]);
+
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFilterQuery(prevFilterQuery => ({
+    ...prevFilterQuery,
+    [name]: value
+  }));
+};
 
   return (
     <>
@@ -1554,13 +1618,33 @@ const toCamelCase = (str) => {
                             <form onSubmit={HandleFilterForm}>
                               <div className="row">
                               <div className="col-md-3 mt-3">
+                                <label className="form-label">From:{" "}</label>
+                                <input
+                                    name="startDate"
+                                    type="date"
+                                    className="form-control"
+                                    value={filterQuery.startDate}
+                                    onChange={HandleFilter}
+                                />
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">To:{" "}</label>
+                                <input
+                                    name="endDate"
+                                    type="date"
+                                    className="form-control"
+                                    value={filterQuery.endDate}
+                                    onChange={HandleFilter}
+                                />
+                              </div>
+                              {/* <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                   WEEK ENDING:{" "}
                                     <span className="text-danger"></span>
                                   </label>
                                   <input name="weekending" type="date" className="form-control" value={filterQuery.weekending} onChange={HandleFilter}/>
 
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3">
                               <label className="form-label">
                                 BUILDER NAME:{" "}
@@ -1718,6 +1802,18 @@ const toCamelCase = (str) => {
                                   Filter
                                 </Button>       
                             </div>
+                            <br />
+                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
+                            <>
+                            <h5 className="">Calculation Filter Options</h5>
+                            <div className="border-top">
+                              <div className="row">
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
+                                  <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={handleInputChange} />
+                                </div>
+                              </div>
+                            </div></>}
           </div>
         </div>
       </Offcanvas>

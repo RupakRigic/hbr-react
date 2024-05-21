@@ -100,7 +100,31 @@ const handleSortClose = () => setShowSort(false);
     juridiction:"",
     gasprovider:"",
     hoafee:"",
-    masterplan_id:""
+    masterplan_id:"",
+    months_open:"",
+    latest_lots_released:"",
+    latest_standing_inventory:"",
+    avg_sqft_all:"",
+    avg_sqft_active:"",
+    avg_base_price_all:"",
+    avg_base_price_active:"",
+    min_sqft_all:"",
+    min_sqft_active:"",
+    max_sqft_all:"",
+    max_sqft_active:"",
+    min_base_price_all:"",
+    min_sqft_active_current:"",
+    max_base_price_all:"",
+    max_sqft_active_current:"",
+    avg_net_traffic_per_month_this_year:"",
+    avg_net_sales_per_month_this_year:"",
+    avg_closings_per_month_this_year:"",
+    avg_net_sales_per_month_since_open:"",
+    avg_net_sales_per_month_last_three_months:"",
+    sqft_group:"",
+    price_group:"",
+    month_net_sold:"",
+    year_net_sold:"",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -739,7 +763,31 @@ console.log(AllBuilderListExport)
         juridiction:"",
         gasprovider:"",
         hoafee:"",
-        masterplan_id:""
+        masterplan_id:"",
+        months_open:"",
+        latest_lots_released:"",
+        latest_standing_inventory:"",
+        avg_sqft_all:"",
+        avg_sqft_active:"",
+        avg_base_price_all:"",
+        avg_base_price_active:"",
+        min_sqft_all:"",
+        min_sqft_active:"",
+        max_sqft_all:"",
+        max_sqft_active:"",
+        min_base_price_all:"",
+        min_sqft_active_current:"",
+        max_base_price_all:"",
+        max_sqft_active_current:"",
+        avg_traffic_per_month_this_year:"",
+        avg_net_sales_per_month_this_year:"",
+        avg_closings_per_month_this_year:"",
+        avg_net_sales_per_month_since_open:"",
+        avg_net_sales_per_month_last_three_months:"",
+        sqft_group:"",
+        price_group:"",
+        month_net_sold:"",
+        year_net_sold:""
       });
       getbuilderlist(currentPage,searchQuery);
   };
@@ -1042,6 +1090,80 @@ console.log(AllBuilderListExport)
     .join('');
   }
   
+  const applyFilters = () => {
+    let filtered = AllBuilderListExport;
+
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
+
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+            operator = query[0];
+            value = query.slice(1);
+        }
+
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
+            return items.filter(item => {
+                const itemValue = parseFloat(item[key]);
+                if (operator === '>') return itemValue > numberValue;
+                if (operator === '<') return itemValue < numberValue;
+                return itemValue === numberValue;
+            });
+        }
+      }
+      return items;
+    };
+
+    filtered = applyNumberFilter(filtered, filterQuery.months_open, 'months_open');
+    filtered = applyNumberFilter(filtered, filterQuery.latest_lots_released, 'latest_lots_released');
+    filtered = applyNumberFilter(filtered, filterQuery.latest_standing_inventory, 'latest_standing_inventory');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_sqft_all, 'avg_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_sqft_active, 'avg_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_base_price_all, 'avg_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_base_price_active, 'avg_base_price_active');
+    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_all, 'min_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_active, 'min_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_all, 'max_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_active, 'max_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQuery.min_base_price_all, 'min_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_active_current, 'min_sqft_active_current');
+    filtered = applyNumberFilter(filtered, filterQuery.max_base_price_all, 'max_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_active_current, 'max_sqft_active_current');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_net_traffic_per_month_this_year, 'avg_net_traffic_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_since_open, 'avg_net_sales_per_month_since_open');
+    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_last_three_months, 'avg_net_sales_per_month_last_three_months');
+    filtered = applyNumberFilter(filtered, filterQuery.month_net_sold, 'month_net_sold');
+    filtered = applyNumberFilter(filtered, filterQuery.year_net_sold, 'year_net_sold');
+
+    if (filterQuery.sqft_group) {
+      filtered = filtered.filter((item) =>
+        item.sqft_group.toString().includes(filterQuery.sqft_group)
+      );
+    }
+    if (filterQuery.price_group) {
+      filtered = filtered.filter((item) =>
+        item.price_group.toString().includes(filterQuery.price_group)
+      );
+    }
+
+    setBuilderList(filtered);
+  };
+  
+  useEffect(() => {
+    applyFilters();
+  }, [filterQuery]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+  };
 
   return (
     <>
@@ -3887,6 +4009,109 @@ console.log(AllBuilderListExport)
                                   Filter
                                 </Button>       
                             </div>
+                            <br/>
+                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
+                            <>
+                            <h5 className="">Calculation Filter Options</h5>
+                            <div className="border-top">
+                              <div className="row">
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MOTHS OPEN:{" "}</label>
+                                  <input style={{marginTop: "20px"}} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">LATEST LOTS RELEASED:{" "}</label>
+                                  <input style={{marginTop: "20px"}} value={filterQuery.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">LATEST STANDING INVENTORY:{" "}</label>
+                                  <input value={filterQuery.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG SQFT ALL:{" "}</label>
+                                  <input style={{marginTop: "20px"}} value={filterQuery.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG SQFT ACTIVE:{" "}</label>
+                                  <input value={filterQuery.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG BASE PRICE ALL:{" "}</label>
+                                  <input value={filterQuery.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG BASE PRICE ACTIVE:{" "}</label>
+                                  <input value={filterQuery.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MIN SQFT ALL:{" "}</label>
+                                  <input value={filterQuery.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
+                                  <input value={filterQuery.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MAX SQFT ALL:{" "}</label>
+                                  <input value={filterQuery.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MAX SQFT ACTIVE:{" "}</label>
+                                  <input value={filterQuery.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MIN BASE PRICE ALL:{" "}</label>
+                                  <input value={filterQuery.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MIN BASE PRICE ACTIVE:{" "}</label>
+                                  <input value={filterQuery.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MAX BASE PRICE ALL:{" "}</label>
+                                  <input value={filterQuery.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MAX BASE PRICE ACTIVE:{" "}</label>
+                                  <input value={filterQuery.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                                </div><div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
+                                  <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:{" "}</label>
+                                  <input value={filterQuery.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:{" "}</label>
+                                  <input value={filterQuery.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">SQFT GROUP:{" "}</label>
+                                  <input type="text" value={filterQuery.sqft_group} name="sqft_group" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">PRICE GROUP:{" "}</label>
+                                  <input type="text" value={filterQuery.price_group} name="price_group" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">MONTH NET SOLD:{" "}</label>
+                                  <input value={filterQuery.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
+                                </div>
+                                <div className="col-md-3 mt-3 mb-3">
+                                  <label className="form-label">YEAR NET SOLD:{" "}</label>
+                                  <input value={filterQuery.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
+                                </div>
+                              </div>
+                            </div></>}
           </div>
         </div>
       </Offcanvas>
