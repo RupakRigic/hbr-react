@@ -144,6 +144,42 @@ const ProductList = () => {
     }
   };
 
+  const calculatedField = [
+    {
+      "Active Communities": null,
+      "Closing This Year": null,
+      "Permits This Year": null,
+      "Net Sales this year": null,
+      "Current Avg Base Price": null,
+      "Median Closing Price This Year": null,
+      "Median Closing Price Last Year": null,
+      "Avg Net Sales Per Month This Year ": null,
+      "Avg Closings Per Month This Year": null,
+      "Total Closings": null,
+      "Total Permits": null,
+      "Total Net Sales": null,
+    },
+  ];
+
+  function handleLabelExist(lable)
+  {
+
+    return calculatedField.some(field => field.hasOwnProperty(lable));
+ 
+  }
+
+  const totalSumFields = (label) => {
+    if (!handleLabelExist(label)) {
+      return 0;
+    }
+    label = label
+    .toLowerCase()      
+    .replace(/\s+/g, '_');
+    return AllProductListExport.reduce((sum, builder) => {
+      return sum + (builder[label] || 0);
+    }, 0);
+  };
+  
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)

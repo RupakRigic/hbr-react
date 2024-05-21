@@ -296,6 +296,42 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     { label: "Fk sub id", key: "fkSubID" },
   ];
 
+  const calculatedField = [
+    {
+      "Active Communities": null,
+      "Closing This Year": null,
+      "Permits This Year": null,
+      "Net Sales this year": null,
+      "Current Avg Base Price": null,
+      "Median Closing Price This Year": null,
+      "Median Closing Price Last Year": null,
+      "Avg Net Sales Per Month This Year ": null,
+      "Avg Closings Per Month This Year": null,
+      "Total Closings": null,
+      "Total Permits": null,
+      "Total Net Sales": null,
+    },
+  ];
+
+  function handleLabelExist(lable)
+  {
+
+    return calculatedField.some(field => field.hasOwnProperty(lable));
+ 
+  }
+
+  const totalSumFields = (label) => {
+    if (!handleLabelExist(label)) {
+      return 0;
+    }
+    label = label
+    .toLowerCase()      
+    .replace(/\s+/g, '_');
+    return AllPermitListExport.reduce((sum, builder) => {
+      return sum + (builder[label] || 0);
+    }, 0);
+  };
+
   const handleSelectAllToggle = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
@@ -1561,7 +1597,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.plan === "" || element.plan === null ? "NA" : element.plan}</td>
                                   }
                                   {column.id == "sub Legal Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
                                   }
                                   {column.id == "value" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.value}</td>

@@ -779,6 +779,68 @@ console.log(AllBuilderListExport)
     getbuilderlist(currentPage, sortConfig);
   };
 
+  const calculatedField = [
+    {
+      "Latest Lots Released": null,
+      "Latest Standing Inventory": null,
+      "Avg Sqft All": null,
+      "Avg Sqft Active": null,
+      "Avg Base Price All": null,
+      "Avg Base Price Active": null,
+      "Min Sqft All": null,
+      "Min Sqft Active": null,
+      "Max Sqft All": null,
+      "Max Sqft Active": null,
+      "Min Base Price All": null,
+      "Min Base Price Active": null,
+      "Max Base Price All": null,
+      "Max Base Price Active": null,
+      "Avg Traffic Per Month This Year": null,
+      "Avg Net Sales Per Month This Year": null,
+      "Avg Closings Per Month This Year": null,
+      "Avg Net Sales Per Month Since Open": null,
+      "Avg Net Sales Per Month Last 3 Month": null,
+      "Month Net Sold": null,
+      "Year Net Sold": null,
+      'Total Closings':null,
+      'Total Permits':null,
+      'Total Net Sales':null,
+
+
+    },
+  ];
+  
+
+  function handleLabelExist(lable)
+  {
+
+      console.log(lable);
+      console.log(calculatedField.some(field => field.hasOwnProperty(lable)));
+
+      return calculatedField.some(field => field.hasOwnProperty(lable));
+ 
+  }
+
+  const totalSumFields = (label) => {
+    console.log(AllBuilderListExport);
+    console.log(label);
+  
+    // return 0 if the label doesn't exist
+    if (!handleLabelExist(label)) {
+      return 0;
+    }
+  
+    label = label.toLowerCase().replace(/\s+/g, '_');
+  
+    const sum = AllBuilderListExport.reduce((sum, builder) => {
+      return sum + (builder[label] || 0);
+    }, 0);
+  
+    return sum.toFixed(2);
+  };
+  
+
+
 
   const exportToExcelData = async () => {
     try {
@@ -1061,7 +1123,7 @@ console.log(AllBuilderListExport)
                       </button>
                       <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
                       <i className="fa fa-filter" />
-                    </button>   
+                      </button>   
                       <Button
                         className="btn-sm me-1"
                         variant="secondary"
@@ -1237,7 +1299,7 @@ console.log(AllBuilderListExport)
                                 column.id == "year Net Sold" ? "year_net_sold" : 
                                 column.id == "parcel" ? "parcel" : toCamelCase(column.id)))}>
                                 <strong>
-                                  {column.label}
+                                  {column.label + (handleLabelExist(column.label) ? ' ' + totalSumFields(column.label) : "")}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === toCamelCase(column.id)
                                     ) ? (
@@ -2499,35 +2561,6 @@ console.log(AllBuilderListExport)
                                   {column.id == "_fkBuilderID" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
                                   }
-                                  {column.id == "action" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      <div>
-                                        <Link
-                                          to={`/subdivisionUpdate/${element.id}`}
-                                          className="btn btn-primary shadow btn-xs sharp me-1"
-                                        >
-                                          <i className="fas fa-pencil-alt"></i>
-                                        </Link>
-                                        <Link
-                                          onClick={() =>
-                                            swal({
-                                              title: "Are you sure?",
-                                              icon: "warning",
-                                              buttons: true,
-                                              dangerMode: true,
-                                            }).then((willDelete) => {
-                                              if (willDelete) {
-                                                handleDelete(element.id);
-                                              }
-                                            })
-                                          }
-                                          className="btn btn-danger shadow btn-xs sharp"
-                                        >
-                                          <i className="fa fa-trash"></i>
-                                        </Link>
-                                      </div>
-                                    </td>
-                                  }
                                   {column.id == "total Closings" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
                                   }
@@ -2616,7 +2649,35 @@ console.log(AllBuilderListExport)
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
                                   }
 
-
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div>
+                                        <Link
+                                          to={`/subdivisionUpdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  }
                                   </>
                                 ))}
 

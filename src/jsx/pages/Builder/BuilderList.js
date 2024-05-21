@@ -828,6 +828,43 @@ const handleSortClose = () => setShowSort(false);
     }));
     setColumns(mappedColumns);
   }, [fieldList]);
+
+  const calculatedField = [
+    {
+      "Active Communities": null,
+      "Closing This Year": null,
+      "Permits This Year": null,
+      "Net Sales this year": null,
+      "Current Avg Base Price": null,
+      "Median Closing Price This Year": null,
+      "Median Closing Price Last Year": null,
+      "Avg Net Sales Per Month This Year ": null,
+      "Avg Closings Per Month This Year": null,
+      "Total Closings": null,
+      "Total Permits": null,
+      "Total Net Sales": null,
+    },
+  ];
+
+  function handleLabelExist(lable)
+  {
+
+    return calculatedField.some(field => field.hasOwnProperty(lable));
+ 
+  }
+
+  const totalSumFields = (label) => {
+    if (!handleLabelExist(label)) {
+      return 0;
+    }
+    label = label
+    .toLowerCase()      
+    .replace(/\s+/g, '_');
+    return AllBuilderListExport.reduce((sum, builder) => {
+      return sum + (builder[label] || 0);
+    }, 0);
+  };
+
   
   const toCamelCase = (str) => {
     return str
@@ -1180,7 +1217,7 @@ const handleSortClose = () => setShowSort(false);
                                   column.id == "date Of First Closing" ? "date_of_first_closing" : 
                                   column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))}>
                                   <strong>
-                                    {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
+                                    {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label + (handleLabelExist(column.label) ? ' '+totalSumFields(column.label) : "")}
                                     {column.id != "action" && sortConfig.some(
                                     (item) => item.key === toCamelCase(column.id)
                                     ) ? (
@@ -2055,7 +2092,7 @@ const handleSortClose = () => setShowSort(false);
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.net_sales_this_year}</td>
                                       }
                                       {column.id == "current Avg Base Price" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_avg_base_Price}</td>
+                                        <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price ={element.current_avg_base_Price}/>}</td>
                                       }
                                       {column.id == "median Closing Price This Year" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{ <PriceComponent price={element.median_closing_price_this_year} />}</td>

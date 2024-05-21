@@ -4,8 +4,10 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import AdminGoogleMapService from "../../../API/Services/AdminService/AdminGoogleMapService";
 import DateComponent from "../../components/date/DateFormat";
 import PriceComponent from "../../components/Price/PriceComponent";
-import { Form } from "react-bootstrap";
+import { Form,Offcanvas } from "react-bootstrap";
 import Select from "react-select";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import Button from "react-bootstrap/Button";
 
 
 const containerStyle = {
@@ -19,10 +21,100 @@ const defaultCenter = {
 };
 
 const GoogleMapLocator = () => {
+
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+
   const [builderList, setBuilderList] = useState([]);
   const [subdivisionList, setSubdivisionList] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [builderId, setBuilderId] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState({
+    status: "",
+    product_type: "",
+    reporting: "",
+    builder_name:"",
+    name:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotwidth:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
+    gated:"",
+    juridiction:"",
+    gasprovider:"",
+    hoafee:"",
+    masterplan_id:""
+  });
+  console.log(filterQuery)
+
+  const filterString = () => {
+    const queryString = Object.keys(filterQuery)
+      .map(
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+      )
+      .join("&");
+
+    return queryString ? `?${queryString}` : "";
+  };
+
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
+
+  
+  const HandleFilterForm = (e) =>
+    {
+      e.preventDefault();
+      console.log(filterQuery);
+      fetchSubdivisionList(filterQuery);
+    };
+
+    const HandleFilter = (e) => {
+      const { name, value } = e.target;
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        [name]: value,
+      }));
+    };
+  
+    const HandleSelectChange = (selectedOption) => {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        builder_name: selectedOption.name,
+      }));
+    };
+
+    const HandleCancelFilter = (e) => {
+      setFilterQuery(
+        {
+          status: "",
+          product_type: "",
+          reporting: "",
+          builder_name:"",
+          name:"",
+          product_type:"",
+          area:"",
+          masterplan_id:"",
+          zipcode:"",
+          lotwidth:"",
+          lotsize:"",
+          zoning:"",
+          age:"",
+          single:"",
+          gated:"",
+          juridiction:"",
+          gasprovider:"",
+          hoafee:"",
+          masterplan_id:""
+        });
+        fetchSubdivisionList(searchQuery);
+    };
 
   useEffect(() => {
     const fetchBuilderList = async () => {
@@ -39,19 +131,18 @@ const GoogleMapLocator = () => {
     fetchBuilderList();
   }, []);
 
+  const fetchSubdivisionList = async () => {
+
+    try {
+      const response = await AdminSubdevisionService.getByBuilderId(searchQuery);
+      const data = await response.json();
+      setSubdivisionList(data);
+    } catch (error) {
+      console.log("Error fetching subdivision list:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchSubdivisionList = async () => {
-      if (!builderId) return;
-
-      try {
-        const response = await AdminGoogleMapService.showbybuilderid(builderId);
-        const data = await response.json();
-        setSubdivisionList(data);
-      } catch (error) {
-        console.log("Error fetching subdivision list:", error);
-      }
-    };
-
     fetchSubdivisionList();
   }, [builderId]);
 
@@ -66,9 +157,231 @@ const GoogleMapLocator = () => {
 
   return (
     <div className="container">
+            <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Subdivision{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+          <div className="">
+                            <form onSubmit={HandleFilterForm}>
+                              <div className="row">
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    STATUS:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="status"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Sold Out</option>
+                                    <option value="2">Future</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                  <label className="form-label">
+                                    REPORTING:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <select
+                                    className="default-select form-control"
+                                    value={filterQuery.is_active}
+                                    name="reporting"
+                                    onChange={HandleFilter}
+                                  >
+                                    <option value="">All</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                  </select>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                {/* <label className="form-label">
+                                  BUILDER NAME:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+
+                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
+                              */}
+                                <label className="form-label">
+                                BUILDER NAME:{" "}
+                                    <span className="text-danger"></span>
+                                  </label>
+                                  <Form.Group controlId="tournamentList">
+                          <Select
+                            options={builderList}
+                            onChange={HandleSelectChange}
+                            getOptionValue={(option) => option.name}
+                            getOptionLabel={(option) => option.name}
+                            value={builderList.name}
+                            name="builder_name"
+                          ></Select>
+                        </Form.Group>
+                             
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                NAME :{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.name} name="name" className="form-control"  onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                              <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type <span className="text-danger"></span></label>
+                                    <select className="default-select form-control" name="product_type" onChange={HandleFilter} >
+                                        <option value="">Select Product Type</option>
+                                         <option value="DET">DET</option>
+                                        <option value="ATT">ATT</option>
+                                        <option value="HR">HR</option>
+                                        <option value="AC">AC</option>
+                                    </select> 
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input name="area" value={filterQuery.area} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                MASTERPLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LOT WIDTH:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                LOT SIZE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">
+                                ZONING:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input  value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
+                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                                    <option value="">Select age Restricted</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                              </select>    
+                              </div>
+                              <div className="col-md-3 mt-3 ">
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
+                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                                        <option value="">Select Story</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>    
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                              <label htmlFor="exampleFormControlInput28" className="form-label">GATED</label>
+                                    <select className="default-select form-control" 
+                                    onChange={HandleFilter} 
+                                    value={filterQuery.gated}
+                                    name="gated"
+                                    > 
+                                        <option value="">Select Gate</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>                                </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                JURISDICTION:{" "}
+                                </label>
+                                <input value={filterQuery.juridiction} name="juridiction" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                GAS PROVIDER:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.gasprovider} name="gasprovider" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                HOA FEE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.hoafee} name="hoafee" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                MASTERPLAN FEE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <input value={filterQuery.masterplanfee} name="masterplanfee" className="form-control" onChange={HandleFilter}/>
+                              </div>
+                             </div>
+                             </form>
+                            </div>
+                              <div className="d-flex justify-content-between">                 
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>    
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>       
+                            </div>
+          </div>
+        </div>
+      </Offcanvas>
       <div className="row mb-3">
-        <div className="col-md-4">  
-          <label className="form-label">Builder:</label>
+        <div className="d-flex justify-content-end align-items-center">  
+
+
+        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                      <i className="fa fa-filter" />
+                      </button>   
+
+          {/* <label className="form-label">Builder:</label>
   
           <Form.Group controlId="tournamentList">
                           <Select
@@ -78,7 +391,7 @@ const GoogleMapLocator = () => {
                             getOptionLabel={(option) => option.name}
                             value={builderList.builderId}
                           ></Select>
-                        </Form.Group>
+                        </Form.Group> */}
         </div>
       </div>
       
@@ -383,7 +696,7 @@ const GoogleMapLocator = () => {
           )}
         </GoogleMap>
       </LoadScript>
-    </div>
+    </div>  
   );
 };
 

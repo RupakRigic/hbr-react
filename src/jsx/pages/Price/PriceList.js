@@ -1190,7 +1190,7 @@ const toCamelCase = (str) => {
                                     <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.baseprice} /></td>
                                   }
                                   {column.id == "price Per SQFT" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.product.recentpricesqft} /></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per_sqft} /></td>
                                   }
                                   {column.id == "product Type" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.product_type}</td>
