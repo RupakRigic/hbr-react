@@ -92,7 +92,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 "closingdate": event.target.closingdate.value,
                 "closingprice": event.target.closingprice.value,
                 "loanamount": event.target.loanamount.value,
-                "document": event.target.document.value
+                "document": event.target.document.value,
+                "closing_type": event.target.closing_type.value,
+                "parcel": event.target.parcel.value,
+                "sublegal_name": event.target.sublegal_name.value,
+                "type": event.target.type.value
             }
             console.log(userData);
             const data = await AdminClosingService.bulkupdate(selectedLandSales, userData).json();
@@ -151,30 +155,30 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller Leagal</label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label">Seller Legal Name</label>
                                     <input type="text" name='sellerleagal' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Address</label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label">Address</label>
                                     <textarea rows="2" name='address' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput4" className="form-label">Buyer <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput4" className="form-label">Buyer Name<span className="text-danger"></span></label>
                                     <input type="text" name='buyer' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Lender <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Lender<span className="text-danger"></span></label>
                                     <input type="text" name='lender' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 
 
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Closing Date</label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">Closing Date</label>
                                     <input type="date" name='closingdate' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Closing Price</label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label">Closing Price</label>
                                     <input type="number" name='closingprice' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
@@ -190,7 +194,22 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Document<span className="text-danger"></span></label>
                                     <input type="text" name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
-
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput11" className="form-label">Closing Type</label>
+                                    <input type="text" name='closing_type' className="form-control" id="exampleFormControlInput11" placeholder="" />
+                                </div>
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput12" className="form-label">Parcel Number</label>
+                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput12" placeholder="" />
+                                </div>
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput13" className="form-label">Sub Legal Name</label>
+                                    <input type="text" name='sublegal_name' className="form-control" id="exampleFormControlInput13" placeholder="" />
+                                </div>
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput14" className="form-label">Type</label>
+                                    <input type="text" name='type' className="form-control" id="exampleFormControlInput14" placeholder="" />
+                                </div>
 
 
                                 <p className='text-danger fs-12'>{Error}</p>

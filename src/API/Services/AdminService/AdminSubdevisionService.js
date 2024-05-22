@@ -14,5 +14,6 @@ export default {
     import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
     put: (id, userData) => clientAuth.put(`admin/subdivision/soldout/${id}`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/subdivision/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/subdivision/bulkdestroy/${id}`),
 
 };

@@ -26,14 +26,18 @@ const ClosingList = () => {
 
   const [excelLoading, setExcelLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
+
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+}, [sortConfig]);
+
   const [showSort, setShowSort] = useState(false);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [AllClosingListExport, setAllClosingListExport] = useState([]);
 
 
-  const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
+  const HandleSortDetailClick = (e) =>{
+    setShowSort(true);
     }
     const handleSortCheckboxChange = (e, key) => {
       if (e.target.checked) {
@@ -94,6 +98,14 @@ const ClosingList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
+
+  const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+  };
+
+  const handleSortClose = () => setShowSort(false);
 
   useEffect(() => {
     console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
@@ -422,6 +434,20 @@ const ClosingList = () => {
     }
   };
 
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminClosingService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getClosingList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -708,6 +734,13 @@ const toCamelCase = (str) => {
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -811,20 +844,32 @@ const toCamelCase = (str) => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
                                 column.id == "closing Type" ? "closing_type" : 
-                                (column.id == "closing Price" ? "closingprice" : 
-                                (column.id == "Parcel Number" ? "parcel" : 
-                                (column.id == "sub Legal Name" ? "subdivisionName" : 
-                                (column.id == "seller Legal Name" ? "sellerleagal" : 
-                                (column.id == "buyer Name" ? "buyer" : 
-                                (column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)))))))) : ""}>
+                                column.id == "closing Price" ? "closingprice" : 
+                                column.id == "Parcel Number" ? "parcel" : 
+                                column.id == "sub Legal Name" ? "subdivisionName" : 
+                                column.id == "seller Legal Name" ? "sellerleagal" : 
+                                column.id == "buyer Name" ? "buyer" : 
+                                column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "closing Type" ? "closing_type" : 
+                                      column.id == "closing Price" ? "closingprice" : 
+                                      column.id == "sub Legal Name" ? "subdivisionName" : 
+                                      column.id == "seller Legal Name" ? "sellerleagal" : 
+                                      column.id == "buyer Name" ? "buyer" : 
+                                      column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (
+                                          column.id == "closing Type" ? "closing_type" : 
+                                          column.id == "closing Price" ? "closingprice" : 
+                                          column.id == "sub Legal Name" ? "subdivisionName" : 
+                                          column.id == "seller Legal Name" ? "sellerleagal" : 
+                                          column.id == "buyer Name" ? "buyer" : 
+                                          column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : (
@@ -1267,7 +1312,7 @@ const toCamelCase = (str) => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.loanamount}</td>
                                   }
                                   {column.id == "type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>NA</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.type}</td>
                                   }
                                   {column.id == "product Type" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
@@ -1616,7 +1661,49 @@ const toCamelCase = (str) => {
           </Modal.Footer>
         </>
       </Modal>
-
+      
+      <Modal show={showSort} onHide={HandleSortDetailClick}>
+        <Modal.Header handleSortClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        {sortConfig.length > 0 ? (
+                sortConfig.map((col) => (
+                    <div className="row" key={col.key}>
+                        <div className="col-md-6">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={col.key}
+                                    defaultChecked={true}
+                                    id={`checkbox-${col.key}`}
+                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                                />
+                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                                <span>{col.key}</span>:<span>{col.direction}</span>
+                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p>N/A</p>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleRemoveSelected}
+          >
+           Clear Sort
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

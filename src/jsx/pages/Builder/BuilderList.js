@@ -522,6 +522,20 @@ const handleSortClose = () => setShowSort(false);
     }
   };
 
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminBuilderService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getbuilderlist();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     getbuilderlist();
   };
@@ -1141,6 +1155,13 @@ const handleSortClose = () => setShowSort(false);
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                         </div>
                       )}
                     </div>
@@ -2284,7 +2305,7 @@ const handleSortClose = () => setShowSort(false);
         />
         <BulkBuilderUpdate
         ref={bulkBuilder}
-        Title="Bulk Edit Subdivision sale"
+        Title="Bulk Edit Builders"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

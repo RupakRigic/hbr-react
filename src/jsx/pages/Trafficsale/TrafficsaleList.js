@@ -506,6 +506,21 @@ useEffect(() => {
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminTrafficsaleService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        gettrafficsaleList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     // Update the name in the component's state
     gettrafficsaleList();
@@ -812,7 +827,7 @@ const handleInputChange = (e) => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    <div className="d-flex">
+                    <div className="d-flex" style={{marginTop: "10px"}}>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                     <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
@@ -858,6 +873,13 @@ const handleInputChange = (e) => {
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -962,24 +984,45 @@ const handleInputChange = (e) => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
                                 column.id == "week Ending" ? "weekending" :
-                                (column.id == "weekly Traffic" ? "weeklytraffic" : 
-                                (column.id == "weekly Gross Sales" ? "grosssales" : 
-                                (column.id == "weekly Cancellations" ? "cancelations" : 
-                                (column.id == "weekly Net Sales" ? "netsales" : 
-                                (column.id == "age Restricted" ? "age" : 
-                                (column.id == "all Single Story" ? "stories" : 
-                                (column.id == "date Added" ? "created_at" : 
-                                (column.id == "lot Size" ? "lotsize" : 
-                                (column.id == "_fkSubID" ? "subdivisionCode" : 
-                                (column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id)))))))))))) : ""}>
+                                column.id == "weekly Traffic" ? "weeklytraffic" : 
+                                column.id == "weekly Gross Sales" ? "grosssales" : 
+                                column.id == "weekly Cancellations" ? "cancelations" : 
+                                column.id == "weekly Net Sales" ? "netsales" : 
+                                column.id == "age Restricted" ? "age" : 
+                                column.id == "all Single Story" ? "stories" : 
+                                column.id == "date Added" ? "created_at" : 
+                                column.id == "lot Size" ? "lotsize" : 
+                                column.id == "_fkSubID" ? "subdivisionCode" : 
+                                column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "week Ending" ? "weekending" :
+                                      column.id == "weekly Traffic" ? "weeklytraffic" : 
+                                      column.id == "weekly Gross Sales" ? "grosssales" : 
+                                      column.id == "weekly Cancellations" ? "cancelations" : 
+                                      column.id == "weekly Net Sales" ? "netsales" : 
+                                      column.id == "age Restricted" ? "age" : 
+                                      column.id == "all Single Story" ? "stories" : 
+                                      column.id == "date Added" ? "created_at" : 
+                                      column.id == "lot Size" ? "lotsize" : 
+                                      column.id == "_fkSubID" ? "subdivisionCode" : 
+                                      column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" :toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (column.id == "week Ending" ? "weekending" :
+                                        column.id == "weekly Traffic" ? "weeklytraffic" : 
+                                        column.id == "weekly Gross Sales" ? "grosssales" : 
+                                        column.id == "weekly Cancellations" ? "cancelations" : 
+                                        column.id == "weekly Net Sales" ? "netsales" : 
+                                        column.id == "age Restricted" ? "age" : 
+                                        column.id == "all Single Story" ? "stories" : 
+                                        column.id == "date Added" ? "created_at" : 
+                                        column.id == "lot Size" ? "lotsize" : 
+                                        column.id == "_fkSubID" ? "subdivisionCode" : 
+                                        column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" :toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : (

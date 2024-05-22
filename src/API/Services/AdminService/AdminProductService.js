@@ -12,5 +12,6 @@ export default {
     getBySubDivisionId: (id) => clientAuth.get(`admin/product/showbysubdivisionid/${id}`),
     import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/product/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/product/bulkdestroy/${id}`),
 
 };

@@ -12,5 +12,6 @@ export default {
     export: () => clientAuth.get(`admin/permit/export`),
     import: (userData) => clientAuth.post(`admin/permit/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/permit/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/permit/bulkdestroy/${id}`),
 
 };

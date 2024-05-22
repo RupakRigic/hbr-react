@@ -230,6 +230,21 @@ const UserList = () => {
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminUserRoleService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getuserList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     getuserList();
   };
@@ -466,6 +481,13 @@ const UserList = () => {
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete(selectedUsers)}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -573,11 +595,11 @@ const UserList = () => {
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === column.id
+                                    (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
                                     ) ? (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
-                                          (item) => item.key === column.id
+                                          (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
                                           ).direction === "asc" ? "↑" : "↓"
                                         }
                                       </span>

@@ -62,6 +62,7 @@ const handleSortClose = () => setShowSort(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
+  console.log("BuilderList",BuilderList);
   const [BuilderListCount, setBuilderListCount] = useState('');
   const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
@@ -549,6 +550,7 @@ const handleSortClose = () => setShowSort(false);
     zoning: "",
     gasprovider: "",
   });
+  console.log("SubdivisionDetails", SubdivisionDetails);
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
@@ -650,6 +652,21 @@ console.log(AllBuilderListExport)
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminSubdevisionService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getbuilderlist();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     // Update the name in the component's state
     getbuilderlist();
@@ -1147,7 +1164,7 @@ console.log(AllBuilderListExport)
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    <div className="d-flex">
+                    <div className="d-flex" style={{marginTop: "10px"}}>
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
                       </button>
@@ -1207,6 +1224,13 @@ console.log(AllBuilderListExport)
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
