@@ -149,9 +149,6 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     { label: "Size", key: "Price" },
     { label: "Size MS", key: "Price" },
     { label: "Date", key: "Price" },
-
-
-
   ];
 
   const handleSelectAllToggle = () => {
