@@ -132,6 +132,8 @@ const ProductList = () => {
     { label: 'All Single Story', key: 'singlestory' },
     { label: 'Product ID', key: 'productid' },
     { label: 'Fk Sub ID', key: 'fksubid' }, 
+    { label: 'Price Change Since Open', key: 'pricechangesinceopen' },
+    { label: 'Price Change Last 12 Months', key: 'pricechangelasttwelvemonths' }, 
   ];
 
   const handleSelectAllToggle = () => {
@@ -272,6 +274,12 @@ const ProductList = () => {
             break;
           case "Fk Sub ID":
             mappedRow[header] = row.subdivision ? row.subdivision.subdivision_code : '';
+            break;
+          case "Price Change Since Open":
+            mappedRow[header] = row.price_changes_since_open+'%';
+            break;
+          case "Price Change Last 12 Months":
+            mappedRow[header] = row.price_changes_last_12_Month+'%';
             break;
           default:
             mappedRow[header] = '';
@@ -468,6 +476,21 @@ const ProductList = () => {
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminProductService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getproductList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     // Update the name in the component's state
     getproductList();
@@ -801,7 +824,6 @@ const HandleFilterForm = (e) =>
   }
 
   const applyFilters = () => {
-    debugger
     let filtered = AllProductListExport;
 
     const applyNumberFilter = (items, query, key) => {
@@ -830,7 +852,7 @@ const HandleFilterForm = (e) =>
     filtered = applyNumberFilter(filtered, filterQuery.current_price_per_sqft, 'current_price_per_sqft');
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_last_12_Month, 'price_changes_last_12_Month');
-debugger
+    
     setProductList(filtered);
   };
   
@@ -937,6 +959,13 @@ debugger
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">

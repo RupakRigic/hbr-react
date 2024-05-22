@@ -10,5 +10,6 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/trafficsale/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/trafficsale/export`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/trafficsale/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/trafficsale/bulkdestroy/${id}`),
 
 };

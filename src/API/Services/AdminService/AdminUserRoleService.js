@@ -10,5 +10,6 @@ export default {
     accessField: () => clientAuth.get(`admin/user/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/user/manage-access-fields`,{ json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/user/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/user/bulkdestroy/${id}`),
 
 };

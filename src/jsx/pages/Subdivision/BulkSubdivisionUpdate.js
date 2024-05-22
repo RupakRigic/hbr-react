@@ -184,6 +184,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 dateadded: event.target.dateadded.value,
                 zoning: event.target.zoning.value,
                 gasprovider: event.target.gasprovider.value,
+                hoafee: event.target.hoafee.value
               };
             console.log(userData);
             const data = await AdminSubdevisionService.bulkupdate(selectedLandSales, userData).json();
@@ -916,6 +917,16 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                           name="gasprovider"
                           className="form-control"
                           id="exampleFormControlInput35"
+                        />
+                      </div>
+                      <div className="col-xl-6 mb-3">
+                        <label htmlFor="exampleFormControlInput36" className="form-label">HOA Fee</label>
+                        <input
+                          type="number"
+                          defaultValue={Subdivision.hoafee}
+                          name="hoafee"
+                          className="form-control"
+                          id="exampleFormControlInput36"
                         />
                       </div>
                       <p className="text-danger fs-12">{Error}</p>

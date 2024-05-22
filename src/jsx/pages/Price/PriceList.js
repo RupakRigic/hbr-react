@@ -428,6 +428,21 @@ const handleDownloadExcel = () => {
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminPriceService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getpriceList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     // Update the name in the component's state
     getpriceList();
@@ -713,6 +728,13 @@ const toCamelCase = (str) => {
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -818,22 +840,40 @@ const toCamelCase = (str) => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
                                 column.id == "date" ? "created_at" : 
-                                (column.id == "squre Footage" ? "sqft" : 
-                                (column.id == "bedrooms" ? "bedroom" : 
-                                (column.id == "base Price" ? "baseprice" : 
-                                (column.id == "price Per SQFT" ? "perSQFT" : 
-                                (column.id == "lot Size" ? "lotsize" : 
-                                (column.id == "all Single Story" ? "stories" : 
-                                (column.id == "__pkPriceID" ? "id" : 
-                                (column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id)))))))))) : ""}>
+                                column.id == "squre Footage" ? "sqft" : 
+                                column.id == "bedrooms" ? "bedroom" : 
+                                column.id == "base Price" ? "baseprice" : 
+                                column.id == "price Per SQFT" ? "perSQFT" : 
+                                column.id == "lot Size" ? "lotsize" : 
+                                column.id == "all Single Story" ? "stories" : 
+                                column.id == "__pkPriceID" ? "id" : 
+                                column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.id == "squre Footage" ? "Square Footage" : column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "date" ? "created_at" : 
+                                      column.id == "squre Footage" ? "sqft" : 
+                                      column.id == "bedrooms" ? "bedroom" : 
+                                      column.id == "base Price" ? "baseprice" : 
+                                      column.id == "price Per SQFT" ? "perSQFT" : 
+                                      column.id == "lot Size" ? "lotsize" : 
+                                      column.id == "all Single Story" ? "stories" : 
+                                      column.id == "__pkPriceID" ? "id" : 
+                                      column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (
+                                          column.id == "date" ? "created_at" : 
+                                          column.id == "squre Footage" ? "sqft" : 
+                                          column.id == "bedrooms" ? "bedroom" : 
+                                          column.id == "base Price" ? "baseprice" : 
+                                          column.id == "price Per SQFT" ? "perSQFT" : 
+                                          column.id == "lot Size" ? "lotsize" : 
+                                          column.id == "all Single Story" ? "stories" : 
+                                          column.id == "__pkPriceID" ? "id" : 
+                                          column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : (

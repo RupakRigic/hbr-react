@@ -589,6 +589,21 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminPermitService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getPermitList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     // Update the name in the component's state
     getPermitList();
@@ -868,7 +883,7 @@ useEffect(() => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    <div>
+                    <div className="d-flex">
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
                       </button>
@@ -922,6 +937,13 @@ useEffect(() => {
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
@@ -1027,23 +1049,43 @@ useEffect(() => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
                                 column.id == "parcel Number" ? "parcel" : 
-                                (column.id == "squre Footage" ? "sqft" : 
-                                (column.id == "lot Number" ? "lotnumber" : 
-                                (column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" : 
-                                (column.id == "sub Legal Name" ? "Sublegal_name" : 
-                                (column.id == "lot Size" ? "lotsize" : 
-                                (column.id == "age Restricted" ? "age" : 
-                                (column.id == "all Single Story" ? "stories" : 
-                                (column.id == "date Added" ? "created_at" : 
-                                (column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id))))))))))) : ""}>
+                                column.id == "squre Footage" ? "sqft" : 
+                                column.id == "lot Number" ? "lotnumber" : 
+                                column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" : 
+                                column.id == "sub Legal Name" ? "Sublegal_name" : 
+                                column.id == "lot Size" ? "lotsize" : 
+                                column.id == "age Restricted" ? "age" : 
+                                column.id == "all Single Story" ? "stories" : 
+                                column.id == "date Added" ? "created_at" : 
+                                column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "parcel Number" ? "parcel" : 
+                                      column.id == "squre Footage" ? "sqft" : 
+                                      column.id == "lot Number" ? "lotnumber" : 
+                                      column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" : 
+                                      column.id == "sub Legal Name" ? "Sublegal_name" : 
+                                      column.id == "lot Size" ? "lotsize" : 
+                                      column.id == "age Restricted" ? "age" : 
+                                      column.id == "all Single Story" ? "stories" : 
+                                      column.id == "date Added" ? "created_at" : 
+                                      column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (
+                                          column.id == "parcel Number" ? "parcel" : 
+                                          column.id == "squre Footage" ? "sqft" : 
+                                          column.id == "lot Number" ? "lotnumber" : 
+                                          column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" : 
+                                          column.id == "sub Legal Name" ? "Sublegal_name" : 
+                                          column.id == "lot Size" ? "lotsize" : 
+                                          column.id == "age Restricted" ? "age" : 
+                                          column.id == "all Single Story" ? "stories" : 
+                                          column.id == "date Added" ? "created_at" : 
+                                          column.id == "_fkSubID" ? "subdivisionCode" :toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : (

@@ -11,5 +11,6 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/landsale/manage-access-fields`,{ json: userData }),
     export: () => clientAuth.get(`admin/landsale/export`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/landsale/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/landsale/bulkdestroy/${id}`),
 
 };

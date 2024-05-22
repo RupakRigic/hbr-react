@@ -14,5 +14,6 @@ export default {
     import: (userData) => clientAuth.post(`admin/builder/import`, { json: userData }),
     builderDropDown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),    
     bulkupdate: (id, userData) => clientAuth.put(`admin/builder/bulkupdate/${id}`, { json: userData }),
+    bulkdestroy: (id) => clientAuth.delete(`admin/builder/bulkdestroy/${id}`),
 
 };

@@ -50,6 +50,7 @@ const LandsaleList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [LandsaleList, setLandsaleList] = useState([]);
+  console.log("LandsaleList", LandsaleList);
   const [landSaleListCount, setlandSaleListCount] = useState("");
   const [TotalLandsaleListCount, setTotallandSaleListCount] = useState("");
   const [selectAll, setSelectAll] = useState(false);
@@ -146,6 +147,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     { label: "Location", key: "Location" },
     { label: "Notes", key: "Notes" },
     { label: "Price", key: "Price" },
+    { label: "Price Per", key: "Price" },
     { label: "Size", key: "Price" },
     { label: "Size MS", key: "Price" },
     { label: "Date", key: "Price" },
@@ -381,6 +383,21 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
       }
     }
   };
+
+  const handleBulkDelete = async (e) => {
+    try {
+      let responseData = await AdminLandsaleService.bulkdestroy(e).json();
+      if (responseData.status === true) {
+        getLandsaleList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
   const handleCallback = () => {
     getLandsaleList();
   };
@@ -715,6 +732,13 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                       >
                         Bulk Edit
                       </Link>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "3px"}}
+                        onClick={() => handleBulkDelete()}
+                      >
+                        Bulk Delete
+                      </button>
                     </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
