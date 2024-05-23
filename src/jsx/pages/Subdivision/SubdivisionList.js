@@ -1396,7 +1396,7 @@ console.log(AllBuilderListExport)
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" ? "" : requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "location" || column.id == "website") ? "" : requestSort(
                                 column.id == "builder" ? "builderName" : 
                                 column.id == "product Type" ? "product_type" : 
                                 column.id == "masterplan" ? "masterplan_id" : 
@@ -1443,23 +1443,119 @@ console.log(AllBuilderListExport)
                                 column.id == "price Group" ? "price_group" : 
                                 column.id == "month Net Sold" ? "month_net_sold" : 
                                 column.id == "year Net Sold" ? "year_net_sold" : 
-                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)))}>
+                                column.id == "parcel" ? "parcel" : toCamelCase(column.id))}>
                                 <strong>
                                   {column.label + (handleLabelExist(column.label) ? ' ' + totalSumFields(column.label) : "")}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "builder" ? "builderName" : 
+                                      column.id == "product Type" ? "product_type" : 
+                                      column.id == "masterplan" ? "masterplan_id" : 
+                                      column.id == "total Lots" ? "totallots" : 
+                                      column.id == "lot Width" ? "lotwidth" : 
+                                      column.id == "lot Size" ? "lotsize" : 
+                                      column.id == "age Restricted" ? "age" : 
+                                      column.id == "all Single Story" ? "single" : 
+                                      column.id == "latitude" ? "lat" : 
+                                      column.id == "longitude" ? "lng" : 
+                                      column.id == "gas Provider" ? "gasprovider" : 
+                                      column.id == "hOA Fee" ? "hoafee" : 
+                                      column.id == "masterplan Fee" ? "masterplanfee" : 
+                                      column.id == "parcel Group" ? "parcel" : 
+                                      column.id == "date Added" ? "created_at" : 
+                                      column.id == "__pkSubID" ? "subdivision_code" : 
+                                      column.id == "_fkBuilderID" ? "builder_code" : 
+                                      column.id == "total Closings" ? "total_closings" : 
+                                      column.id == "total Permits" ? "total_permits" : 
+                                      column.id == "total Net Sales" ? "total_net_sales" : 
+                                      column.id == "months Open" ? "months_open" : 
+                                      column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
+                                      column.id == "latest Lots Released" ? "latest_lots_released" : 
+                                      column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
+                                      column.id == "unsold Lots" ? "unsold_lots" : 
+                                      column.id == "avg Sqft All" ? "avg_sqft_all" : 
+                                      column.id == "avg Sqft Active" ? "avg_sqft_active" : 
+                                      column.id == "avg Base Price All" ? "avg_base_price_all" : 
+                                      column.id == "avg Base Price Active" ? "avg_base_price_active" : 
+                                      column.id == "min Sqft All" ? "min_sqft_all" : 
+                                      column.id == "max Sqft All" ? "max_sqft_all" : 
+                                      column.id == "max Sqft Active" ? "max_sqft_active_current" : 
+                                      column.id == "min Base Price All" ? "min_base_price_all" : 
+                                      column.id == "min Sqft Active" ? "min_sqft_active_current" : 
+                                      column.id == "max Base Price All" ? "max_base_price_all" : 
+                                      column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                      column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
+                                      column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
+                                      column.id == "max Week Ending" ? "max_week_ending" : 
+                                      column.id == "min Week Ending" ? "min_week_ending" : 
+                                      column.id == "sqft Group" ? "sqft_group" : 
+                                      column.id == "price Group" ? "price_group" : 
+                                      column.id == "month Net Sold" ? "month_net_sold" : 
+                                      column.id == "year Net Sold" ? "year_net_sold" : 
+                                      column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (
+                                          column.id == "builder" ? "builderName" : 
+                                          column.id == "product Type" ? "product_type" : 
+                                          column.id == "masterplan" ? "masterplan_id" : 
+                                          column.id == "total Lots" ? "totallots" : 
+                                          column.id == "lot Width" ? "lotwidth" : 
+                                          column.id == "lot Size" ? "lotsize" : 
+                                          column.id == "age Restricted" ? "age" : 
+                                          column.id == "all Single Story" ? "single" : 
+                                          column.id == "latitude" ? "lat" : 
+                                          column.id == "longitude" ? "lng" : 
+                                          column.id == "gas Provider" ? "gasprovider" : 
+                                          column.id == "hOA Fee" ? "hoafee" : 
+                                          column.id == "masterplan Fee" ? "masterplanfee" : 
+                                          column.id == "parcel Group" ? "parcel" : 
+                                          column.id == "date Added" ? "created_at" : 
+                                          column.id == "__pkSubID" ? "subdivision_code" : 
+                                          column.id == "_fkBuilderID" ? "builder_code" : 
+                                          column.id == "total Closings" ? "total_closings" : 
+                                          column.id == "total Permits" ? "total_permits" : 
+                                          column.id == "total Net Sales" ? "total_net_sales" : 
+                                          column.id == "months Open" ? "months_open" : 
+                                          column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
+                                          column.id == "latest Lots Released" ? "latest_lots_released" : 
+                                          column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
+                                          column.id == "unsold Lots" ? "unsold_lots" : 
+                                          column.id == "avg Sqft All" ? "avg_sqft_all" : 
+                                          column.id == "avg Sqft Active" ? "avg_sqft_active" : 
+                                          column.id == "avg Base Price All" ? "avg_base_price_all" : 
+                                          column.id == "avg Base Price Active" ? "avg_base_price_active" : 
+                                          column.id == "min Sqft All" ? "min_sqft_all" : 
+                                          column.id == "max Sqft All" ? "max_sqft_all" : 
+                                          column.id == "max Sqft Active" ? "max_sqft_active_current" : 
+                                          column.id == "min Base Price All" ? "min_base_price_all" : 
+                                          column.id == "min Sqft Active" ? "min_sqft_active_current" : 
+                                          column.id == "max Base Price All" ? "max_base_price_all" : 
+                                          column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                          column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
+                                          column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
+                                          column.id == "max Week Ending" ? "max_week_ending" : 
+                                          column.id == "min Week Ending" ? "min_week_ending" : 
+                                          column.id == "sqft Group" ? "sqft_group" : 
+                                          column.id == "price Group" ? "price_group" : 
+                                          column.id == "month Net Sold" ? "month_net_sold" : 
+                                          column.id == "year Net Sold" ? "year_net_sold" : 
+                                          column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                    ) : (
-                                    column.id != "action" && <span>↑↓</span>
+                                    ) : ((column.id == "action" || column.id == "location" || column.id == "website") ? "" : <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
                             ))}
+                            {/* <th>
+                              <strong>Open Since</strong>
+                            </th> */}
                             {/* {checkFieldExist("Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong> Status</strong>
@@ -2826,6 +2922,9 @@ console.log(AllBuilderListExport)
                                   }
                                   </>
                                 ))}
+                                  
+                                    {/* <td style={{ textAlign: "center" }}>{element.opensince}</td> */}
+                                  
 
                                 {/* {checkFieldExist("__pkSubID") && (
                                   <td>{element.subdivision_code}</td>
@@ -2907,7 +3006,7 @@ console.log(AllBuilderListExport)
                                     onChange={(e) => handleSortCheckboxChange(e, col.key)}
                                 />
                                 <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                  <span>{col.key}</span>:<span>{col.direction}</span>
                                     
                                 </label>
                             </div>

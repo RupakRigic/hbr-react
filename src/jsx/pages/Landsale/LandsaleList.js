@@ -843,15 +843,24 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                             </th>
 
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(toCamelCase(column.id)) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                                column.id == "sIZE MS" ? "typeofunit" : 
+                                column.id == "sIZE" ? "noofunit" : 
+                                 toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                  (item) => item.key === toCamelCase(column.id)
+                                  (item) => item.key === (
+                                    column.id == "sIZE MS" ? "typeofunit" : 
+                                    column.id == "sIZE" ? "noofunit" : 
+                                    toCamelCase(column.id))
                                 ) ? (
                                   <span>
                                     {column.id != "action" && sortConfig.find(
-                                      (item) => item.key === toCamelCase(column.id)
+                                      (item) => item.key === (
+                                        column.id == "sIZE MS" ? "typeofunit" : 
+                                        column.id == "sIZE" ? "noofunit" : 
+                                         toCamelCase(column.id))
                                     ).direction === "asc"
                                       ? "↑"
                                       : "↓"}
@@ -1182,6 +1191,15 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                                           </Link>
                                         </div>
                                       </td>
+                                    }
+                                    {column.id == "sIZE MS" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.typeofunit}</td>
+                                    }
+                                    {column.id == "sIZE" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit.toFixed(2)}</td>
+                                    }
+                                    {column.id == "price Per" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per} /></td>
                                     }
                                   </>
                                 ))}

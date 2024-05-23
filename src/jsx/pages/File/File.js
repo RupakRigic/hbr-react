@@ -42,6 +42,8 @@ const File = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfigKey, setSortConfigKey] = useState('');
+  const [sortConfigDirection, setSortConfigDirection] = useState('');
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
 }, [sortConfig]);
@@ -253,6 +255,8 @@ const File = () => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
+    setSortConfigKey(newSortConfig[0].key);
+    setSortConfigDirection(newSortConfig[0].direction);
     getproductList(currentPage,sortConfig);
   };
 
@@ -459,11 +463,17 @@ const File = () => {
                             </th>
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id == "title" ? requestSort("name") : ""}>
-                                <strong>{column.label}{column.id == "title" && sortConfig.key !== "name" ? "↑↓" : ""}{column.id == "title" && sortConfig.key === "name" && (<span>
-                                  {sortConfig.direction === "asc"
-                                    ? "↑"
-                                    : "↓"}
-                                </span>)}</strong>
+                                <strong>
+                                  {column.label}
+                                  {column.id == "title" && sortConfigKey !== "name" ? "↑↓" : ""}
+                                  {column.id == "title" && sortConfigKey === "name" && (
+                                    <span>
+                                      {sortConfigDirection === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  )}
+                                </strong>
                               </th>
                             ))}
                           </tr>

@@ -175,6 +175,7 @@ const handleSortClose = () => setShowSort(false);
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
   const exportColumns = [
+    { label: "Builder_code", key: "builder_code" },
     { label: "Logo", key: "Logo" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
@@ -255,6 +256,9 @@ const handleSortClose = () => setShowSort(false);
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
+          case "Builder_code":
+            mappedRow[header] = row.builder_code;
+            break;
           case "Logo":
             mappedRow[header] = imageUrl + row.logo;
             break;
@@ -1322,11 +1326,39 @@ const handleSortClose = () => setShowSort(false);
                                   <strong>
                                     {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label + (handleLabelExist(column.label) ? ' '+totalSumFields(column.label) : "")}
                                     {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === toCamelCase(column.id)
+                                    (item) => item.key === (
+                                      column.id == "active Communities" ? "active_communities" : 
+                                      column.id == "closing This Year" ? "closing_this_year" : 
+                                      column.id == "permits This Year" ? "permits_this_year" : 
+                                      column.id == "net Sales this year" ? "net_sales_this_year" : 
+                                      column.id == "current Avg Base Price" ? "current_avg_base_Price" : 
+                                      column.id == "median Closing Price This Year" ? "median_closing_price_this_year" : 
+                                      column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" : 
+                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                      column.id == "total Closings" ? "total_closings" : 
+                                      column.id == "total Permits" ? "total_permits" : 
+                                      column.id == "total Net Sales" ? "total_net_sales" : 
+                                      column.id == "date Of First Closing" ? "date_of_first_closing" : 
+                                      column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === toCamelCase(column.id)
+                                        (item) => item.key === (
+                                          column.id == "active Communities" ? "active_communities" : 
+                                          column.id == "closing This Year" ? "closing_this_year" : 
+                                          column.id == "permits This Year" ? "permits_this_year" : 
+                                          column.id == "net Sales this year" ? "net_sales_this_year" : 
+                                          column.id == "current Avg Base Price" ? "current_avg_base_Price" : 
+                                          column.id == "median Closing Price This Year" ? "median_closing_price_this_year" : 
+                                          column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" : 
+                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
+                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
+                                          column.id == "total Closings" ? "total_closings" : 
+                                          column.id == "total Permits" ? "total_permits" : 
+                                          column.id == "total Net Sales" ? "total_net_sales" : 
+                                          column.id == "date Of First Closing" ? "date_of_first_closing" : 
+                                          column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>)
@@ -2103,7 +2135,7 @@ const handleSortClose = () => setShowSort(false);
                                   <td>{index + 1}</td>
                                   {columns.map((column) => (
                                     <>
-                                      {column.id == "builder_code" &&
+                                      {column.id == "builder_code " &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.builder_code}</td>
                                       }
                                       {column.id == "name" &&
@@ -2227,38 +2259,37 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "action" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>
                                           {SyestemUserRole === "Data Uploader" ||
-                                    SyestemUserRole === "User" ? (
-                                      ""
-                                    ) : (
-                                          <div className="d-flex justify-content-center">
-                                            <Link
-                                              to={`/builderUpdate/${element.id}`}
-                                              className="btn btn-primary shadow btn-xs sharp me-1"
-                                            >
-                                              <i className="fas fa-pencil-alt"></i>
-                                            </Link>
-                                            <Link
-                                              onClick={() =>
-                                                swal({
-                                                  title: "Are you sure?",
-                                                  icon: "warning",
-                                                  buttons: true,
-                                                  dangerMode: true,
-                                                }).then((willDelete) => {
-                                                  if (willDelete) {
-                                                    handleDelete(element.id);
-                                                  }
-                                                })
-                                              }
-                                              className="btn btn-danger shadow btn-xs sharp"
-                                            >
-                                              <i className="fa fa-trash"></i>
-                                            </Link>
-                                          </div>
-                                    )}
+                                          SyestemUserRole === "User" ? (
+                                            ""
+                                            )  : (
+                                            <div className="d-flex justify-content-center">
+                                              <Link
+                                                to={`/builderUpdate/${element.id}`}
+                                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                              >
+                                                <i className="fas fa-pencil-alt"></i>
+                                              </Link>
+                                              <Link
+                                                onClick={() =>
+                                                  swal({
+                                                    title: "Are you sure?",
+                                                    icon: "warning",
+                                                    buttons: true,
+                                                    dangerMode: true,
+                                                  }).then((willDelete) => {
+                                                    if (willDelete) {
+                                                      handleDelete(element.id);
+                                                    }
+                                                  })
+                                                }
+                                                className="btn btn-danger shadow btn-xs sharp"
+                                              >
+                                                <i className="fa fa-trash"></i>
+                                              </Link>
+                                            </div>
+                                          )}
                                         </td>
                                       }
-
                                     </>
                                   ))}
                                   

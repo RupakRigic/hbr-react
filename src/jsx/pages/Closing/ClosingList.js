@@ -74,6 +74,40 @@ const ClosingList = () => {
   const navigate = useNavigate();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [filterQuery, setFilterQuery] = useState({
+    from:"",
+    to:"",
+  });
+
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
+
+  const filterString = () => {
+    const queryString = Object.keys(filterQuery)
+      .map(
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+      )
+      .join("&");
+
+    return queryString ? `&${queryString}` : "";
+  };
+
+  const HandleFilterForm = (e) =>{
+    e.preventDefault();
+    console.log(555);
+    getClosingList(currentPage,searchQuery);
+  };
+
+  const HandleCancelFilter = (e) => {
+    setFilterQuery({
+      from: "",
+      to: "",
+    });
+  };
+
   const [ClosingDetails, setClosingDetails] = useState({
     subdivision: "",
     sellerleagal: "",
@@ -574,6 +608,15 @@ const ClosingList = () => {
       setSearchQuery("");
     }
   };
+
+  const HandleFilter = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      [name]: value,
+    }));
+  };
+
   const requestSort = (key) => {
     let direction = "asc";
     const newSortConfig = [...sortConfig];
@@ -718,7 +761,7 @@ const toCamelCase = (str) => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    <div>
+                    <div className="d-flex" style={{marginTop: "10px"}}>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                     <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
@@ -745,6 +788,9 @@ const toCamelCase = (str) => {
                       >
                         {" "}
                         Field Access
+                      </button>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                        <i className="fa fa-filter" />
                       </button>
                       <Button
                         className="btn-sm me-1"
@@ -1650,7 +1696,73 @@ const toCamelCase = (str) => {
           </div>
         </div>
       </Offcanvas>
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Closings{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
 
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <div className="">
+              <form onSubmit={HandleFilterForm}>
+                <div className="row">
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">From:{" "}</label>
+                    <input
+                      name="from"
+                      type="date"
+                      className="form-control"
+                      value={filterQuery.startDate}
+                      onChange={HandleFilter}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}</label>
+                    <input
+                      name="to"
+                      type="date"
+                      className="form-control"
+                      value={filterQuery.endDate}
+                      onChange={HandleFilter}
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                onClick={HandleCancelFilter}
+                variant="secondary"
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                onClick={HandleFilterForm}
+                variant="primary"
+              >
+                Filter
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Offcanvas>
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
