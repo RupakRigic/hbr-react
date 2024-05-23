@@ -1494,7 +1494,7 @@ console.log(AllBuilderListExport)
                                       column.id == "price Group" ? "price_group" : 
                                       column.id == "month Net Sold" ? "month_net_sold" : 
                                       column.id == "year Net Sold" ? "year_net_sold" : 
-                                      column.id == "parcel" ? "parcel" :toCamelCase(column.id))
+                                      column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
@@ -1545,7 +1545,7 @@ console.log(AllBuilderListExport)
                                           column.id == "price Group" ? "price_group" : 
                                           column.id == "month Net Sold" ? "month_net_sold" : 
                                           column.id == "year Net Sold" ? "year_net_sold" : 
-                                          column.id == "parcel" ? "parcel" :toCamelCase(column.id))
+                                          column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                     ) : ((column.id == "action" || column.id == "location" || column.id == "website") ? "" : <span>↑↓</span>
@@ -1553,6 +1553,9 @@ console.log(AllBuilderListExport)
                                 </strong>
                               </th>
                             ))}
+                            {/* <th>
+                              <strong>Open Since</strong>
+                            </th> */}
                             {/* {checkFieldExist("Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong> Status</strong>
@@ -2919,6 +2922,9 @@ console.log(AllBuilderListExport)
                                   }
                                   </>
                                 ))}
+                                  
+                                    {/* <td style={{ textAlign: "center" }}>{element.opensince}</td> */}
+                                  
 
                                 {/* {checkFieldExist("__pkSubID") && (
                                   <td>{element.subdivision_code}</td>
@@ -3000,7 +3006,7 @@ console.log(AllBuilderListExport)
                                     onChange={(e) => handleSortCheckboxChange(e, col.key)}
                                 />
                                 <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                  <span>{columns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                                  <span>{col.key}</span>:<span>{col.direction}</span>
                                     
                                 </label>
                             </div>
