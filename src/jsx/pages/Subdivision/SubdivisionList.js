@@ -1396,7 +1396,7 @@ console.log(AllBuilderListExport)
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id == "action" ? "" : requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "location" || column.id == "website") ? "" : requestSort(
                                 column.id == "builder" ? "builderName" : 
                                 column.id == "product Type" ? "product_type" : 
                                 column.id == "masterplan" ? "masterplan_id" : 
@@ -1548,8 +1548,7 @@ console.log(AllBuilderListExport)
                                           column.id == "parcel" ? "parcel" :toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                    ) : (
-                                    column.id != "action" && <span>↑↓</span>
+                                    ) : ((column.id == "action" || column.id == "location" || column.id == "website") ? "" : <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
