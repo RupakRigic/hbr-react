@@ -26,6 +26,8 @@ function RechartJs() {
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [type, setType] = useState("");
+
   useEffect(() => {
     const currentDate = new Date(); // Today's date
     const currentYear = currentDate.getFullYear(); // Current year
@@ -34,6 +36,7 @@ function RechartJs() {
     setEndDate(currentDate.toISOString().split('T')[0]); // Format as yyyy-mm-dd
   }, []);
 
+  console.log(type);
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -41,6 +44,49 @@ function RechartJs() {
       [name]: value,
     }));
   };
+
+  const [BuyerTrafficData, setBuyerTrafficdata] = useState({
+    defaultFontFamily: "Poppins",
+    labels: ["0", "01-07", "01-14", "01-21"],
+    datasets: [
+      {
+        label: "My First Dataset",
+        data: [0, 2000, 4500, 500],
+        fill: false,
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.4,
+      },
+    ],
+  });
+
+  const [BuyerTrafficOption, setBuyerTrafficOption] = useState({
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
+        max: 5000,
+        ticks: {
+          beginAtZero: true,
+          padding: 0,
+        },
+        grid: {
+          color: "#e5e5e5",
+        },
+      },
+      x: {
+        ticks: {
+          padding: 0,
+        },
+        grid: {
+          color: "#e5e5e5",
+        },
+      },
+    },
+  });
   const [NetSaleData, setNetSaleData] = useState({
     defaultFontFamily: "Poppins",
     labels: ["0", "01-07", "01-14", "01-21"],
@@ -211,37 +257,82 @@ function RechartJs() {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (event, newValue) => {
-    setValue(event.target.value)
-    //setValue(newValue);
+  const handleChange = (event) => {
+    setType(event.target.value);
   };
 
   const handleDisplay = (e) => {
     setCurrentDisplay(e.target.value);
   };
-  const BuyerTrafficData = {
-    defaultFontFamily: "Poppins",
-    labels: ["0", "01-07", "01-14", "01-21"],
-    datasets: [
-      {
-        label: "My First Dataset",
-        data: [0, 2000, 4500, 500],
-        fill: false,
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.4,
-      },
-    ],
-  };
 
-  const getchartList = async (startDate,endDate) => {
+
+  const getchartList = async (type,startDate,endDate) => {
     try {
-      let responseData = await AdminWeeklyDataService.getstatistics(startDate,endDate).json();
+      let responseData = await AdminWeeklyDataService.getstatistics(type,startDate,endDate).json();
+
+      console.log(responseData);
+
+      const filteredBuyerData = Object.entries(
+        responseData["buyer_traffic"]
+      ).filter(([key, value]) => key !== "status");
+      const BuyerDate = filteredBuyerData.map(([key]) => key);
+      const buyerValue = filteredBuyerData.map(([, value]) => value);
+      const maxBuyerValue = Math.max(...buyerValue);
+
+      console.log(buyerValue);
+      setBuyerTrafficdata({
+        defaultFontFamily: "Poppins",
+        labels: BuyerDate,
+        datasets: [
+          {
+            label: "",
+            data: buyerValue,
+            fill: false,
+            borderColor: "rgb(75, 192, 192)",
+            tension: 0.4,
+          },
+        ],
+      });
+
+      setBuyerTrafficOption({
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: maxBuyerValue * 2,
+            ticks: {
+              beginAtZero: true,
+              padding: 0,
+            },
+            grid: {
+              color: "#e5e5e5",
+            },
+          },
+          x: {
+            ticks: {
+              padding: 0,
+            },
+            grid: {
+              color: "#e5e5e5",
+            },
+          },
+        },
+      });
+
       const filteredNetSaleData = Object.entries(
-        responseData["net_sale"]
+        responseData["net_sales"]
       ).filter(([key, value]) => key !== "status");
       const netSaleWeekDate = filteredNetSaleData.map(([key]) => key);
       const netSaleValue = filteredNetSaleData.map(([, value]) => value);
       const maxNetSaleValue = Math.max(...netSaleValue);
+
+      console.log(netSaleWeekDate);
+            console.log(netSaleWeekDate);
+
       setNetSaleData({
         defaultFontFamily: "Poppins",
         labels: netSaleWeekDate,
@@ -287,7 +378,7 @@ function RechartJs() {
 
       // prepare cancelation chart data
       const filteredCancelationData = Object.entries(
-        responseData["cancelation"]
+        responseData["cancellation"]
       ).filter(([key, value]) => key !== "status");
       const cancelationWeekDate = filteredCancelationData.map(([key]) => key);
       const cancelationValue = filteredCancelationData.map(
@@ -338,9 +429,8 @@ function RechartJs() {
         },
       });
 
-      // prepare Standing chart data
       const filteredStandingData = Object.entries(
-        responseData["standing"]
+        responseData["standing_inventory"]
       ).filter(([key, value]) => key !== "status");
       const StandingWeekDate = filteredStandingData.map(([key]) => key);
       const StandingValue = filteredStandingData.map(([, value]) => value);
@@ -391,7 +481,7 @@ function RechartJs() {
 
       // prepare net sale sub division wise chart data
       const filteredNetSaleSubWiseData = Object.entries(
-        responseData["sub_wise"]
+        responseData["net_sales_per_subdivsion  "]
       ).filter(([key, value]) => key !== "status");
       const SubdivisionName = filteredNetSaleSubWiseData.map(([key]) => key);
       const NetSaleValue = filteredNetSaleSubWiseData.map(([, value]) => value);
@@ -453,136 +543,14 @@ function RechartJs() {
       navigate("/");
     }
   }, []);
-  const BuyerTrafficOption = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 5000,
-        ticks: {
-          beginAtZero: true,
-          padding: 0,
-        },
-        grid: {
-          color: "#e5e5e5",
-        },
-      },
-      x: {
-        ticks: {
-          padding: 0,
-        },
-        grid: {
-          color: "#e5e5e5",
-        },
-      },
-    },
-  };
-  const BuilderRawData = {
-    defaultFontFamily: "Poppins",
-    labels: ["-1", "-0.5", "0", "0.5", "1"],
-    datasets: [
-      {
-        label: "Builder Raw Acres Purchaed",
-        data: [5, 2, 3, 6, 1],
-        borderColor: "rgba(44, 44, 44, 1)",
-        borderWidth: "0",
-        backgroundColor: "rgba(44, 44, 44, 1)",
-        barThickness: 5,
-        fill: {
-          target: "origin", // 3. Set the fill options
-          above: "rgba(255, 0, 0, 0.3)",
-        },
-      },
-    ],
-  };
-  const BuilderRawoptions = {
-    plugins: {
-      legend: false,
-    },
-    scales: {
-      y: {
-        min: 0,
-        max: 10,
-        ticks: {
-          beginAtZero: true,
-          padding: 0,
-        },
-        grid: {
-          color: "#e5e5e5",
-        },
-      },
-      x: {
-        // Change here
-        barPercentage: 0.5,
-        grid: {
-          color: "#e5e5e5",
-        },
-      },
-    },
-  };
-  const formattedData = ["01:00", "00:30", "01:11"];
-  const AvgRawData = {
-    labels: ["BC", "E", "H", "IS", "L", "M", "MV", "NLV", "NW", "p", "S", "SW"],
-    datasets: [
-      {
-        data: [60, 30, 73],
-        datalabels: {
-          formatter: function (value, context) {
-            return formattedData[context.dataIndex];
-          },
-        },
-        barThickness: 10,
-      },
-    ],
-  };
-  const AvgRawoptions = {
-    indexAxis: "y",
-    elements: {
-      bar: {
-        borderWidth: 1,
-      },
-    },
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: false,
-        text: "General SMS - 150",
-      },
-      layout: {
-        padding: 50,
-      },
-      datalabels: {
-        font: {
-          weight: "bold",
-        },
-        align: "end",
-        anchor: "end",
-        formatter: function (value, context) {
-          return context.chart.formattedData[context.dataIndex];
-        },
-      },
-    },
-  };
-
-  const HandleDateRange = () =>{
-    getchartList(startDate,endDate);
-
-  }
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getchartList(startDate, endDate); // Call getchartList with startDate and endDate
+      getchartList(type,startDate, endDate); // Call getchartList with startDate and endDate
     } else {
       navigate("/");
     }
-  }, [startDate, endDate]); 
+  }, [type, startDate, endDate]); 
   return (
     <>
       {/* <PageTitle motherMenu="Charts" activeMenu="ReChartJs" /> */}
@@ -590,23 +558,17 @@ function RechartJs() {
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            {/* <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="Buyer Traffic" value="1" />
-              <Tab label="Net Sales" value="2" />
-              <Tab label="Cancellation%" value="3" />
-              <Tab label="Standing Inventory" value="4" />
-              <Tab label="Net Sales Per Sub" value="5" />
-              <Tab label="Active Subdivisions" value="6" />
-            </TabList> */}
     <div className="row mb-3">
     <div className="col-md-3">
     <label className="form-label">Data Type:</label>
     <select className="default-select form-control" onChange={handleChange}>
-      <option value="1">Land Sales</option>
-      <option value="2">New Home Closings</option>
-      <option value="3">New Home Prices</option>
-      <option value="4">New Home Traffic Sales</option>
-      <option value="5">Resales</option>
+      <option value="">Select Data Type</option>
+      <option value="New-Home-Traffic-Sales">New Home Traffic & Sales</option>
+      <option value="New-Home-Prices">New Home Prices</option>
+      <option value="New-Home-Closings">New Home Closings</option>
+      <option value="New-Home-Permits">New Home Permits</option>
+      <option value="Resales">Resales</option>
+      <option value="Land-Sales">Land Sales</option>
     </select>
     </div>
     <div className="col-md-3">
@@ -666,11 +628,16 @@ function RechartJs() {
                     </div>
                   </Card.Header>
                   <Card.Body>
-                    <LineChart1
+                    {/* <LineChart1
+                      data={BuyerTrafficData}
+                      options={BuyerTrafficOption}
+                    /> */}
+
+                    <BarChart1
                       data={BuyerTrafficData}
                       options={BuyerTrafficOption}
                     />
-                  </Card.Body>
+                 </Card.Body>
                 </Card>
               </Col>
             {/* </Row> */}
@@ -763,7 +730,12 @@ function RechartJs() {
                     </div>
                   </Card.Header>
                   <Card.Body>
-                    <LineChart1
+                    {/* <LineChart1
+                      data={CancellationData}
+                      options={CancellationOption}
+                    /> */}
+
+                    <BarChart1
                       data={CancellationData}
                       options={CancellationOption}
                     />
@@ -817,8 +789,6 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            {/* </Row> */}
-            {/* <Row> */}
               <Col xl={4} lg={4}>
                 {" "}
                 <Card>
@@ -860,7 +830,12 @@ function RechartJs() {
                     </div>
                   </Card.Header>
                   <Card.Body>
-                    <LineChart1
+                    {/* <LineChart1
+                      data={NetSaleSubWisData}
+                      options={NetSaleSubWisOption}
+                    /> */}
+
+                    <BarChart1
                       data={NetSaleSubWisData}
                       options={NetSaleSubWisOption}
                     />
