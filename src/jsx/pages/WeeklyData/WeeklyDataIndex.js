@@ -9,7 +9,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import MainPagetitle from "../../layouts/MainPagetitle";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import FutureSubdivisionPopup from "./FutureSubdivisionPopup";
+
 const WeeklyDataIndex = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [builderId, setBuilderId] = useState('');
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -205,6 +209,10 @@ const WeeklyDataIndex = () => {
     }
   };
 
+  const handleOpenDialog = () => {
+    setShowModal(true);
+  };
+
   return (
     <>
       <MainPagetitle
@@ -220,6 +228,12 @@ const WeeklyDataIndex = () => {
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <h4 className="heading mb-0">Data Reporting List</h4>
+                    <div className="d-flex">
+                    <button className="btn btn-primary btn-sm me-1" 
+                      onClick={() => handleOpenDialog()}
+                    >
+                      Add Future Subdivision
+                     </button>
                     <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
@@ -228,6 +242,7 @@ const WeeklyDataIndex = () => {
                       >
                         + Add Subdivision
                       </Link>
+                      </div>
                   </div>
                   <div
                     id="employee-tbl_wrapper"
@@ -477,6 +492,13 @@ const WeeklyDataIndex = () => {
         ref={subdivision}
         Title="Add Subdivision"
         parentCallback={handleCallback}
+      />
+      <FutureSubdivisionPopup
+        show={showModal}
+        BuilderList={BuilderList}
+        setBuilderId={setBuilderId}
+        handleClose={() => setShowModal(false)}
+        handleSave={() => { setShowModal(false);}}
       />
       {/* <WeeklyDataOffcanvas
         ref={subdivision}
