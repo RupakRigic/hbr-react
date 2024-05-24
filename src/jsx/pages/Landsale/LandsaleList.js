@@ -384,9 +384,9 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminLandsaleService.bulkdestroy(e).json();
+      let responseData = await AdminLandsaleService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getLandsaleList();
       }
@@ -735,7 +735,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>

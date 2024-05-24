@@ -231,9 +231,9 @@ const UserList = () => {
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminUserRoleService.bulkdestroy(e).json();
+      let responseData = await AdminUserRoleService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getuserList();
       }
@@ -484,7 +484,7 @@ const UserList = () => {
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete(selectedUsers)}
+                        onClick={() => selectedUsers.length > 0 ? handleBulkDelete(selectedUsers) : ""}
                       >
                         Bulk Delete
                       </button>

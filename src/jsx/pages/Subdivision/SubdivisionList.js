@@ -653,9 +653,9 @@ console.log(AllBuilderListExport)
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminSubdevisionService.bulkdestroy(e).json();
+      let responseData = await AdminSubdevisionService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getbuilderlist();
       }
@@ -1289,7 +1289,7 @@ console.log(AllBuilderListExport)
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>

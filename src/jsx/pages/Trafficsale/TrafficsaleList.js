@@ -507,9 +507,9 @@ useEffect(() => {
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminTrafficsaleService.bulkdestroy(e).json();
+      let responseData = await AdminTrafficsaleService.bulkdestroy(id).json();
       if (responseData.status === true) {
         gettrafficsaleList();
       }
@@ -876,7 +876,7 @@ const handleInputChange = (e) => {
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>

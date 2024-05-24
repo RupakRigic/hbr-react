@@ -503,9 +503,9 @@ const ClosingList = () => {
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminClosingService.bulkdestroy(e).json();
+      let responseData = await AdminClosingService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getClosingList();
       }
@@ -818,7 +818,7 @@ const toCamelCase = (str) => {
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>
