@@ -938,7 +938,7 @@ useEffect(() => {
                         Bulk Edit
                       </Link>
                       <button
-                        className="btn btn-primary btn-sm me-1"
+                        className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
                         onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >

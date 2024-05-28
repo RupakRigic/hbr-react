@@ -482,7 +482,7 @@ const UserList = () => {
                         Bulk Edit
                       </Link>
                       <button
-                        className="btn btn-primary btn-sm me-1"
+                        className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
                         onClick={() => selectedUsers.length > 0 ? handleBulkDelete(selectedUsers) : ""}
                       >
@@ -829,7 +829,7 @@ const UserList = () => {
                 <label className="">Builder :</label>
                 <div>
                   <span className="fw-bold">
-                    {UserDetails.builder.name || "NA"}
+                  {UserDetails?.builder?.name ?? "NA"}
                   </span>
                 </div>
               </div>

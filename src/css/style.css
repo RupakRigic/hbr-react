@@ -31493,9 +31493,11 @@ label {
 [data-nav-headerbg="color_4"] .brand-logo .logo-abbr path.w3 {
   fill: var(--primary) !important; }
 
-@media only screen and (min-width: 1199px) and (max-width: 1920px) {
-  .customeoff {
-    width: 800px !important; } }
+    @media(min-width:1199px){
+
+      .customeoff {
+        width: 800px !important; }
+    }  
 
 .inovice-logo .logo-abbr .react-w {
   fill: #000;
@@ -36548,4 +36550,11 @@ label{
 }
 .cshow{
   display:block;
+}
+
+@media only screen and (min-width: 1920px) and (max-width: 5500px){
+  .customeoff {
+      width: 800px !important;
+  }
+  
 }

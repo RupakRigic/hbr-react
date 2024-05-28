@@ -1293,7 +1293,7 @@ console.log(AllBuilderListExport)
                         Bulk Edit
                       </Link>
                       <button
-                        className="btn btn-primary btn-sm me-1"
+                        className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
                         onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
@@ -1451,6 +1451,7 @@ console.log(AllBuilderListExport)
                                 column.id == "year Net Sold" ? "year_net_sold" : 
                                 column.id == "parcel" ? "parcel" : toCamelCase(column.id))}>
                                 <strong>
+                           
                                   {column.label + (handleLabelExist(column.label) ? ' ' + totalSumFields(column.label) : "")}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
