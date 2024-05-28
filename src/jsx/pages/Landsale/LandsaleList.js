@@ -1201,6 +1201,12 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                                     {column.id == "price Per" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per} /></td>
                                     }
+                                    {column.id == "doc" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.doc}</td>
+                                    }
+                                      {column.id == "parcel" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                    }
                                   </>
                                 ))}
 

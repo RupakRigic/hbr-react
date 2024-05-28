@@ -446,10 +446,8 @@ const BuilderTable = () => {
                                   <option>Active List Of LV New Home</option>
                                   <option>Annual Report</option>
                                   <option>Area Summaries Report</option>
-                                  <option>Closing on Google Earth</option>
                                   <option>Closing Report(PDF) </option>
                                   <option>Closing Report(XLS) </option>
-                                  <option>Land Sales on Google Earth</option>
                                   <option>
                                     LV Quartley Traffic and Sales Summary
                                   </option>
@@ -458,13 +456,8 @@ const BuilderTable = () => {
                                   <option>Subdivision Analysis Report</option>
                                   <option>The Las vegas land Report</option>
                                   <option>
-                                    The Las vegas land Report EXCEL
-                                  </option>
-                                  <option>
                                     Weekly Traffic and Sales Watch
                                   </option>
-                                  <option>WTSD on Google Earth</option>
-                                  <option>WTSD Report Excel</option>
                                 </select>
                               </div>
                               <div className="col-md-3 ms-4 sm-m-0">
@@ -565,10 +558,8 @@ const BuilderTable = () => {
                                 <option>Active List Of LV New Home</option>
                                 <option>Annual Report</option>
                                 <option>Area Summaries Report</option>
-                                <option>Closing on Google Earth</option>
                                 <option>Closing Report(PDF) </option>
                                 <option>Closing Report(XLS) </option>
-                                <option>Land Sales on Google Earth</option>
                                 <option>
                                   LV Quartley Traffic and Sales Summary
                                 </option>
@@ -576,10 +567,7 @@ const BuilderTable = () => {
                                 <option>Permits Rankings Report</option>
                                 <option>Subdivision Analysis Report</option>
                                 <option>The Las vegas land Report</option>
-                                <option>The Las vegas land Report EXCEL</option>
                                 <option>Weekly Traffic and Sales Watch</option>
-                                <option>WTSD on Google Earth</option>
-                                <option>WTSD Report Excel</option>
                               </select>
                             </div>
                           </div>

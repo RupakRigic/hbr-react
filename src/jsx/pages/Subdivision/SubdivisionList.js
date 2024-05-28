@@ -201,7 +201,9 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Sqft Group', key: 'sqft_group' },
     { label: 'Price Group', key: 'price_group' },
     { label: 'Month Net Sold', key: 'month_net_sold' },
-    { label: 'Year Net Sold', key: 'year_net_sold' }
+    { label: 'Year Net Sold', key: 'year_net_sold' },
+    { label: 'Open Since', key: 'opensince' }
+
   ];
   const exportColumns = [
     { label: 'Status', key: 'is_active' },
@@ -261,7 +263,8 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Price Group', key: 'price_group' },
     { label: 'Month Net Sold', key: 'month_net_sold' },
     { label: 'Year Net Sold', key: 'year_net_sold' },
-    { label: 'Date Added', key: 'created_at' }
+    { label: 'Open Since', key: 'opensince' },
+    { label: 'Date Added', key: 'created_at' },
   ];
 
   const handleSelectAllToggle = () => {
@@ -483,6 +486,9 @@ const handleSortClose = () => setShowSort(false);
           case 'Year Net Sold':
             mappedRow[header] = row.year_net_sold;
             break;
+            case 'Open Since':
+              mappedRow[header] = <DateComponent date={row.year_net_sold} /> ;
+              break;
           default:
             mappedRow[header] = '';
         }
@@ -2889,6 +2895,9 @@ console.log(AllBuilderListExport)
                                   }
                                   {column.id == "year Net Sold" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
+                                  }
+                                    {column.id == "open Since" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince}/></td>
                                   }
 
                                   {column.id == "action" &&

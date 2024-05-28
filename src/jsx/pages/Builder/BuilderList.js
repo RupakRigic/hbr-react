@@ -527,6 +527,7 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const handleBulkDelete = async (e) => {
+    consol
     try {
       let responseData = await AdminBuilderService.bulkdestroy(e).json();
       if (responseData.status === true) {

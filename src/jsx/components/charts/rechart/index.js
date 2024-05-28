@@ -254,6 +254,49 @@ function RechartJs() {
     },
   });
 
+  const [ActiveSubData, setActiveSubData] = useState({
+    defaultFontFamily: "Poppins",
+    labels: ["0", "01-07", "01-14", "01-21"],
+    datasets: [
+      {
+        label: "My First Dataset",
+        data: [0, 2000, 4500, 500],
+        fill: false,
+        borderColor: "rgb(75, 192, 192)",
+        tension: 0.4,
+      },
+    ],
+  });
+  const [ActiveSubOption, setActiveSubOption] = useState({
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
+        max: 5000,
+        ticks: {
+          beginAtZero: true,
+          padding: 0,
+        },
+        grid: {
+          color: "#e5e5e5",
+        },
+      },
+      x: {
+        ticks: {
+          padding: 0,
+        },
+        grid: {
+          color: "#e5e5e5",
+        },
+      },
+    },
+  });
+
+
   const [Error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -481,7 +524,7 @@ function RechartJs() {
 
       // prepare net sale sub division wise chart data
       const filteredNetSaleSubWiseData = Object.entries(
-        responseData["net_sales_per_subdivsion  "]
+        responseData["net_sales_per_subdivsion"]
       ).filter(([key, value]) => key !== "status");
       const SubdivisionName = filteredNetSaleSubWiseData.map(([key]) => key);
       const NetSaleValue = filteredNetSaleSubWiseData.map(([, value]) => value);
@@ -529,6 +572,60 @@ function RechartJs() {
           },
         },
       });
+
+
+
+      // prepare net Active sub division wise chart data
+      const filteredActiveSub = Object.entries(
+        responseData["active_subdivision"]
+      ).filter(([key, value]) => key !== "status");
+      const activeSubLevels = filteredActiveSub.map(([key]) => key);
+      const ActiveSubValue = filteredActiveSub.map(([, value]) => value);
+
+      const ActiveSubMax = Math.max(...ActiveSubValue);
+      setActiveSubData({
+        defaultFontFamily: "Poppins",
+        labels: activeSubLevels,
+        datasets: [
+          {
+            label: "My First Dataset",
+            data: ActiveSubValue,
+            fill: false,
+            borderColor: "rgb(75, 192, 192)",
+            tension: 0.4,
+          },
+        ],
+      });
+
+      setActiveSubOption({
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: ActiveSubMax * 2,
+            ticks: {
+              beginAtZero: true,
+              padding: 0,
+            },
+            grid: {
+              color: "#e5e5e5",
+            },
+          },
+          x: {
+            ticks: {
+              padding: 0,
+            },
+            grid: {
+              color: "#e5e5e5",
+            },
+          },
+        },
+      });
+
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -568,7 +665,6 @@ function RechartJs() {
       <option value="New-Home-Closings">New Home Closings</option>
       <option value="New-Home-Permits">New Home Permits</option>
       <option value="Resales">Resales</option>
-      <option value="Land-Sales">Land Sales</option>
     </select>
     </div>
     <div className="col-md-3">
@@ -886,8 +982,8 @@ function RechartJs() {
                   </Card.Header>
                   <Card.Body>
                     <LineChart1
-                      data={BuyerTrafficData}
-                      options={BuyerTrafficOption}
+                      data={ActiveSubData}
+                      options={ActiveSubOption}
                     />
                   </Card.Body>
                 </Card>
