@@ -429,9 +429,9 @@ const handleDownloadExcel = () => {
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminPriceService.bulkdestroy(e).json();
+      let responseData = await AdminPriceService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getpriceList();
       }
@@ -731,7 +731,7 @@ const toCamelCase = (str) => {
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>

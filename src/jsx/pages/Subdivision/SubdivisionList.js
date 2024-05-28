@@ -659,9 +659,9 @@ console.log(AllBuilderListExport)
     }
   };
 
-  const handleBulkDelete = async (e) => {
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminSubdevisionService.bulkdestroy(e).json();
+      let responseData = await AdminSubdevisionService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getbuilderlist();
       }
@@ -1295,7 +1295,7 @@ console.log(AllBuilderListExport)
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>
@@ -4148,7 +4148,7 @@ console.log(AllBuilderListExport)
                             <div className="border-top">
                               <div className="row">
                                 <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MOTHS OPEN:{" "}</label>
+                                  <label className="form-label">MONTHS OPEN:{" "}</label>
                                   <input style={{marginTop: "20px"}} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
                                 </div>
                                 <div className="col-md-3 mt-3 mb-3">

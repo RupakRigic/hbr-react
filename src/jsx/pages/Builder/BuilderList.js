@@ -526,10 +526,9 @@ const handleSortClose = () => setShowSort(false);
     }
   };
 
-  const handleBulkDelete = async (e) => {
-    consol
+  const handleBulkDelete = async (id) => {
     try {
-      let responseData = await AdminBuilderService.bulkdestroy(e).json();
+      let responseData = await AdminBuilderService.bulkdestroy(id).json();
       if (responseData.status === true) {
         getbuilderlist();
       }
@@ -1200,7 +1199,7 @@ const handleSortClose = () => setShowSort(false);
                       <button
                         className="btn btn-primary btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => handleBulkDelete()}
+                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
                       >
                         Bulk Delete
                       </button>
