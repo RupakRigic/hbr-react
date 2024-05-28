@@ -20,6 +20,10 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkClosingUpdate from "./BulkClosingUpdate";
+import Select from "react-select";
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+
 
 
 const ClosingList = () => {
@@ -78,6 +82,29 @@ const ClosingList = () => {
   const [filterQuery, setFilterQuery] = useState({
     from:"",
     to:"",
+    address:"",
+    parcel:"",
+    closing_type:"",
+    document:"",
+    closingprice:"",
+    sublegal_name:"",
+    sellerleagal:"",
+    buyer:"",
+    lender:"",
+    loanamount:"",
+    type:"",
+    product_type:"",
+    area:"",
+    masterplan_id:"",
+    zipcode:"",
+    lotwidth:"",
+    lotsize:"",
+    zoning:"",
+    age:"",
+    single:"",
+    id:"",
+    subdivision_code:"",
+    created_at:""
   });
 
   useEffect(() => {
@@ -105,6 +132,29 @@ const ClosingList = () => {
     setFilterQuery({
       from: "",
       to: "",
+      address:"",
+      parcel:"",
+      closing_type:"",
+      document:"",
+      closingprice:"",
+      sublegal_name:"",
+      sellerleagal:"",
+      buyer:"",
+      lender:"",
+      loanamount:"",
+      type:"",
+      product_type:"",
+      area:"",
+      masterplan_id:"",
+      zipcode:"",
+      lotwidth:"",
+      lotsize:"",
+      zoning:"",
+      age:"",
+      single:"",
+      id:"",
+      subdivision_code:"",
+      created_at:""
     });
   };
 
@@ -662,6 +712,57 @@ const ClosingList = () => {
         }
     }
 }
+
+const HandleSelectChange = (selectedOption) => {
+  setFilterQuery((prevFilterQuery) => ({
+    ...prevFilterQuery,
+    builder_name: selectedOption.name,
+  }));
+};
+
+const HandleSubSelectChange = (selectedOption) => {
+  setFilterQuery((prevFilterQuery) => ({
+    ...prevFilterQuery,
+    subdivision_name: selectedOption.name,
+  }));
+};
+
+const [builderDropDown, setBuilderDropDown] = useState([]);
+const [SubdivisionList, SetSubdivisionList] = useState([]);
+  
+useEffect(() => {
+  const fetchBuilderList = async () => {
+    try {
+      const response = await AdminBuilderService.builderDropDown();
+      const data = await response.json();
+      setBuilderDropDown(data);
+    } catch (error) {
+      console.log("Error fetching builder list:", error);
+    }
+  };
+  fetchBuilderList();
+}, []);
+
+const getSubdivisionList = async () => {
+  try {
+      let response = await AdminSubdevisionService.index()
+      let responseData = await response.json()
+      SetSubdivisionList(responseData.data)
+  } catch (error) {
+      if (error.name === 'HTTPError') {
+          const errorJson = await error.response.json();
+          setError(errorJson.message)
+      }
+  }
+}
+useEffect(() => {
+  if (localStorage.getItem('usertoken')) {
+      getSubdivisionList();
+  }
+  else {
+      navigate('/');
+  }
+}, [])
 
 const handleOpenDialog = () => {
   setDraggedColumns(columns);
@@ -1721,6 +1822,12 @@ const toCamelCase = (str) => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      CLOSING TYPE:{" "}
+                    </label>
+                    <input name="closing_type" value={filterQuery.closing_type} className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
                     <input
                       name="from"
@@ -1739,6 +1846,162 @@ const toCamelCase = (str) => {
                       value={filterQuery.endDate}
                       onChange={HandleFilter}
                     />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      DOC:{" "}
+                    </label>
+                    <input name="document" value={filterQuery.document} className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      BUILDER NAME:{" "}
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={builderDropDown}
+                        onChange={HandleSelectChange}
+                        getOptionValue={(option) => option.name}
+                        getOptionLabel={(option) => option.name}
+                        value={builderDropDown.name}
+                        name="builder_name"
+                      ></Select>
+                    </Form.Group>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      SUBDIVISION NAME:{" "}
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={SubdivisionList}
+                        onChange={HandleSubSelectChange}
+                        getOptionValue={(option) => option.name}
+                        getOptionLabel={(option) => option.name}
+                        value={SubdivisionList.name}
+                        name="subdivision_name"
+                      ></Select>
+                    </Form.Group>                              
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      CLOSING PRICE:{" "}
+                    </label>
+                    <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      ADDRESS:{" "}
+                    </label>
+                    <input name="address" value={filterQuery.address} className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      PARCEL NUMBER:{" "}
+                    </label>
+                    <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      SUB LEGAL NAME:{" "}
+                    </label>
+                    <input value={filterQuery.sublegal_name} name="sublegal_name" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      SELLER LEGAL NAME:{" "}
+                    </label>
+                    <input value={filterQuery.sellerleagal} name="sellerleagal" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      BUYER NAME:{" "}
+                    </label>
+                    <input value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LENDER:{" "}
+                    </label>
+                    <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LOAN AMOUNT:{" "}
+                    </label>
+                    <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      TYPE:{" "}
+                    </label>
+                    <input value={filterQuery.type} name="type" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      PRODUCT TYPE:{" "}
+                    </label>
+                    <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      AREA:{" "}
+                    </label>
+                    <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      MASTER PLAN:{" "}
+                    </label>
+                    <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      ZIP CODE:{" "}
+                    </label>
+                    <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LOT WIDTH:{" "}
+                    </label>
+                    <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LOT SIZE:{" "}
+                    </label>
+                    <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      ZONING:{" "}
+                    </label>
+                    <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      AGE RESTRICTED:{" "}
+                    </label>
+                    <input value={filterQuery.age} name="age" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      ALL SINGLE STORY:{" "}
+                    </label>
+                    <input value={filterQuery.single} name="single" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      __pkRecordID:{" "}
+                    </label>
+                    <input value={filterQuery.id} name="id" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      _fkSubID:{" "}
+                    </label>
+                    <input value={filterQuery.subdivision_code} name="subdivision_code" className="form-control" onChange={HandleFilter}/>
                   </div>
                 </div>
               </form>
