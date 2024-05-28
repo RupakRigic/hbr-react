@@ -4139,7 +4139,7 @@ console.log(AllBuilderListExport)
                             <div className="border-top">
                               <div className="row">
                                 <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MOTHS OPEN:{" "}</label>
+                                  <label className="form-label">MONTHS OPEN:{" "}</label>
                                   <input style={{marginTop: "20px"}} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
                                 </div>
                                 <div className="col-md-3 mt-3 mb-3">
