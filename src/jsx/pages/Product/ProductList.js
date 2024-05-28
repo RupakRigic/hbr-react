@@ -962,7 +962,16 @@ const HandleFilterForm = (e) =>
                       <button
                         className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
+                        onClick={() => selectedLandSales.length > 0 ? swal({
+                          title: "Are you sure?",
+                          icon: "warning",
+                          buttons: true,
+                          dangerMode: true,
+                        }).then((willDelete) => {
+                          if (willDelete) {
+                            handleBulkDelete(selectedLandSales);
+                          }
+                        }) : ""}
                       >
                         Bulk Delete
                       </button>
