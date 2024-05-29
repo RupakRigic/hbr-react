@@ -145,66 +145,76 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            var userData = {
-                builder_id: BuilderCode.id ? BuilderCode.id : Subdivision.builder_id,
-                subdivision_code: event.target.subdivision_code.value,
-                name: event.target.name.value,
-                status: status,
-                reporting: reporting,
-                product_type: productType,
-                phone: event.target.phone.value,
-                opensince: event.target.opensince.value,
-                age: age,
-                single: single,
-                firstpermitdate: event.target.firstpermitdate.value,
-                masterplan_id:masterplan,
-                lat: event.target.lat.value,
-                lng: event.target.lng.value,
-                area:area,
-                juridiction: juridiction,
-                zipcode: event.target.zipcode.value,
-                parcel: event.target.parcel.value,
-                crossstreet: event.target.crossstreet.value,
-                totallots: event.target.totallots.value,
-                unsoldlots: event.target.unsoldlots.value,
-                lotreleased: event.target.lotreleased.value,
-                lotwidth: event.target.lotwidth.value,
-                stadinginventory: event.target.stadinginventory.value,
-                lotsize: event.target.lotsize.value,
-                permits: event.target.permits.value,
-                netsales: event.target.netsales.value,
-                closing: event.target.closing.value,
-                monthsopen: event.target.monthsopen.value,
-                gated: gate,
-                sqftgroup: event.target.sqftgroup.value,
-                dollargroup: event.target.dollargroup.value,
-                masterplanfee: event.target.masterplanfee.value,
-                lastweeklydata: event.target.lastweeklydata.value,
-                dateadded: event.target.dateadded.value,
-                zoning: event.target.zoning.value,
-                gasprovider: event.target.gasprovider.value,
-                hoafee: event.target.hoafee.value
-              };
-            console.log(userData);
-            const data = await AdminSubdevisionService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Subdivision Updated Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/subdivisionlist');
-                    }
-                })
-                props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+            swal({
+              title: "Are you sure?",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then(async (willDelete) => {
+              if(willDelete){
+                try {
+                  var userData = {
+                      builder_id: BuilderCode.id ? BuilderCode.id : Subdivision.builder_id,
+                      subdivision_code: event.target.subdivision_code.value,
+                      name: event.target.name.value,
+                      status: status,
+                      reporting: reporting,
+                      product_type: productType,
+                      phone: event.target.phone.value,
+                      opensince: event.target.opensince.value,
+                      age: age,
+                      single: single,
+                      firstpermitdate: event.target.firstpermitdate.value,
+                      masterplan_id:masterplan,
+                      lat: event.target.lat.value,
+                      lng: event.target.lng.value,
+                      area:area,
+                      juridiction: juridiction,
+                      zipcode: event.target.zipcode.value,
+                      parcel: event.target.parcel.value,
+                      crossstreet: event.target.crossstreet.value,
+                      totallots: event.target.totallots.value,
+                      unsoldlots: event.target.unsoldlots.value,
+                      lotreleased: event.target.lotreleased.value,
+                      lotwidth: event.target.lotwidth.value,
+                      stadinginventory: event.target.stadinginventory.value,
+                      lotsize: event.target.lotsize.value,
+                      permits: event.target.permits.value,
+                      netsales: event.target.netsales.value,
+                      closing: event.target.closing.value,
+                      monthsopen: event.target.monthsopen.value,
+                      gated: gate,
+                      sqftgroup: event.target.sqftgroup.value,
+                      dollargroup: event.target.dollargroup.value,
+                      masterplanfee: event.target.masterplanfee.value,
+                      lastweeklydata: event.target.lastweeklydata.value,
+                      dateadded: event.target.dateadded.value,
+                      zoning: event.target.zoning.value,
+                      gasprovider: event.target.gasprovider.value,
+                      hoafee: event.target.hoafee.value
+                    };
+                  console.log(userData);
+                  const data = await AdminSubdevisionService.bulkupdate(selectedLandSales, userData).json();
+                  if (data.status === true) {
+                      swal("Subdivision Updated Succesfully").then((willDelete) => {
+                          if (willDelete) {
+                              setAddProduct(false);
+                              navigate('/subdivisionlist');
+                          }
+                      })
+                      props.parentCallback();
+      
+                  }
+              }
+              catch (error) {
+                  if (error.name === 'HTTPError') {
+                      const errorJson = await error.response.json();
+                      setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                  }
+              }
+              }
+            })
+        
     }
 
     return (
