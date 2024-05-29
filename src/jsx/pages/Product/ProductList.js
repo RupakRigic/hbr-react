@@ -941,7 +941,13 @@ const HandleFilterForm = (e) =>
                       </button>
                       <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
                       <i className="fa fa-filter" />
-                    </button>   
+                    </button>                         <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={handlBuilderClick}
+                      >
+                        Import
+                      </Button>
 
                       <Link
                         to={"#"}
@@ -951,6 +957,8 @@ const HandleFilterForm = (e) =>
                       >
                         + Add Product
                       </Link>
+
+
                       <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"

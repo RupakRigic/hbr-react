@@ -2233,7 +2233,7 @@ const handleSortClose = () => setShowSort(false);
                                         <td key={column.id} style={{ textAlign: "center" }}>{ <PriceComponent price={element.median_closing_price_this_year} />}</td>
                                       }
                                       {column.id == "median Closing Price Last Year" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.median_closing_price_last_year}</td>
+                                        <td key={column.id} style={{ textAlign: "center" }}> {<PriceComponent price={element.median_closing_price_last_year}/>}</td>
                                       }
                                       {column.id == "avg Net Sales Per Month This Year" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>

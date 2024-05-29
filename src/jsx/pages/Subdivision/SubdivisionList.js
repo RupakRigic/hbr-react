@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect,useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
@@ -28,6 +28,8 @@ import { saveAs } from 'file-saver';
 import BulkSubdivisionUpdate from "./BulkSubdivisionUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import Select from "react-select";
+import { Link } from 'react-router-dom';
+import GoogleMapLocator from "./GoogleMapLocator";
 
 
 const SubdivisionList = () => {
@@ -39,6 +41,11 @@ const SubdivisionList = () => {
         setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
 };
+  const addToBuilderList = () => {
+    navigate('/google-map-locator',{
+      state: { subdivisionList: BuilderList },
+    });
+  };
 
 const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
@@ -62,7 +69,6 @@ const handleSortClose = () => setShowSort(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
-  console.log("BuilderList",BuilderList);
   const [BuilderListCount, setBuilderListCount] = useState('');
   const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
@@ -281,7 +287,6 @@ const handleSortClose = () => setShowSort(false);
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   //   newdata.map((nw, i) =>
@@ -291,7 +296,6 @@ const handleSortClose = () => setShowSort(false);
 
   };
   useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
@@ -556,7 +560,8 @@ const handleSortClose = () => setShowSort(false);
     zoning: "",
     gasprovider: "",
   });
-  console.log("SubdivisionDetails", SubdivisionDetails);
+  console.log(BuilderList);
+
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
@@ -587,7 +592,6 @@ const handleSortClose = () => setShowSort(false);
   const [selectedFileError, setSelectedFileError] = useState("");
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
-  console.log(BuilderList);
 
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
@@ -598,7 +602,6 @@ const handleSortClose = () => setShowSort(false);
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      console.log(sortConfig);
       const response = await AdminSubdevisionService.index(
         pageNumber,
         sortConfigString,
@@ -619,7 +622,6 @@ const handleSortClose = () => setShowSort(false);
     }
   };
   
-console.log(AllBuilderListExport)
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
@@ -682,9 +684,6 @@ console.log(AllBuilderListExport)
     try {
       let responseData = await AdminSubdevisionService.show(id).json();
       setSubdivisionDetails(responseData);
-      console.log(responseData);
-      console.log(SubdivisionDetails.status);
-      console.log(BuilderList);
       setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -724,7 +723,6 @@ console.log(AllBuilderListExport)
   const HandleFilterForm = (e) =>
     {
       e.preventDefault();
-      console.log(555);
       getbuilderlist(currentPage,searchQuery);
     };
 
@@ -885,17 +883,11 @@ console.log(AllBuilderListExport)
   function handleLabelExist(lable)
   {
 
-      console.log(lable);
-      console.log(calculatedField.some(field => field.hasOwnProperty(lable)));
-
       return calculatedField.some(field => field.hasOwnProperty(lable));
  
   }
 
   const totalSumFields = (label) => {
-    console.log(AllBuilderListExport);
-    console.log(label);
-  
     // return 0 if the label doesn't exist
     if (!handleLabelExist(label)) {
       return 0;
@@ -984,7 +976,6 @@ console.log(AllBuilderListExport)
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
-    console.log('logs',event.target);
     setCheckedItems((prevCheckedItems) => ({
       ...prevCheckedItems,
       [name]: checked,
@@ -1000,9 +991,7 @@ console.log(AllBuilderListExport)
       const response = await AdminSubdevisionService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -1030,10 +1019,11 @@ console.log(AllBuilderListExport)
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
+
+        console.log(inputData);
         try {
           let responseData = await AdminSubdevisionService.import(inputData).json();
           setSelectedFile("");
@@ -1047,6 +1037,7 @@ console.log(AllBuilderListExport)
           });
           getbuilderlist();
         } catch (error) {
+        
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
             setSelectedFile("");
@@ -1252,12 +1243,12 @@ console.log(AllBuilderListExport)
                     </button>
                     {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
                    
-                    <Link
-                        to={"/google-map-locator"}
-                        className="btn btn-primary btn-sm me-1"
-                      >
-                        <i class="fa fa-map-marker" aria-hidden="true"></i>
-                      </Link>
+                    <Button
+  className="btn btn-primary btn-sm me-1"
+  onClick={addToBuilderList}
+>
+  <i className="fa fa-map-marker" aria-hidden="true"></i>
+</Button>
 
                       <button
                         className="btn btn-primary btn-sm me-1"

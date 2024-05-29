@@ -1192,10 +1192,10 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                                         </div>
                                       </td>
                                     }
-                                    {column.id == "sIZE MS" &&
+                                    {column.id == "size MS" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.typeofunit}</td>
                                     }
-                                    {column.id == "sIZE" &&
+                                    {column.id == "size" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit.toFixed(2)}</td>
                                     }
                                     {column.id == "price Per" &&
