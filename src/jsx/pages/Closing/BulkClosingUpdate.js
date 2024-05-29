@@ -82,41 +82,51 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            var userData = {
-                "subdivision_id": SubdivisionCode,
-                "sellerleagal": event.target.sellerleagal.value,
-                "address": event.target.address.value,
-                "buyer": event.target.buyer.value,
-                "lender": event.target.lender.value,
-                "closingdate": event.target.closingdate.value,
-                "closingprice": event.target.closingprice.value,
-                "loanamount": event.target.loanamount.value,
-                "document": event.target.document.value,
-                "closing_type": event.target.closing_type.value,
-                "parcel": event.target.parcel.value,
-                "sublegal_name": event.target.sublegal_name.value,
-                "type": event.target.type.value
-            }
-            console.log(userData);
-            const data = await AdminClosingService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Closing Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/closingsalelist');
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              }).then(async (willDelete) => {
+                if(willDelete){
+                    try {
+                        var userData = {
+                            "subdivision_id": SubdivisionCode,
+                            "sellerleagal": event.target.sellerleagal.value,
+                            "address": event.target.address.value,
+                            "buyer": event.target.buyer.value,
+                            "lender": event.target.lender.value,
+                            "closingdate": event.target.closingdate.value,
+                            "closingprice": event.target.closingprice.value,
+                            "loanamount": event.target.loanamount.value,
+                            "document": event.target.document.value,
+                            "closing_type": event.target.closing_type.value,
+                            "parcel": event.target.parcel.value,
+                            "sublegal_name": event.target.sublegal_name.value,
+                            "type": event.target.type.value
+                        }
+                        console.log(userData);
+                        const data = await AdminClosingService.bulkupdate(selectedLandSales, userData).json();
+                        if (data.status === true) {
+                            swal("Closing Update Succesfully").then((willDelete) => {
+                                if (willDelete) {
+                                    setAddProduct(false);
+                                    navigate('/closingsalelist');
+                                }
+                            })
+                            props.parentCallback();
+            
+                        }
                     }
-                })
-                props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+                    catch (error) {
+                        if (error.name === 'HTTPError') {
+                            const errorJson = await error.response.json();
+                            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        }
+                    }
+                }
+            })
+        
     }
 
     return (

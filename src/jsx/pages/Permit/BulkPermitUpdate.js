@@ -85,43 +85,53 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         if(selectedLandSales.length === 0)
             {
                 setError('No selected records'); return false
-            } 
-        try {
-            var userData = {
-                "subdivision_id": SubdivisionCode.id,
-                "parcel": event.target.parcel.value,
-                "contractor": event.target.contractor.value,
-                "description": event.target.description.value,
-                "date": event.target.date.value,
-                "dateadded": event.target.dateadded.value,
-                "lotnumber": event.target.lotnumber.value,
-                "owner": event.target.owner.value,
-                "plan": event.target.plan.value,
-                "sqft": event.target.sqft.value,
-                "value": event.target.value.value,
-                "permitnumber": event.target.permitnumber.value,
-                "address1": event.target.address1.value,
-                "address2": event.target.address2.value
             }
-            console.log(userData);
-            const data = await AdminPermitService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Permit Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/permitlist');
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              }).then(async (willDelete) => {
+                if(willDelete){
+                    try {
+                        var userData = {
+                            "subdivision_id": SubdivisionCode.id,
+                            "parcel": event.target.parcel.value,
+                            "contractor": event.target.contractor.value,
+                            "description": event.target.description.value,
+                            "date": event.target.date.value,
+                            "dateadded": event.target.dateadded.value,
+                            "lotnumber": event.target.lotnumber.value,
+                            "owner": event.target.owner.value,
+                            "plan": event.target.plan.value,
+                            "sqft": event.target.sqft.value,
+                            "value": event.target.value.value,
+                            "permitnumber": event.target.permitnumber.value,
+                            "address1": event.target.address1.value,
+                            "address2": event.target.address2.value
+                        }
+                        console.log(userData);
+                        const data = await AdminPermitService.bulkupdate(selectedLandSales, userData).json();
+                        if (data.status === true) {
+                            swal("Permit Update Succesfully").then((willDelete) => {
+                                if (willDelete) {
+                                    setAddProduct(false);
+                                    navigate('/permitlist');
+                                }
+                            })
+                            props.parentCallback();
+            
+                        }
                     }
-                })
-                props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+                    catch (error) {
+                        if (error.name === 'HTTPError') {
+                            const errorJson = await error.response.json();
+                            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        }
+                    }
+                } 
+            })
+        
     }
 
     return (

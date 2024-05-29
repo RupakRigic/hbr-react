@@ -55,31 +55,41 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            var userData = {
-                product_id: ProductCode,
-                baseprice: event.target.baseprice.value,
-                date: event.target.date.value,
-            };
-            console.log(userData);
-            const data = await AdminPriceService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Closing Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/priceList');
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              }).then(async (willDelete) => {
+                if(willDelete){
+                    try {
+                        var userData = {
+                            product_id: ProductCode,
+                            baseprice: event.target.baseprice.value,
+                            date: event.target.date.value,
+                        };
+                        console.log(userData);
+                        const data = await AdminPriceService.bulkupdate(selectedLandSales, userData).json();
+                        if (data.status === true) {
+                            swal("Closing Update Succesfully").then((willDelete) => {
+                                if (willDelete) {
+                                    setAddProduct(false);
+                                    navigate('/priceList');
+                                }
+                            })
+                            props.parentCallback();
+            
+                        }
                     }
-                })
-                props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+                    catch (error) {
+                        if (error.name === 'HTTPError') {
+                            const errorJson = await error.response.json();
+                            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        }
+                    }
+                }
+            })
+        
     }
 
     return (

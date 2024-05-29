@@ -89,40 +89,50 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     };
 
     const handleSubmit = async (event) => {
+      debugger
         event.preventDefault();
         if(userSelectedUsers.length === 0)
           {
               setError('No selected records'); return false
           }
-        try {
-            var userData = {
-                builder_id: BuilderCode.id,
-                name: event.target.name.value,
-                email: event.target.email.value,
-                role_id: RoleCode.id,
-              };
-
-            const data = await AdminUserRoleService.bulkupdate(
-                userSelectedUsers,
-                userData
-            ).json();
-            if (data.status === true) {
-                swal("User Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddUser(false);
-                        navigate("/userlist");
-                    }
-                });
-                props.parentCallback();
+          swal({
+            title: "Are you sure?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          }).then(async (willDelete) => {
+            if(willDelete){
+              try {
+                var userData = {
+                    builder_id: BuilderCode.id,
+                    name: event.target.name.value,
+                    email: event.target.email.value,
+                    role_id: RoleCode.id,
+                  };
+    
+                const data = await AdminUserRoleService.bulkupdate(
+                    userSelectedUsers,
+                    userData
+                ).json();
+                if (data.status === true) {
+                    swal("User Update Succesfully").then((willDelete) => {
+                        if (willDelete) {
+                            setAddUser(false);
+                            navigate("/userlist");
+                        }
+                    });
+                    props.parentCallback();
+                }
+            } catch (error) {
+                if (error.name === "HTTPError") {
+                    const errorJson = await error.response.json();
+                    setError(
+                        errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+                    );
+                }
             }
-        } catch (error) {
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(
-                    errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-                );
             }
-        }
+          })
     };
 
     return (

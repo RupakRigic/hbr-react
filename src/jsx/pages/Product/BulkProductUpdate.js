@@ -84,42 +84,52 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            var userData = {
-                subdivision_id: SubdivisionCode.id
-                  ? SubdivisionCode.id
-                  : ProductList.subdivision_id,
-                product_code: event.target.product_code.value,
-                name: event.target.name.value,
-                status: event.target.status.value,
-                stories: event.target.stories.value,
-                garage: event.target.garage.value,
-                pricechange: event.target.pricechange.value,
-                bathroom: event.target.bathroom.value,
-                recentprice: event.target.recentprice.value,
-                bedroom: event.target.bedroom.value,
-                recentpricesqft: event.target.recentpricesqft.value,
-                sqft: event.target.sqft.value,
-              };
-
-              const data = await AdminProductService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Product Updated Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/productlist');
-                    }
-                })
-            }
-            props.parentCallback();
-
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+            swal({
+              title: "Are you sure?",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then(async (willDelete) => {
+              if(willDelete){
+                try {
+                  var userData = {
+                      subdivision_id: SubdivisionCode.id
+                        ? SubdivisionCode.id
+                        : ProductList.subdivision_id,
+                      product_code: event.target.product_code.value,
+                      name: event.target.name.value,
+                      status: event.target.status.value,
+                      stories: event.target.stories.value,
+                      garage: event.target.garage.value,
+                      pricechange: event.target.pricechange.value,
+                      bathroom: event.target.bathroom.value,
+                      recentprice: event.target.recentprice.value,
+                      bedroom: event.target.bedroom.value,
+                      recentpricesqft: event.target.recentpricesqft.value,
+                      sqft: event.target.sqft.value,
+                    };
+      
+                    const data = await AdminProductService.bulkupdate(selectedLandSales, userData).json();
+                  if (data.status === true) {
+                      swal("Product Updated Succesfully").then((willDelete) => {
+                          if (willDelete) {
+                              setAddProduct(false);
+                              navigate('/productlist');
+                          }
+                      })
+                  }
+                  props.parentCallback();
+      
+              }
+              catch (error) {
+                  if (error.name === 'HTTPError') {
+                      const errorJson = await error.response.json();
+                      setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                  }
+              }
+              }
+            })
+        
     }
 
     return (

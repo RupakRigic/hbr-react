@@ -97,37 +97,47 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            var userData = {
-                "subdivision_id": SubdivisionCode.id,
-                "weekending": event.target.weekending.value,
-                "weeklytraffic": event.target.weeklytraffic.value,
-                "grosssales": event.target.grosssales.value,
-                "cancelations": event.target.cancelations.value,
-                "netsales": event.target.netsales.value,
-                "lotreleased": event.target.lotreleased.value,
-                "unsoldinventory": event.target.unsoldinventory.value,
-                "status": isActive.value ? isActive.value : TrafficsaleList.status,
-            }
-            console.log(userData);
-            const data = await AdminTrafficsaleService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Weekly Traffic & sale Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/trafficsalelist');
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              }).then(async (willDelete) => {
+                if(willDelete){
+                    try {
+                        var userData = {
+                            "subdivision_id": SubdivisionCode.id,
+                            "weekending": event.target.weekending.value,
+                            "weeklytraffic": event.target.weeklytraffic.value,
+                            "grosssales": event.target.grosssales.value,
+                            "cancelations": event.target.cancelations.value,
+                            "netsales": event.target.netsales.value,
+                            "lotreleased": event.target.lotreleased.value,
+                            "unsoldinventory": event.target.unsoldinventory.value,
+                            "status": isActive.value ? isActive.value : TrafficsaleList.status,
+                        }
+                        console.log(userData);
+                        const data = await AdminTrafficsaleService.bulkupdate(selectedLandSales, userData).json();
+                        if (data.status === true) {
+                            swal("Weekly Traffic & sale Update Succesfully").then((willDelete) => {
+                                if (willDelete) {
+                                    setAddProduct(false);
+                                    navigate('/trafficsalelist');
+                                }
+                            })
+                            props.parentCallback();
+            
+                        }
                     }
-                })
-                props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+                    catch (error) {
+                        if (error.name === 'HTTPError') {
+                            const errorJson = await error.response.json();
+                            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        }
+                    }
+                }
+            })
+        
     }
 
     return (

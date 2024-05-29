@@ -119,52 +119,62 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             {
                 setError('No selected records'); return false
             } 
-        try {
-            console.log(userData);
-            var userData = {
-                "builder_code": event.target.code.value,
-                "name": event.target.name.value,
-                "website": event.target.website.value,
-                "phone": event.target.phone.value,
-                "fax": event.target.fax.value,
-                "officeaddress1": event.target.officeaddress1.value,
-                "officeaddress2": event.target.officeaddress2.value,
-                "city": event.target.city.value,
-                "zipcode": event.target.zipcode.value,
-                "is_active": isActive.value ? isActive.value : Builder.is_active,
-                "company_type": company_type.value ? company_type.value : Builder.company_type,
-                "stock_market": event.target.stock_market.value,
-                "current_division_president": event.target.current_division_president.value,
-                "stock_symbol": event.target.stock_symbol.value,
-                "current_land_aquisitions": event.target.current_land_aquisitions.value,
-                "coporate_officeaddress_1": event.target.coporate_officeaddress_1.value,
-                "coporate_officeaddress_2": event.target.coporate_officeaddress_2.value,
-                "coporate_officeaddress_city": event.target.coporate_officeaddress_city.value,
-                "coporate_officeaddress_zipcode": event.target.coporate_officeaddress_zipcode.value,
-                // "logo": "",
-                "logo": file ? file.split(',')[1] : Builder.logo,
-                "coporate_officeaddress_lat": event.target.coporate_officeaddress_lat.value,
-                "coporate_officeaddress_lng": event.target.coporate_officeaddress_lng.value,
-            }
-            console.log(userData);
-            const data = await AdminBuilderService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Builder Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/builderList');
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+              }).then(async (willDelete) => {
+                if(willDelete){
+                    try {
+                        console.log(userData);
+                        var userData = {
+                            "builder_code": event.target.code.value,
+                            "name": event.target.name.value,
+                            "website": event.target.website.value,
+                            "phone": event.target.phone.value,
+                            "fax": event.target.fax.value,
+                            "officeaddress1": event.target.officeaddress1.value,
+                            "officeaddress2": event.target.officeaddress2.value,
+                            "city": event.target.city.value,
+                            "zipcode": event.target.zipcode.value,
+                            "is_active": isActive.value ? isActive.value : Builder.is_active,
+                            "company_type": company_type.value ? company_type.value : Builder.company_type,
+                            "stock_market": event.target.stock_market.value,
+                            "current_division_president": event.target.current_division_president.value,
+                            "stock_symbol": event.target.stock_symbol.value,
+                            "current_land_aquisitions": event.target.current_land_aquisitions.value,
+                            "coporate_officeaddress_1": event.target.coporate_officeaddress_1.value,
+                            "coporate_officeaddress_2": event.target.coporate_officeaddress_2.value,
+                            "coporate_officeaddress_city": event.target.coporate_officeaddress_city.value,
+                            "coporate_officeaddress_zipcode": event.target.coporate_officeaddress_zipcode.value,
+                            // "logo": "",
+                            "logo": file ? file.split(',')[1] : Builder.logo,
+                            "coporate_officeaddress_lat": event.target.coporate_officeaddress_lat.value,
+                            "coporate_officeaddress_lng": event.target.coporate_officeaddress_lng.value,
+                        }
+                        console.log(userData);
+                        const data = await AdminBuilderService.bulkupdate(selectedLandSales, userData).json();
+                        if (data.status === true) {
+                            swal("Builder Update Succesfully").then((willDelete) => {
+                                if (willDelete) {
+                                    setAddProduct(false);
+                                    navigate('/builderList');
+                                }
+                            })
+                         props.parentCallback();
+            
+                        }
                     }
-                })
-             props.parentCallback();
-
-            }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+                    catch (error) {
+                        if (error.name === 'HTTPError') {
+                            const errorJson = await error.response.json();
+                            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        }
+                    }
+                }
+            })
+        
     }
 
     return (

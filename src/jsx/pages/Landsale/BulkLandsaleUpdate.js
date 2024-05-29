@@ -76,51 +76,60 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }
 
     const handleSubmit = async (event) => {
-        
+        debugger
         event.preventDefault();
         if(selectedLandSales.length === 0)
         {
             setError('No selected records'); return false
         } 
-        try {
-            var userData = {
-                "seller": event.target.seller.value,
-                "buyer": event.target.buyer.value,
-                "location": event.target.location.value,
-                "date": event.target.date.value,
-                "parcel": event.target.parcel.value,
-                "price": event.target.price.value,
-                "typeofunit": event.target.typeofunit.value,
-                "priceperunit": event.target.priceperunit.value,
-                "noofunit": event.target.noofunit.value,
-                "notes": event.target.notes.value,
-                "doc": event.target.doc.value,
-                "zoning": event.target.zoning.value,
-                "lat": event.target.lat.value,
-                "lng": event.target.lng.value,
-                "area": event.target.area.value,
-                "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode,
-            }
-            console.log(userData);
-            const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
-            if (data.status === true) {
-                swal("Landsale Update Succesfully").then((willDelete) => {
-                    if (willDelete) {
-                        setAddProduct(false);
-                        navigate('/landsalelist');
+        swal({
+            title: "Are you sure?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          }).then(async (willDelete) => {
+            if(willDelete){
+                try {
+                    var userData = {
+                        "seller": event.target.seller.value,
+                        "buyer": event.target.buyer.value,
+                        "location": event.target.location.value,
+                        "date": event.target.date.value,
+                        "parcel": event.target.parcel.value,
+                        "price": event.target.price.value,
+                        "typeofunit": event.target.typeofunit.value,
+                        "priceperunit": event.target.priceperunit.value,
+                        "noofunit": event.target.noofunit.value,
+                        "notes": event.target.notes.value,
+                        "doc": event.target.doc.value,
+                        "zoning": event.target.zoning.value,
+                        "lat": event.target.lat.value,
+                        "lng": event.target.lng.value,
+                        "area": event.target.area.value,
+                        "zip": event.target.zip.value,
+                        "subdivision_id": SubdivisionCode,
                     }
-                })
-                props.parentCallback();
-
+                    console.log(userData);
+                    const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
+                    if (data.status === true) {
+                        swal("Landsale Update Succesfully").then((willDelete) => {
+                            if (willDelete) {
+                                setAddProduct(false);
+                                navigate('/landsalelist');
+                            }
+                        })
+                        props.parentCallback();
+        
+                    }
+                }
+                catch (error) {
+                    if (error.name === 'HTTPError') {
+                        const errorJson = await error.response.json();
+                        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                    }
+                }
             }
-        }
-        catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
-            }
-        }
+        })
     }
 
     return (
