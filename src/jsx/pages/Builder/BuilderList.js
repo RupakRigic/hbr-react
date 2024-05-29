@@ -121,6 +121,33 @@ const handleSortClose = () => setShowSort(false);
   console.log("columns",columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
+  const [activeCommunitiesOption, setActiveCommunitiesOption] = useState("");
+  const [closingThisYearOption, setClosingThisYearOption] = useState("");
+  const [permitsThisYearOption, setPermitsThisYearOption] = useState("");
+  const [netSalesThisYearOption, setNetSalesThisYearOption] = useState("");
+  const [currentAvgBasePriceOption, setCurrentAvgBasePriceOption] = useState("");
+  const [medianClosingPriceThisYearOption, setMedianClosingPriceThisYearOption] = useState("");
+  const [medianClosingPriceLastYearOption, setMedianClosingPriceLastYearOption] = useState("");
+  const [avgNetSalesPerMonthThisYearOption, setAvgNetSalesPerMonthThisYearOption] = useState("");
+  const [avgClosingsPerMonthThisYearOption, setAvgClosingsPerMonthThisYearOption] = useState("");
+  const [totalClosingsOption, setTotalClosingsOption] = useState("");
+  const [totalPermitsOption, setTotalPermitsOption] = useState("");
+  const [totalNetSalesOption, setTotalNetSalesOption] = useState("");
+  
+  const [activeCommunitiesResult, setActiveCommunitiesResult] = useState(0);
+  const [closingThisYearResult, setClosingThisYearResult] = useState(0);
+  const [permitsThisYearResult, setPermitsThisYearResult] = useState(0);
+  const [netSalesThisYearResult, setNetSalesThisYearResult] = useState(0);
+  const [currentAvgBasePriceResult, setCurrentAvgBasePriceResult] = useState(0);
+  const [medianClosingPriceThisYearResult, setMedianClosingPriceThisYearResult] = useState(0);
+  const [medianClosingPriceLastYearResult, setMedianClosingPriceLastYearResult] = useState(0);
+  const [avgNetSalesPerMonthThisYearResult, setAvgNetSalesPerMonthThisYearResult] = useState(0);
+  const [avgClosingsPerMonthThisYearResult, setAvgClosingsPerMonthThisYearResult] = useState(0);
+  const [totalClosingsResult, setTotalClosingsResult] = useState(0);
+  const [totalPermitsResult, setTotalPermitsResult] = useState(0);
+  const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
+
+
   useEffect(() => {
     console.log(fieldList);
   }, [fieldList]);
@@ -864,25 +891,6 @@ const handleSortClose = () => setShowSort(false);
     },
   ];
 
-  function handleLabelExist(lable)
-  {
-
-    return calculatedField.some(field => field.hasOwnProperty(lable));
- 
-  }
-
-  const totalSumFields = (label) => {
-    if (!handleLabelExist(label)) {
-      return 0;
-    }
-    label = label
-    .toLowerCase()      
-    .replace(/\s+/g, '_');
-    return AllBuilderListExport.reduce((sum, builder) => {
-      return sum + (builder[label] || 0);
-    }, 0);
-  };
-
   
   const toCamelCase = (str) => {
     return str
@@ -943,6 +951,472 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       [name]: value
     }));
+  };
+
+  const totalSumFields = (field) => {
+    if(field == "active_communities") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.active_communities || 0);
+      }, 0);
+    }
+    if(field == "closing_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.closing_this_year || 0);
+      }, 0);
+    }
+    if(field == "permits_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.permits_this_year || 0);
+      }, 0);
+    }
+    if(field == "net_sales_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.net_sales_this_year || 0);
+      }, 0);
+    }
+    if(field == "current_avg_base_Price") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.current_avg_base_Price || 0);
+      }, 0);
+    }
+    if(field == "median_closing_price_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.median_closing_price_this_year || 0);
+      }, 0);
+    }
+    if(field == "median_closing_price_last_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.median_closing_price_last_year || 0);
+      }, 0);
+    }
+    if(field == "avg_net_sales_per_month_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_this_year || 0);
+      }, 0);
+    }
+    if(field == "avg_closings_per_month_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_closings_per_month_this_year || 0);
+      }, 0);
+    }
+    if(field == "total_closings") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_closings || 0);
+      }, 0);
+    }
+    if(field == "total_permits") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_permits || 0);
+      }, 0);
+    }
+    if(field == "total_net_sales") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_net_sales || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    const sum = totalSumFields(field);
+    return sum / AllBuilderListExport.length;
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+    
+    switch (field) {
+      case "active_communities":
+        setActiveCommunitiesOption(value);
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setActiveCommunitiesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setActiveCommunitiesResult(averageFields(field));
+        }
+        break;
+
+      case "closing_this_year":
+        setClosingThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setClosingThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setClosingThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "permits_this_year":
+        setPermitsThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+        setClosingThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        
+        if (value === 'sum') {
+          setPermitsThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPermitsThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "net_sales_this_year":
+        setNetSalesThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setNetSalesThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setNetSalesThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "current_avg_base_Price":
+        setCurrentAvgBasePriceOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setCurrentAvgBasePriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setCurrentAvgBasePriceResult(averageFields(field));
+        }
+        break;
+
+      case "median_closing_price_this_year":
+        setMedianClosingPriceThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setMedianClosingPriceThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMedianClosingPriceThisYearResult(averageFields(field));
+        }
+        break;
+      case "median_closing_price_last_year":
+        setMedianClosingPriceLastYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setMedianClosingPriceLastYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMedianClosingPriceLastYearResult(averageFields(field));
+        }
+        break;
+      case "avg_net_sales_per_month_this_year":
+        setAvgNetSalesPerMonthThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setAvgNetSalesPerMonthThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgNetSalesPerMonthThisYearResult(averageFields(field));
+        }
+        break;
+      case "avg_closings_per_month_this_year":
+        setAvgClosingsPerMonthThisYearOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setAvgClosingsPerMonthThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgClosingsPerMonthThisYearResult(averageFields(field));
+        }
+        break;
+      case "total_closings":
+        setTotalClosingsOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setTotalClosingsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalClosingsResult(averageFields(field));
+        }
+        break;
+      case "total_permits":
+        setTotalPermitsOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalNetSalesOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalNetSalesResult(0);
+
+        if (value === 'sum') {
+          setTotalPermitsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalPermitsResult(averageFields(field));
+        }
+        break;
+      case "total_net_sales":
+        setTotalNetSalesOption(value);
+        setActiveCommunitiesOption("");
+        setClosingThisYearOption("");
+        setPermitsThisYearOption("");
+        setNetSalesThisYearOption("");
+        setCurrentAvgBasePriceOption("");
+        setMedianClosingPriceThisYearOption("");
+        setMedianClosingPriceLastYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+
+        setActiveCommunitiesResult(0);
+		    setClosingThisYearResult(0);
+        setPermitsThisYearResult(0);
+        setNetSalesThisYearResult(0);
+        setCurrentAvgBasePriceResult(0);
+        setMedianClosingPriceThisYearResult(0);
+        setMedianClosingPriceLastYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        
+        if (value === 'sum') {
+          setTotalNetSalesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalNetSalesResult(averageFields(field));
+        }
+        break;
+      default:
+        break;
+    }
   };
   
   return (
@@ -1199,7 +1673,16 @@ const handleSortClose = () => setShowSort(false);
                       <button
                         className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? handleBulkDelete(selectedLandSales) : ""}
+                        onClick={() => selectedLandSales.length > 0 ? swal({
+                          title: "Are you sure?",
+                          icon: "warning",
+                          buttons: true,
+                          dangerMode: true,
+                        }).then((willDelete) => {
+                          if (willDelete) {
+                            handleBulkDelete(selectedLandSales);
+                          }
+                        }) : ""}
                       >
                         Bulk Delete
                       </button>
@@ -1324,7 +1807,7 @@ const handleSortClose = () => setShowSort(false);
                                   column.id == "date Of First Closing" ? "date_of_first_closing" : 
                                   column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))}>
                                   <strong>
-                                    {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label + (handleLabelExist(column.label) ? ' '+totalSumFields(column.label) : "")}
+                                    {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
                                     {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "active Communities" ? "active_communities" : 
@@ -2352,6 +2835,272 @@ const handleSortClose = () => setShowSort(false);
                                 </td>
                               </tr>
                             )}
+                          </tbody>
+                          <tbody>
+                            {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "builder_code " &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "logo" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "website" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "phone" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "fax" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "officeaddress1" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "officeaddress2" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "city" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zipcode" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "company_type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "is_active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "stock_market" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "current_division_president" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "stock_symbol" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "current_land_aquisitions" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_1" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_2" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_city" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_zipcode" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_lat" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "coporate_officeaddress_lng" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "active Communities" && (
+                                    <td key={AllBuilderListExport.active_communities} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={activeCommunitiesOption} 
+                                        onChange={(e) => handleSelectChange(e, "active_communities")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{activeCommunitiesResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "closing This Year" && (
+                                    <td key={AllBuilderListExport.closing_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={closingThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "closing_this_year")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{closingThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "permits This Year" && (
+                                    <td key={AllBuilderListExport.permits_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={permitsThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "permits_this_year")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{permitsThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "net Sales this year" && (
+                                    <td key={AllBuilderListExport.net_sales_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={netSalesThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "net_sales_this_year")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{netSalesThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "current Avg Base Price" && (
+                                    <td key={AllBuilderListExport.current_avg_base_Price} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={currentAvgBasePriceOption} 
+                                        onChange={(e) => handleSelectChange(e, "current_avg_base_Price")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{currentAvgBasePriceResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "median Closing Price This Year" && (
+                                    <td key={AllBuilderListExport.median_closing_price_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={medianClosingPriceThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "median_closing_price_this_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{medianClosingPriceThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "median Closing Price Last Year" && (
+                                    <td key={AllBuilderListExport.median_closing_price_last_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={medianClosingPriceLastYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "median_closing_price_last_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{medianClosingPriceLastYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "avg Net Sales Per Month This Year" && (
+                                    <td key={AllBuilderListExport.avg_net_sales_per_month_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={avgNetSalesPerMonthThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_this_year")} 
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{avgNetSalesPerMonthThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "avg Closings Per Month This Year" && (
+                                    <td key={AllBuilderListExport.avg_closings_per_month_this_year} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={avgClosingsPerMonthThisYearOption} 
+                                        onChange={(e) => handleSelectChange(e, "avg_closings_per_month_this_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{avgClosingsPerMonthThisYearResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "total Closings" && (
+                                    <td key={AllBuilderListExport.total_closings} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={totalClosingsOption} 
+                                        onChange={(e) => handleSelectChange(e, "total_closings")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{totalClosingsResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "total Permits" && (
+                                    <td key={AllBuilderListExport.total_permits} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={totalPermitsOption} 
+                                        onChange={(e) => handleSelectChange(e, "total_permits")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{totalPermitsResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "total Net Sales" && (
+                                    <td key={AllBuilderListExport.total_net_sales} style={{ textAlign: "center" }}>
+                                      <select 
+                                        value={totalNetSalesOption} 
+                                        onChange={(e) => handleSelectChange(e, "total_net_sales")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{totalNetSalesResult}</span>
+                                    </td>
+                                  )}
+                                  {column.id == "date Of First Closing" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "date Of Latest Closing" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>}
                           </tbody>
                         </table>
                     )}

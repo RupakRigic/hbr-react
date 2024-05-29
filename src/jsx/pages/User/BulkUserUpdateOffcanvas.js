@@ -90,6 +90,10 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if(userSelectedUsers.length === 0)
+          {
+              setError('No selected records'); return false
+          }
         try {
             var userData = {
                 builder_id: BuilderCode.id,
@@ -123,11 +127,11 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
 
     return (
         <>
-            <Offcanvas show={addUser} onHide={() => setAddUser(false)} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={addUser} onHide={() => {setAddUser(false); setError('')}} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => {setAddUser(false);setRoleCode("");setBuilderCode("");}}
+                        onClick={() => {setAddUser(false);setRoleCode("");setBuilderCode(""); setError('')}}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -204,7 +208,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                       <button type="submit" className="btn btn-primary me-1">
                         Submit
                       </button>
-                      <Link to={"/userlist"} className="btn btn-danger light ms-1">
+                      <Link to={"#"} onClick={() => {setAddUser(false);setError('')}} className="btn btn-danger light ms-1">
                         Cancel
                       </Link>
                     </div>

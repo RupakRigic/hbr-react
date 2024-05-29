@@ -484,7 +484,16 @@ const UserList = () => {
                       <button
                         className="btn btn-danger btn-sm me-1"
                         style={{marginLeft: "3px"}}
-                        onClick={() => selectedUsers.length > 0 ? handleBulkDelete(selectedUsers) : ""}
+                        onClick={() => selectedUsers.length > 0 ? swal({
+                          title: "Are you sure?",
+                          icon: "warning",
+                          buttons: true,
+                          dangerMode: true,
+                        }).then((willDelete) => {
+                          if (willDelete) {
+                            handleBulkDelete(selectedUsers);
+                          }
+                        }) : ""}
                       >
                         Bulk Delete
                       </button>
