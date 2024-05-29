@@ -144,6 +144,57 @@ const handleSortClose = () => setShowSort(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
+  const [totalClosingsOption, setTotalClosingsOption] = useState("");
+  const [totalPermitsOption, setTotalPermitsOption] = useState("");
+  const [totalNetSalesOption, setTotalNetSalesOption] = useState("");
+  const [monthsOpenOption, setMonthsOpenOption] = useState("");
+  const [latestLotsReleasedOption, setLatestLotsReleasedOption] = useState("");
+  const [latestStandingInventoryOption, setLatestStandingInventoryOption] = useState("");
+  const [unsoldLotsOption, setUnsoldLotsOption] = useState("");
+  const [avgSqftAllOption, setAvgSqftAllOption] = useState("");
+  const [avgSqftActiveOption, setAvgSqftActiveOption] = useState("");
+  const [avgBasePriceAllOption, setAvgBasePriceAllOption] = useState("");
+  const [avgBasePriceActiveOption, setAvgBasePriceActiveOption] = useState("");
+  const [minSqftAllOption, setMinSqftAllOption] = useState("");
+  const [maxSqftAllOption, setMaxSqftAllOption] = useState("");
+  const [minBasePriceAllOption, setMinBasePriceAllOption] = useState("");
+  const [minSqftActiveOption, setMinSqftActiveOption] = useState("");
+  const [maxBasePriceAllOption, setMaxBasePriceAllOption] = useState("");
+  const [maxSqftActiveOption, setMaxSqftActiveOption] = useState("");
+  const [avgNetTrafficPerMonthThisYearOption, setAvgNetTrafficPerMonthThisYearOption] = useState("");
+  const [avgNetSalesPerMonthThisYearOption, setAvgNetSalesPerMonthThisYearOption] = useState("");
+  const [avgClosingsPerMonthThisYearOption, setAvgClosingsPerMonthThisYearOption] = useState("");
+  const [avgNetSalesPerMonthSinceOpenOption, setAvgNetSalesPerMonthSinceOpenOption] = useState("");
+  const [avgNetSalesPerMonthLastThreeMonthsOption, setAvgNetSalesPerMonthLastThreeMonthsOption] = useState("");
+  const [monthNetSoldOption, setMonthNetSoldOption] = useState("");
+  const [yearNetSoldOption, setYearNetSoldOption] = useState("");
+
+
+  const [totalClosingsResult, setTotalClosingsResult] = useState(0);
+  const [totalPermitsResult, setTotalPermitsResult] = useState(0);
+  const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
+  const [monthsOpenResult, setMonthsOpenResult] = useState(0);
+  const [latestLotsReleasedResult, setLatestLotsReleasedResult] = useState(0);
+  const [latestStandingInventoryResult, setLatestStandingInventoryResult] = useState(0);
+  const [unsoldLotsResult, setUnsoldLotsResult] = useState(0);
+  const [avgSqftAllResult, setAvgSqftAllResult] = useState(0);
+  const [avgSqftActiveResult, setAvgSqftActiveResult] = useState(0);
+  const [avgBasePriceAllResult, setAvgBasePriceAllResult] = useState(0);
+  const [avgBasePriceActiveResult, setAvgBasePriceActiveResult] = useState(0);
+  const [minSqftAllResult, setMinSqftAllResult] = useState(0);
+  const [maxSqftAllResult, setMaxSqftAllResult] = useState(0);
+  const [minBasePriceAllResult, setMinBasePriceAllResult] = useState(0);
+  const [minSqftActiveResult, setMinSqftActiveResult] = useState(0);
+  const [maxBasePriceAllResult, setMaxBasePriceAllResult] = useState(0);
+  const [maxSqftActiveResult, setMaxSqftActiveResult] = useState(0);
+  const [avgNetTrafficPerMonthThisYearResult, setAvgNetTrafficPerMonthThisYearResult] = useState(0);
+  const [avgNetSalesPerMonthThisYearResult, setAvgNetSalesPerMonthThisYearResult] = useState(0);
+  const [avgClosingsPerMonthThisYearResult, setAvgClosingsPerMonthThisYearResult] = useState(0);
+  const [avgNetSalesPerMonthSinceOpenResult, setAvgNetSalesPerMonthSinceOpenResult] = useState(0);
+  const [avgNetSalesPerMonthLastThreeMonthsResult, setAvgNetSalesPerMonthLastThreeMonthsResult] = useState(0);
+  const [monthNetSoldResult, setMonthNetSoldResult] = useState(0);
+  const [yearNetSoldResult, setYearNetSoldResult] = useState(0);
+
   const headers = [
     { label: 'Status', key: 'firstname' },
     { label: 'Reporting', key: 'lastname' },
@@ -882,33 +933,33 @@ console.log(AllBuilderListExport)
   ];
   
 
-  function handleLabelExist(lable)
-  {
+  // function handleLabelExist(lable)
+  // {
 
-      console.log(lable);
-      console.log(calculatedField.some(field => field.hasOwnProperty(lable)));
+  //     console.log(lable);
+  //     console.log(calculatedField.some(field => field.hasOwnProperty(lable)));
 
-      return calculatedField.some(field => field.hasOwnProperty(lable));
+  //     return calculatedField.some(field => field.hasOwnProperty(lable));
  
-  }
+  // }
 
-  const totalSumFields = (label) => {
-    console.log(AllBuilderListExport);
-    console.log(label);
+  // const totalSumFields = (label) => {
+  //   console.log(AllBuilderListExport);
+  //   console.log(label);
   
-    // return 0 if the label doesn't exist
-    if (!handleLabelExist(label)) {
-      return 0;
-    }
+  //   // return 0 if the label doesn't exist
+  //   if (!handleLabelExist(label)) {
+  //     return 0;
+  //   }
   
-    label = label.toLowerCase().replace(/\s+/g, '_');
+  //   label = label.toLowerCase().replace(/\s+/g, '_');
   
-    const sum = AllBuilderListExport.reduce((sum, builder) => {
-      return sum + (builder[label] || 0);
-    }, 0);
+  //   const sum = AllBuilderListExport.reduce((sum, builder) => {
+  //     return sum + (builder[label] || 0);
+  //   }, 0);
   
-    return sum.toFixed(2);
-  };
+  //   return sum.toFixed(2);
+  // };
   
 
 
@@ -1188,6 +1239,1511 @@ console.log(AllBuilderListExport)
     }));
   };
 
+  const totalSumFields = (field) => {
+    if(field == "total_closings") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_closings || 0);
+      }, 0);
+    }
+    if(field == "total_permits") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_permits || 0);
+      }, 0);
+    }
+    if(field == "total_net_sales") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.total_net_sales || 0);
+      }, 0);
+    }
+    if(field == "months_open") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.months_open || 0);
+      }, 0);
+    }
+    if(field == "latest_lots_released") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.latest_lots_released || 0);
+      }, 0);
+    }
+    if(field == "latest_standing_inventory") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.latest_standing_inventory || 0);
+      }, 0);
+    }
+    if(field == "unsold_lots") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.unsold_lots || 0);
+      }, 0);
+    }
+    if(field == "avg_sqft_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_sqft_all || 0);
+      }, 0);
+    }
+    if(field == "avg_sqft_active") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_sqft_active || 0);
+      }, 0);
+    }
+    if(field == "avg_base_price_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_base_price_all || 0);
+      }, 0);
+    }
+    if(field == "avg_base_price_active") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_base_price_active || 0);
+      }, 0);
+    }
+    if(field == "min_sqft_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.min_sqft_all || 0);
+      }, 0);
+    }
+    if(field == "max_sqft_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.max_sqft_all || 0);
+      }, 0);
+    }
+    if(field == "min_base_price_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.min_base_price_all || 0);
+      }, 0);
+    }
+    if(field == "min_sqft_active") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.min_sqft_active || 0);
+      }, 0);
+    }
+    if(field == "max_base_price_all") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.max_base_price_all || 0);
+      }, 0);
+    }
+    if(field == "max_sqft_active") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.max_sqft_active || 0);
+      }, 0);
+    }
+    if(field == "avg_net_traffic_per_month_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+      }, 0);
+    }
+    if(field == "avg_net_sales_per_month_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_this_year || 0);
+      }, 0);
+    }
+    if(field == "avg_closings_per_month_this_year") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_closings_per_month_this_year || 0);
+      }, 0);
+    }
+    if(field == "avg_net_sales_per_month_since_open") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_since_open || 0);
+      }, 0);
+    }
+    if(field == "avg_net_sales_per_month_last_three_months") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+      }, 0);
+    }
+    if(field == "month_net_sold") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.month_net_sold || 0);
+      }, 0);
+    }
+    if(field == "year_net_sold") {
+      return AllBuilderListExport.reduce((sum, builder) => {
+        return sum + (builder.year_net_sold || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    const sum = totalSumFields(field);
+    return sum / AllBuilderListExport.length;
+  };
+
+  const handleSelectChange = (e, field) => {
+    debugger
+    const value = e.target.value;
+    
+    switch (field) {
+      case "total_closings":
+        setTotalClosingsOption(value);
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setTotalClosingsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalClosingsResult(averageFields(field));
+        }
+        break;
+
+      case "total_permits":
+        setTotalPermitsOption(value);
+        setTotalClosingsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setTotalPermitsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalPermitsResult(averageFields(field));
+        }
+        break;
+
+      case "total_net_sales":
+        setTotalNetSalesOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+		    setTotalPermitsResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        if (value === 'sum') {
+          setTotalNetSalesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalNetSalesResult(averageFields(field));
+        }
+        break;
+
+      case "months_open":
+        setMonthsOpenOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMonthsOpenResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMonthsOpenResult(averageFields(field));
+        }
+        break;
+
+      case "latest_lots_released":
+        setLatestLotsReleasedOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setLatestLotsReleasedResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLatestLotsReleasedResult(averageFields(field));
+        }
+        break;
+
+      case "latest_standing_inventory":
+        setLatestStandingInventoryOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setLatestStandingInventoryResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLatestStandingInventoryResult(averageFields(field));
+        }
+        break;
+
+      case "unsold_lots":
+        setUnsoldLotsOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setUnsoldLotsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setUnsoldLotsResult(averageFields(field));
+        }
+        break;
+
+      case "avg_sqft_all":
+        setAvgSqftAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgSqftAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgSqftAllResult(averageFields(field));
+        }
+        break;
+
+      case "avg_sqft_active":
+        setAvgSqftActiveOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgSqftActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgSqftActiveResult(averageFields(field));
+        }
+        break;
+
+      case "avg_base_price_all":
+        setAvgBasePriceAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgBasePriceAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgBasePriceAllResult(averageFields(field));
+        }
+        break;
+
+      case "avg_base_price_active":
+        setAvgBasePriceActiveOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgBasePriceActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgBasePriceActiveResult(averageFields(field));
+        }
+        break;
+
+      case "min_sqft_all":
+        setMinSqftAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMinSqftAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMinSqftAllResult(averageFields(field));
+        }
+        break;
+
+      case "max_sqft_all":
+        setMaxSqftAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMaxSqftAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMaxSqftAllResult(averageFields(field));
+        }
+        break;
+
+      case "min_base_price_all":
+        setMinBasePriceAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMinBasePriceAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMinBasePriceAllResult(averageFields(field));
+        }
+        break;
+
+      case "min_sqft_active":
+        setMinSqftActiveOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMinSqftActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMinSqftActiveResult(averageFields(field));
+        }
+        break;
+
+      case "max_base_price_all":
+        setMaxBasePriceAllOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMaxBasePriceAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMaxBasePriceAllResult(averageFields(field));
+        }
+        break;
+
+      case "max_sqft_active":
+        setMaxSqftActiveOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMaxSqftActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMaxSqftActiveResult(averageFields(field));
+        }
+        break;
+
+      case "avg_net_traffic_per_month_this_year":
+        setAvgNetTrafficPerMonthThisYearOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgNetTrafficPerMonthThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgNetTrafficPerMonthThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "avg_net_sales_per_month_this_year":
+        setAvgNetSalesPerMonthThisYearOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgNetSalesPerMonthThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgNetSalesPerMonthThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "avg_closings_per_month_this_year":
+        setAvgClosingsPerMonthThisYearOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgClosingsPerMonthThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgClosingsPerMonthThisYearResult(averageFields(field));
+        }
+        break;
+
+      case "avg_net_sales_per_month_since_open":
+        setAvgNetSalesPerMonthSinceOpenOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgNetSalesPerMonthSinceOpenResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgNetSalesPerMonthSinceOpenResult(averageFields(field));
+        }
+        break;
+
+      case "avg_net_sales_per_month_last_three_months":
+        setAvgNetSalesPerMonthLastThreeMonthsOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setAvgNetSalesPerMonthLastThreeMonthsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgNetSalesPerMonthLastThreeMonthsResult(averageFields(field));
+        }
+        break;
+
+      case "month_net_sold":
+        setMonthNetSoldOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setYearNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setYearNetSoldResult(0);
+
+        if (value === 'sum') {
+          setMonthNetSoldResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMonthNetSoldResult(averageFields(field));
+        }
+        break;
+
+      case "year_net_sold":
+        setYearNetSoldOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+
+        if (value === 'sum') {
+          setYearNetSoldResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setYearNetSoldResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1461,7 +3017,7 @@ console.log(AllBuilderListExport)
                                 column.id == "parcel" ? "parcel" : toCamelCase(column.id))}>
                                 <strong>
                            
-                                  {column.label + (handleLabelExist(column.label) ? ' ' + totalSumFields(column.label) : "")}
+                                  {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "builder" ? "builderName" : 
@@ -2959,6 +4515,482 @@ console.log(AllBuilderListExport)
                               </td>
                             </tr>
                           )}
+                        </tbody>
+                        <tbody>
+                          {!excelLoading && 
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                {column.id == "status" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "reporting" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "builder" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "name" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "product Type" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "area" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "masterplan" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "zipcode" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Lots" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "lot Width" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "lot Size" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "zoning" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "age Restricted" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "all Single Story" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gated" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "location" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "juridiction" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "longitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gas Provider" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "hOA Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "masterplan Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "parcel Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "phone" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "website" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "date Added" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "__pkSubID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "_fkBuilderID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Closings" &&
+                                  <td  key={AllBuilderListExport.total_closings} style={{ textAlign: "center" }}>
+                                    <select 
+                                        value={totalClosingsOption} 
+                                        onChange={(e) => handleSelectChange(e, "total_closings")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br/>
+                                      <span>{totalClosingsResult}</span>
+                                  </td>
+                                }
+                                {column.id == "total Permits" &&
+                                  <td key={AllBuilderListExport.total_permits} style={{ textAlign: "center" }}>
+                                    <select
+                                      value={totalPermitsOption}
+                                      onChange={(e) => handleSelectChange(e, "total_permits")}
+                                      placeholder="CALCULATE"
+                                    >
+                                      <option value="" disabled>CALCULATE</option>
+                                      <option value="sum">Sum</option>
+                                      <option value="avg">Avg</option>
+                                    </select>
+                                    <br />
+                                    <span>{totalPermitsResult}</span>
+                                  </td>
+                                }
+                                {column.id == "total Net Sales" &&
+                                  <td key={AllBuilderListExport.total_net_sales} style={{ textAlign: "center" }}>
+                                    <select
+                                      value={totalNetSalesOption}
+                                      onChange={(e) => handleSelectChange(e, "total_net_sales")}
+                                      placeholder="CALCULATE"
+                                    >
+                                      <option value="" disabled>CALCULATE</option>
+                                      <option value="sum">Sum</option>
+                                      <option value="avg">Avg</option>
+                                    </select>
+                                    <br />
+                                    <span>{totalNetSalesResult}</span>
+                                  </td>
+                                }
+                                {column.id == "months Open" &&
+                                  <td key={AllBuilderListExport.months_open} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={monthsOpenOption}
+                                        onChange={(e) => handleSelectChange(e, "months_open")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{monthsOpenResult}</span>
+                                  </td>
+                                }
+                                {column.id == "latest Traffic/Sales Data" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latest Lots Released" &&
+                                  <td key={AllBuilderListExport.latest_lots_released} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={latestLotsReleasedOption}
+                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{latestLotsReleasedResult}</span>
+                                  </td>
+                                }
+                                {column.id == "latest Standing Inventory" &&
+                                  <td key={AllBuilderListExport.latest_standing_inventory} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={latestStandingInventoryOption}
+                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{latestStandingInventoryResult}</span>
+                                  </td>
+                                }
+                                {column.id == "unsold Lots" &&
+                                  <td key={AllBuilderListExport.unsold_lots} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={unsoldLotsOption}
+                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{unsoldLotsResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Sqft All" &&
+                                  <td key={AllBuilderListExport.avg_sqft_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={avgSqftAllOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_sqft_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgSqftAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Sqft Active" &&
+                                  <td key={AllBuilderListExport.avg_sqft_active} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={avgSqftActiveOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_sqft_active")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgSqftActiveResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Base Price All" &&
+                                  <td key={AllBuilderListExport.avg_base_price_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={avgBasePriceAllOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_base_price_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgBasePriceAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Base Price Active" &&
+                                  <td key={AllBuilderListExport.avg_base_price_active} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={avgBasePriceActiveOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_base_price_active")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgBasePriceActiveResult}</span>
+                                  </td>
+                                }
+                                {column.id == "min Sqft All" &&
+                                  <td key={AllBuilderListExport.min_sqft_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={minSqftAllOption}
+                                        onChange={(e) => handleSelectChange(e, "min_sqft_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{minSqftAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "max Sqft All" &&
+                                  <td key={AllBuilderListExport.max_sqft_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={maxSqftAllOption}
+                                        onChange={(e) => handleSelectChange(e, "max_sqft_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{maxSqftAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "min Base Price All" &&
+                                  <td key={AllBuilderListExport.min_base_price_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={minBasePriceAllOption}
+                                        onChange={(e) => handleSelectChange(e, "min_base_price_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{minBasePriceAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "min Sqft Active" &&
+                                  <td key={AllBuilderListExport.min_sqft_active} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={minSqftActiveOption}
+                                        onChange={(e) => handleSelectChange(e, "min_sqft_active")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{minSqftActiveResult}</span>
+                                  </td>
+                                }
+                                {column.id == "max Base Price All" &&
+                                  <td key={AllBuilderListExport.max_base_price_all} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={maxBasePriceAllOption}
+                                        onChange={(e) => handleSelectChange(e, "max_base_price_all")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{maxBasePriceAllResult}</span>
+                                  </td>
+                                }
+                                {column.id == "max Sqft Active" &&
+                                  <td key={AllBuilderListExport.max_sqft_active} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={maxSqftActiveOption}
+                                        onChange={(e) => handleSelectChange(e, "max_sqft_active")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{maxSqftActiveResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Net Traffic Per Month This Year" &&
+                                  <td key={AllBuilderListExport.avg_net_traffic_per_month_this_year} style={{ textAlign: "center" }}>
+                                      <select
+                                        value={avgNetTrafficPerMonthThisYearOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_net_traffic_per_month_this_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgNetTrafficPerMonthThisYearResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Net Sales Per Month This Year" &&
+                                  <td key={AllBuilderListExport.avg_net_sales_per_month_this_year} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={avgNetSalesPerMonthThisYearOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_this_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgNetSalesPerMonthThisYearResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Closings Per Month This Year" &&
+                                  <td key={AllBuilderListExport.avg_closings_per_month_this_year} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={avgClosingsPerMonthThisYearOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_closings_per_month_this_year")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgClosingsPerMonthThisYearResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Net Sales Per Month Since Open" &&
+                                  <td key={AllBuilderListExport.avg_net_sales_per_month_since_open} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={avgNetSalesPerMonthSinceOpenOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_since_open")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgNetSalesPerMonthSinceOpenResult}</span>
+                                  </td>
+                                }
+                                {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                  <td key={AllBuilderListExport.avg_net_sales_per_month_last_three_months} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={avgNetSalesPerMonthLastThreeMonthsOption}
+                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_last_three_months")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult}</span>
+                                  </td>
+                                }
+                                {column.id == "max Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "min Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "sqft Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "price Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "month Net Sold" &&
+                                  <td key={AllBuilderListExport.month_net_sold} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={monthNetSoldOption}
+                                        onChange={(e) => handleSelectChange(e, "month_net_sold")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{monthNetSoldResult}</span>
+                                  </td>
+                                }
+                                {column.id == "year Net Sold" &&
+                                  <td key={AllBuilderListExport.year_net_sold} style={{ textAlign: "center" }}>
+                                    <select
+                                        value={yearNetSoldOption}
+                                        onChange={(e) => handleSelectChange(e, "year_net_sold")}
+                                        placeholder="CALCULATE"
+                                      >
+                                        <option value="" disabled>CALCULATE</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                      <span>{yearNetSoldResult}</span>
+                                  </td>
+                                }
+                                  {column.id == "open Since" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "action" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                              </>
+                            ))}
+                          </tr>}
                         </tbody>
                       </table>
                     )}
