@@ -88,6 +88,9 @@ const handleSortClose = () => setShowSort(false);
   const [npage, setNpage] = useState(0);
   const number = [...Array(npage + 1).keys()].slice(1);
 
+  const [filter, setFilter] = useState(false);
+  const [normalFilter, setNormalFilter] = useState(false);
+
   const [filterQuery, setFilterQuery] = useState({
     status: "",
     product_type: "",
@@ -774,6 +777,7 @@ const handleSortClose = () => setShowSort(false);
   const HandleFilterForm = (e) =>
     {
       e.preventDefault();
+      setFilter(true);
       getbuilderlist(currentPage,searchQuery);
     };
 
@@ -794,6 +798,7 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       [name]: value,
     }));
+    setNormalFilter(true);
   };
 
   const HandleSelectChange = (selectedOption) => {
@@ -1221,6 +1226,67 @@ const handleSortClose = () => setShowSort(false);
       );
     }
 
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+
+    if (isAnyFilterApplied && !normalFilter) {
+      setBuilderList(filtered);
+      setFilter(true);
+      setNormalFilter(false);
+    } else {
+      setBuilderList(filtered.slice(0, 25));
+      setCurrentPage(1);
+      setFilter(false);
+      setNormalFilter(false);
+      setTotalClosingsOption("");
+      setTotalPermitsOption("");
+      setTotalNetSalesOption("");
+      setMonthsOpenOption("");
+      setLatestLotsReleasedOption("");
+      setLatestStandingInventoryOption("");
+      setUnsoldLotsOption("");
+      setAvgSqftAllOption("");
+      setAvgSqftActiveOption("");
+      setAvgBasePriceAllOption("");
+      setAvgBasePriceActiveOption("");
+      setMinSqftAllOption("");
+      setMaxSqftAllOption("");
+      setMinBasePriceAllOption("");
+      setMinSqftActiveOption("");
+      setMaxBasePriceAllOption("");
+      setMaxSqftActiveOption("");
+      setAvgNetTrafficPerMonthThisYearOption("");
+      setAvgNetSalesPerMonthThisYearOption("");
+      setAvgClosingsPerMonthThisYearOption("");
+      setAvgNetSalesPerMonthSinceOpenOption("");
+      setAvgNetSalesPerMonthLastThreeMonthsOption("");
+      setMonthNetSoldOption("");
+      setYearNetSoldOption("");
+      setTotalClosingsResult(0);
+      setTotalPermitsResult(0);
+      setTotalNetSalesResult(0);
+      setMonthsOpenResult(0);
+      setLatestLotsReleasedResult(0);
+      setLatestStandingInventoryResult(0);
+      setUnsoldLotsResult(0);
+      setAvgSqftAllResult(0);
+      setAvgSqftActiveResult(0);
+      setAvgBasePriceAllResult(0);
+      setAvgBasePriceActiveResult(0);
+      setMinSqftAllResult(0);
+      setMaxSqftAllResult(0);
+      setMinBasePriceAllResult(0);
+      setMinSqftActiveResult(0);
+      setMaxBasePriceAllResult(0);
+      setMaxSqftActiveResult(0);
+      setAvgNetTrafficPerMonthThisYearResult(0);
+      setAvgNetSalesPerMonthThisYearResult(0);
+      setAvgClosingsPerMonthThisYearResult(0);
+      setAvgNetSalesPerMonthSinceOpenResult(0);
+      setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+      setMonthNetSoldResult(0);
+      setYearNetSoldResult(0);
+    }
+
     setBuilderList(filtered);
   };
   
@@ -1234,138 +1300,286 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       [name]: value
     }));
+    setNormalFilter(false);
   };
 
   const totalSumFields = (field) => {
     if(field == "total_closings") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.total_closings || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      }
     }
     if(field == "total_permits") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.total_permits || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);  
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);
+      }
     }
     if(field == "total_net_sales") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.total_net_sales || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      }
     }
     if(field == "months_open") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.months_open || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.months_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.months_open || 0);
+        }, 0);
+      }
     }
     if(field == "latest_lots_released") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.latest_lots_released || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.latest_lots_released || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.latest_lots_released || 0);
+        }, 0);
+      }
     }
     if(field == "latest_standing_inventory") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.latest_standing_inventory || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.latest_standing_inventory || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.latest_standing_inventory || 0);
+        }, 0);
+      }
     }
     if(field == "unsold_lots") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.unsold_lots || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.unsold_lots || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.unsold_lots || 0);
+        }, 0);
+      }
     }
     if(field == "avg_sqft_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_sqft_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_all || 0);
+        }, 0);
+      }
     }
     if(field == "avg_sqft_active") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_sqft_active || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_active || 0);
+        }, 0);
+      }
     }
     if(field == "avg_base_price_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_base_price_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_all || 0);
+        }, 0);
+      }
     }
     if(field == "avg_base_price_active") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_base_price_active || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_active || 0);
+        }, 0);
+      }
     }
     if(field == "min_sqft_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.min_sqft_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_all || 0);
+        }, 0);
+      }
     }
     if(field == "max_sqft_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.max_sqft_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_all || 0);
+        }, 0);
+      }
     }
     if(field == "min_base_price_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.min_base_price_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_base_price_all || 0);
+        }, 0);
+      }
     }
     if(field == "min_sqft_active") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.min_sqft_active || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_active || 0);
+        }, 0);
+      }
     }
     if(field == "max_base_price_all") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.max_base_price_all || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_base_price_all || 0);
+        }, 0);
+      }
     }
     if(field == "max_sqft_active") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.max_sqft_active || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_active || 0);
+        }, 0);
+      }
     }
     if(field == "avg_net_traffic_per_month_this_year") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_net_traffic_per_month_this_year || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+        }, 0);
+      }
     }
     if(field == "avg_net_sales_per_month_this_year") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_this_year || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      }
     }
     if(field == "avg_closings_per_month_this_year") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_closings_per_month_this_year || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      }
     }
     if(field == "avg_net_sales_per_month_since_open") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_since_open || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_since_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_since_open || 0);
+        }, 0);
+      }
     }
     if(field == "avg_net_sales_per_month_last_three_months") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+        }, 0);
+      }
     }
     if(field == "month_net_sold") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.month_net_sold || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.month_net_sold || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.month_net_sold || 0);
+        }, 0);
+      }
     }
     if(field == "year_net_sold") {
-      return AllBuilderListExport.reduce((sum, builder) => {
-        return sum + (builder.year_net_sold || 0);
-      }, 0);
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.year_net_sold || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.year_net_sold || 0);
+        }, 0);
+      }
     }
   };
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    return sum / AllBuilderListExport.length;
+    if(filter){
+      return sum / BuilderList.length;
+    } else{
+      return sum / AllBuilderListExport.length;
+    }
   };
 
   const handleSelectChange = (e, field) => {
-    debugger
     const value = e.target.value;
     
     switch (field) {
@@ -4605,7 +4819,7 @@ const handleSortClose = () => setShowSort(false);
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "total Closings" &&
-                                  <td  key={AllBuilderListExport.total_closings} style={{ textAlign: "center" }}>
+                                  <td  key={ filter ? BuilderList.total_closings : AllBuilderListExport.total_closings} style={{ textAlign: "center" }}>
                                     <select 
                                         value={totalClosingsOption} 
                                         onChange={(e) => handleSelectChange(e, "total_closings")}
@@ -4616,11 +4830,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br/>
-                                      <span>{totalClosingsResult}</span>
+                                      <span>{totalClosingsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "total Permits" &&
-                                  <td key={AllBuilderListExport.total_permits} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.total_permits : AllBuilderListExport.total_permits} style={{ textAlign: "center" }}>
                                     <select
                                       value={totalPermitsOption}
                                       onChange={(e) => handleSelectChange(e, "total_permits")}
@@ -4631,11 +4845,11 @@ const handleSortClose = () => setShowSort(false);
                                       <option value="avg">Avg</option>
                                     </select>
                                     <br />
-                                    <span>{totalPermitsResult}</span>
+                                    <span>{totalPermitsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "total Net Sales" &&
-                                  <td key={AllBuilderListExport.total_net_sales} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.total_net_sales : AllBuilderListExport.total_net_sales} style={{ textAlign: "center" }}>
                                     <select
                                       value={totalNetSalesOption}
                                       onChange={(e) => handleSelectChange(e, "total_net_sales")}
@@ -4646,11 +4860,11 @@ const handleSortClose = () => setShowSort(false);
                                       <option value="avg">Avg</option>
                                     </select>
                                     <br />
-                                    <span>{totalNetSalesResult}</span>
+                                    <span>{totalNetSalesResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "months Open" &&
-                                  <td key={AllBuilderListExport.months_open} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.months_open : AllBuilderListExport.months_open} style={{ textAlign: "center" }}>
                                       <select
                                         value={monthsOpenOption}
                                         onChange={(e) => handleSelectChange(e, "months_open")}
@@ -4661,14 +4875,14 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{monthsOpenResult}</span>
+                                      <span>{monthsOpenResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "latest Traffic/Sales Data" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "latest Lots Released" &&
-                                  <td key={AllBuilderListExport.latest_lots_released} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.latest_lots_released : AllBuilderListExport.latest_lots_released} style={{ textAlign: "center" }}>
                                     <select
                                         value={latestLotsReleasedOption}
                                         onChange={(e) => handleSelectChange(e, "latest_lots_released")}
@@ -4679,11 +4893,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{latestLotsReleasedResult}</span>
+                                      <span>{latestLotsReleasedResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "latest Standing Inventory" &&
-                                  <td key={AllBuilderListExport.latest_standing_inventory} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.latest_standing_inventory : AllBuilderListExport.latest_standing_inventory} style={{ textAlign: "center" }}>
                                       <select
                                         value={latestStandingInventoryOption}
                                         onChange={(e) => handleSelectChange(e, "latest_lots_released")}
@@ -4694,11 +4908,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{latestStandingInventoryResult}</span>
+                                      <span>{latestStandingInventoryResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "unsold Lots" &&
-                                  <td key={AllBuilderListExport.unsold_lots} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.unsold_lots : AllBuilderListExport.unsold_lots} style={{ textAlign: "center" }}>
                                       <select
                                         value={unsoldLotsOption}
                                         onChange={(e) => handleSelectChange(e, "latest_lots_released")}
@@ -4709,11 +4923,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{unsoldLotsResult}</span>
+                                      <span>{unsoldLotsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Sqft All" &&
-                                  <td key={AllBuilderListExport.avg_sqft_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_sqft_all : AllBuilderListExport.avg_sqft_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgSqftAllOption}
                                         onChange={(e) => handleSelectChange(e, "avg_sqft_all")}
@@ -4724,11 +4938,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgSqftAllResult}</span>
+                                      <span>{avgSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Sqft Active" &&
-                                  <td key={AllBuilderListExport.avg_sqft_active} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_sqft_active : AllBuilderListExport.avg_sqft_active} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgSqftActiveOption}
                                         onChange={(e) => handleSelectChange(e, "avg_sqft_active")}
@@ -4739,11 +4953,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgSqftActiveResult}</span>
+                                      <span>{avgSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Base Price All" &&
-                                  <td key={AllBuilderListExport.avg_base_price_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_base_price_all : AllBuilderListExport.avg_base_price_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgBasePriceAllOption}
                                         onChange={(e) => handleSelectChange(e, "avg_base_price_all")}
@@ -4754,11 +4968,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgBasePriceAllResult}</span>
+                                      <span>{avgBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Base Price Active" &&
-                                  <td key={AllBuilderListExport.avg_base_price_active} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_base_price_active : AllBuilderListExport.avg_base_price_active} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgBasePriceActiveOption}
                                         onChange={(e) => handleSelectChange(e, "avg_base_price_active")}
@@ -4769,11 +4983,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgBasePriceActiveResult}</span>
+                                      <span>{avgBasePriceActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Sqft All" &&
-                                  <td key={AllBuilderListExport.min_sqft_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.min_sqft_all : AllBuilderListExport.min_sqft_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={minSqftAllOption}
                                         onChange={(e) => handleSelectChange(e, "min_sqft_all")}
@@ -4784,11 +4998,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minSqftAllResult}</span>
+                                      <span>{minSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Sqft All" &&
-                                  <td key={AllBuilderListExport.max_sqft_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.max_sqft_all : AllBuilderListExport.max_sqft_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={maxSqftAllOption}
                                         onChange={(e) => handleSelectChange(e, "max_sqft_all")}
@@ -4799,11 +5013,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxSqftAllResult}</span>
+                                      <span>{maxSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Base Price All" &&
-                                  <td key={AllBuilderListExport.min_base_price_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.min_base_price_all : AllBuilderListExport.min_base_price_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={minBasePriceAllOption}
                                         onChange={(e) => handleSelectChange(e, "min_base_price_all")}
@@ -4814,11 +5028,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minBasePriceAllResult}</span>
+                                      <span>{minBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Sqft Active" &&
-                                  <td key={AllBuilderListExport.min_sqft_active} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.min_sqft_active : AllBuilderListExport.min_sqft_active} style={{ textAlign: "center" }}>
                                       <select
                                         value={minSqftActiveOption}
                                         onChange={(e) => handleSelectChange(e, "min_sqft_active")}
@@ -4829,11 +5043,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minSqftActiveResult}</span>
+                                      <span>{minSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Base Price All" &&
-                                  <td key={AllBuilderListExport.max_base_price_all} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.max_base_price_all : AllBuilderListExport.max_base_price_all} style={{ textAlign: "center" }}>
                                       <select
                                         value={maxBasePriceAllOption}
                                         onChange={(e) => handleSelectChange(e, "max_base_price_all")}
@@ -4844,11 +5058,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxBasePriceAllResult}</span>
+                                      <span>{maxBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Sqft Active" &&
-                                  <td key={AllBuilderListExport.max_sqft_active} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.max_sqft_active : AllBuilderListExport.max_sqft_active} style={{ textAlign: "center" }}>
                                       <select
                                         value={maxSqftActiveOption}
                                         onChange={(e) => handleSelectChange(e, "max_sqft_active")}
@@ -4859,11 +5073,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxSqftActiveResult}</span>
+                                      <span>{maxSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Traffic Per Month This Year" &&
-                                  <td key={AllBuilderListExport.avg_net_traffic_per_month_this_year} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_net_traffic_per_month_this_year : AllBuilderListExport.avg_net_traffic_per_month_this_year} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgNetTrafficPerMonthThisYearOption}
                                         onChange={(e) => handleSelectChange(e, "avg_net_traffic_per_month_this_year")}
@@ -4874,11 +5088,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetTrafficPerMonthThisYearResult}</span>
+                                      <span>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month This Year" &&
-                                  <td key={AllBuilderListExport.avg_net_sales_per_month_this_year} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_net_sales_per_month_this_year : AllBuilderListExport.avg_net_sales_per_month_this_year} style={{ textAlign: "center" }}>
                                     <select
                                         value={avgNetSalesPerMonthThisYearOption}
                                         onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_this_year")}
@@ -4889,11 +5103,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthThisYearResult}</span>
+                                      <span>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Closings Per Month This Year" &&
-                                  <td key={AllBuilderListExport.avg_closings_per_month_this_year} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_closings_per_month_this_year : AllBuilderListExport.avg_closings_per_month_this_year} style={{ textAlign: "center" }}>
                                     <select
                                         value={avgClosingsPerMonthThisYearOption}
                                         onChange={(e) => handleSelectChange(e, "avg_closings_per_month_this_year")}
@@ -4904,11 +5118,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgClosingsPerMonthThisYearResult}</span>
+                                      <span>{avgClosingsPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month Since Open" &&
-                                  <td key={AllBuilderListExport.avg_net_sales_per_month_since_open} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_net_sales_per_month_since_open : AllBuilderListExport.avg_net_sales_per_month_since_open} style={{ textAlign: "center" }}>
                                     <select
                                         value={avgNetSalesPerMonthSinceOpenOption}
                                         onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_since_open")}
@@ -4919,11 +5133,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthSinceOpenResult}</span>
+                                      <span>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                  <td key={AllBuilderListExport.avg_net_sales_per_month_last_three_months} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.avg_net_sales_per_month_last_three_months : AllBuilderListExport.avg_net_sales_per_month_last_three_months} style={{ textAlign: "center" }}>
                                     <select
                                         value={avgNetSalesPerMonthLastThreeMonthsOption}
                                         onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_last_three_months")}
@@ -4934,7 +5148,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult}</span>
+                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Week Ending" &&
@@ -4950,7 +5164,7 @@ const handleSortClose = () => setShowSort(false);
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "month Net Sold" &&
-                                  <td key={AllBuilderListExport.month_net_sold} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.month_net_sold : AllBuilderListExport.month_net_sold} style={{ textAlign: "center" }}>
                                     <select
                                         value={monthNetSoldOption}
                                         onChange={(e) => handleSelectChange(e, "month_net_sold")}
@@ -4961,11 +5175,11 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{monthNetSoldResult}</span>
+                                      <span>{monthNetSoldResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "year Net Sold" &&
-                                  <td key={AllBuilderListExport.year_net_sold} style={{ textAlign: "center" }}>
+                                  <td key={filter ? BuilderList.year_net_sold : AllBuilderListExport.year_net_sold} style={{ textAlign: "center" }}>
                                     <select
                                         value={yearNetSoldOption}
                                         onChange={(e) => handleSelectChange(e, "year_net_sold")}
@@ -4976,7 +5190,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{yearNetSoldResult}</span>
+                                      <span>{yearNetSoldResult.toFixed(2)}</span>
                                   </td>
                                 }
                                   {column.id == "open Since" &&

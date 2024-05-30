@@ -156,6 +156,7 @@ const ClosingList = () => {
       subdivision_code:"",
       created_at:""
     });
+    // getClosingList();
   };
 
   const [ClosingDetails, setClosingDetails] = useState({
