@@ -28,6 +28,13 @@ function RechartJs() {
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState("");
 
+  const [graph1Title,setgraph1Title] = useState("");
+  const [graph2Title,setgraph2Title] = useState("");
+  const [graph3Title,setgraph3Title] = useState("");
+  const [graph4Title,setgraph4Title] = useState("");
+  const [graph5Title,setgraph5Title] = useState("");
+  const [graph6Title,setgraph6Title] = useState("");
+
   useEffect(() => {
     const currentDate = new Date(); // Today's date
     const currentYear = currentDate.getFullYear(); // Current year
@@ -302,6 +309,42 @@ function RechartJs() {
 
   const handleChange = (event) => {
     setType(event.target.value);
+    if(event.target.value == "New-Home-Traffic-Sales"){
+      setgraph1Title("Buyer Traffic");
+      setgraph2Title("Net sales");
+      setgraph3Title("Cancellation %");
+      setgraph4Title("Standing Inventory");
+      setgraph5Title("Net sale Per Sub");
+      setgraph6Title("Active Subdivision");
+    }else if(event.target.value == "New-Home-Prices"){
+      setgraph1Title("Median Closing Price");
+      setgraph2Title("Median Closing Price SFR");
+      setgraph3Title("Median Closng Price Attached");
+      setgraph4Title("Median Closing Price By Area");
+      setgraph5Title("Average Base Asking Price Overall");
+      setgraph6Title("Average Base Asking Price By Area");
+    }else if(event.target.value == "New-Home-Closings"){
+      setgraph1Title("New Home Closings Overall");
+      setgraph2Title("New Home Closings SFR");
+      setgraph3Title("New Home Closings Attached");
+      setgraph4Title("New Home Closings By Area");
+      setgraph5Title("New Home Closings By Builder");
+      setgraph6Title("New Home Closings By Master Plan");
+    }else if(event.target.value == "New-Home-Permits"){
+      setgraph1Title("New Home Permits Overall");
+      setgraph2Title("New Home Permits SFR");
+      setgraph3Title("New Home Permits Attached");
+      setgraph4Title("New Home Permits By Area");
+      setgraph5Title("New Home Permits By Builder");
+      setgraph6Title("New Home Permits By Master Plan");
+    }else if(event.target.value == "Resales"){
+      setgraph1Title("New Home Resales OveResales")
+      setgraph2Title("New Home Resales SFR");
+      setgraph3Title("New Home Resales Attached");
+      setgraph4Title("New Home Resales By Area");
+      setgraph5Title("New Home Resales By Builder");
+      setgraph6Title("New Home Resales By Master Plan");
+    }
   };
 
   const handleDisplay = (e) => {
@@ -667,32 +710,11 @@ function RechartJs() {
       <option value="Resales">Resales</option>
     </select>
     </div>
-    <div className="col-md-3">
-    <label className="form-label">Series1:</label>
-    <select className="default-select form-control" onChange={handleChange}>
-      <option value="1">2024</option>
-    </select>
-    </div>
-    <div className="col-md-3">
-    <label className="form-label">Series2:</label>
-    <select className="default-select form-control" onChange={handleChange}>
-      <option value="1">2024</option>
-    </select>
-    </div>
-    </div>
-
-          </Box>
-            <Row>
-              <Col xl={4} lg={4}>
-                {" "}
-                <Card>
-                  <Card.Header>
-                    <h4 className="card-title">Buyer Traffic</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
+    <div className="col-md-3 mt-4">
+    <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
-                          className="btn-sm"
+                          className="btn-md"
                           id="dropdown-basic"
                         >
                           <i className="fa fa-filter"></i>
@@ -720,7 +742,18 @@ function RechartJs() {
                           />
                    
                         </Dropdown.Menu>
-                      </Dropdown>
+    </Dropdown>
+    </div>
+    </div>
+
+          </Box>
+            <Row>
+              <Col xl={4} lg={4}>
+                {" "}
+                <Card>
+                  <Card.Header>
+                    <h4 className="card-title">{graph1Title}</h4>
+                    <div className="d-flex justify-content-center me-5">
                     </div>
                   </Card.Header>
                   <Card.Body>
@@ -742,41 +775,7 @@ function RechartJs() {
                 {" "}
                 <Card>
                   <Card.Header>
-                    <h4 className="card-title">Net Sales</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{width:"200px"}}>
-                          <label htmlFor="start_date">From:</label>
-                          <input
-                            type="date"
-                            id="start_date"
-                            name="start_date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-
-                          <label htmlFor="end_date">To:</label>
-                          <input
-                            type="date"
-                            id="end_date"
-                            name="end_date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                       
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <h4 className="card-title">{graph2Title}</h4>
                   </Card.Header>
                   <Card.Body>
                     <LineChart1 data={NetSaleData} options={NetSaleOption} />
@@ -789,41 +788,7 @@ function RechartJs() {
                 {" "}
                 <Card>
                   <Card.Header>
-                    <h4 className="card-title">Cancellation%</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{width:"200px"}}>
-                          <label htmlFor="start_date">From:</label>
-                          <input
-                            type="date"
-                            id="start_date"
-                            name="start_date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-
-                          <label htmlFor="end_date">To:</label>
-                          <input
-                            type="date"
-                            id="end_date"
-                            name="end_date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                        
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <h4 className="card-title">{graph3Title}</h4>
                   </Card.Header>
                   <Card.Body>
                     {/* <LineChart1
@@ -844,41 +809,7 @@ function RechartJs() {
                 {" "}
                 <Card>
                   <Card.Header>
-                    <h4 className="card-title">Standing Inventory</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{width:"200px"}}>
-                          <label htmlFor="start_date">From:</label>
-                          <input
-                            type="date"
-                            id="start_date"
-                            name="start_date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-
-                          <label htmlFor="end_date">To:</label>
-                          <input
-                            type="date"
-                            id="end_date"
-                            name="end_date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                       
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <h4 className="card-title">{graph4Title}</h4>
                   </Card.Header>
                   <Card.Body>
                     <LineChart1 data={StandingData} options={StandingOption} />
@@ -889,41 +820,7 @@ function RechartJs() {
                 {" "}
                 <Card>
                   <Card.Header>
-                    <h4 className="card-title">Net Sales per Sub</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{width:"200px"}}>
-                          <label htmlFor="start_date">From:</label>
-                          <input
-                            type="date"
-                            id="start_date"
-                            name="start_date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-
-                          <label htmlFor="end_date">To:</label>
-                          <input
-                            type="date"
-                            id="end_date"
-                            name="end_date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                         
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <h4 className="card-title">{graph5Title}</h4>
                   </Card.Header>
                   <Card.Body>
                     {/* <LineChart1
@@ -944,41 +841,7 @@ function RechartJs() {
                 {" "}
                 <Card>
                   <Card.Header>
-                    <h4 className="card-title">Active Subdivisions</h4>
-                    <div className="d-flex justify-content-center me-5">
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{width:"200px"}}>
-                          <label htmlFor="start_date">From:</label>
-                          <input
-                            type="date"
-                            id="start_date"
-                            name="start_date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                          />
-
-                          <label htmlFor="end_date">To:</label>
-                          <input
-                            type="date"
-                            id="end_date"
-                            name="end_date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                          />
-                 
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <h4 className="card-title">{graph6Title}</h4>
                   </Card.Header>
                   <Card.Body>
                     <LineChart1

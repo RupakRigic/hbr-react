@@ -625,6 +625,7 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         const inputData = {
           csv: iFile,
         };
+        console.log(inputData);
         try {
           let responseData = await AdminPermitService.import(inputData).json();
           setSelectedFile("");

@@ -509,10 +509,11 @@ const handleDownloadExcel = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
+
+        console.log(inputData);
         try {
           let responseData = await AdminPriceService.import(inputData).json();
           setSelectedFile("");
@@ -520,12 +521,13 @@ const handleDownloadExcel = () => {
           setLoading(false);
           swal("Imported Sucessfully").then((willDelete) => {
             if (willDelete) {
-              navigate("/builderlist");
+              navigate("/subdivisionlist");
               setShow(false);
             }
           });
           getpriceList();
         } catch (error) {
+        
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
             setSelectedFile("");
