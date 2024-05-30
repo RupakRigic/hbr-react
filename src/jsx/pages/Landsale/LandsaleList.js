@@ -1166,8 +1166,10 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
                                     }
                                     {column.id == "price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price} />/{" "}
-                                      {element.typeofunit}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price} />
+                                        {/* /{" "}
+                                        {element.typeofunit} */}
+                                      </td>
                                     }
                                     {column.id == "date" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
