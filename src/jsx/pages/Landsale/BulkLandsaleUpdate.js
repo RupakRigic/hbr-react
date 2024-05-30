@@ -76,7 +76,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }
 
     const handleSubmit = async (event) => {
-        debugger
         event.preventDefault();
         if(selectedLandSales.length === 0)
         {

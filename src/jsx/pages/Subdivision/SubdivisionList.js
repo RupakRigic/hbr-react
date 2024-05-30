@@ -1365,7 +1365,6 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const handleSelectChange = (e, field) => {
-    debugger
     const value = e.target.value;
     
     switch (field) {
@@ -4616,7 +4615,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br/>
-                                      <span>{totalClosingsResult}</span>
+                                      <span>{totalClosingsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "total Permits" &&
@@ -4631,7 +4630,7 @@ const handleSortClose = () => setShowSort(false);
                                       <option value="avg">Avg</option>
                                     </select>
                                     <br />
-                                    <span>{totalPermitsResult}</span>
+                                    <span>{totalPermitsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "total Net Sales" &&
@@ -4646,7 +4645,7 @@ const handleSortClose = () => setShowSort(false);
                                       <option value="avg">Avg</option>
                                     </select>
                                     <br />
-                                    <span>{totalNetSalesResult}</span>
+                                    <span>{totalNetSalesResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "months Open" &&
@@ -4661,7 +4660,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{monthsOpenResult}</span>
+                                      <span>{monthsOpenResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "latest Traffic/Sales Data" &&
@@ -4679,7 +4678,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{latestLotsReleasedResult}</span>
+                                      <span>{latestLotsReleasedResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "latest Standing Inventory" &&
@@ -4694,7 +4693,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{latestStandingInventoryResult}</span>
+                                      <span>{latestStandingInventoryResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "unsold Lots" &&
@@ -4709,7 +4708,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{unsoldLotsResult}</span>
+                                      <span>{unsoldLotsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Sqft All" &&
@@ -4724,7 +4723,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgSqftAllResult}</span>
+                                      <span>{avgSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Sqft Active" &&
@@ -4739,7 +4738,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgSqftActiveResult}</span>
+                                      <span>{avgSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Base Price All" &&
@@ -4754,7 +4753,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgBasePriceAllResult}</span>
+                                      <span>{avgBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Base Price Active" &&
@@ -4769,7 +4768,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgBasePriceActiveResult}</span>
+                                      <span>{avgBasePriceActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Sqft All" &&
@@ -4784,7 +4783,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minSqftAllResult}</span>
+                                      <span>{minSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Sqft All" &&
@@ -4799,7 +4798,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxSqftAllResult}</span>
+                                      <span>{maxSqftAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Base Price All" &&
@@ -4814,7 +4813,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minBasePriceAllResult}</span>
+                                      <span>{minBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "min Sqft Active" &&
@@ -4829,7 +4828,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{minSqftActiveResult}</span>
+                                      <span>{minSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Base Price All" &&
@@ -4844,7 +4843,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxBasePriceAllResult}</span>
+                                      <span>{maxBasePriceAllResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Sqft Active" &&
@@ -4859,7 +4858,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{maxSqftActiveResult}</span>
+                                      <span>{maxSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Traffic Per Month This Year" &&
@@ -4874,7 +4873,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetTrafficPerMonthThisYearResult}</span>
+                                      <span>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month This Year" &&
@@ -4889,7 +4888,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthThisYearResult}</span>
+                                      <span>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Closings Per Month This Year" &&
@@ -4904,7 +4903,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgClosingsPerMonthThisYearResult}</span>
+                                      <span>{avgClosingsPerMonthThisYearResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month Since Open" &&
@@ -4919,7 +4918,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthSinceOpenResult}</span>
+                                      <span>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "avg Net Sales Per Month Last 3 Months" &&
@@ -4934,7 +4933,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult}</span>
+                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "max Week Ending" &&
@@ -4961,7 +4960,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{monthNetSoldResult}</span>
+                                      <span>{monthNetSoldResult.toFixed(2)}</span>
                                   </td>
                                 }
                                 {column.id == "year Net Sold" &&
@@ -4976,7 +4975,7 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="avg">Avg</option>
                                       </select>
                                       <br />
-                                      <span>{yearNetSoldResult}</span>
+                                      <span>{yearNetSoldResult.toFixed(2)}</span>
                                   </td>
                                 }
                                   {column.id == "open Since" &&

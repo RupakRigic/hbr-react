@@ -89,7 +89,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     };
 
     const handleSubmit = async (event) => {
-      debugger
         event.preventDefault();
         if(userSelectedUsers.length === 0)
           {
