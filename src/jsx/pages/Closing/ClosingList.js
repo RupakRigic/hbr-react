@@ -102,8 +102,8 @@ const ClosingList = () => {
     zoning:"",
     age:"",
     single:"",
-    id:"",
-    subdivision_code:"",
+    // id:"",
+    // subdivision_code:"",
     created_at:""
   });
 
@@ -152,8 +152,8 @@ const ClosingList = () => {
       zoning:"",
       age:"",
       single:"",
-      id:"",
-      subdivision_code:"",
+      // id:"",
+      // subdivision_code:"",
       created_at:""
     });
     // getClosingList();
@@ -1843,7 +1843,7 @@ const toCamelCase = (str) => {
                       name="from"
                       type="date"
                       className="form-control"
-                      value={filterQuery.startDate}
+                      value={filterQuery.from}
                       onChange={HandleFilter}
                     />
                   </div>
@@ -1853,7 +1853,7 @@ const toCamelCase = (str) => {
                       name="to"
                       type="date"
                       className="form-control"
-                      value={filterQuery.endDate}
+                      value={filterQuery.to}
                       onChange={HandleFilter}
                     />
                   </div>
@@ -2001,7 +2001,7 @@ const toCamelCase = (str) => {
                     </label>
                     <input value={filterQuery.single} name="single" className="form-control" onChange={HandleFilter}/>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  {/* <div className="col-md-3 mt-3">
                     <label className="form-label">
                       __pkRecordID:{" "}
                     </label>
@@ -2012,7 +2012,7 @@ const toCamelCase = (str) => {
                       _fkSubID:{" "}
                     </label>
                     <input value={filterQuery.subdivision_code} name="subdivision_code" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  </div> */}
                 </div>
               </form>
             </div>

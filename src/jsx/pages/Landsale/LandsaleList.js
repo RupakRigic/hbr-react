@@ -79,13 +79,14 @@ const LandsaleList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    name:"",
+    builder_name:"",
     subdivision_name:"",
     seller:"",
     buyer:"",
     location:"",
     notes:"",
-    date:"",
+    from:"",
+    to:"",
     parcel:"",
     price:"",
     typeofunit:"",
@@ -93,6 +94,21 @@ const LandsaleList = () => {
     noofunit:"",
     doc:"",
   });
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        setBuilderDropDown(data);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -117,13 +133,14 @@ const LandsaleList = () => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      name:"",
+      builder_name:"",
       subdivision_name:"",
       seller:"",
       buyer:"",
       location:"",
       notes:"",
-      date:"",
+      from:"",
+      to:"",
       parcel:"",
       price:"",
       typeofunit:"",
@@ -481,24 +498,26 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     getbuilderlist();
   }, []);
 
-  const getsubdivisionlist = async () => {
-    
+  const getSubdivisionList = async () => {
     try {
-      let response = await AdminSubdevisionService.index();
-      let responseData = await response.json();
-
-      setSubdivisionList(responseData.data);
+        let response = await AdminSubdevisionService.index()
+        let responseData = await response.json()
+        setSubdivisionList(responseData.data)
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
+        if (error.name === 'HTTPError') {
+            const errorJson = await error.response.json();
+            setError(errorJson.message)
+        }
     }
-  };
-  useEffect(() => {
-    getsubdivisionlist();
-  }, []);
+}
+useEffect(() => {
+  if (localStorage.getItem('usertoken')) {
+    getSubdivisionList();
+  }
+  else {
+    navigate('/');
+  }
+}, [])
 
   const handleModalClick = () => {
     navigate("/report-list");
@@ -553,6 +572,13 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
   };
 
   const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      builder_name: selectedOption.name,
+    }));
+  };
+
+  const HandleSubSelectChange = (selectedOption) => {
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       subdivision_name: selectedOption.name,
@@ -1713,7 +1739,16 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                     <label className="form-label">
                       BUILDER NAME:{" "}
                     </label>
-                    <input name="name" value={filterQuery.name} className="form-control" onChange={HandleFilter}/>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={builderDropDown}
+                        onChange={HandleSelectChange}
+                        getOptionValue={(option) => option.name}
+                        getOptionLabel={(option) => option.name}
+                        value={builderDropDown.name}
+                        name="builder_name"
+                      ></Select>
+                    </Form.Group>
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1721,14 +1756,14 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                     </label>
                     <Form.Group controlId="tournamentList">
                       <Select
-                        options={LandsaleList}
-                        onChange={HandleSelectChange}
+                        options={SubdivisionList}
+                        onChange={HandleSubSelectChange}
                         getOptionValue={(option) => option.name}
                         getOptionLabel={(option) => option.name}
-                        value={LandsaleList.subdivision}
+                        value={SubdivisionList.name}
                         name="subdivision_name"
                       ></Select>
-                    </Form.Group>  
+                    </Form.Group>                              
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1761,10 +1796,24 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
                     <input name="price" value={filterQuery.price} className="form-control" onChange={HandleFilter}/>
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      DATE:{" "}
-                    </label>
-                    <input name="date" value={filterQuery.date} className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">From:{" "}</label>
+                    <input
+                      name="from"
+                      type="date"
+                      className="form-control"
+                      value={filterQuery.from}
+                      onChange={HandleFilter}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}</label>
+                    <input
+                      name="to"
+                      type="date"
+                      className="form-control"
+                      value={filterQuery.to}
+                      onChange={HandleFilter}
+                    />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">

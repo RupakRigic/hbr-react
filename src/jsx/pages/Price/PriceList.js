@@ -19,6 +19,8 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';  
 import BulkPriceUpdate from "./BulkPriceUpdate";
 import Select from "react-select";
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 
 
 const PriceList = () => {
@@ -221,8 +223,9 @@ const handleDownloadExcel = () => {
 };
 
 const [filterQuery, setFilterQuery] = useState({
-  startDate:"",
-  endDate:"",
+  from:"",
+  to:"",
+  builder_name:"",
   name:"",
   subdivision_name:"",
   sqft:"",
@@ -240,9 +243,7 @@ const [filterQuery, setFilterQuery] = useState({
   lotsize:"",
   zoning:"",
   age:"",
-  single:"",
-  id:"",
-  subdivision_code:""
+  single:""
 });
 
 
@@ -510,6 +511,22 @@ const [filterQuery, setFilterQuery] = useState({
     }
   };
 
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        setBuilderDropDown(data);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
+
   useEffect(() => {
     setSearchQuery(filterString());
   }, [filterQuery]);
@@ -522,6 +539,13 @@ const [filterQuery, setFilterQuery] = useState({
     }));
   };
   const HandleSelectChange = (selectedOption) => {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      builder_name: selectedOption.name,
+    }));
+  };
+
+  const HandleSubSelectChange = (selectedOption) => {
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       subdivision_name: selectedOption.name,
@@ -541,9 +565,11 @@ const [filterQuery, setFilterQuery] = useState({
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      startDate:"",
-      endDate:"",
+      from:"",
+      to:"",
       name:"",
+      builder_name:"",
+      subdivision_name:"",
       sqft:"",
       stories:"",
       bedroom:"",
@@ -559,9 +585,7 @@ const [filterQuery, setFilterQuery] = useState({
       lotsize:"",
       zoning:"",
       age:"",
-      single:"",
-      id:"",
-      subdivision_code:""
+      single:""
     });
   };
 
@@ -681,6 +705,29 @@ const handleSaveDialog = () => {
   setColumns(draggedColumns);
   setOpenDialog(false);
 };
+
+const [SubdivisionList, SetSubdivisionList] = useState([]);
+
+const getSubdivisionList = async () => {
+  try {
+      let response = await AdminSubdevisionService.index()
+      let responseData = await response.json()
+      SetSubdivisionList(responseData.data)
+  } catch (error) {
+      if (error.name === 'HTTPError') {
+          const errorJson = await error.response.json();
+          setError(errorJson.message)
+      }
+  }
+}
+useEffect(() => {
+  if (localStorage.getItem('usertoken')) {
+      getSubdivisionList();
+  }
+  else {
+      navigate('/');
+  }
+}, [])
 
 const handleColumnOrderChange = (result) => {
   if (!result.destination) {
@@ -1513,7 +1560,7 @@ const toCamelCase = (str) => {
                       name="from"
                       type="date"
                       className="form-control"
-                      value={filterQuery.startDate}
+                      value={filterQuery.from}
                       onChange={HandleFilter}
                     />
                   </div>
@@ -1523,7 +1570,7 @@ const toCamelCase = (str) => {
                       name="to"
                       type="date"
                       className="form-control"
-                      value={filterQuery.endDate}
+                      value={filterQuery.to}
                       onChange={HandleFilter}
                     />
                   </div>
@@ -1531,24 +1578,31 @@ const toCamelCase = (str) => {
                     <label className="form-label">
                       BUILDER NAME:{" "}
                     </label>
-                    <input name="name" value={filterQuery.name} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      SUBDIVISION NAME:{" "}
-                      <span className="text-danger"></span>
-                    </label>
                     <Form.Group controlId="tournamentList">
                       <Select
-                        options={priceList}
+                        options={builderDropDown}
                         onChange={HandleSelectChange}
                         getOptionValue={(option) => option.name}
                         getOptionLabel={(option) => option.name}
-                        value={priceList.name}
-                        name="subdivision_name"
+                        value={builderDropDown.name}
+                        name="builder_name"
                       ></Select>
                     </Form.Group>
-
+                  </div>                         
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      SUBDIVISION NAME:{" "}
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={SubdivisionList}
+                        onChange={HandleSubSelectChange}
+                        getOptionValue={(option) => option.name}
+                        getOptionLabel={(option) => option.name}
+                        value={SubdivisionList.name}
+                        name="subdivision_name"
+                      ></Select>
+                    </Form.Group>                      
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1670,18 +1724,6 @@ const toCamelCase = (str) => {
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      __pkRecordID:{" "}
-                    </label>
-                    <input value={filterQuery.id} name="id" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      _fkSubID:{" "}
-                    </label>
-                    <input value={filterQuery.subdivision_code} name="subdivision_code" className="form-control" onChange={HandleFilter}/>
                   </div>
                 </div>
               </form>
