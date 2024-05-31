@@ -806,6 +806,7 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       builder_name: selectedOption.name,
     }));
+    setNormalFilter(true);
   };
 
   const filterString = () => {
@@ -866,7 +867,7 @@ const handleSortClose = () => setShowSort(false);
         month_net_sold:"",
         year_net_sold:""
       });
-      getbuilderlist(currentPage,searchQuery);
+      getbuilderlist();
   };
 
   const [value, setValue] = React.useState("1");
