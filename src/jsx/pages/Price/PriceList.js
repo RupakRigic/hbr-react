@@ -629,7 +629,7 @@ const [filterQuery, setFilterQuery] = useState({
           setLoading(false);
           swal("Imported Sucessfully").then((willDelete) => {
             if (willDelete) {
-              navigate("/subdivisionlist");
+              navigate("/priceList");
               setShow(false);
             }
           });

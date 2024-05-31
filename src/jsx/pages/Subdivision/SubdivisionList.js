@@ -3278,6 +3278,7 @@ const handleSortClose = () => setShowSort(false);
                                       column.id == "price Group" ? "price_group" : 
                                       column.id == "month Net Sold" ? "month_net_sold" : 
                                       column.id == "year Net Sold" ? "year_net_sold" : 
+                                      column.id == "avg Closing Price" ? "avg_closing_price" : 
                                       column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
@@ -4676,6 +4677,9 @@ const handleSortClose = () => setShowSort(false);
                                   }
                                     {column.id == "open Since" &&
                                     <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince}/></td>
+                                  }
+                                    {column.id == "avg Closing Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price}/></td>
                                   }
 
                                   {column.id == "action" &&
