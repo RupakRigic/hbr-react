@@ -806,6 +806,7 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       builder_name: selectedOption.name,
     }));
+    setNormalFilter(true);
   };
 
   const filterString = () => {
@@ -866,7 +867,7 @@ const handleSortClose = () => setShowSort(false);
         month_net_sold:"",
         year_net_sold:""
       });
-      getbuilderlist(currentPage,searchQuery);
+      getbuilderlist();
   };
 
   const [value, setValue] = React.useState("1");
@@ -3034,7 +3035,7 @@ const handleSortClose = () => setShowSort(false);
                         Field Access
                       </button>
                       <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                      <i className="fa fa-filter" />
+                        <i className="fa fa-filter" />
                       </button>   
                       <Button
                         className="btn-sm me-1"
