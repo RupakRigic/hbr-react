@@ -102,6 +102,7 @@ const handleSortClose = () => setShowSort(false);
     : "";
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
@@ -1619,6 +1620,9 @@ const handleSortClose = () => setShowSort(false);
                             {" "}
                             Field Access
                           </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                            <i className="fa fa-filter" />
+                          </button>
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
@@ -1626,150 +1630,6 @@ const handleSortClose = () => setShowSort(false);
                           >
                             Import
                           </Button>
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              variant="success"
-                              className="btn-sm"
-                              id="dropdown-basic"
-                            >
-                              <i className="fa fa-filter"></i>
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              <h5 className="">Filter Options</h5>
-                              <div className="border-top">
-                            <form onSubmit={HandleFilterForm}>
-                              <div className="row">
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                  BUILDER NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                  <label className="form-label">
-                                    STATUS:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="is_active"
-                                    onChange={HandleFilter}
-
-                                  >
-                                    {/* <option data-display="Select">Please select</option> */}
-                                    <option value="">All</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">De-active</option>
-                                  </select>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                ACTIVE COMMUNITIES :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                COMPANY TYPE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3">
-                                <label className="form-label">
-                                LV OFFICE CITY:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.city} name="city" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3 ">
-                                <label className="form-label">
-                                LV OFFICE ZIP:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3 mb-3">
-                                <label className="form-label">
-                                CORPORATE OFFICE STATE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.coporate_officeaddress_1} name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3 mb-3">
-                                <label className="form-label">
-                                CORPORATE OFFICE ZIP:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.coporate_officeaddress_zipcode} name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-4 mt-3 mb-3">
-                                <label className="form-label">
-                                STOCK MARKET:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                             </div>
-                             </form>
-                            </div>
-                            <div className="d-flex justify-content-between">                 
-                              <Button
-                                className="btn-sm"
-                                onClick={HandleCancelFilter}
-                                variant="secondary"
-                              >
-                                Reset
-                              </Button>    
-                              <Button
-                                className="btn-sm"
-                                onClick={HandleFilterForm}
-                                variant="primary"
-                              >
-                                Filter
-                              </Button>       
-                            </div>
-                            <br/>
-                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
-                            <>
-                            <h5 className="">Calculation Filter Options</h5>
-                            <div className="border-top">
-                              <div className="row">
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">CLOSINGS THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">PERMITS THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">NET SALES THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">CURRENT AVG BASE PRICE:{" "}</label>
-                                  <input style={{marginTop : "20px"}} value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
-                                  <br/>
-                                  <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                                <div className="col-md-4 mt-3 mb-3">
-                                  <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange}/>
-                                </div>
-                              </div>
-                            </div></>}
-                              
-                            </Dropdown.Menu>
-                          </Dropdown>
-
                           <Link
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
@@ -3771,6 +3631,159 @@ const handleSortClose = () => setShowSort(false);
                 Submit
               </button>
             </form>
+          </div>
+        </div>
+      </Offcanvas>
+
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter Subdivision{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <div className="">
+              <form onSubmit={HandleFilterForm}>
+                <div className="row">
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">
+                      BUILDER NAME:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                      <label className="form-label">
+                        STATUS:{" "}
+                        <span className="text-danger"></span>
+                      </label>
+                      <select
+                        className="default-select form-control"
+                        value={filterQuery.is_active}
+                        name="is_active"
+                        onChange={HandleFilter}
+                      >
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="0">De-active</option>
+                      </select>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">
+                    ACTIVE COMMUNITIES :{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">
+                    COMPANY TYPE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">
+                    LV OFFICE CITY:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.city} name="city" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3 ">
+                    <label className="form-label">
+                    LV OFFICE ZIP:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3 mb-3">
+                    <label className="form-label">
+                    CORPORATE OFFICE STATE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.coporate_officeaddress_1} name="coporate_officeaddress_1" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3 mb-3">
+                    <label className="form-label">
+                    CORPORATE OFFICE ZIP:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.coporate_officeaddress_zipcode} name="coporate_officeaddress_zipcode" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                  <div className="col-md-4 mt-3 mb-3">
+                    <label className="form-label">
+                    STOCK MARKET:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
+                  </div>
+                </div>
+              </form>        
+            </div>
+            <div className="d-flex justify-content-between">                 
+              <Button
+                className="btn-sm"
+                onClick={HandleCancelFilter}
+                variant="secondary"
+              >
+                Reset
+              </Button>    
+              <Button
+                className="btn-sm"
+                onClick={HandleFilterForm}
+                variant="primary"
+              >
+                Filter
+              </Button>       
+            </div>
+            <br/>
+            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
+            <>
+            <h5 className="">Calculation Filter Options</h5>
+            <div className="border-top">
+              <div className="row">
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">CLOSINGS THIS YEAR:{" "}</label>
+                  <input value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">PERMITS THIS YEAR:{" "}</label>
+                  <input value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">NET SALES THIS YEAR:{" "}</label>
+                  <input value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">CURRENT AVG BASE PRICE:{" "}</label>
+                  <input style={{marginTop : "20px"}} value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
+                  <br/>
+                  <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
+                  <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+              </div>
+            </div>
+            </>}
           </div>
         </div>
       </Offcanvas>

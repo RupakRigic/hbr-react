@@ -3035,7 +3035,7 @@ const handleSortClose = () => setShowSort(false);
                         Field Access
                       </button>
                       <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                      <i className="fa fa-filter" />
+                        <i className="fa fa-filter" />
                       </button>   
                       <Button
                         className="btn-sm me-1"
