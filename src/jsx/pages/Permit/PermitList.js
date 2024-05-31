@@ -612,49 +612,43 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     setSelectedFile(e.target.files[0]);
   };
   const handleUploadClick = async () => {
-    const file = selectedFile;
-
-    if (file && file.type === "text/csv") {
+    if (selectedFile && selectedFile.type === "text/csv") {
       setLoading(true);
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = async () => {
-        var iFile = fileReader.result;
-        setSelectedFile(iFile);
-        console.log(iFile);
-        const inputData = {
-          csv: iFile,
-        };
-        console.log(inputData);
-        try {
-          let responseData = await AdminPermitService.import(inputData).json();
-          setSelectedFile("");
-          document.getElementById("fileInput").value = null;
-          setLoading(false);
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/builderlist");
-              setShow(false);
-            }
-          });
-          getbuilderlist();
-        } catch (error) {
-          if (error.name === "HTTPError") {
-            const errorJson = error.response.json();
-            setSelectedFile("");
-            setError(errorJson.message);
-            document.getElementById("fileInput").value = null;
-            setLoading(false);
-          }
-        }
-      };
+      const formData = new FormData();
+      formData.append("csv", selectedFile);
 
-      setSelectedFileError("");
+      try {
+        const response = await AdminPermitService.import(formData);
+
+        if (response.status !== 200) {
+          throw new Error('HTTPError');
+        }
+
+        setSelectedFile(null);
+        document.getElementById("fileInput").value = null;
+        setLoading(false);
+        swal("Imported Successfully").then((willDelete) => {
+          if (willDelete) {
+            navigate("/builderlist");
+          }
+        });
+        getbuilderlist();
+      } catch (error) {
+        let errorMessage = "An error occurred. Please try again.";
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data.message;
+        }
+        setSelectedFile(null);
+        setError(errorMessage);
+        document.getElementById("fileInput").value = null;
+        setLoading(false);
+      }
     } else {
-      setSelectedFile("");
-      setSelectedFileError("Please select a CSV file.");
+      setSelectedFile(null);
+      setError("Please select a CSV file.");
     }
   };
+
   const getbuilderlist = async () => {
     try {
       const response = await AdminBuilderService.index();
