@@ -1543,7 +1543,6 @@ const handleSortClose = () => setShowSort(false);
 
   useEffect(() => {
     const fetchBuilderList = async () => {
-      debugger
       try {
         const response = await AdminBuilderService.builderDropDown();
         const data = await response.json();
@@ -1575,7 +1574,7 @@ const handleSortClose = () => setShowSort(false);
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
-  }
+  };
   
   return (
     <>
@@ -1808,7 +1807,7 @@ const handleSortClose = () => setShowSort(false);
                                 <strong>No.</strong>
                               </th>
                               {columns.map((column) => (
-                                <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "logo") ? "" : requestSort(
+                                <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id == "action" || column.id == "logo") ? "" : e.target.type !== "select-one" ? requestSort(
                                   column.id == "active Communities" ? "active_communities" : 
                                   column.id == "closing This Year" ? "closing_this_year" : 
                                   column.id == "permits This Year" ? "permits_this_year" : 
@@ -1822,7 +1821,7 @@ const handleSortClose = () => setShowSort(false);
                                   column.id == "total Permits" ? "total_permits" : 
                                   column.id == "total Net Sales" ? "total_net_sales" : 
                                   column.id == "date Of First Closing" ? "date_of_first_closing" : 
-                                  column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))}>
+                                  column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id)) : ""}>
                                   <strong>
                                     {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
                                     {column.id != "action" && sortConfig.some(
@@ -1864,6 +1863,39 @@ const handleSortClose = () => setShowSort(false);
                                     ) : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>)
                                   }
                                   </strong>
+                                  {(!excelLoading) && (column.id !== "action" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
+                                  column.id !== "fax" && column.id !== "officeaddress1" && column.id !== "officeaddress2" && column.id !== "city" && column.id !== "zipcode" &&
+                                  column.id !== "company_type" && column.id !== "is_active" && column.id !== "stock_market" && column.id !== "current_division_president" && column.id !== "stock_symbol" &&
+                                  column.id !== "current_land_aquisitions" && column.id !== "coporate_officeaddress_1" && column.id !== "coporate_officeaddress_2" && column.id !== "coporate_officeaddress_city" && column.id !== "coporate_officeaddress_zipcode" &&
+                                  column.id !== "coporate_officeaddress_lat" && column.id !== "coporate_officeaddress_lng" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
+                                ) && (
+                                    <>
+                                      <select value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption : 
+                                        column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales this year" ? netSalesThisYearOption : 
+                                        column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
+                                        column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
+                                        column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
+                                        column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""} 
+                                      style={{cursor: "pointer", marginLeft: '10px'}} 
+                                      onChange={(e) => column.id == "active Communities" ? handleSelectChange(e, "active_communities") : 
+                                        column.id == "closing This Year" ? handleSelectChange(e, "closing_this_year") :
+                                        column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
+                                        column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
+                                        column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
+                                        column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
+                                        column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
+                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                        column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                        column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                        column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
+                                        <option value="" disabled>CALCULATION</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                                 </th>
                               ))}
                               {/* {checkFieldExist("logo") && (
@@ -2609,6 +2641,47 @@ const handleSortClose = () => setShowSort(false);
                             </tr>
                           </thead>
                           <tbody>
+                          {!excelLoading &&
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style={{textAlign: "center"}}>{activeCommunitiesResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{closingThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{permitsThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{netSalesThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{currentAvgBasePriceResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{medianClosingPriceLastYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{totalClosingsResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{totalPermitsResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{totalNetSalesResult.toFixed(2)}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>}
                             {BuilderList !== null && BuilderList.length > 0 ? (
                               BuilderList.map((element, index) => (
                                 <tr
