@@ -30,6 +30,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import Select from "react-select";
 import { Link } from 'react-router-dom';
 import GoogleMapLocator from "./GoogleMapLocator";
+import { MultiSelect } from "react-multi-select-component";
 
 
 const SubdivisionList = () => {
@@ -203,6 +204,15 @@ const handleSortClose = () => setShowSort(false);
   const [avgNetSalesPerMonthLastThreeMonthsResult, setAvgNetSalesPerMonthLastThreeMonthsResult] = useState(0);
   const [monthNetSoldResult, setMonthNetSoldResult] = useState(0);
   const [yearNetSoldResult, setYearNetSoldResult] = useState(0);
+
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedReporting, setSelectedReporting] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+  const [selectedGated, setSelectedGated] = useState([]);
+  const [productTypeStatus, setProductTypeStatus] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
 
   const headers = [
     { label: 'Status', key: 'firstname' },
@@ -751,7 +761,11 @@ const handleSortClose = () => setShowSort(false);
     try {
       const response = await AdminBuilderService.builderDropDown();
       const responseData = await response.json();
-      setBuilderListDropDown(responseData);
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderListDropDown(formattedData);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -2955,6 +2969,83 @@ const handleSortClose = () => setShowSort(false);
         break;
     }
   };
+
+  
+
+  const statusOptions = [
+    { value: "1", label: "Active" },
+    { value: "0", label: "Sold Out" },
+    { value: "2", label: "Future" }
+  ];
+
+  const reportingOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const ageOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const singleOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const gatedOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const productTypeOptions = [
+    { value: "DET", label: "DET" },
+    { value: "ATT", label: "ATT" },
+    { value: "HR", label: "HR" },
+    { value: "AC", label: "AC" }
+  ];
+
+  const handleSelectBuilderNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+  }
+
+  const handleSelectStatusChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedStatus(selectedItems);
+  }
+
+  const handleSelectReportingChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedReporting(selectedItems);
+  }
+
+  const handleSelectProductTypeChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setProductTypeStatus(selectedItems);
+  }
+
+  const handleSelectAgeChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedAge(selectedItems);
+  }
+
+  const handleSelectSingleChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSingle(selectedItems);
+  }
+
+  const handleSelectGatedChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedGated(selectedItems);
+  }
 
   return (
     <>
@@ -6215,7 +6306,14 @@ const handleSortClose = () => setShowSort(false);
                                     STATUS:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <select
+                                  <MultiSelect
+                                     name="status"
+                                     options={statusOptions}
+                                      value={selectedStatus}
+                                      onChange={handleSelectStatusChange }
+                                     placeholder={"Select Status"} 
+                                  />
+                                  {/* <select
                                     className="default-select form-control"
                                     value={filterQuery.is_active}
                                     name="status"
@@ -6225,14 +6323,21 @@ const handleSortClose = () => setShowSort(false);
                                     <option value="1">Active</option>
                                     <option value="0">Sold Out</option>
                                     <option value="2">Future</option>
-                                  </select>
+                                  </select> */}
                               </div>
                               <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                     REPORTING:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <select
+                                  <MultiSelect
+                                     name="reporting"
+                                     options={reportingOptions}
+                                      value={selectedReporting}
+                                      onChange={handleSelectReportingChange }
+                                     placeholder={"Select Reporting"} 
+                                  />
+                                  {/* <select
                                     className="default-select form-control"
                                     value={filterQuery.is_active}
                                     name="reporting"
@@ -6241,7 +6346,7 @@ const handleSortClose = () => setShowSort(false);
                                     <option value="">All</option>
                                     <option value="1">Yes</option>
                                     <option value="0">No</option>
-                                  </select>
+                                  </select> */}
                               </div>
                               <div className="col-md-3 mt-3">
                                 {/* <label className="form-label">
@@ -6256,6 +6361,15 @@ const handleSortClose = () => setShowSort(false);
                                     <span className="text-danger"></span>
                                   </label>
                                   <Form.Group controlId="tournamentList">
+                                    <MultiSelect
+                                      name="builder_name"
+                                      options={builderListDropDown}
+                                      value={selectedBuilderName}
+                                      onChange={handleSelectBuilderNameChange }
+                                      placeholder={"Select Builder Name"} 
+                                    />
+                                  </Form.Group>
+                                  {/* <Form.Group controlId="tournamentList">
                           <Select
                             options={builderListDropDown}
                             onChange={HandleSelectChange}
@@ -6264,7 +6378,7 @@ const handleSortClose = () => setShowSort(false);
                             value={builderListDropDown.name}
                             name="builder_name"
                           ></Select>
-                        </Form.Group>
+                        </Form.Group> */}
                              
                               </div>
                               <div className="col-md-3 mt-3">
@@ -6276,13 +6390,20 @@ const handleSortClose = () => setShowSort(false);
                               </div>
                               <div className="col-md-3 mt-3">
                               <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type <span className="text-danger"></span></label>
-                                    <select className="default-select form-control" name="product_type" onChange={HandleFilter} >
-                                        <option value="">Select Product Type</option>
-                                         <option value="DET">DET</option>
-                                        <option value="ATT">ATT</option>
-                                        <option value="HR">HR</option>
-                                        <option value="AC">AC</option>
-                                    </select> 
+                              <MultiSelect
+                                name="product_type"
+                                options={productTypeOptions}
+                                value={productTypeStatus}
+                                onChange={handleSelectProductTypeChange }
+                                placeholder="Select Status" 
+                              />
+                                {/* <select className="default-select form-control" name="product_type" onChange={HandleFilter} >
+                                    <option value="">Select Product Type</option>
+                                     <option value="DET">DET</option>
+                                    <option value="ATT">ATT</option>
+                                    <option value="HR">HR</option>
+                                    <option value="AC">AC</option>
+                                </select>  */}
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
@@ -6327,24 +6448,45 @@ const handleSortClose = () => setShowSort(false);
                                 <input  value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
-                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                              <MultiSelect
+                                name="age"
+                                options={ageOptions}
+                                value={selectedAge}
+                                onChange={handleSelectAgeChange }
+                                placeholder={"Select Age"} 
+                              />
+                              {/* <select className="default-select form-control" name="age" onChange={HandleFilter} >
                                     <option value="">Select age Restricted</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                              </select>    
+                              </select>     */}
                               </div>
                               <div className="col-md-3 mt-3 ">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
-                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                              <MultiSelect
+                                name="single"
+                                options={singleOptions}
+                                value={selectedSingle}
+                                onChange={handleSelectSingleChange }
+                                placeholder={"Select Single"} 
+                              />
+                                    {/* <select className="default-select form-control" name="single" onChange={HandleFilter} >
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>    
+                                    </select>     */}
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput28" className="form-label">GATED</label>
-                                    <select className="default-select form-control" 
+                              <label htmlFor="exampleFormControlInput28" className="form-label">GATED:{" "}</label>
+                              <MultiSelect
+                                name="gated"
+                                options={gatedOptions}
+                                value={selectedGated}
+                                onChange={handleSelectGatedChange }
+                                placeholder={"Select Gated"} 
+                              />
+                                    {/* <select className="default-select form-control" 
                                     onChange={HandleFilter} 
                                     value={filterQuery.gated}
                                     name="gated"
@@ -6352,7 +6494,8 @@ const handleSortClose = () => setShowSort(false);
                                         <option value="">Select Gate</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>                                </div>
+                                    </select> */}
+                                                                    </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 JURISDICTION:{" "}

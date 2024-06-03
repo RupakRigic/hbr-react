@@ -16,6 +16,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkUserUpdateOffcanvas from "./BulkUserUpdateOffcanvas";
 import Modal from "react-bootstrap/Modal";
 import Select from "react-select";
+import { MultiSelect } from "react-multi-select-component";
 
 const UserList = () => {
 
@@ -73,6 +74,10 @@ const UserList = () => {
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
   console.log("userselect",selectedUsers);
+
+  const [selectedRole, setSelectedRole] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
+
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -365,6 +370,17 @@ const UserList = () => {
     setColumns(mappedColumns);
   }, [fieldList]);
 
+  const roleOptions = [
+    { value: "User", label: "User" },
+    { value: "Data Uploader", label: "Data Uploader" }
+  ];
+
+  const handleSelectRoleChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedRole(selectedItems);
+  }
+
   return (
     <>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
@@ -439,19 +455,26 @@ const UserList = () => {
                               <label className="form-label">
                                 Role: <span className="text-danger"></span>
                               </label>
-                              <select
+                              <MultiSelect
+                                name="role"
+                                options={roleOptions}
+                                value={selectedRole}
+                                onChange={handleSelectRoleChange }
+                                placeholder={"Select Role"} 
+                              />
+                              {/* <select
                                 className="default-select form-control"
                                 value={filterQuery.role}
                                 name="role"
                                 onChange={HandleFilter}
                               >
-                                {/* <option data-display="Select">Please select</option> */}
+                                <option data-display="Select">Please select</option>
                                 <option value="">All</option>
                                 <option value="User">User</option>
                                 <option value="Data Uploader">
                                   Data Uploader
                                 </option>
-                              </select>
+                              </select> */}
                             </div>
                           </div>
                           <div className="d-flex justify-content-end">
