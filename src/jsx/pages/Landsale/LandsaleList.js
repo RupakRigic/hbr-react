@@ -23,6 +23,7 @@ import BulkLandsaleUpdate from "./BulkLandsaleUpdate";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Select from "react-select";
+import { MultiSelect } from "react-multi-select-component";
 
 const LandsaleList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -95,13 +96,20 @@ const LandsaleList = () => {
     doc:"",
   });
   const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
     const fetchBuilderList = async () => {
       try {
         const response = await AdminBuilderService.builderDropDown();
         const data = await response.json();
-        setBuilderDropDown(data);
+        const formattedData = data.map((builder) => ({
+          label: builder.name,
+          value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
       } catch (error) {
         console.log("Error fetching builder list:", error);
       }
@@ -502,7 +510,11 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     try {
         let response = await AdminSubdevisionService.index()
         let responseData = await response.json()
-        setSubdivisionList(responseData.data)
+        const formattedData = responseData.data.map((subdivision) => ({
+          label: subdivision.name,
+          value: subdivision.id,
+        }));
+        setSubdivisionList(formattedData)
     } catch (error) {
         if (error.name === 'HTTPError') {
             const errorJson = await error.response.json();
@@ -577,6 +589,18 @@ useEffect(() => {
       builder_name: selectedOption.name,
     }));
   };
+
+  const handleSelectBuilderNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+  }
+
+  const handleSelectSubdivisionNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSubdivisionName(selectedItems);
+  }
 
   const HandleSubSelectChange = (selectedOption) => {
     setFilterQuery((prevFilterQuery) => ({
@@ -1743,21 +1767,40 @@ useEffect(() => {
                       BUILDER NAME:{" "}
                     </label>
                     <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown}
+                        value={selectedBuilderName}
+                        onChange={handleSelectBuilderNameChange }
+                        placeholder={"Select Builder Name"} 
+                      />
+                    </Form.Group>
+                    {/* <Form.Group controlId="tournamentList">
                       <Select
                         options={builderDropDown}
                         onChange={HandleSelectChange}
                         getOptionValue={(option) => option.name}
                         getOptionLabel={(option) => option.name}
+                        isMulti
                         value={builderDropDown.name}
                         name="builder_name"
                       ></Select>
-                    </Form.Group>
+                    </Form.Group> */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SUBDIVISION NAME:{" "}
                     </label>
                     <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={SubdivisionList}
+                        value={selectedSubdivisionName}
+                        onChange={handleSelectSubdivisionNameChange }
+                        placeholder={"Select Subdivision Name"} 
+                      />
+                    </Form.Group>
+                    {/* <Form.Group controlId="tournamentList">
                       <Select
                         options={SubdivisionList}
                         onChange={HandleSubSelectChange}
@@ -1766,7 +1809,7 @@ useEffect(() => {
                         value={SubdivisionList.name}
                         name="subdivision_name"
                       ></Select>
-                    </Form.Group>                              
+                    </Form.Group>                               */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">

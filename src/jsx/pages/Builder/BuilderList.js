@@ -26,6 +26,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import BulkBuilderUpdate from "./BulkBuilderUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
+import { MultiSelect } from "react-multi-select-component";
 
 const BuilderTable = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -150,6 +151,10 @@ const handleSortClose = () => setShowSort(false);
   const [totalPermitsResult, setTotalPermitsResult] = useState(0);
   const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
 
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
     console.log(fieldList);
@@ -1535,6 +1540,42 @@ const handleSortClose = () => setShowSort(false);
         break;
     }
   };
+
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      debugger
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        const formattedData = data.map((builder) => ({
+          label: builder.name,
+          value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
+
+  const handleSelectBuilderNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+  };
+
+  const statusOptions = [
+    { value: "1", label: "Active" },
+    { value: "0", label: "De-active" }
+  ];
+
+  const handleSelectStatusChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedStatus(selectedItems);
+  }
   
   return (
     <>
@@ -3705,14 +3746,30 @@ const handleSortClose = () => setShowSort(false);
                       BUILDER NAME:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown}
+                        value={selectedBuilderName}
+                        onChange={handleSelectBuilderNameChange }
+                        placeholder={"Select Builder Name"} 
+                      />
+                    </Form.Group>
+                    {/* <input name="name" className="form-control" value={filterQuery.name} onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-4 mt-3">
                       <label className="form-label">
                         STATUS:{" "}
                         <span className="text-danger"></span>
                       </label>
-                      <select
+                      <MultiSelect
+                        name="status"
+                        options={statusOptions}
+                        value={selectedStatus}
+                        onChange={handleSelectStatusChange }
+                        placeholder={"Select Status"} 
+                      />
+                      {/* <select
                         className="default-select form-control"
                         value={filterQuery.is_active}
                         name="is_active"
@@ -3721,7 +3778,7 @@ const handleSortClose = () => setShowSort(false);
                         <option value="">All</option>
                         <option value="1">Active</option>
                         <option value="0">De-active</option>
-                      </select>
+                      </select> */}
                   </div>
                   <div className="col-md-4 mt-3">
                     <label className="form-label">

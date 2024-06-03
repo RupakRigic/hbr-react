@@ -21,6 +21,7 @@ import BulkPriceUpdate from "./BulkPriceUpdate";
 import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import { MultiSelect } from "react-multi-select-component";
 
 
 const PriceList = () => {
@@ -512,13 +513,22 @@ const [filterQuery, setFilterQuery] = useState({
   };
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+ const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
     const fetchBuilderList = async () => {
       try {
         const response = await AdminBuilderService.builderDropDown();
         const data = await response.json();
-        setBuilderDropDown(data);
+        const formattedData = data.map((builder) => ({
+          label: builder.name,
+          value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
       } catch (error) {
         console.log("Error fetching builder list:", error);
       }
@@ -544,6 +554,18 @@ const [filterQuery, setFilterQuery] = useState({
       builder_name: selectedOption.name,
     }));
   };
+
+  const handleSelectBuilderNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+  }
+
+  const handleSelectSubdivisionNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSubdivisionName(selectedItems);
+  }
 
   const HandleSubSelectChange = (selectedOption) => {
     setFilterQuery((prevFilterQuery) => ({
@@ -712,7 +734,11 @@ const getSubdivisionList = async () => {
   try {
       let response = await AdminSubdevisionService.index()
       let responseData = await response.json()
-      SetSubdivisionList(responseData.data)
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData)
   } catch (error) {
       if (error.name === 'HTTPError') {
           const errorJson = await error.response.json();
@@ -768,6 +794,29 @@ const toCamelCase = (str) => {
     })
   .join('');
 }
+
+const ageOptions = [
+  { value: "1", label: "Yes" },
+  { value: "0", label: "No" }
+];
+
+const singleOptions = [
+  { value: "1", label: "Yes" },
+  { value: "0", label: "No" }
+];
+
+const handleSelectAgeChange  = (selectedItems) => {  
+  const selectedValues = selectedItems.map(item => item.value);
+  setSelectedValues(selectedValues);
+  setSelectedAge(selectedItems);
+};
+
+const handleSelectSingleChange  = (selectedItems) => {  
+  const selectedValues = selectedItems.map(item => item.value);
+  setSelectedValues(selectedValues);
+  setSelectedSingle(selectedItems);
+};
+
 
   return (
     <>
@@ -1579,6 +1628,15 @@ const toCamelCase = (str) => {
                       BUILDER NAME:{" "}
                     </label>
                     <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown}
+                        value={selectedBuilderName}
+                        onChange={handleSelectBuilderNameChange }
+                        placeholder={"Select Builder Name"} 
+                      />
+                    </Form.Group>
+                    {/* <Form.Group controlId="tournamentList">
                       <Select
                         options={builderDropDown}
                         onChange={HandleSelectChange}
@@ -1587,13 +1645,22 @@ const toCamelCase = (str) => {
                         value={builderDropDown.name}
                         name="builder_name"
                       ></Select>
-                    </Form.Group>
+                    </Form.Group> */}
                   </div>                         
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SUBDIVISION NAME:{" "}
                     </label>
                     <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={SubdivisionList}
+                        value={selectedSubdivisionName}
+                        onChange={handleSelectSubdivisionNameChange }
+                        placeholder={"Select Subdivision Name"} 
+                      />
+                    </Form.Group>
+                    {/* <Form.Group controlId="tournamentList">
                       <Select
                         options={SubdivisionList}
                         onChange={HandleSubSelectChange}
@@ -1602,7 +1669,7 @@ const toCamelCase = (str) => {
                         value={SubdivisionList.name}
                         name="subdivision_name"
                       ></Select>
-                    </Form.Group>                      
+                    </Form.Group>                       */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1710,20 +1777,34 @@ const toCamelCase = (str) => {
                     <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
-                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
-                    <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                    <MultiSelect
+                      name="age"
+                      options={ageOptions}
+                      value={selectedAge}
+                      onChange={handleSelectAgeChange }
+                      placeholder={"Select Age"} 
+                    />
+                    {/* <select className="default-select form-control" name="age" onChange={HandleFilter} >
                       <option value="">Select age Restricted</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
-                    </select>                                
+                    </select>                                 */}
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
-                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
-                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                    <MultiSelect
+                      name="single"
+                      options={singleOptions}
+                      value={selectedSingle}
+                      onChange={handleSelectSingleChange }
+                      placeholder={"Select Single"} 
+                    />
+                    {/* <select className="default-select form-control" name="single" onChange={HandleFilter} >
                       <option value="">Select Story</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
-                    </select>
+                    </select> */}
                   </div>
                 </div>
               </form>

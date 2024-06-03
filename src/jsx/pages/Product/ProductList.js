@@ -27,6 +27,8 @@ import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkProductUpdate from "./BulkProductUpdate";
 import Select from "react-select";
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
+import { MultiSelect } from "react-multi-select-component";
 
 
 
@@ -675,7 +677,11 @@ const ProductList = () => {
     try {
       const response = await AdminSubdevisionService.index(searchQuery);
       const responseData = await response.json();
-      setBuilderList(responseData.data);
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      setBuilderList(formattedData);
       setIsLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -860,12 +866,84 @@ const HandleFilterForm = (e) =>
     applyFilters();
   }, [filterQuery]);
 
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+ const [selectedValues, setSelectedValues] = useState([]);
+  
+  useEffect(() => {
+    const fetchBuilderList = async () => {
+      try {
+        const response = await AdminBuilderService.builderDropDown();
+        const data = await response.json();
+        const formattedData = data.map((builder) => ({
+          label: builder.name,
+          value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
+      } catch (error) {
+        console.log("Error fetching builder list:", error);
+      }
+    };
+
+    fetchBuilderList();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFilterQuery(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
     }));
+  };
+
+  const ageOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+  
+  const singleOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const statusOptions = [
+    { value: "1", label: "Active" },
+    { value: "0", label: "Sold Out" },
+    { value: "2", label: "Future" }
+  ];
+
+  const handleSelectBuilderNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+  }
+
+  const handleSelectSubdivisionNameChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSubdivisionName(selectedItems);
+  }
+  
+  const handleSelectAgeChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedAge(selectedItems);
+  };
+  
+  const handleSelectSingleChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSingle(selectedItems);
+  };
+
+  const handleSelectStatusChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedStatus(selectedItems);
   };
 
   return (
@@ -912,8 +990,8 @@ const HandleFilterForm = (e) =>
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-
-                    <div className="d-flex">
+                          
+                    <div className="d-flex" style={{marginTop: "10px"}}>
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
                       </button>
@@ -1887,7 +1965,14 @@ const HandleFilterForm = (e) =>
                                   PLAN STATUS:{" "}
                                     <span className="text-danger"></span>
                                   </label>
-                                  <select
+                                  <MultiSelect
+                                    name="status"
+                                    options={statusOptions}
+                                    value={selectedStatus}
+                                    onChange={handleSelectStatusChange }
+                                    placeholder={"Select Plan Status"} 
+                                  />
+                                  {/* <select
                                     className="default-select form-control"
                                     value={filterQuery.status}
                                     name="status"
@@ -1897,7 +1982,19 @@ const HandleFilterForm = (e) =>
                                     <option value="1">Active</option>
                                     <option value="0">Sold Out</option>
                                     <option value="2">Future</option>
-                                  </select>
+                                  </select> */}
+                              </div>
+                              <div className="col-md-3 mt-3">
+                                <label className="form-label">BUILDER NAME:{" "}</label>
+                                  <Form.Group controlId="tournamentList">
+                                    <MultiSelect
+                                      name="builder_name"
+                                      options={builderDropDown}
+                                      value={selectedBuilderName}
+                                      onChange={handleSelectBuilderNameChange }
+                                      placeholder={"Select Builder Name"} 
+                                    />
+                                  </Form.Group>
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
@@ -1905,6 +2002,15 @@ const HandleFilterForm = (e) =>
                                   <span className="text-danger"></span>
                                 </label>
                                 <Form.Group controlId="tournamentList">
+                                    <MultiSelect
+                                      name="subdivision_name"
+                                      options={BuilderList}
+                                      value={selectedSubdivisionName}
+                                      onChange={handleSelectSubdivisionNameChange }
+                                      placeholder={"Select Subdivision Name"} 
+                                    />
+                                  </Form.Group>
+                                {/* <Form.Group controlId="tournamentList">
                           <Select
                             options={BuilderList}
                             onChange={HandleSelectChange}
@@ -1913,7 +2019,7 @@ const HandleFilterForm = (e) =>
                             value={BuilderList.name}
                             name="subdivision_name"
                           ></Select>
-                        </Form.Group>  
+                        </Form.Group>   */}
 
                               </div>
                               <div className="col-md-3 mt-3">
@@ -2015,19 +2121,34 @@ const HandleFilterForm = (e) =>
                                 <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED</label>
-                              <select className="default-select form-control" name="age" onChange={HandleFilter} >
+                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                              <MultiSelect
+                                name="age"
+                                options={ageOptions}
+                                value={selectedAge}
+                                onChange={handleSelectAgeChange }
+                                placeholder={"Select Age"} 
+                              />
+                              {/* <select className="default-select form-control" name="age" onChange={HandleFilter} >
                                     <option value="">Select age Restricted</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                              </select>                                </div>
+                              </select>                                 */}
+                              </div>
                               <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY</label>
-                                    <select className="default-select form-control" name="single" onChange={HandleFilter} >
+                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                              <MultiSelect
+                                name="single"
+                                options={singleOptions}
+                                value={selectedSingle}
+                                onChange={handleSelectSingleChange }
+                                placeholder={"Select Single"} 
+                              />
+                                    {/* <select className="default-select form-control" name="single" onChange={HandleFilter} >
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>          
+                                    </select>           */}
                               </div>
                              </div>
                              </form>
