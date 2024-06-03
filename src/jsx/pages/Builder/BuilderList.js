@@ -2637,10 +2637,10 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "zipcode" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                       }
-                                      {column.id == "company_type" &&
+                                      {column.id == "company Type" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.company_type}</td>
                                       }
-                                      {column.id == "is_active" &&
+                                      {column.id == "active" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.is_active}</td>
                                       }
                                       {column.id == "stock_market" &&
@@ -2708,6 +2708,47 @@ const handleSortClose = () => setShowSort(false);
                                       }
                                       {column.id == "total Net Sales" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
+                                      }
+                                      {column.id == "office Address 1" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
+                                      }
+                                      {column.id == "office Address 2" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
+                                      }
+                                      {column.id == "stock Market" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_market}</td>
+                                      }
+                                      {column.id == "current Division President" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_division_president}</td>
+                                      }
+                                      {column.id == "stock Symbol" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_symbol}</td>
+                                      }
+                                      {column.id == "current Land Aquisitions" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_land_aquisitions}</td>
+                                      }
+                                      {column.id == "coporate Office Address 1" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
+                                      }
+
+                               
+                                        {column.id == "coporate Office Address 2" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
+                                      }
+                                      {column.id == "coporate Office Address City" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_city}</td>
+                                      }
+                                      {column.id == "coporate office address zipcode" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_zipcode}</td>
+                                      }
+                                             {column.id == "coporate Office Address latitude" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lat}</td>
+                                      }
+                                      {column.id == "coporate Office Address longitude" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lng}</td>
+                                      }
+                                      {column.id == "__pkBuilderID" &&
+                                       <td key={column.id} style={{ textAlign: "center" }}>{element.builder_code}</td>
                                       }
                                       {column.id == "date Of First Closing" &&
                                         <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date_of_first_closing} /></td>
@@ -2837,10 +2878,10 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "fax" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "officeaddress1" &&
+                                  {column.id == "office Address 1" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "officeaddress2" &&
+                                  {column.id == "office Address 2" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "city" &&
@@ -2849,7 +2890,7 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "zipcode" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "company_type" &&
+                                  {column.id == "company Type" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "is_active" &&

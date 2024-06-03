@@ -49,8 +49,8 @@ const BuilderTable = () => {
   const lastDayOfMonth = currentDate.endOf("month").format("YYYY-MM-DD");
   const [startDate, setStartDate] = useState(firstDayOfMonth);
   const [endDate, setEndDate] = useState(lastDayOfMonth);
-  const [reportType, setReportType] = useState("Active List Of LV New Home");
-  const [uploadReportType, setUploadReportType] = useState("Active List Of LV New Home");
+  const [reportType, setReportType] = useState("List of Active New Home Builders");
+  const [uploadReportType, setUploadReportType] = useState("List of Active New Home Builders");
   console.log(uploadReportType);
   const [pdfData, setPdfData] = useState();
   const handleClose = () => setShow(false);
@@ -443,7 +443,7 @@ const BuilderTable = () => {
                                   value={uploadReportType}
                                   className="form-control-select"
                                 >
-                                  <option>Active List Of LV New Home</option>
+                                  <option>List of Active New Home Builders</option>
                                   <option>Annual Report</option>
                                   <option>Area Summaries Report</option>
                                   <option>Closing Report(PDF) </option>
@@ -555,7 +555,7 @@ const BuilderTable = () => {
                                 value={reportType}
                                 className="form-control-select"
                               >
-                                <option>Active List Of LV New Home</option>
+                                <option>List of Active New Home Builders</option>
                                 <option>Annual Report</option>
                                 <option>Area Summaries Report</option>
                                 <option>Closing Report(PDF) </option>

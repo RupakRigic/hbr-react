@@ -1,14 +1,70 @@
-import React from 'react';
+import React, { useState,useEffect,useNa } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import Select from "react-select";
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
+import { Link, useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
-const FutureSubdivisionPopup = ({ show, handleClose, handleSave, BuilderList, setBuilderId }) => {
+const FutureSubdivisionPopup = ({ show, handleClose }) => {
+    const [Error, setError] = useState('');
+    const[builderId,setBuilderId] = useState('');
+    const navigate = useNavigate();
+    const [BuilderList, setBuilderList] = useState([]);
+    const getFutureBuilderlist = async () => {
+        try {
+        const response = await AdminSubdevisionService.getByBuilderId(localStorage.getItem('builderId'));
+          const responseData = await response.json();
+          console.log(responseData);
+          setBuilderList(responseData);
+        } catch (error) {
+          console.log(error);
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+          }
+        }
+      };
+      useEffect(() => {
+        if (localStorage.getItem("usertoken")) {
+            getFutureBuilderlist();
+        } else {
+          navigate("/");
+        }
+      }, []);
 
-    const filtered = BuilderList.filter(item => item.status == 2);
-console.log("filtered",filtered);
-    const HandleSelectChange = (selectedOption) => {
-        setBuilderId(selectedOption.builder_id);
+    const HandleSelectChange = (e) => {
+        console.log(e);
+        setBuilderId(e.id);
     };
+    console.log(builderId);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+           var userData = {
+                "status": true
+            }
+            const data = await AdminSubdevisionService.bulkupdate(builderId,userData).json();
+            if (data.status === true) {
+
+                swal("Subdivision Added Succesfully").then((willDelete) => {
+                    if (willDelete) {
+                        handleClose()
+                    }
+                })
+
+            }
+        }
+        catch (error) {
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+            }
+        }
+
+
+    }
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -21,11 +77,11 @@ console.log("filtered",filtered);
                 </label>
                 <Form.Group controlId="subdivisionList">
                     <Select
-                        options={filtered}
-                        onChange={HandleSelectChange}
-                        getOptionValue={(option) => option.name}
+                        getOptionValue={(option) => option.id}
                         getOptionLabel={(option) => option.name}
-                        value={filtered.name}
+                        options={BuilderList}
+                        onChange={(e) =>HandleSelectChange(e)}
+                        value={BuilderList.id}
                         name="builder_name"
                     ></Select>
                 </Form.Group>
@@ -34,7 +90,7 @@ console.log("filtered",filtered);
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSave}>
+                <Button variant="primary" onClick={handleSubmit}>
                     Save Changes
                 </Button>
             </Modal.Footer>

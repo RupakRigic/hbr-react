@@ -82,7 +82,7 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPage = 25;
+  const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);

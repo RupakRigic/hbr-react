@@ -1321,6 +1321,9 @@ useEffect(() => {
                                       {column.id == "parcel" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
                                     }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zip}</td>
+                                    }
                                   </>
                                 ))}
 

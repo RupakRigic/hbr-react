@@ -373,9 +373,9 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
           case "Subdivision Name":
             return row.subdivision?.name || '';
           case "Address Number":
-            return row.address1 || '';
-          case "Address Name":
             return row.address2 || '';
+          case "Address Name":
+            return row.address1 || '';
           case "Parcel Number":
             return row.parcel || '';
           case "Contractor":
@@ -1644,10 +1644,10 @@ useEffect(() => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
                                   }
                                   {column.id == "address Number" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address1}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address2}</td>
                                   }
                                   {column.id == "address Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address2}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address1}</td>
                                   }
                                   {column.id == "parcel Number" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
