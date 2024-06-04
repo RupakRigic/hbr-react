@@ -3270,7 +3270,7 @@ const handleSortClose = () => setShowSort(false);
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "builder" ? "builderName" : 
                                 column.id == "product Type" ? "product_type" : 
                                 column.id == "master Plan" ? "masterplan_id" : 
@@ -3317,7 +3317,7 @@ const handleSortClose = () => setShowSort(false);
                                 column.id == "price Group" ? "price_group" : 
                                 column.id == "month Net Sold" ? "month_net_sold" : 
                                 column.id == "year Net Sold" ? "year_net_sold" : 
-                                column.id == "parcel" ? "parcel" : toCamelCase(column.id))}>
+                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}>
                                 <strong>
                            
                                   {column.label}
@@ -3427,11 +3427,68 @@ const handleSortClose = () => setShowSort(false);
                                     ) : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
                                   )}
                                 </strong>
+                                
+                                {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "masterplan" && column.id !== "zipcode" && column.id !== "total Lots" &&
+                                  column.id !== "lot Width" && column.id !== "lot Size" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" &&
+                                  column.id !== "gated" && column.id !== "location" && column.id !== "juridiction" && column.id !== "latitude" && column.id !== "longitude" &&
+                                  column.id !== "gas Provider" && column.id !== "hOA Fee" && column.id !== "masterplan Fee" && column.id !== "parcel Group" && column.id !== "phone" &&
+                                  column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
+                                  column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
+                                ) && (
+                                    <>
+                                    
+                                      <select value={column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption : 
+                                        column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption : 
+                                        column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
+                                        column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
+                                        column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
+                                        column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
+                                        column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption : 
+                                        column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
+                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption : 
+                                        column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
+                                        column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
+                                        column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption : ""} 
+                                      style={{cursor: "pointer", marginLeft: '10px'}} 
+                                      onChange={(e) => column.id == "total Closings" ? handleSelectChange(e, "total_closings") : 
+                                        column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                        column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
+                                        column.id == "months Open" ? handleSelectChange(e, "months_open") :
+                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
+                                        column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
+                                        column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
+                                        column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
+                                        column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
+                                        column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
+                                        column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
+                                        column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
+                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
+                                        column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
+                                        column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
+                                        column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
+                                        column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
+                                        column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
+                                        column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
+                                        column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
+                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") : ""}>
+                                        <option value="" disabled>CALCULATION</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="avg">Avg</option>
+                                      </select>
+                                      
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                             {/* <th>
                               <strong>Open Since</strong>
-                            </th> */}
+                            </th> */
+                          }
                             {/* {checkFieldExist("Status") && (
                               <th onClick={() => requestSort("status")}>
                                 <strong> Status</strong>
@@ -4553,6 +4610,70 @@ const handleSortClose = () => setShowSort(false);
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style={{textAlign: "center"}}>{totalClosingsResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{totalPermitsResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{totalNetSalesResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{monthsOpenResult.toFixed(2)}</td>
+                            <td></td>
+                            <td style={{textAlign: "center"}}>{latestLotsReleasedResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{latestStandingInventoryResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{unsoldLotsResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgSqftAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgSqftActiveResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgBasePriceAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgBasePriceActiveResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{minSqftAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{maxSqftAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{minBasePriceAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{minSqftActiveResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{maxBasePriceAllResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{maxSqftActiveResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
+                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style={{textAlign: "center"}}>{monthNetSoldResult}</td>
+                            <td style={{textAlign: "center"}}>{yearNetSoldResult}</td>
+                            <td></td>
+                            <td></td>
+                          </tr>}
                           {BuilderList !== null && BuilderList.length > 0 ? (
                             BuilderList.map((element, index) => (
                               <tr
@@ -4776,10 +4897,10 @@ const handleSortClose = () => setShowSort(false);
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
                                   }
                                   {column.id == "median Closing Price Since Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}> {element.median_closing_price_since_open}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open}/></td>
                                   }
                                 {column.id == "median Closing Price This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.median_closing_price_this_year}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year}/></td>
                                   }
 
                                   {column.id == "action" &&
@@ -4832,7 +4953,7 @@ const handleSortClose = () => setShowSort(false);
                             </tr>
                           )}
                         </tbody>
-                        <tbody>
+                        {/* <tbody>
                           {!excelLoading && 
                             <tr>
                               <td></td>
@@ -5307,7 +5428,7 @@ const handleSortClose = () => setShowSort(false);
                               </>
                             ))}
                           </tr>}
-                        </tbody>
+                        </tbody> */}
                       </table>
                     )}
                   </div>
