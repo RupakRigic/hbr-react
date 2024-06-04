@@ -3007,44 +3007,86 @@ const handleSortClose = () => setShowSort(false);
 
   const handleSelectBuilderNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+  }));
   }
 
   const handleSelectStatusChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      status: selectedNames
+  }));
   }
 
   const handleSelectReportingChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedReporting(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      reporting: selectedNames
+  }));
   }
 
   const handleSelectProductTypeChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      product_type: selectedNames
+  }));
   }
 
   const handleSelectAgeChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      age: selectedNames
+  }));
   }
 
   const handleSelectSingleChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
+
+    setFilterQuery(prevState => ({
+      ...prevState,
+      age: selectedNames
+  }));
   }
 
   const handleSelectGatedChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedGated(selectedItems);
+
+    setFilterQuery(prevState => ({
+      ...prevState,
+      gated: selectedNames
+  }));
   }
 
   return (

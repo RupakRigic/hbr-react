@@ -63,12 +63,24 @@ const TrafficsaleList = () => {
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
+
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+  }));
   }
 
   const handleSelectSubdivisionNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
+
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+  }));
   }
 
   const HandleSubSelectChange = (selectedOption) => {
@@ -822,12 +834,24 @@ const handleSelectAgeChange  = (selectedItems) => {
   const selectedValues = selectedItems.map(item => item.value);
   setSelectedValues(selectedValues);
   setSelectedAge(selectedItems);
+
+  const selectedNames = selectedItems.map(item => item.value).join(', ');
+  setFilterQuery(prevState => ({
+    ...prevState,
+    age: selectedNames
+}));
 };
 
 const handleSelectSingleChange  = (selectedItems) => {  
   const selectedValues = selectedItems.map(item => item.value);
   setSelectedValues(selectedValues);
   setSelectedSingle(selectedItems);
+
+  const selectedNames = selectedItems.map(item => item.value).join(', ');
+  setFilterQuery(prevState => ({
+    ...prevState,
+    single: selectedNames
+}));
 };
 
   return (

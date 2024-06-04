@@ -918,32 +918,65 @@ const HandleFilterForm = (e) =>
 
   const handleSelectBuilderNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+  }));
   }
 
   const handleSelectSubdivisionNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      subdivision_name: selectedNames
+  }));
   }
   
   const handleSelectAgeChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
+
+    setFilterQuery(prevState => ({
+      ...prevState,
+      age: selectedNames
+  }));
   };
   
   const handleSelectSingleChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
+    
+    setFilterQuery(prevState => ({
+      ...prevState,
+      single: selectedNames
+  }));
   };
 
   const handleSelectStatusChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
+
+    setFilterQuery(prevState => ({
+      ...prevState,
+      status: selectedNames
+  }));
   };
 
   return (

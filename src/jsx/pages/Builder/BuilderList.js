@@ -1560,13 +1560,21 @@ const handleSortClose = () => setShowSort(false);
     fetchBuilderList();
   }, []);
 
-  const handleSelectBuilderNameChange  = (selectedItems) => {  
+  console.log(filterQuery);
+
+  const handleSelectBuilderNameChange = (selectedItems) => {  
     console.log(selectedItems);
 
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
-  };
+    setFilterQuery(prevState => ({
+        ...prevState,
+        name: selectedNames
+    }));
+};
 
   const statusOptions = [
     { value: "1", label: "Active" },
@@ -1574,9 +1582,13 @@ const handleSortClose = () => setShowSort(false);
   ];
 
   const handleSelectStatusChange  = (selectedItems) => {  
-    const selectedValues = selectedItems.map(item => item.value);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      is_active: selectedValues
+  }));
   };
 
   console.log("filter", filter);

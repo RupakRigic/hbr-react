@@ -251,21 +251,29 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
 
   const handleSelectBuilderNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
+    
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+  }));
   }
 
   const handleSelectSubdivisionNameChange  = (selectedItems) => {  
     const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
+
+    setFilterQuery(prevState => ({
+      ...prevState,
+      subdivision_name: selectedNames
+  }));
   }
-  const HandleSubSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      subdivision_name: selectedOption.name,
-    }));
-  };
 
   const headers = [
     { label: "Date", key: "Date" },
@@ -875,12 +883,23 @@ const handleSelectAgeChange  = (selectedItems) => {
   const selectedValues = selectedItems.map(item => item.value);
   setSelectedValues(selectedValues);
   setSelectedAge(selectedItems);
+  const selectedNames = selectedItems.map(item => item.value).join(', ');
+  setFilterQuery(prevState => ({
+    ...prevState,
+    age: selectedNames
+}));
 };
 
 const handleSelectSingleChange  = (selectedItems) => {  
   const selectedValues = selectedItems.map(item => item.value);
   setSelectedValues(selectedValues);
   setSelectedSingle(selectedItems);
+
+  const selectedNames = selectedItems.map(item => item.value).join(', ');
+  setFilterQuery(prevState => ({
+    ...prevState,
+    single: selectedNames
+}));
 };
 
 
