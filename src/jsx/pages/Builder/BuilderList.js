@@ -1868,11 +1868,11 @@ const handleSortClose = () => setShowSort(false);
                                     ) : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>)
                                   }
                                   </strong>
-                                  {(!excelLoading) && (column.id !== "action" && column.id !== "builder_code " && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
-                                  column.id !== "fax" && column.id !== "officeaddress1" && column.id !== "officeaddress2" && column.id !== "city" && column.id !== "zipcode" &&
-                                  column.id !== "company_type" && column.id !== "is_active" && column.id !== "stock_market" && column.id !== "current_division_president" && column.id !== "stock_symbol" &&
-                                  column.id !== "current_land_aquisitions" && column.id !== "coporate_officeaddress_1" && column.id !== "coporate_officeaddress_2" && column.id !== "coporate_officeaddress_city" && column.id !== "coporate_officeaddress_zipcode" &&
-                                  column.id !== "coporate_officeaddress_lat" && column.id !== "coporate_officeaddress_lng" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
+                                  {(!excelLoading) && (column.id !== "action" && column.id !== "email Address" && column.id !== "__pkBuilderID" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
+                                  column.id !== "fax" && column.id !== "office Address 1" && column.id !== "office Address State" && column.id !== "city" && column.id !== "zipcode" &&
+                                  column.id !== "company Type" && column.id !== "active" && column.id !== "stock Market" && column.id !== "current Division President" && column.id !== "stock Symbol" &&
+                                  column.id !== "current Land Aquisitions" && column.id !== "coporate Office Address 1" && column.id !== "corporate Office Address State" && column.id !== "coporate Office Address City" && column.id !== "coporate office address zipcode" &&
+                                  column.id !== "coporate Office Address latitude" && column.id !== "coporate Office Address longitude" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
                                 ) && (
                                     <>
                                       <select value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption : 
@@ -2652,7 +2652,7 @@ const handleSortClose = () => setShowSort(false);
                               <td></td>
                               {columns.map((column) => (
                                 <>
-                                  {column.id == "builder_code " &&
+                                  {column.id == "__pkBuilderID" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "name" &&
@@ -2670,10 +2670,10 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "fax" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "officeaddress1" &&
+                                  {column.id == "office Address 1" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "officeaddress2" &&
+                                  {column.id == "office Address State" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "city" &&
@@ -2682,40 +2682,40 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "zipcode" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "company_type" &&
+                                  {column.id == "company Type" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "is_active" &&
+                                  {column.id == "active" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "stock_market" &&
+                                  {column.id == "stock Market" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "current_division_president" &&
+                                  {column.id == "current Division President" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "stock_symbol" &&
+                                  {column.id == "stock Symbol" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "current_land_aquisitions" &&
+                                  {column.id == "current Land Aquisitions" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_1" &&
+                                  {column.id == "coporate Office Address 1" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_2" &&
+                                  {column.id == "corporate Office Address State" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_city" &&
+                                  {column.id == "coporate Office Address City" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_zipcode" &&
+                                  {column.id == "coporate office address zipcode" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_lat" &&
+                                  {column.id == "coporate Office Address latitude" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate_officeaddress_lng" &&
+                                  {column.id == "coporate Office Address longitude" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "active Communities" &&
@@ -2760,6 +2760,9 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "date Of Latest Closing" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
+                                  {column.id == "email Address" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
@@ -2792,7 +2795,7 @@ const handleSortClose = () => setShowSort(false);
                                   <td>{index + 1}</td>
                                   {columns.map((column) => (
                                     <>
-                                      {column.id == "builder_code " &&
+                                      {column.id == "__pkBuilderID" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.builder_code}</td>
                                       }
                                       {column.id == "name" &&
@@ -2823,10 +2826,10 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "fax" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.fax}</td>
                                       }
-                                      {column.id == "officeaddress1" &&
+                                      {column.id == "office Address 1" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
                                       }
-                                      {column.id == "officeaddress2" &&
+                                      {column.id == "office Address State" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
                                       }
                                       {column.id == "city" &&
@@ -2835,40 +2838,40 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "zipcode" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                       }
-                                      {column.id == "company_type" &&
+                                      {column.id == "company Type" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.company_type}</td>
                                       }
-                                      {column.id == "is_active" &&
+                                      {column.id == "active" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.is_active}</td>
                                       }
-                                      {column.id == "stock_market" &&
+                                      {column.id == "stock Market" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.stock_market}</td>
                                       }
-                                      {column.id == "current_division_president" &&
+                                      {column.id == "current Division President" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.current_division_president}</td>
                                       }
-                                      {column.id == "stock_symbol" &&
+                                      {column.id == "stock Symbol" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.stock_symbol}</td>
                                       }
-                                      {column.id == "current_land_aquisitions" &&
+                                      {column.id == "current Land Aquisitions" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.current_land_aquisitions}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_1" &&
+                                      {column.id == "coporate Office Address 1" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_2" &&
+                                      {column.id == "corporate Office Address State" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_city" &&
+                                      {column.id == "coporate Office Address City" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_city}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_zipcode" &&
+                                      {column.id == "coporate office address zipcode" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_zipcode}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_lat" &&
+                                      {column.id == "coporate Office Address latitude" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lat}</td>
                                       }
-                                      {column.id == "coporate_officeaddress_lng" &&
+                                      {column.id == "coporate Office Address longitude" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lng}</td>
                                       }
                                       {column.id == "active Communities" &&
@@ -2907,54 +2910,14 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "total Net Sales" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
                                       }
-                                      {column.id == "office Address 1" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
-                                      }
-                                      {column.id == "office Address State" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
-                                      }
-                                      {column.id == "stock Market" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_market}</td>
-                                      }
-                                      {column.id == "current Division President" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_division_president}</td>
-                                      }
-                                      {column.id == "stock Symbol" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.stock_symbol}</td>
-                                      }
-                                      {column.id == "current Land Aquisitions" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.current_land_aquisitions}</td>
-                                      }
-                                      {column.id == "coporate Office Address 1" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
-                                      }
-
-                                      {column.id == "email Address" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.email_address}</td>
-                                      }
-                                        {column.id == "corporate Office Address State" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
-                                      }
-                                      {column.id == "coporate Office Address City" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_city}</td>
-                                      }
-                                      {column.id == "coporate office address zipcode" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_zipcode}</td>
-                                      }
-                                             {column.id == "coporate Office Address latitude" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lat}</td>
-                                      }
-                                      {column.id == "coporate Office Address longitude" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lng}</td>
-                                      }
-                                      {column.id == "__pkBuilderID" &&
-                                       <td key={column.id} style={{ textAlign: "center" }}>{element.builder_code}</td>
-                                      }
                                       {column.id == "date Of First Closing" &&
                                         <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date_of_first_closing} /></td>
                                       }
                                       {column.id == "date Of Latest Closing" &&
                                         <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date_of_latest_closing} /></td>
+                                      }
+                                      {column.id == "email Address" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.email_address}</td>
                                       }
                                       {column.id == "action" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>
