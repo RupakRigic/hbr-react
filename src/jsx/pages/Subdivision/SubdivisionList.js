@@ -221,7 +221,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Name', key: 'zipcode' },
     { label: 'Product Type', key: 'city' },
     { label: 'Area', key: 'with' },
-    { label: 'Masterplan', key: 'without' },
+    { label: 'Master Plan', key: 'without' },
     { label: 'Zipcode', key: 'reentries' },
     { label: 'Total Lots', key: 'rakes' },
     { label: 'Lot Width', key: 'firstname' },
@@ -230,13 +230,13 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Age Restricted', key: 'zipcode' },
     { label: 'All Single Story', key: 'city' },
     { label: 'Gated', key: 'with' },
-    { label: 'Location', key: 'without' },
+    { label: 'Cross Streets', key: 'without' },
     { label: 'Juridiction', key: 'reentries' },
     { label: 'Latitude', key: 'rakes' },
     { label: 'Longitude', key: 'zipcode' },
     { label: 'Gas Provider', key: 'city' },
     { label: 'HOA Fee', key: 'with' },
-    { label: 'Masterplan Fee', key: 'without' },
+    { label: 'Master Plan Fee', key: 'without' },
     { label: 'Parcel Group', key: 'reentries' },
     { label: 'Phone', key: 'rakes' },
     { label: 'Website', key: 'with' },
@@ -261,7 +261,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Min Sqft Active', key: 'min_sqft_active_current' },
     { label: 'Max Base Price All', key: 'max_base_price_all' },
     { label: 'Max Sqft Active Current', key: 'max_sqft_active_current' },
-    { label: 'Avg Net Traffic Per Month This Year', key: 'avg_net_traffic_per_month_this_year' },
+    { label: 'Avg Traffic Per Month This Year', key: 'avg_net_traffic_per_month_this_year' },
     { label: 'Avg Net Sales Per Month This Year', key: 'avg_net_sales_per_month_this_year' },
     { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
     { label: 'Avg Net Sales Per Month Since Open', key: 'avg_net_sales_per_month_since_open' },
@@ -282,8 +282,8 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Name', key: 'name' },
     { label: 'Product Type', key: 'product_type' },
     { label: 'Area', key: 'area' },
-    { label: 'Masterplan', key: 'masteplan_id' },
-    { label: 'Zipcode', key: 'zipcode' },
+    { label: 'Master Plan', key: 'masteplan_id' },
+    { label: 'Zip Code', key: 'zipcode' },
     { label: 'Total Lots', key: 'totallots' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
@@ -291,13 +291,13 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Age Restricted', key: 'age' },
     { label: 'All Single Story', key: 'single' },
     { label: 'Gated', key: 'gated' },
-    { label: 'Location', key: 'location' },
+    { label: 'Cross Streets', key: 'location' },
     { label: 'Juridiction', key: 'juridiction' },
     { label: 'Latitude', key: 'lat' },
     { label: 'Longitude', key: 'lng' },
     { label: 'Gas Provider', key: 'gasprovider' },
     { label: 'HOA Fee', key: 'hoafee' },
-    { label: 'Masterplan Fee', key: 'masterplanfee' },
+    { label: 'Master Plan Fee', key: 'masterplanfee' },
     { label: 'Parcel Group', key: 'parcel' },
     { label: 'Phone', key: 'phone' },
     { label: 'Website', key: 'website' },
@@ -322,7 +322,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Min Sqft Active', key: 'min_sqft_active_current' },
     { label: 'Max Base Price All', key: 'max_base_price_all' },
     { label: 'Max Sqft Active Current', key: 'max_sqft_active_current' },
-    { label: 'Avg Net Traffic Per Month This Year', key: 'avg_net_traffic_per_month_this_year' },
+    { label: 'Avg Traffic Per Month This Year', key: 'avg_net_traffic_per_month_this_year' },
     { label: 'Avg Net Sales Per Month This Year', key: 'avg_net_sales_per_month_this_year' },
     { label: 'Avg Closings Per Month This Year', key: 'avg_closings_per_month_this_year' },
     { label: 'Avg Net Sales Per Month Since Open', key: 'avg_net_sales_per_month_since_open' },
@@ -398,10 +398,10 @@ const handleSortClose = () => setShowSort(false);
           case "Area":
             mappedRow[header] = row.area;
             break;
-          case "Masterplan":
+          case "Master Plan":
             mappedRow[header] = row.masterplan_id;
             break;
-          case "Zipcode":
+          case "Zip Code":
             mappedRow[header] = row.zipcode;
             break;
           case "Total Lots":
@@ -425,7 +425,7 @@ const handleSortClose = () => setShowSort(false);
           case "Gated":
             mappedRow[header] = (row.gated === 1 && "Yes") || (row.gated === 0 && "No");
             break;
-          case "Location":
+          case "Cross Streets":
             mappedRow[header] = row.location;
             break;
           case "Juridiction":
@@ -443,7 +443,7 @@ const handleSortClose = () => setShowSort(false);
           case "HOA Fee":
             mappedRow[header] = row.hoafee;
             break;
-          case "Masterplan Fee":
+          case "Master Plan Fee":
             mappedRow[header] = row.masterplanfee;
             break;
           case "Parcel Group":
@@ -521,7 +521,7 @@ const handleSortClose = () => setShowSort(false);
           case 'Max Sqft Active Current':
             mappedRow[header] = row.max_sqft_active_current;
             break;
-          case 'Avg Net Traffic Per Month This Year':
+          case 'Avg Traffic Per Month This Year':
             mappedRow[header] = row.avg_net_traffic_per_month_this_year;
             break;
           case 'Avg Net Sales Per Month This Year':
@@ -3270,10 +3270,10 @@ const handleSortClose = () => setShowSort(false);
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "location" || column.id == "website") ? "" : requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : requestSort(
                                 column.id == "builder" ? "builderName" : 
                                 column.id == "product Type" ? "product_type" : 
-                                column.id == "masterplan" ? "masterplan_id" : 
+                                column.id == "master Plan" ? "masterplan_id" : 
                                 column.id == "total Lots" ? "totallots" : 
                                 column.id == "lot Width" ? "lotwidth" : 
                                 column.id == "lot Size" ? "lotsize" : 
@@ -3283,7 +3283,7 @@ const handleSortClose = () => setShowSort(false);
                                 column.id == "longitude" ? "lng" : 
                                 column.id == "gas Provider" ? "gasprovider" : 
                                 column.id == "hOA Fee" ? "hoafee" : 
-                                column.id == "masterplan Fee" ? "masterplanfee" : 
+                                column.id == "master Plan Fee" ? "masterplanfee" : 
                                 column.id == "parcel Group" ? "parcel" : 
                                 column.id == "date Added" ? "created_at" : 
                                 column.id == "__pkSubID" ? "subdivision_code" : 
@@ -3306,7 +3306,7 @@ const handleSortClose = () => setShowSort(false);
                                 column.id == "min Base Price All" ? "min_base_price_all" : 
                                 column.id == "min Sqft Active" ? "min_sqft_active_current" : 
                                 column.id == "max Base Price All" ? "max_base_price_all" : 
-                                column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
                                 column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
                                 column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
                                 column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
@@ -3325,7 +3325,7 @@ const handleSortClose = () => setShowSort(false);
                                     (item) => item.key === (
                                       column.id == "builder" ? "builderName" : 
                                       column.id == "product Type" ? "product_type" : 
-                                      column.id == "masterplan" ? "masterplan_id" : 
+                                      column.id == "master Plan" ? "masterplan_id" : 
                                       column.id == "total Lots" ? "totallots" : 
                                       column.id == "lot Width" ? "lotwidth" : 
                                       column.id == "lot Size" ? "lotsize" : 
@@ -3335,7 +3335,7 @@ const handleSortClose = () => setShowSort(false);
                                       column.id == "longitude" ? "lng" : 
                                       column.id == "gas Provider" ? "gasprovider" : 
                                       column.id == "hOA Fee" ? "hoafee" : 
-                                      column.id == "masterplan Fee" ? "masterplanfee" : 
+                                      column.id == "master Plan Fee" ? "masterplanfee" : 
                                       column.id == "parcel Group" ? "parcel" : 
                                       column.id == "date Added" ? "created_at" : 
                                       column.id == "__pkSubID" ? "subdivision_code" : 
@@ -3358,7 +3358,7 @@ const handleSortClose = () => setShowSort(false);
                                       column.id == "min Base Price All" ? "min_base_price_all" : 
                                       column.id == "min Sqft Active" ? "min_sqft_active_current" : 
                                       column.id == "max Base Price All" ? "max_base_price_all" : 
-                                      column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                      column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
                                       column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
                                       column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
                                       column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
@@ -3377,7 +3377,7 @@ const handleSortClose = () => setShowSort(false);
                                         (item) => item.key === (
                                           column.id == "builder" ? "builderName" : 
                                           column.id == "product Type" ? "product_type" : 
-                                          column.id == "masterplan" ? "masterplan_id" : 
+                                          column.id == "master Plan" ? "masterplan_id" : 
                                           column.id == "total Lots" ? "totallots" : 
                                           column.id == "lot Width" ? "lotwidth" : 
                                           column.id == "lot Size" ? "lotsize" : 
@@ -3387,7 +3387,7 @@ const handleSortClose = () => setShowSort(false);
                                           column.id == "longitude" ? "lng" : 
                                           column.id == "gas Provider" ? "gasprovider" : 
                                           column.id == "hOA Fee" ? "hoafee" : 
-                                          column.id == "masterplan Fee" ? "masterplanfee" : 
+                                          column.id == "master Plan Fee" ? "masterplanfee" : 
                                           column.id == "parcel Group" ? "parcel" : 
                                           column.id == "date Added" ? "created_at" : 
                                           column.id == "__pkSubID" ? "subdivision_code" : 
@@ -3410,7 +3410,7 @@ const handleSortClose = () => setShowSort(false);
                                           column.id == "min Base Price All" ? "min_base_price_all" : 
                                           column.id == "min Sqft Active" ? "min_sqft_active_current" : 
                                           column.id == "max Base Price All" ? "max_base_price_all" : 
-                                          column.id == "avg Net Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
+                                          column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
                                           column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
                                           column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
                                           column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
@@ -3424,7 +3424,7 @@ const handleSortClose = () => setShowSort(false);
                                           column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                    ) : ((column.id == "action" || column.id == "location" || column.id == "website") ? "" : <span>↑↓</span>
+                                    ) : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
@@ -4604,10 +4604,10 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "area" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
                                   }
-                                  {column.id == "masterplan" &&
+                                  {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                   }
-                                  {column.id == "zipcode" &&
+                                  {column.id == "zip Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                   }
                                   {column.id == "total Lots" &&
@@ -4640,7 +4640,7 @@ const handleSortClose = () => setShowSort(false);
                                       {element.gated === 0 && "No"}
                                     </td>
                                   }
-                                  {column.id == "location" &&
+                                  {column.id == "cross Streets" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
                                   }
                                   {column.id == "juridiction" &&
@@ -4658,7 +4658,7 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "hOA Fee" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
                                   }
-                                  {column.id == "masterplan Fee" &&
+                                  {column.id == "master Plan Fee" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
                                   }
                                   {column.id == "parcel Group" &&
@@ -4733,7 +4733,7 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "max Sqft Active" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
                                   }
-                                  {column.id == "avg Net Traffic Per Month This Year" &&
+                                  {column.id == "avg Traffic Per Month This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
                                   }
                                   {column.id == "avg Net Sales Per Month This Year" &&
@@ -4771,6 +4771,15 @@ const handleSortClose = () => setShowSort(false);
                                   }
                                     {column.id == "avg Closing Price" &&
                                     <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price}/></td>
+                                  }
+                                           {column.id == "permits This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
+                                  }
+                                  {column.id == "median Closing Price Since Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}> {element.median_closing_price_since_open}</td>
+                                  }
+                                {column.id == "median Closing Price This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.median_closing_price_this_year}</td>
                                   }
 
                                   {column.id == "action" &&
@@ -4848,10 +4857,10 @@ const handleSortClose = () => setShowSort(false);
                                 {column.id == "area" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "masterplan" &&
+                                {column.id == "master Plan" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "zipcode" &&
+                                {column.id == "zip Code" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "total Lots" &&
@@ -4875,7 +4884,7 @@ const handleSortClose = () => setShowSort(false);
                                 {column.id == "gated" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "location" &&
+                                {column.id == "cross Streets" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "juridiction" &&
@@ -4893,7 +4902,7 @@ const handleSortClose = () => setShowSort(false);
                                 {column.id == "hOA Fee" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "masterplan Fee" &&
+                                {column.id == "master Plan Fee" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "parcel Group" &&
@@ -5172,7 +5181,7 @@ const handleSortClose = () => setShowSort(false);
                                       <span>{maxSqftActiveResult.toFixed(2)}</span>
                                   </td>
                                 }
-                                {column.id == "avg Net Traffic Per Month This Year" &&
+                                {column.id == "avg Traffic Per Month This Year" &&
                                   <td key={filter ? BuilderList.avg_net_traffic_per_month_this_year : AllBuilderListExport.avg_net_traffic_per_month_this_year} style={{ textAlign: "center" }}>
                                       <select
                                         value={avgNetTrafficPerMonthThisYearOption}
@@ -5529,7 +5538,7 @@ const handleSortClose = () => setShowSort(false);
                           </div>
                         </div>
                         <div className="col-xl-4 mt-4">
-                          <label className="">Masterplan:</label>
+                          <label className="">Master Plan:</label>
                           <div>
                             <span className="fw-bold">
                               {SubdivisionDetails.masterplan_id || "NA"}
@@ -5569,7 +5578,7 @@ const handleSortClose = () => setShowSort(false);
                           </div>
                         </div>
                         <div className="col-xl-4 mt-4">
-                          <label className="">Zipcode:</label>
+                          <label className="">Zip Code:</label>
                           <div>
                             <span className="fw-bold">
                               {SubdivisionDetails.zipcode || "NA"}
@@ -6414,7 +6423,7 @@ const handleSortClose = () => setShowSort(false);
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
-                                MASTERPLAN:{" "}
+                                MASTER PLAN:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
@@ -6518,7 +6527,7 @@ const handleSortClose = () => setShowSort(false);
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
-                                MASTERPLAN FEE:{" "}
+                                MASTER PLAN FEE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.masterplanfee} name="masterplanfee" className="form-control" onChange={HandleFilter}/>

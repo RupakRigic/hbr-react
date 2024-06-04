@@ -170,7 +170,7 @@ const handleSortClose = () => setShowSort(false);
     { label: "Builder Name", key: "name" },
     { label: "Company Type", key: "companytype" },
     { label: "LV office Phone", key: "phone" },
-    { label: "LV office Email", key: "email" },
+    { label: "LV office Email", key: "email_address" },
     { label: "LV office address", key: "officeaddress1" },
     { label: "LV office City", key: "city" },
     { label: "LV office Zip", key: "zipcode" },
@@ -216,14 +216,14 @@ const handleSortClose = () => setShowSort(false);
     { label: "Builder Name", key: "name" },
     { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
-    { label: "LV office Email", key: "email" },
+    { label: "LV office Email", key: "email_address" },
     { label: "LV office address", key: "officeaddress1" },
     { label: "LV office City", key: "city" },
     { label: "LV office Zip", key: "zipCode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
-    { label: "Corporate Office Address 2", key: "coporate_officeaddress_2" },
+    { label: "Corporate State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_office_state" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
@@ -310,7 +310,7 @@ const handleSortClose = () => setShowSort(false);
             mappedRow[header] = row.phone;
             break;
           case "LV office Email":
-            mappedRow[header] = row.email;
+            mappedRow[header] = row.email_address;
             break;
           case "LV office address":
             mappedRow[header] = row.officeaddress1;
@@ -610,7 +610,7 @@ const handleSortClose = () => setShowSort(false);
   const HandleFilterForm = (e) =>
   {
     e.preventDefault();
-    console.log(555);
+    console.log(searchQuery);
     setFilter(true);
     getbuilderlist(currentPage,searchQuery);
   };
@@ -1561,6 +1561,8 @@ const handleSortClose = () => setShowSort(false);
   }, []);
 
   const handleSelectBuilderNameChange  = (selectedItems) => {  
+    console.log(selectedItems);
+
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
@@ -2753,7 +2755,7 @@ const handleSortClose = () => setShowSort(false);
                                       {column.id == "office Address 1" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
                                       }
-                                      {column.id == "office Address 2" &&
+                                      {column.id == "office Address State" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
                                       }
                                       {column.id == "stock Market" &&
@@ -2772,8 +2774,10 @@ const handleSortClose = () => setShowSort(false);
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
                                       }
 
-                               
-                                        {column.id == "coporate Office Address 2" &&
+                                      {column.id == "email Address" &&
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.email_address}</td>
+                                      }
+                                        {column.id == "corporate Office Address State" &&
                                        <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
                                       }
                                       {column.id == "coporate Office Address City" &&
@@ -2922,7 +2926,7 @@ const handleSortClose = () => setShowSort(false);
                                   {column.id == "office Address 1" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "office Address 2" &&
+                                  {column.id == "office Address State" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "city" &&
@@ -3373,7 +3377,7 @@ const handleSortClose = () => setShowSort(false);
                           </div>
 
                           <div className="col-xl-4 mt-4">
-                            <label className="">Office Address 2:</label>
+                            <label className="">Office Address State:</label>
                             <div>
                               <span className="fw-bold">
                                 {BuilderDetails.officeaddress2 || "NA"}
@@ -3479,7 +3483,7 @@ const handleSortClose = () => setShowSort(false);
 
                           <div className="col-xl-4 mt-4">
                             <label className="">
-                              Coporate Office Address 2:
+                              Coporate Office Address State:
                             </label>
                             <div>
                               <span className="fw-bold">
@@ -3725,7 +3729,7 @@ const handleSortClose = () => setShowSort(false);
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Filter Subdivision{" "}
+            Filter Builder{" "}
           </h5>
           <button
             type="button"
@@ -3748,7 +3752,7 @@ const handleSortClose = () => setShowSort(false);
                     </label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
-                        name="builder_name"
+                        name="name"
                         options={builderDropDown}
                         value={selectedBuilderName}
                         onChange={handleSelectBuilderNameChange }
@@ -3763,7 +3767,7 @@ const handleSortClose = () => setShowSort(false);
                         <span className="text-danger"></span>
                       </label>
                       <MultiSelect
-                        name="status"
+                        name="is_active"
                         options={statusOptions}
                         value={selectedStatus}
                         onChange={handleSelectStatusChange }
