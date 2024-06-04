@@ -178,6 +178,11 @@ const handleSortClose = () => setShowSort(false);
   const [avgNetSalesPerMonthLastThreeMonthsOption, setAvgNetSalesPerMonthLastThreeMonthsOption] = useState("");
   const [monthNetSoldOption, setMonthNetSoldOption] = useState("");
   const [yearNetSoldOption, setYearNetSoldOption] = useState("");
+  const [avgClosingPriceOption, setAvgClosingPriceOption] = useState("");
+  const [permitsThisYearOption, setPermitsThisYearOption] = useState("");
+  const [medianClosingPriceSinceOpenOption, setMedianClosingPriceSinceOpenOption] = useState("");
+  const [medianClosingPriceThisYearOption, setMedianClosingPriceThisYearOption] = useState("");
+
 
 
   const [totalClosingsResult, setTotalClosingsResult] = useState(0);
@@ -204,6 +209,10 @@ const handleSortClose = () => setShowSort(false);
   const [avgNetSalesPerMonthLastThreeMonthsResult, setAvgNetSalesPerMonthLastThreeMonthsResult] = useState(0);
   const [monthNetSoldResult, setMonthNetSoldResult] = useState(0);
   const [yearNetSoldResult, setYearNetSoldResult] = useState(0);
+  const [avgClosingPriceResult, setAvgClosingPriceResult] = useState(0);
+  const [permitsThisYearResult, setPermitsThisYearResult] = useState(0);
+  const [medianClosingPriceSinceOpenResult, setMedianClosingPriceSinceOpenResult] = useState(0);
+  const [medianClosingPriceThisYearResult, setMedianClosingPriceThisYearResult] = useState(0);
 
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
@@ -334,6 +343,10 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Month Net Sold', key: 'month_net_sold' },
     { label: 'Year Net Sold', key: 'year_net_sold' },
     { label: 'Open Since', key: 'opensince' },
+    { label: 'Avg Closing Price', key: 'avg_closing_price' },
+    { label: 'Permits This Year', key: 'permit_this_year' },
+    { label: 'Median Closing Price Since Open', key: 'median_closing_price_since_open' },
+    { label: 'Median Closing Price This Year', key: 'median_closing_price_this_year' },
     { label: 'Date Added', key: 'created_at' },
   ];
 
@@ -554,9 +567,21 @@ const handleSortClose = () => setShowSort(false);
           case 'Year Net Sold':
             mappedRow[header] = row.year_net_sold;
             break;
-            case 'Open Since':
-              mappedRow[header] = <DateComponent date={row.year_net_sold} /> ;
-              break;
+          case 'Open Since':
+            mappedRow[header] = <DateComponent date={row.year_net_sold} /> ;
+            break;
+          case 'Avg Closing Price':
+            mappedRow[header] = row.avg_closing_price;
+            break;
+          case 'Permits This Year':
+            mappedRow[header] = row.permit_this_year;
+            break;
+          case 'Median Closing Price Since Open':
+            mappedRow[header] = row.median_closing_price_since_open;
+            break;
+          case 'Median Closing Price This Year':
+            mappedRow[header] = row.median_closing_price_this_year;
+            break;
           default:
             mappedRow[header] = '';
         }
@@ -1315,6 +1340,7 @@ const handleSortClose = () => setShowSort(false);
       ...prevFilterQuery,
       [name]: value
     }));
+    setFilter(true);
     setNormalFilter(false);
   };
 
@@ -1583,6 +1609,50 @@ const handleSortClose = () => setShowSort(false);
         }, 0);
       }
     }
+    if(field == "avg_closing_price") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_closing_price || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_closing_price || 0);
+        }, 0);
+      }
+    }
+    if(field == "permit_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.permit_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.permit_this_year || 0);
+        }, 0);
+      }
+    }
+    if(field == "median_closing_price_since_open") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_since_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_since_open || 0);
+        }, 0);
+      }
+    }
+    if(field == "median_closing_price_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      }
+    }
   };
 
   const averageFields = (field) => {
@@ -1623,6 +1693,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -1647,6 +1721,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setTotalClosingsResult(totalSumFields(field));
@@ -1680,6 +1758,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalNetSalesResult(0);
@@ -1704,6 +1786,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setTotalPermitsResult(totalSumFields(field));
@@ -1737,6 +1823,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
 		    setTotalPermitsResult(0);
@@ -1761,6 +1851,11 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
         if (value === 'sum') {
           setTotalNetSalesResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1793,6 +1888,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -1817,6 +1916,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMonthsOpenResult(totalSumFields(field));
@@ -1850,6 +1953,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -1874,6 +1981,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setLatestLotsReleasedResult(totalSumFields(field));
@@ -1907,6 +2018,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -1931,6 +2046,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setLatestStandingInventoryResult(totalSumFields(field));
@@ -1964,6 +2083,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -1988,6 +2111,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setUnsoldLotsResult(totalSumFields(field));
@@ -2021,6 +2148,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2045,6 +2176,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgSqftAllResult(totalSumFields(field));
@@ -2078,6 +2213,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2102,6 +2241,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgSqftActiveResult(totalSumFields(field));
@@ -2135,6 +2278,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2159,6 +2306,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgBasePriceAllResult(totalSumFields(field));
@@ -2192,6 +2343,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2216,6 +2371,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgBasePriceActiveResult(totalSumFields(field));
@@ -2249,6 +2408,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2273,6 +2436,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMinSqftAllResult(totalSumFields(field));
@@ -2306,6 +2473,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2330,6 +2501,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMaxSqftAllResult(totalSumFields(field));
@@ -2363,6 +2538,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2387,6 +2566,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMinBasePriceAllResult(totalSumFields(field));
@@ -2420,6 +2603,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2444,6 +2631,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMinSqftActiveResult(totalSumFields(field));
@@ -2477,6 +2668,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2501,6 +2696,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMaxBasePriceAllResult(totalSumFields(field));
@@ -2534,6 +2733,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2558,6 +2761,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMaxSqftActiveResult(totalSumFields(field));
@@ -2591,6 +2798,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2615,6 +2826,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgNetTrafficPerMonthThisYearResult(totalSumFields(field));
@@ -2648,6 +2863,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2672,6 +2891,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgNetSalesPerMonthThisYearResult(totalSumFields(field));
@@ -2705,6 +2928,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2729,6 +2956,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgClosingsPerMonthThisYearResult(totalSumFields(field));
@@ -2762,6 +2993,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2786,6 +3021,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgNetSalesPerMonthSinceOpenResult(totalSumFields(field));
@@ -2819,6 +3058,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenOption("");
         setMonthNetSoldOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2843,6 +3086,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenResult(0);
         setMonthNetSoldResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setAvgNetSalesPerMonthLastThreeMonthsResult(totalSumFields(field));
@@ -2876,6 +3123,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenOption("");
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2900,6 +3151,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenResult(0);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setMonthNetSoldResult(totalSumFields(field));
@@ -2933,6 +3188,10 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenOption("");
         setAvgNetSalesPerMonthLastThreeMonthsOption("");
         setMonthNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
@@ -2957,11 +3216,267 @@ const handleSortClose = () => setShowSort(false);
         setAvgNetSalesPerMonthSinceOpenResult(0);
         setAvgNetSalesPerMonthLastThreeMonthsResult(0);
         setMonthNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
 
         if (value === 'sum') {
           setYearNetSoldResult(totalSumFields(field));
         } else if (value === 'avg') {
           setYearNetSoldResult(averageFields(field));
+        }
+        break;
+
+        case "avg_closing_price":
+        setAvgClosingPriceOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setAvgClosingPriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgClosingPriceResult(averageFields(field));
+        }
+        break;
+
+        case "permit_this_year":
+        setPermitsThisYearOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setPermitsThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPermitsThisYearResult(averageFields(field));
+        }
+        break;
+
+        case "median_closing_price_since_open":
+        setMedianClosingPriceSinceOpenOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setMedianClosingPriceSinceOpenResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMedianClosingPriceSinceOpenResult(averageFields(field));
+        }
+        break;
+
+        case "median_closing_price_this_year":
+        setMedianClosingPriceThisYearOption(value);
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+
+        if (value === 'sum') {
+          setMedianClosingPriceThisYearResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setMedianClosingPriceThisYearResult(averageFields(field));
         }
         break;
 
@@ -3471,10 +3986,10 @@ const handleSortClose = () => setShowSort(false);
                                 </strong>
                                 
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "masterplan" && column.id !== "zipcode" && column.id !== "total Lots" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "total Lots" &&
                                   column.id !== "lot Width" && column.id !== "lot Size" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" &&
-                                  column.id !== "gated" && column.id !== "location" && column.id !== "juridiction" && column.id !== "latitude" && column.id !== "longitude" &&
-                                  column.id !== "gas Provider" && column.id !== "hOA Fee" && column.id !== "masterplan Fee" && column.id !== "parcel Group" && column.id !== "phone" &&
+                                  column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" && column.id !== "latitude" && column.id !== "longitude" &&
+                                  column.id !== "gas Provider" && column.id !== "hOA Fee" && column.id !== "master Plan Fee" && column.id !== "parcel Group" && column.id !== "phone" &&
                                   column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
                                   column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
                                 ) && (
@@ -3491,7 +4006,9 @@ const handleSortClose = () => setShowSort(false);
                                         column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption : 
                                         column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
                                         column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
-                                        column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption : ""} 
+                                        column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
+                                        column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
+                                        column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""} 
                                       style={{cursor: "pointer", marginLeft: '10px'}} 
                                       onChange={(e) => column.id == "total Closings" ? handleSelectChange(e, "total_closings") : 
                                         column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
@@ -3516,7 +4033,11 @@ const handleSortClose = () => setShowSort(false);
                                         column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
                                         column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
                                         column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
-                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") : ""}>
+                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") : 
+                                        column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") : 
+                                        column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") : 
+                                        column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") : 
+                                        column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""}>
                                         <option value="" disabled>CALCULATION</option>
                                         <option value="sum">Sum</option>
                                         <option value="avg">Avg</option>
@@ -4652,7 +5173,205 @@ const handleSortClose = () => setShowSort(false);
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {!excelLoading &&
+                        {!excelLoading &&
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            {columns.map((column) => (
+                              <>
+                                {column.id == "status" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "reporting" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "builder" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "name" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "product Type" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "area" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "master Plan" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "zip Code" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Lots" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "lot Width" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "lot Size" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "zoning" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "age Restricted" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "all Single Story" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gated" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "cross Streets" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "juridiction" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "longitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gas Provider" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "hOA Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "master Plan Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "parcel Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "phone" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "website" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "date Added" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "__pkSubID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "_fkBuilderID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Closings" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalClosingsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "total Permits" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalPermitsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "total Net Sales" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalNetSalesResult.toFixed(2)}</td>
+                                }
+                                {column.id == "months Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{monthsOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "latest Traffic/Sales Data" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latest Lots Released" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{latestLotsReleasedResult.toFixed(2)}</td>
+                                }
+                                {column.id == "latest Standing Inventory" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{latestStandingInventoryResult.toFixed(2)}</td>
+                                }
+                                {column.id == "unsold Lots" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{unsoldLotsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Base Price Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Traffic Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Closings Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month Since Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "min Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "sqft Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "price Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "month Net Sold" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{monthNetSoldResult.toFixed(2)}</td>
+                                }
+                                {column.id == "year Net Sold" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{yearNetSoldResult.toFixed(2)}</td>
+                                }
+                                {column.id == "open Since" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "avg Closing Price" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingPriceResult.toFixed(2)}</td>
+                                }
+                                {column.id == "permits This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "median Closing Price Since Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceSinceOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "median Closing Price This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "action" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                              </>
+                            ))}
+                          </tr>}
+                          {/* {!excelLoading &&
                           <tr>
                             <td></td>
                             <td></td>
@@ -4715,7 +5434,11 @@ const handleSortClose = () => setShowSort(false);
                             <td style={{textAlign: "center"}}>{yearNetSoldResult}</td>
                             <td></td>
                             <td></td>
-                          </tr>}
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>} */}
                           {BuilderList !== null && BuilderList.length > 0 ? (
                             BuilderList.map((element, index) => (
                               <tr
@@ -4932,16 +5655,16 @@ const handleSortClose = () => setShowSort(false);
                                     {column.id == "open Since" &&
                                     <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince}/></td>
                                   }
-                                    {column.id == "avg Closing Price" &&
+                                  {column.id == "avg Closing Price" &&
                                     <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price}/></td>
                                   }
-                                           {column.id == "permits This Year" &&
+                                  {column.id == "permits This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
                                   }
                                   {column.id == "median Closing Price Since Open" &&
                                     <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open}/></td>
                                   }
-                                {column.id == "median Closing Price This Year" &&
+                                  {column.id == "median Closing Price This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year}/></td>
                                   }
 
