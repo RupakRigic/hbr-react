@@ -6332,7 +6332,7 @@ const handleSortClose = () => setShowSort(false);
                           {SubdivisionDetails.name || "NA"}
                         </span><br />
                         <span className="fs-18">
-                          {SubdivisionDetails.builder.website || "NA"}
+                          {SubdivisionDetails.builder?.website || "NA"}
                         </span><br />
                       
                         <label className="fs-18" style={{marginTop: "10px"}}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
