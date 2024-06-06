@@ -6318,339 +6318,138 @@ const handleSortClose = () => setShowSort(false);
                   </TabList>
                 </Box>
                 <TabPanel value="1" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="row">
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Builder :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.builder &&
-                              SubdivisionDetails.builder.name !== undefined
-                                ? SubdivisionDetails.builder.name
-                                : "NA"}
-                            </span>
-                          </div>
+                  <div className="d-flex">
+
+                    <div style={{width: "60%"}}>
+
+                      <div style={{marginTop: "10px"}}>
+                        <span className="fw-bold fs-20">
+                          {SubdivisionDetails.builder && SubdivisionDetails.builder.name !== undefined
+                            ? SubdivisionDetails.builder.name
+                            : "NA"}
+                        </span><br />
+                        <span className="fw-bold fs-30">
+                          {SubdivisionDetails.name || "NA"}
+                        </span><br />
+                        <span className="fs-18">
+                          {SubdivisionDetails.builder.website || "NA"}
+                        </span><br />
+                      
+                        <label className="fs-18" style={{marginTop: "10px"}}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
+                        <label className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{SubdivisionDetails.product_type || "NA"}</span></label><br />
+                        <label className="fs-18"><b>OPEN SINCE:</b>&nbsp;<span>{SubdivisionDetails.opensince || "NA"}</span></label><br />
+                        <label className="fs-18"><b>AGE RESTRICTED:</b>&nbsp;
+                          <span className="fw-bold">
+                            {SubdivisionDetails.reporting === 0 && "No"}
+                            {SubdivisionDetails.reporting === 1 && "Yes"}
+                            {SubdivisionDetails.reporting === "" && "NA"}
+                          </span>
+                        </label><br />
+                        <label className="fs-18"><b>ALL SINGLE-STORY:</b>&nbsp;
+                          <span className="fw-bold">
+                            {SubdivisionDetails.reporting === 0 && "No"}
+                            {SubdivisionDetails.reporting === 1 && "Yes"}
+                            {SubdivisionDetails.reporting === "" && "NA"}
+                          </span>
+                        </label><br />
+                        <label className="fs-18"><b>GATED:</b>&nbsp;<span>{SubdivisionDetails.gated || "NA"}</span></label>
+
+                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "0px", marginBottom: "10px"}}></hr>
+
+                        <div className="d-flex" style={{marginTop: "5px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
+                          <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
                         </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Subdivision Code:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.subdivision_code || "NA"}
-                            </span>
-                          </div>
+                        <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{SubdivisionDetails.zipcode || "NA"}</span></label><br />
+                        <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{SubdivisionDetails.crossstreet || "NA"}</span></label><br />
+                        <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{SubdivisionDetails.juridiction || "NA"}</span></label>
+                        <div className="d-flex" style={{marginTop: "0px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>LATITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lat || "NA"}</span></div>
+                          <div className="fs-18"><span><b>LONGITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lng || "NA"}</span></div>
                         </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Name:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.name || "NA"}
-                            </span>
-                          </div>
+                        <label className="fs-18" style={{marginTop: "5px"}}><b>PARCEL:</b>&nbsp;<span>{SubdivisionDetails.parcel || "NA"}</span></label>
+
+                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "0px", marginBottom: "10px"}}></hr>
+
+                        <div className="d-flex" style={{marginTop: "5px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>TOTAL LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.totallots || "NA"}</span></div>
+                          <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.lotreleased || "NA"}</span></div>
                         </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Status :</label>
-                          <div>
-                            <span className="fw-bold">
-                              <span className="fw-bold">
-                                {SubdivisionDetails.status === 1 && "Active"}
-                                {SubdivisionDetails.status === 0 && "De-acitve"}
-                                {SubdivisionDetails.status === 2 && "Future"}
-                              </span>
-                            </span>
-                          </div>
+                        <div className="d-flex" style={{marginTop: "5px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsoldlots || "NA"}</span></div>
+                          <div className="fs-18"><span><b>STANDING INVENTORY:</b></span>&nbsp;<span>{SubdivisionDetails.stadinginventory || "NA"}</span></div>
+                        </div>
+                        <div className="d-flex" style={{marginTop: "5px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>LOT WIDTH:</b></span>&nbsp;<span>{SubdivisionDetails.lotwidth || "NA"}</span></div>
+                          <div className="fs-18"><span><b>LOT SIZE:</b></span>&nbsp;<span>{SubdivisionDetails.lotsize || "NA"}</span></div>
                         </div>
 
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Reporting :</label>
+                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "5px", marginBottom: "10px"}}></hr>
+
+                        <div className="d-flex" style={{marginTop: "5px"}}>
+                          <div className="fs-18" style={{width: "180px"}}><span><b>HOA FEE:</b></span>&nbsp;<span>{SubdivisionDetails.hoafee || "NA"}</span></div>
+                          <div className="fs-18"><span><b>MASTER PLAN FEE:</b></span>&nbsp;<span>{SubdivisionDetails.masterplanfee || "NA"}</span></div>
+                        </div>
+                        <label className="fs-18" style={{marginTop: "5px", marginBottom: "5px"}}><b>GAS PROVIDER:</b>&nbsp;<span>{SubdivisionDetails.gasprovider || "NA"}</span></label><br />
+                        <label className="fs-18"><b>ZONING:</b>&nbsp;<span>{SubdivisionDetails.zoning || "NA"}</span></label>
+
+                      </div>
+                    </div>
+
+                    <div style={{width: "40%"}}>
+
+                      <div className="d-flex" style={{marginTop: "10px"}}>
+                        <div style={{width: "50%"}}>
+                          <label className="fs-20" style={{marginBottom: "0px"}}><b>STATUS:</b></label>
                           <div>
-                            <span className="fw-bold">
+                            <span className="" style={{marginTop: "1px"}}>
+                              {SubdivisionDetails.status === 1 && "Active"}
+                              {SubdivisionDetails.status === 0 && "De-acitve"}
+                              {SubdivisionDetails.status === 2 && "Future"}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                        <label className="fs-20" style={{marginBottom: "0px"}}><b>REPORTING?:</b></label>
+                          <div>
+                            <span className="" style={{marginTop: "1px"}}>
                               {SubdivisionDetails.reporting === 1 && "Yes"}
                               {SubdivisionDetails.reporting === 0 && "No"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Product Type:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.product_type || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Phone:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.phone || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Open Since:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.opensince || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Age Restricted:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.reporting === 0 && "No"}
-                              {SubdivisionDetails.reporting === 1 && "Yes"}
-                              {SubdivisionDetails.reporting === "" && "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">All Single Story :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.reporting === 0 && "No"}
-                              {SubdivisionDetails.reporting === 1 && "Yes"}
-                              {SubdivisionDetails.reporting === "" && "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">First Permit Date:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.firstpermitdate || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Master Plan:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.masterplan_id || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Latitude:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lat || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Longitude:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lng || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Area:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.area || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Juridiction:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.juridiction || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Zip Code:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.zipcode || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Parcel:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.parcel || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Cross Street:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.crossstreet || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Total Lots :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.totallots || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Unsold Lots :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.unsoldlots || "NA"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Lot Width :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lotwidth || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Stading Inventory :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.stadinginventory || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Lot Size :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lotsize || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Permits :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.permits || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Net Sales :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.netsales || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Closing :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.closing || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Months Open:</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.monthsopen || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Gated :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.gated || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Sqft Group :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.sqftgroup || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Lot Released :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lotreleased || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Dollar Group :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lat || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Master Plan Fee :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.masterplanfee || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Last Weekly Data :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.lastweeklydata || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Date Added :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.dateadded || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Zoning :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.zoning || "NA"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-4 mt-4">
-                          <label className="">Gas Provider :</label>
-                          <div>
-                            <span className="fw-bold">
-                              {SubdivisionDetails.gasprovider || "NA"}
                             </span>
                           </div>
                         </div>
                       </div>
+
+                      <div>
+                        <label className="fs-20" style={{ marginBottom: "0px"}}><b>CURRENT AVG BASE ASKING $:</b></label>
+                        <div >
+                          <span className="">{<PriceComponent price={SubdivisionDetails.avg_base_price_active} /> || "NA"}</span>
+                        </div>
+                        <label className="fs-20"><b>CURRENT AVG SQFT:</b>&nbsp;<span style={{fontSize: "16px"}}>{SubdivisionDetails.avg_sqft_active || "NA"}</span></label>
+                      </div>
+
+                      <div style={{border : "1px solid black", marginTop: "10px"}}>
+                        <div style={{marginLeft: "5px"}}>
+                          <label className="fs-20" style={{marginBottom: "0px"}}><b>TOTAL SINCE OPEN:</b></label><br />
+                          <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{SubdivisionDetails.total_net_sales || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{SubdivisionDetails.total_permits || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;{SubdivisionDetails.total_closings || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_since_open || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;</label><br />
+                          <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_since_open}/> || "NA"}</label><br />
+
+                          <label className="fs-20" style={{marginBottom: "0px"}}><b>THIS YEAR:</b></label><br />
+                          <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{SubdivisionDetails.year_net_sold || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{SubdivisionDetails.permit_this_year || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;</label><br />
+                          <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year}/> || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
+                          <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;{SubdivisionDetails.avg_closings_per_month_this_year || "NA"}</label><br />
+                        </div>
+                      </div>
+
                     </div>
+
                   </div>
                 </TabPanel>
                 <TabPanel value="2" className="p-0">

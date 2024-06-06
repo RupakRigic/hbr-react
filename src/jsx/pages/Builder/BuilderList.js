@@ -3474,7 +3474,7 @@ const handleSortClose = () => setShowSort(false);
                               </div>
                             </div>
 
-                            <hr style={{borderTop:"2px solid black", width: "40%"}}></hr>
+                            <hr style={{borderTop:"2px solid black", width: "70%"}}></hr>
 
                             <label><b>COMPANY TYPE:</b> &nbsp; {BuilderDetails.company_type || "NA"}</label><br />
                             <label><b>STOCK MARKET:</b> &nbsp; {BuilderDetails.stock_market || "NA"}</label><br />
@@ -3488,7 +3488,7 @@ const handleSortClose = () => setShowSort(false);
                               </div>
                             </div>
 
-                            <hr style={{borderTop:"2px solid black", width: "40%"}}></hr>
+                            <hr style={{borderTop:"2px solid black", width: "70%"}}></hr>
 
                             <div>
                               <label style={{marginBottom: "0px"}}><b>CURRENT DIVISION PERSIDENT:</b></label><br />
