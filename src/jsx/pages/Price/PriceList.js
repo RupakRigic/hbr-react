@@ -658,6 +658,7 @@ const [filterQuery, setFilterQuery] = useState({
         try {
           let responseData = await AdminPriceService.import(inputData).json();
           setSelectedFile("");
+          console.log(responseData)
           document.getElementById("fileInput").value = null;
           setLoading(false);
           swal("Imported Sucessfully").then((willDelete) => {

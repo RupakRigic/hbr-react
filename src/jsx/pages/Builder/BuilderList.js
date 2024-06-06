@@ -793,6 +793,7 @@ const handleSortClose = () => setShowSort(false);
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
+          console.log(responseData)
           swal("Imported Sucessfully").then((willDelete) => {
             if (willDelete) {
               navigate("/builderlist");
