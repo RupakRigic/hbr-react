@@ -3423,26 +3423,169 @@ const handleSortClose = () => setShowSort(false);
                     </TabList>
                   </Box>
                   <TabPanel value="1" className="p-0">
-                    <div className="card">
-                      <div className="card-body p-0">
-                        <div className="mt-3">
-                          <label>Logo</label>
-                          <div className="dz-default dlab-message upload-img mb-3">
+                    {/* <div className="card"> */}
+                      {/* <div className="card-body p-0" style={{display: "flex", width: "100%"}}> */}
+                        <div className="d-flex">
+                          <div style={{width : "65%"}}>
+
+                          <div className="d-flex">
                             <div>
-                              {BuilderDetails.logo ? (
-                                <img
-                                  src={imageUrl + BuilderDetails.logo}
-                                  className="rounded-lg me-2"
-                                  width="70"
-                                  alt=""
-                                />
-                              ) : (
-                                "NA"
-                              )}
+                              <label>Logo</label>
+                              <div className="dz-default dlab-message upload-img mb-3">
+                                <div style={{width: "150px",height: "150px"}}>
+                                  {BuilderDetails.logo ? (
+                                    <img
+                                      src={imageUrl + BuilderDetails.logo}
+                                      className="rounded-lg me-2"
+                                      width="70"
+                                      alt=""
+                                    />
+                                  ) : (
+                                    "NA"
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="fw-bold" style={{fontSize: "30px",marginLeft: "0px"}}>
+                                {BuilderDetails.name || "NA"}
+                              </span>
+                              <br />
+                              <span style={{fontSize: "20px",marginLeft: "0px"}}>
+                                {BuilderDetails.website || "NA"}
+                              </span>
+                              <br />
+                              <span  style={{fontSize: "14px",marginLeft: "0px"}}>
+                                {BuilderDetails.email_address || "NA"}
+                              </span>
                             </div>
                           </div>
+
+                          <div className="d-block">
+                            <label><b>LV OFFICE PHONE:</b> &nbsp; {BuilderDetails.phone || "NA"}</label><br />
+                            <div className="d-flex">
+                              <div>
+                                <label><b>LV OFFICE ADDRESS:</b></label>
+                              </div>
+                              &nbsp;
+                              <div>
+                                <span>{BuilderDetails.officeaddress1 || "NA"}<br /> {BuilderDetails.city || "NA"}<br /> {BuilderDetails.zipcode || "NA"}</span>
+                              </div>
+                            </div>
+
+                            <hr style={{borderTop:"2px solid black", width: "40%"}}></hr>
+
+                            <label><b>COMPANY TYPE:</b> &nbsp; {BuilderDetails.company_type || "NA"}</label><br />
+                            <label><b>STOCK MARKET:</b> &nbsp; {BuilderDetails.stock_market || "NA"}</label><br />
+                            <label><b>STOCK SYMBOL:</b> &nbsp; {BuilderDetails.stock_symbol || "NA"}</label><br />
+                            <div>
+                              <label style={{marginBottom: "0px"}}><b>CORPORATE OFFICE:</b></label>
+                              <div style={{marginLeft: "30px"}}>
+                                <span>{BuilderDetails.coporate_officeaddress_1 || "NA"}</span><br />
+                                <span>{BuilderDetails.coporate_officeaddress_city || "NA"}, {BuilderDetails.coporate_officeaddress_2 || "NA"}</span><br />
+                                <span>{BuilderDetails.coporate_officeaddress_zipcode || "NA"}</span>
+                              </div>
+                            </div>
+
+                            <hr style={{borderTop:"2px solid black", width: "40%"}}></hr>
+
+                            <div>
+                              <label style={{marginBottom: "0px"}}><b>CURRENT DIVISION PERSIDENT:</b></label><br />
+                              <span style={{marginLeft: "15px"}}>{BuilderDetails.current_division_president || "NA"}</span>
+                            </div>
+                            <div style={{marginTop: "10px"}}>
+                              <label style={{marginBottom: "0px"}}><b>CURRENT LAND AQUISITIONS:</b></label><br />
+                              <span style={{marginLeft: "15px"}}>{BuilderDetails.current_land_aquisitions || "NA"}</span>
+                            </div>
+
+                          </div>
+                          </div>
+
+                          <div style={{width : "35%"}}>
+
+                            <div style={{textAlign: "center", fontSize: "20px"}}>
+                              <label style={{textAlign: "center", fontSize: "20px"}}><b><span>ACTIVE</span><br /><span style={{marginTop: "0px"}}>COMMUNITIES</span></b></label>
+                              <div style={{border : "1px solid black", width: "40px", marginLeft: "110px"}}>
+                                <span>{BuilderDetails.active_communities || "NA"}</span>
+                              </div>
+                            </div>
+
+                            <div style={{marginTop: "10px", width: "300px"}}>
+                              <label style={{fontSize: "18px"}}><b>CURRENT AVG BASE ASKING $:</b></label>
+                              <span style={{marginLeft: "100px"}}>$000,000</span>
+                            </div>
+
+                            <div style={{border : "1px solid black", marginTop: "10px"}}>
+                              <div style={{marginLeft: "5px"}}>
+                                <label style={{marginBottom: "0px"}}><b>THIS YEAR:</b></label><br />
+                                <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{BuilderDetails.net_sales_this_year || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{BuilderDetails.permits_this_year || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;{BuilderDetails.closing_this_year || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={BuilderDetails.median_closing_price_this_year} /> || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{BuilderDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;{BuilderDetails.avg_closings_per_month_this_year.toFixed(2) || "NA"}</label><br />
+
+                                <label style={{marginBottom: "0px"}}><b>LAST YEAR:</b></label><br />
+                                <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={BuilderDetails.median_closing_price_last_year}/> || "NA"}</label><br />
+
+                                <label style={{marginBottom: "0px"}}><b>TOTAL:</b></label><br />
+                                <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{BuilderDetails.total_net_sales || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{BuilderDetails.total_permits || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;{BuilderDetails.total_closings || "NA"}</label><br />
+                              </div>
+                            </div>
+
+                          </div>
                         </div>
-                        <div className="row">
+                        {/* <div style={{display: "flex",width: "70%",height: "30%"}}>
+                          <div className="mt-3" >
+                            <label>Logo</label>
+                            <div className="dz-default dlab-message upload-img mb-3">
+                              <div style={{width: "150px",height: "150px"}}>
+                                {BuilderDetails.logo ? (
+                                  <img
+                                    src={imageUrl + BuilderDetails.logo}
+                                    className="rounded-lg me-2"
+                                    width="70"
+                                    alt=""
+                                  />
+                                ) : (
+                                  "NA"
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="fw-bold" style={{fontSize: "30px",marginLeft: "0px"}}>
+                              {BuilderDetails.name || "NA"}
+                            </span>
+                            <br />
+                            <span style={{fontSize: "20px",marginLeft: "0px"}}>
+                              {BuilderDetails.website || "NA"}
+                            </span>
+                            <br />
+                            <span  style={{fontSize: "14px",marginLeft: "0px"}}>
+                              {BuilderDetails.email_address || "NA"}
+                            </span>
+                            <div className="">
+                            <label className="">Mobile:</label>
+                            <div>
+                              <span className="fw-bold">
+                                {BuilderDetails.phone || "NA"}
+                              </span>
+                            </div>
+                          </div>
+                          </div>
+                          <br />
+                          
+                        
+                        
+                          </div> */}
+                          
+                        
+                        
+                        
+                        {/* <div className="row">
                           <div className="col-xl-4 mt-4">
                             <label className="">Builder Code:</label>
                             <div>
@@ -3452,32 +3595,11 @@ const handleSortClose = () => setShowSort(false);
                             </div>
                           </div>
 
-                          <div className="col-xl-4 mt-4">
-                            <label className="">Name:</label>
-                            <div>
-                              <span className="fw-bold">
-                                {BuilderDetails.name || "NA"}
-                              </span>
-                            </div>
-                          </div>
+                      
 
-                          <div className="col-xl-4 mt-4">
-                            <label className="">Website:</label>
-                            <div>
-                              <span className="fw-bold">
-                                {BuilderDetails.website || "NA"}
-                              </span>
-                            </div>
-                          </div>
+                          
 
-                          <div className="col-xl-4 mt-4">
-                            <label className="">Mobile:</label>
-                            <div>
-                              <span className="fw-bold">
-                                {BuilderDetails.phone || "NA"}
-                              </span>
-                            </div>
-                          </div>
+                          
 
                           <div className="col-xl-4 mt-4">
                             <label className="">Fax:</label>
@@ -3646,9 +3768,12 @@ const handleSortClose = () => setShowSort(false);
                               </span>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </div>
+                        </div> */}
+                      {/* </div> */}
+                    {/* </div> */}
+                    {/* <div className="col-xl-4 mt-4">
+                      <label style={{fontSize: "16px", width: "100%"}}><b>LV OFFICE PHONE:</b> &nbsp;{BuilderDetails.phone || "NA"}</label>
+                    </div> */}
                   </TabPanel>
                   <TabPanel value="2" className="p-0">
                     <div className="card">
