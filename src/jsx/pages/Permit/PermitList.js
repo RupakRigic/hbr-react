@@ -1957,127 +1957,49 @@ const handleSelectSingleChange  = (selectedItems) => {
         </div>
         <div className="offcanvas-body">
           <div className="container-fluid">
-            <div className="row">
-              <div className="col-xl-4 mt-4">
-                <label className="">Subdivision:</label>
-                <div>
-                  {PermitDetails.subdivision !== null &&
-                  PermitDetails.subdivision.name !== undefined
-                    ? PermitDetails.subdivision.name
-                    : "NA"}
-                </div>
+            <div style={{marginTop: "10px"}}>
+              <span className="fw-bold" style={{fontSize: "22px"}}>
+                {PermitDetails.subdivision.builder?.name || "NA"}
+              </span><br />
+              <span className="fw-bold" style={{fontSize: "40px"}}>
+                {PermitDetails.subdivision !== null && PermitDetails.subdivision.name !== undefined
+                  ? PermitDetails.subdivision.name
+                  : "NA"
+                }
+              </span><br />
+              <label className="" style={{fontSize: "22px"}}><b>PRODUCT TYPE:</b>&nbsp;<span>{PermitDetails.subdivision?.product_type || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{PermitDetails.subdivision?.area || "NA"}</span></div>
+                <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{PermitDetails.subdivision?.masterplan_id || "NA"}</span></div>
+              </div>
+              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{PermitDetails.subdivision?.zipcode || "NA"}</span></label><br />
+              <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{PermitDetails.subdivision?.crossstreet || "NA"}</span></label><br />
+              <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{PermitDetails.subdivision?.juridiction || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>PARCEL:</b></span>&nbsp;<span>{PermitDetails.parcel || "NA"}</span></div>
+                <div className="fs-18"><span><b>LOT NUMBER:</b></span>&nbsp;<span>{PermitDetails.lotnumber || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>ADDRESS:</b></span>&nbsp;<span>{PermitDetails.address2 || "NA"} {PermitDetails.address1 || "NA"}</span></div>
+                <div className="fs-18"><span><b>SQFT:</b></span>&nbsp;<span>{PermitDetails.sqft || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>DATE:</b></span>&nbsp;<span>{<DateComponent date={PermitDetails.date} /> || "NA"}</span></div>
+                <div className="fs-18"><span><b>VALUE:</b></span>&nbsp;<span>{PermitDetails.value || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>CONTRACTOR:</b></span>&nbsp;<span>{PermitDetails.contractor || "NA"}</span></div>
+                <div className="fs-18"><span><b>PERMIT #:</b></span>&nbsp;<span>{PermitDetails.permitnumber || "NA"}</span></div>
               </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Parcel:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.parcel || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Contractor :</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.contractor || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Description:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.description || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Date:</label>
-                <div>
-                  <span className="fw-bold">
-                    <span className="fw-bold">
-                      {<DateComponent date={PermitDetails.date} /> || "NA"}
-                    </span>
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Date Added:</label>
-                <div>
-                  <span className="fw-bold">
-                    {<DateComponent date={PermitDetails.dateadded} /> || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Lot Number:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.lotnumber || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Owner:</label>
-                <div>
-                  <span className="fw-bold">{PermitDetails.owner || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Plan :</label>
-                <div>
-                  <span className="fw-bold">{PermitDetails.plan || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">SQFT:</label>
-                <div>
-                  <span className="fw-bold">{PermitDetails.sqft || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Value:</label>
-                <div>
-                  <span className="fw-bold">{PermitDetails.value || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Permit Number:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.permitnumber || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Address 1:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.address1 || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Address 2:</label>
-                <div>
-                  <span className="fw-bold">
-                    {PermitDetails.address2 || "NA"}
-                  </span>
-                </div>
-              </div>
+              <label className="fs-18"><b>OWNER:</b>&nbsp;<span>{PermitDetails.owner || "NA"}</span></label><br />
+              <label className="fs-18"><b>DESCRIPTION:</b>&nbsp;<span>{PermitDetails.description || "NA"}</span></label>
             </div>
           </div>
         </div>
