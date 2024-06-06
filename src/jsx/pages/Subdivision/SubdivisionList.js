@@ -1207,6 +1207,11 @@ const handleSortClose = () => setShowSort(false);
   }
   
   const applyFilters = () => {
+    if(AllBuilderListExport.length === 0){
+      setBuilderList(BuilderList);;
+      return;
+    }
+
     let filtered = AllBuilderListExport;
 
     const applyNumberFilter = (items, query, key) => {
@@ -1269,11 +1274,11 @@ const handleSortClose = () => setShowSort(false);
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
 
     if (isAnyFilterApplied && !normalFilter) {
-      setBuilderList(filtered);
+      setBuilderList(filtered.slice(0, 100));
       setFilter(true);
       setNormalFilter(false);
     } else {
-      setBuilderList(filtered.slice(0, 25));
+      setBuilderList(filtered.slice(0, 100));
       setCurrentPage(1);
       setFilter(false);
       setNormalFilter(false);
