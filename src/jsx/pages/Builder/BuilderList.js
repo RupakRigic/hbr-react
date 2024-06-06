@@ -3524,7 +3524,7 @@ const handleSortClose = () => setShowSort(false);
                                 <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;{BuilderDetails.closing_this_year || "NA"}</label><br />
                                 <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={BuilderDetails.median_closing_price_this_year} /> || "NA"}</label><br />
                                 <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{BuilderDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
-                                <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;{BuilderDetails.avg_closings_per_month_this_year.toFixed(2) || "NA"}</label><br />
+                                <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;{BuilderDetails.avg_closings_per_month_this_year || "NA"}</label><br />
 
                                 <label style={{marginBottom: "0px"}}><b>LAST YEAR:</b></label><br />
                                 <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={BuilderDetails.median_closing_price_last_year}/> || "NA"}</label><br />
