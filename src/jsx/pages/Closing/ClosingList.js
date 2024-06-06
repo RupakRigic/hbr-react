@@ -592,13 +592,26 @@ const ClosingList = () => {
           let responseData = await AdminClosingService.import(inputData).json();
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
+          console.log(responseData);
           setLoading(false);
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/subdivisionlist");
-              setShow(false);
+          if (responseData.message) {
+            let message = responseData.message;
+            if (responseData.failed_records > 0) {
+                const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+                message += ' Problematic Record Rows: ' + problematicRows+'.';
             }
-          });
+            message += ' Record Imported: ' + responseData.successful_records;
+            message += '. Failed Record Count: ' + responseData.failed_records;
+            message += '. Last Row: ' + responseData.last_processed_row;
+
+            swal(message).then((willDelete) => {
+                if (willDelete) {
+                    navigate("/closingsalelist");
+                }
+            });
+        } else {
+            swal('Error: ' + responseData.error);
+        }
           getClosingList();
         } catch (error) {
           if (error.name === "HTTPError") {

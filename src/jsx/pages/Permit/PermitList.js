@@ -659,11 +659,25 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         setSelectedFile(null);
         document.getElementById("fileInput").value = null;
         setLoading(false);
-        swal("Imported Successfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/builderlist");
+        if (response.message) {
+          console.log(response);
+          let message = response.message;
+          if (response.failed_records > 0) {
+              const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows+'.';
           }
-        });
+          message += ' Record Imported: ' + response.successful_records;
+          message += '. Failed Record Count: ' + response.failed_records;
+          message += '. Last Row: ' + response.last_processed_row;
+
+          swal(message).then((willDelete) => {
+              if (willDelete) {
+                  navigate("/productList");
+              }
+          });
+      } else {
+          swal('Error: ' + response.error);
+      }
         getbuilderlist();
       } catch (error) {
         let errorMessage = "An error occurred. Please try again.";
