@@ -39,6 +39,7 @@ import PriceUpdate from "./pages/Price/PriceUpdate";
 
 import BuilderUpdate from "./pages/Builder/BuilderUpdate";
 import GoogleMapLocator from "./pages/Subdivision/GoogleMapLocator";
+import CCAPNList from "./pages/CCAPN/CCAPNList";
 const allroutes = [
   // Dashboard
   { url: "", component: <Login /> },
@@ -144,6 +145,11 @@ const allroutes = [
   {
     url: "/google-map-locator",
     component: <GoogleMapLocator />,
+    allowedRoles: ["Admin", "User"],
+  },
+  {
+    url: "/ccapn",
+    component: <CCAPNList />,
     allowedRoles: ["Admin", "User"],
   },
 ];

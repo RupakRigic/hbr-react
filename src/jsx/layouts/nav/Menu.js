@@ -85,4 +85,9 @@ export const MenuList = [
         iconStyle: SVGICON.GridDots,
         to: '/weekly-data',
     },
+    {
+        title: 'CCAPNs',
+        iconStyle: SVGICON.GridDots,
+        to: '/ccapn',
+    },
 ]
