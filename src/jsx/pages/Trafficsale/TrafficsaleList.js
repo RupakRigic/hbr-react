@@ -113,7 +113,7 @@ const TrafficsaleList = () => {
   console.log(SubdivisionList);
 
   const getSubdivisionList = async () => {
-debugger
+
     try {
 
         let response = await AdminSubdevisionService.index()
@@ -763,6 +763,11 @@ const toCamelCase = (str) => {
 }
 
 const applyFilters = () => {
+  if(AllTrafficListExport.length === 0){
+    setTrafficsaleList(trafficsaleList);
+    return;
+  }
+
   let filtered = AllTrafficListExport;
 
   const applyNumberFilter = (items, query, key) => {

@@ -859,6 +859,11 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
   };
 
   const applyFilters = () => {
+    if(AllPermitListExport.length === 0){
+      setPermitList(permitList);
+      return;
+    }
+
     let filtered = AllPermitListExport;
 
     const applyDateRangeFilter = (items, startDateQuery, endDateQuery, key) => {

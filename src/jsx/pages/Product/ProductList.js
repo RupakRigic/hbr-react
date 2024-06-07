@@ -843,6 +843,10 @@ const HandleFilterForm = (e) =>
   }
 
   const applyFilters = () => {
+    if(AllProductListExport.length === 0){
+      setProductList(productList);
+      return;
+    }
     let filtered = AllProductListExport;
 
     const applyNumberFilter = (items, query, key) => {
