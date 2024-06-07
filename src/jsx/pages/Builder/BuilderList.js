@@ -917,6 +917,10 @@ const handleSortClose = () => setShowSort(false);
   }
 
   const applyFilters = () => {
+    if(AllBuilderListExport.length === 0){
+      setBuilderList(BuilderList);
+      return;
+    }
     let filtered = AllBuilderListExport;
 
     const applyNumberFilter = (items, query, key) => {

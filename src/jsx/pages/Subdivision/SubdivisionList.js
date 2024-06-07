@@ -1223,7 +1223,7 @@ const handleSortClose = () => setShowSort(false);
   
   const applyFilters = () => {
     if(AllBuilderListExport.length === 0){
-      setBuilderList(BuilderList);;
+      setBuilderList(BuilderList);
       return;
     }
 
