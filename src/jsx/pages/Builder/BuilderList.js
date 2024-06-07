@@ -2912,7 +2912,7 @@ const handleSortClose = () => setShowSort(false);
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
                                       }
                                       {column.id == "avg Closings Per Month This Year" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year.toFixed(2)}</td>
+                                        <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
                                       }
                                       {column.id == "total Closings" &&
                                         <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>

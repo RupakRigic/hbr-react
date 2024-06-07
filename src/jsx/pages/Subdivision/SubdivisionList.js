@@ -214,7 +214,10 @@ const handleSortClose = () => setShowSort(false);
   const [medianClosingPriceSinceOpenResult, setMedianClosingPriceSinceOpenResult] = useState(0);
   const [medianClosingPriceThisYearResult, setMedianClosingPriceThisYearResult] = useState(0);
 
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([{
+    label:'',
+    value:''
+  }]);
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [selectedReporting, setSelectedReporting] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
@@ -710,7 +713,7 @@ const handleSortClose = () => setShowSort(false);
       }
     }
   };
-  
+  console.log(selectedBuilderName);
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
@@ -718,7 +721,7 @@ const handleSortClose = () => setShowSort(false);
     } else {
       navigate("/");
     }
-  }, [currentPage]);
+  }, [currentPage,searchQuery]);
 
   async function fetchAllPages(searchQuery, sortConfig) {
     const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
@@ -791,6 +794,17 @@ const handleSortClose = () => setShowSort(false);
         value: builder.id,
       }));
       setBuilderListDropDown(formattedData);
+      if (formattedData.length > 0) {
+        setFilterQuery(prevState => ({
+          ...prevState,
+          builder_name: formattedData[0].label
+      }));
+
+      setSelectedBuilderName([{
+        label: formattedData[0].label,
+        value:formattedData[0].value
+      }]);
+      }
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -804,6 +818,7 @@ const handleSortClose = () => setShowSort(false);
     getbuilderDoplist();
   }, []);
 
+  console.log(filterQuery);
   const debouncedHandleSearch = useRef(
     debounce((value) => {
       setSearchQuery(value);
@@ -3526,6 +3541,7 @@ const handleSortClose = () => setShowSort(false);
   ];
 
   const handleSelectBuilderNameChange  = (selectedItems) => {  
+    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
     setSelectedValues(selectedValues);
@@ -3626,11 +3642,11 @@ const handleSortClose = () => setShowSort(false);
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Subdivision List</h4>
                       <div
-                        class="btn-group mx-5"
+                        class=" mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
-                        <button class="btn btn-secondary cursor-none">
+                        {/* <button class="btn btn-secondary cursor-none">
                           {" "}
                           <i class="fas fa-search"></i>
                         </button>
@@ -3642,7 +3658,20 @@ const handleSortClose = () => setShowSort(false);
                           }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
-                        />
+                        /> */}
+
+            
+                                      <Form.Group controlId="tournamentList">
+                                    <MultiSelect
+                                      name="builder_name"
+                                      options={builderListDropDown}
+                                      value={selectedBuilderName}
+                                      onChange={handleSelectBuilderNameChange }
+                                      placeholder={"Select Builder Name"} 
+                                    />
+                                  </Form.Group>
+
+                   
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -7046,39 +7075,6 @@ const handleSortClose = () => setShowSort(false);
                                     <option value="1">Yes</option>
                                     <option value="0">No</option>
                                   </select> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                {/* <label className="form-label">
-                                  BUILDER NAME:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-
-                                <input name="builder_name" className="form-control" value={filterQuery.builder_name} onChange={HandleFilter}/>
-                              */}
-                                <label className="form-label">
-                                BUILDER NAME:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <Form.Group controlId="tournamentList">
-                                    <MultiSelect
-                                      name="builder_name"
-                                      options={builderListDropDown}
-                                      value={selectedBuilderName}
-                                      onChange={handleSelectBuilderNameChange }
-                                      placeholder={"Select Builder Name"} 
-                                    />
-                                  </Form.Group>
-                                  {/* <Form.Group controlId="tournamentList">
-                          <Select
-                            options={builderListDropDown}
-                            onChange={HandleSelectChange}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
-                            value={builderListDropDown.name}
-                            name="builder_name"
-                          ></Select>
-                        </Form.Group> */}
-                             
                               </div>
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
