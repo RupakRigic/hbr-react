@@ -138,7 +138,7 @@ const CCAPNList = () => {
                     console.log(responseData)
                     swal("Imported Sucessfully").then((willDelete) => {
                         if (willDelete) {
-                            navigate("/builderlist");
+                            navigate("/ccapn");
                             setShow(false);
                         }
                     });
