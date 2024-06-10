@@ -17,6 +17,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Hidden } from "@mui/material";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const BuilderTable = () => {
   const [Error, setError] = useState("");
@@ -30,6 +31,7 @@ const BuilderTable = () => {
   const records = reportList.slice(firstIndex, lastIndex);
   const npage = Math.ceil(reportList.length / recordsPage);
   const number = [...Array(npage + 1).keys()].slice(1);
+  const [isLoading, setIsLoading] = useState(false);
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -115,6 +117,7 @@ const BuilderTable = () => {
     }
   }, []);
   const handlePreview = async (e) => {
+    setIsLoading(true);
     localStorage.setItem("start_date", startDate);
     localStorage.setItem("end_date", endDate);
     localStorage.setItem("report_type", reportType);
@@ -139,6 +142,7 @@ const BuilderTable = () => {
           },
         }
       );
+      setIsLoading(false);
       handlePdfResponse(response);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -598,7 +602,11 @@ const BuilderTable = () => {
             </Box>
           </div>
           <div className="col-xl-6 mt-5">
-            {pdfUrl && (
+          {isLoading ? (
+              <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "35%"}}>
+                  <ClipLoader color="#4474fc" />
+              </div>
+          ) : (
               <embed
                 src={pdfUrl}
                 type="application/pdf"

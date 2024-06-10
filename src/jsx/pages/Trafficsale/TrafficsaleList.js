@@ -25,7 +25,14 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import { MultiSelect } from "react-multi-select-component";
 
 const TrafficsaleList = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
   const [excelLoading, setExcelLoading] = useState(true);
+  const [selectedFileError, setSelectedFileError] = useState("");
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -859,6 +866,70 @@ const handleSelectSingleChange  = (selectedItems) => {
 }));
 };
 
+const handleFileChange = async (e) => {
+  setSelectedFile(e.target.files[0]);
+};
+const handleUploadClick = async () => {
+  const file = selectedFile;
+  console.log(file);
+  if (file && file.type === "text/csv") {
+    setLoading(true);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = async () => {
+      var iFile = fileReader.result;
+      setSelectedFile(iFile);
+      console.log(iFile);
+      const inputData = {
+        csv: iFile,
+      };
+      try {
+        let responseData = await AdminTrafficsaleService.import(inputData).json();
+        setSelectedFile("");
+        document.getElementById("fileInput").value = null;
+        console.log(responseData);
+        setLoading(false);
+        if (responseData.message) {
+          let message = responseData.message;
+          if (responseData.failed_records > 0) {
+              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows+'.';
+          }
+          message += ' Record Imported: ' + responseData.successful_records;
+          message += '. Failed Record Count: ' + responseData.failed_records;
+          message += '. Last Row: ' + responseData.last_processed_row;
+
+          swal(message).then((willDelete) => {
+              if (willDelete) {
+                  navigate("/trafficsalelist");
+              }
+          });
+      } else {
+          swal('Error: ' + responseData.error);
+      }
+        gettrafficsaleList();
+      } catch (error) {
+        if (error.name === "HTTPError") {
+          const errorJson = error.response.json();
+          setSelectedFile("");
+          setError(errorJson.message);
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
+        }
+      }
+    };
+
+    setSelectedFileError("");
+  } else {
+    setSelectedFile("");
+    setSelectedFileError("Please select a CSV file.");
+  }
+};
+
+const handlBuilderClick = (e) => {
+  setShow(true);
+};
+
   return (
     <>
       <MainPagetitle
@@ -910,6 +981,13 @@ const handleSelectSingleChange  = (selectedItems) => {
                     <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                       Set Columns Order
                     </button>
+                    <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={handlBuilderClick}
+                      >
+                        Import
+                      </Button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
@@ -2065,6 +2143,31 @@ const handleSelectSingleChange  = (selectedItems) => {
             onClick={handleRemoveSelected}
           >
            Clear Sort
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Import Weekly Traffic & Sales CSV Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mt-3">
+            <input type="file" id="fileInput" onChange={handleFileChange} />
+          </div>
+          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
+            {selectedFileError}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleUploadClick}
+            disabled={loading}
+          >
+            {loading ? "Loading.." : "Import"}
           </Button>
         </Modal.Footer>
       </Modal>

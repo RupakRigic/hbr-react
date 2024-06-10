@@ -7,6 +7,8 @@ import swal from "sweetalert";
 import AdminCCAPNService from '../../../API/Services/AdminService/AdminCCAPNService';
 import AccessField from '../../components/AccssFieldComponent/AccessFiled';
 import Modal from "react-bootstrap/Modal";
+import axios from "axios";
+
 
 const CCAPNList = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +34,7 @@ const CCAPNList = () => {
         return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
     };
 
-    const GetCCAPNList = async (currentPage) => {
-        debugger
+    const GetCCAPNList = async (pageNumber) => {
         try {
 
             let sortConfigString = "";
@@ -41,7 +42,11 @@ const CCAPNList = () => {
                 sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
             }
 
-            const response = await AdminCCAPNService.index(currentPage, sortConfigString, searchQuery);
+            const response = await AdminCCAPNService.index(
+                pageNumber,
+                searchQuery,
+                sortConfigString
+            );
             const responseData = await response.json();
 
             setCCAPNList(responseData.data);
@@ -99,7 +104,7 @@ const CCAPNList = () => {
         }
     };
 
-    useEffect((currentPage) => {
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetCCAPNList(currentPage);
         } else {
@@ -115,34 +120,42 @@ const CCAPNList = () => {
         setSelectedFile(e.target.files[0]);
     };
 
+    const CHUNK_SIZE = 2 * 1024 * 1024;
+
     const handleUploadClick = async () => {
         const file = selectedFile;
 
         if (file && file.type === "text/csv") {
             setIsLoading(true);
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-            fileReader.onload = async () => {
-                var iFile = fileReader.result;
-                setSelectedFile(iFile);
-                console.log(iFile);
-                const inputData = {
-                    csv: iFile,
-                };
-                console.log(inputData);
+            setSelectedFileError("");
+
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            let currentChunk = 0;
+
+            while (currentChunk < totalChunks) {
+                const start = currentChunk * CHUNK_SIZE;
+                const end = Math.min(file.size, start + CHUNK_SIZE);
+                const fileChunk = file.slice(start, end);
+
+                const formData = new FormData();
+                formData.append("chunk", fileChunk);
+                formData.append("chunkIndex", currentChunk);
+                formData.append("totalChunks", totalChunks);
+                formData.append("fileName", file.name);
+
                 try {
-                    let responseData = await AdminCCAPNService.import(inputData).json();
-                    setSelectedFile("");
-                    document.getElementById("fileInput").value = null;
-                    setIsLoading(false);
-                    console.log(responseData)
-                    swal("Imported Sucessfully").then((willDelete) => {
-                        if (willDelete) {
-                            navigate("/builderlist");
-                            setShow(false);
+                    const response = await axios.post(`${process.env.REACT_APP_IMAGE_URL}api/admin/ccapn/import`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${JSON.parse(localStorage.getItem("usertoken"))}`,
                         }
                     });
-                    GetCCAPNList();
+                    if (response.status !== 200) {
+                        throw new Error('HTTPError');
+                    }
+
+                    currentChunk++;
+                    console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
                 } catch (error) {
                     if (error.name === "HTTPError") {
                         const errorJson = error.response.json();
@@ -154,7 +167,16 @@ const CCAPNList = () => {
                 }
             };
 
-            setSelectedFileError("");
+            setSelectedFile("");
+            document.getElementById("fileInput").value = null;
+            setIsLoading(false);
+            swal("Imported Successfully").then((willDelete) => {
+                if (willDelete) {
+                    navigate("/ccapn");
+                    setShow(false);
+                }
+            });
+            GetCCAPNList();
         } else {
             setSelectedFile("");
             setSelectedFileError("Please select a CSV file.");
@@ -266,29 +288,16 @@ const CCAPNList = () => {
                                                 <thead>
                                                     <tr style={{ textAlign: "center" }}>
                                                         <th><strong>No.</strong></th>
-                                                        <th><strong>PARCEL</strong></th>
-                                                        <th><strong>LOC_STRDIR</strong></th>
-                                                        <th><strong>LOC_STRNO</strong></th>
-                                                        <th><strong>LOC_STRNAME</strong></th>
-                                                        <th><strong>LOC_STRTYPE</strong></th>
-                                                        <th><strong>LOC_STRUNIT</strong></th>
-                                                        <th><strong>LOC_CITY</strong></th>
-                                                        <th><strong>LOC_STRFRAC</strong></th>
-                                                        <th><strong>ADTYPE</strong></th>
-                                                        <th><strong>ADFILE</strong></th>
-                                                        <th><strong>ADPAGE</strong></th>
-                                                        <th><strong>ADPART</strong></th>
-                                                        <th><strong>ADBLKCD</strong></th>
-                                                        <th><strong>ADBLK</strong></th>
-                                                        <th><strong>ADLOTCD</strong></th>
-                                                        <th><strong>ADLOT</strong></th>
-                                                        <th><strong>SECTNO</strong></th>
-                                                        <th><strong>TOWNSHIP</strong></th>
-                                                        <th><strong>RANGE</strong></th>
-                                                        <th><strong>SUBNAME</strong></th>
-                                                        <th><strong>ll_x</strong></th>
-                                                        <th><strong>ll_y</strong></th>
-
+                                                        <th><strong>Parcel Number</strong></th>
+                                                        <th><strong>Full Address</strong></th>
+                                                        <th><strong>Latitude</strong></th>
+                                                        <th><strong>Longitude</strong></th>
+                                                        <th><strong>Sub ID</strong></th>
+                                                        <th><strong>Subdivision</strong></th>
+                                                        <th><strong>Builder</strong></th>
+                                                        <th><strong>Permits</strong></th>
+                                                        <th><strong>Closings</strong></th>
+                                                        <th><strong>Modification Date</strong></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody style={{ textAlign: "center" }}>
@@ -297,33 +306,20 @@ const CCAPNList = () => {
                                                             <tr style={{ textAlign: "center" }}>
                                                                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                                                                 <td style={{ textAlign: "center" }}>{element.parcel}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strdir}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strno}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strname}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strtype}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strunit}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_city}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.loc_strfrac}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adtype}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adfile}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adpage}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adpart}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adblkcd}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adblk}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adlotcd}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.adlot}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.sectno}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.township}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.range}</td>
-                                                                <td style={{ textAlign: "center" }}>{element.subname}</td>
+                                                                <td style={{ textAlign: "center" }}>-</td>
                                                                 <td style={{ textAlign: "center" }}>{element.ll_x}</td>
                                                                 <td style={{ textAlign: "center" }}>{element.ll_y}</td>
-
+                                                                <td style={{ textAlign: "center" }}>-</td>
+                                                                <td style={{ textAlign: "center" }}>{element.subname}</td>
+                                                                <td style={{ textAlign: "center" }}>-</td>
+                                                                <td style={{ textAlign: "center" }}>-</td>
+                                                                <td style={{ textAlign: "center" }}>-</td>
+                                                                <td style={{ textAlign: "center" }}>-</td>
                                                             </tr>
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="7" style={{ textAlign: "center" }}>
+                                                            <td colSpan="11" style={{ textAlign: "left" }}>
                                                                 No data found
                                                             </td>
                                                         </tr>
@@ -339,8 +335,8 @@ const CCAPNList = () => {
                 </div>
             </div>
 
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
+            <Modal show={show} >
+                <Modal.Header closeButton onHide={handleClose}>
                     <Modal.Title>Import CCAPNs CSV Data</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
