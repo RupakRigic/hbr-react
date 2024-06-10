@@ -145,10 +145,12 @@ const BuilderTable = () => {
       setIsLoading(false);
       handlePdfResponse(response);
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
+      setError("Something went wrong");
     }
   };
 
@@ -606,6 +608,10 @@ const BuilderTable = () => {
               <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "35%"}}>
                   <ClipLoader color="#4474fc" />
               </div>
+          ) : (!isLoading && Error !== "" ? (
+            <div style={{textAlign: "center",marginTop: "30%", fontSize: "60px", color: "black"}}>
+              <i class="bi bi-exclamation-octagon" />
+            </div>
           ) : (
               <embed
                 src={pdfUrl}
@@ -613,7 +619,7 @@ const BuilderTable = () => {
                 width="600"
                 height="470"
               />
-            )}
+            ))}
           </div>
         </div>
       </div>

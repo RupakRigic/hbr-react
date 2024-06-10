@@ -28,13 +28,18 @@ const CCAPNList = () => {
     const [show, setShow] = useState(false);
     const [selectedFile, setSelectedFile] = useState("");
     const [selectedFileError, setSelectedFileError] = useState("");
-    const handleClose = () => setShow(false);
+
+    const handleClose = () => {
+        setShow(false);
+        GetCCAPNList();
+    }
 
     const stringifySortConfig = (sortConfig) => {
         return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
     };
 
     const GetCCAPNList = async (pageNumber) => {
+        setIsLoading(true);
         try {
 
             let sortConfigString = "";
@@ -49,19 +54,21 @@ const CCAPNList = () => {
             );
             const responseData = await response.json();
 
+            setIsLoading(false);
             setCCAPNList(responseData.data);
             setNpage(Math.ceil(responseData.total / recordsPage));
             setFileListCount(responseData.total);
-            setIsLoading(false);
 
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            setIsLoading(false);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
 
                 setError(errorJson.message);
             }
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -156,6 +163,7 @@ const CCAPNList = () => {
 
                     currentChunk++;
                     console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
+                    setIsLoading(false);
                 } catch (error) {
                     if (error.name === "HTTPError") {
                         const errorJson = error.response.json();
