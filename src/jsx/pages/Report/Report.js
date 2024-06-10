@@ -444,6 +444,7 @@ const BuilderTable = () => {
                                   className="form-control-select"
                                 >
                                   <option>List of Active New Home Builders</option>
+                                  <option>Active Adult Activity Report</option>
                                   <option>Annual Report</option>
                                   <option>Area Summaries Report</option>
                                   <option>Closing Report(PDF) </option>
@@ -557,6 +558,7 @@ const BuilderTable = () => {
                               >
                                 <option>List of Active New Home Builders</option>
                                 <option>Annual Report</option>
+                                <option>Active Adult Activity Report</option>
                                 <option>Area Summaries Report</option>
                                 <option>Closing Report(PDF) </option>
                                 <option>Closing Report(XLS) </option>
