@@ -32,8 +32,7 @@ const CCAPNList = () => {
         return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
     };
 
-    const GetCCAPNList = async (currentPage) => {
-        debugger
+    const GetCCAPNList = async (pageNumber) => {
         try {
 
             let sortConfigString = "";
@@ -41,7 +40,11 @@ const CCAPNList = () => {
                 sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
             }
 
-            const response = await AdminCCAPNService.index(currentPage, sortConfigString, searchQuery);
+            const response = await AdminCCAPNService.index(
+                pageNumber, 
+                searchQuery,
+                sortConfigString
+            );
             const responseData = await response.json();
 
             setCCAPNList(responseData.data);
@@ -99,7 +102,7 @@ const CCAPNList = () => {
         }
     };
 
-    useEffect((currentPage) => {
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetCCAPNList(currentPage);
         } else {
