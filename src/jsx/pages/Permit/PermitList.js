@@ -659,24 +659,26 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         setSelectedFile(null);
         document.getElementById("fileInput").value = null;
         setLoading(false);
-        if (response.message) {
+        if (response.data) {
           console.log(response);
-          let message = response.message;
-          if (response.failed_records > 0) {
-              const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+          let message = response.data.message;
+          if (response.data.failed_records > 0) {
+              const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
               message += ' Problematic Record Rows: ' + problematicRows+'.';
           }
-          message += ' Record Imported: ' + response.successful_records;
-          message += '. Failed Record Count: ' + response.failed_records;
-          message += '. Last Row: ' + response.last_processed_row;
+          message += '. Record Imported: ' + response.data.successful_records;
+          message += '. Failed Record Count: ' + response.data.failed_records;
+          message += '. Last Row: ' + response.data.last_processed_row;
 
           swal(message).then((willDelete) => {
               if (willDelete) {
                   navigate("/productList");
+                  setShow(false);
               }
           });
       } else {
           swal('Error: ' + response.error);
+          setShow(false);
       }
         getbuilderlist();
       } catch (error) {

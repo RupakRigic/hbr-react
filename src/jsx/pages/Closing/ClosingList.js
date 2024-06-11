@@ -594,15 +594,15 @@ const ClosingList = () => {
           document.getElementById("fileInput").value = null;
           console.log(responseData);
           setLoading(false);
-          if (responseData.message) {
-            let message = responseData.message;
-            if (responseData.failed_records > 0) {
-                const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+          if (responseData.data) {
+            let message = responseData.data.message;
+            if (responseData.data.failed_records > 0) {
+                const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
                 message += ' Problematic Record Rows: ' + problematicRows+'.';
             }
-            message += ' Record Imported: ' + responseData.successful_records;
-            message += '. Failed Record Count: ' + responseData.failed_records;
-            message += '. Last Row: ' + responseData.last_processed_row;
+            message += '. Record Imported: ' + responseData.data.successful_records;
+            message += '. Failed Record Count: ' + responseData.data.failed_records;
+            message += '. Last Row: ' + responseData.data.last_processed_row;
 
             swal(message).then((willDelete) => {
                 if (willDelete) {

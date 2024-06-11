@@ -167,14 +167,14 @@ const CCAPNList = () => {
                     document.getElementById("fileInput").value = null;
                     setIsLoading(false);
 
-                    if (response.data.message) {
+                    if (response.data) {
                         console.log(response.data);
                         let message = response.data.message;
                         if (response.data.failed_records > 0) {
                             const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
                             message += ' Problematic Record Rows: ' + problematicRows+'.';
                         }
-                        message += ' Record Imported: ' + response.data.successful_records;
+                        message += '. Record Imported: ' + response.data.successful_records;
                         message += '. Failed Record Count: ' + response.data.failed_records;
                         message += '. Last Row: ' + response.data.last_processed_row;
                         swal(message).then((willDelete) => {
