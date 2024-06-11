@@ -762,10 +762,12 @@ const handleUploadClick = async () => {
           swal(message).then((willDelete) => {
               if (willDelete) {
                   navigate("/productList");
+                  setShow(false);
               }
           });
       } else {
           swal('Error: ' + responseData.error);
+          setShow(false);
       }
         getbuilderlist();
       } catch (error) {

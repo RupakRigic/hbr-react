@@ -163,7 +163,35 @@ const CCAPNList = () => {
 
                     currentChunk++;
                     console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
+                    setSelectedFile("");
+                    document.getElementById("fileInput").value = null;
                     setIsLoading(false);
+
+                    if (response.data.message) {
+                        console.log(response.data);
+                        let message = response.data.message;
+                        if (response.data.failed_records > 0) {
+                            const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+                            message += ' Problematic Record Rows: ' + problematicRows+'.';
+                        }
+                        message += ' Record Imported: ' + response.data.successful_records;
+                        message += '. Failed Record Count: ' + response.data.failed_records;
+                        message += '. Last Row: ' + response.data.last_processed_row;
+                        swal(message).then((willDelete) => {
+                            if (willDelete) {
+                                navigate("/ccapn");
+                                setShow(false);
+                            }
+                        });
+                    } else {
+                        swal('Error: ' + response.error).then((willDelete) => {
+                            if (willDelete) {
+                                navigate("/ccapn");
+                                setShow(false);
+                            }
+                        });
+                    }
+                    GetCCAPNList();
                 } catch (error) {
                     if (error.name === "HTTPError") {
                         const errorJson = error.response.json();
@@ -171,20 +199,16 @@ const CCAPNList = () => {
                         setError(errorJson.message);
                         document.getElementById("fileInput").value = null;
                         setIsLoading(false);
+                    } else {
+                        swal('Error: ' + error.name).then((willDelete) => {
+                            if (willDelete) {
+                                navigate("/ccapn");
+                                setShow(false);
+                            }
+                        });
                     }
                 }
             };
-
-            setSelectedFile("");
-            document.getElementById("fileInput").value = null;
-            setIsLoading(false);
-            swal("Imported Successfully").then((willDelete) => {
-                if (willDelete) {
-                    navigate("/ccapn");
-                    setShow(false);
-                }
-            });
-            GetCCAPNList();
         } else {
             setSelectedFile("");
             setSelectedFileError("Please select a CSV file.");

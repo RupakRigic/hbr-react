@@ -1691,7 +1691,7 @@ const handleSelectSingleChange  = (selectedItems) => {
       />
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Permit CSV Data</Modal.Title>
+          <Modal.Title>Import Closings CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">

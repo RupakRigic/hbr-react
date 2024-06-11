@@ -793,13 +793,26 @@ const handleSortClose = () => setShowSort(false);
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          console.log(responseData)
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/builderlist");
-              setShow(false);
+          if (responseData.message) {
+            console.log(responseData);
+            let message = responseData.message;
+            if (responseData.failed_records > 0) {
+              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+                message += ' Problematic Record Rows: ' + problematicRows+'.';
             }
-          });
+            message += ' Record Imported: ' + responseData.successful_records;
+            message += '. Failed Record Count: ' + responseData.failed_records;
+            message += '. Last Row: ' + responseData.last_processed_row;
+            
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                navigate("/builderlist");
+                setShow(false);
+              }
+            });
+          } else {
+            swal('Error: ' + responseData.error);
+          }
           getbuilderlist();
         } catch (error) {
           if (error.name === "HTTPError") {
@@ -3327,7 +3340,7 @@ const handleSortClose = () => setShowSort(false);
       )}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Permit CSV Data</Modal.Title>
+          <Modal.Title>Import Builder CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">
