@@ -1146,12 +1146,27 @@ const handleSortClose = () => setShowSort(false);
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          swal("Imported Sucessfully").then((willDelete) => {
-            if (willDelete) {
-              navigate("/subdivisionlist");
-              setShow(false);
+          if (responseData.data) {
+            console.log(responseData);
+            let message = responseData.data.message;
+            if (responseData.data.failed_records > 0) {
+                const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
+                message += ' Problematic Record Rows: ' + problematicRows+'.';
             }
-          });
+            message += '. Record Imported: ' + responseData.data.successful_records;
+            message += '. Failed Record Count: ' + responseData.data.failed_records;
+            message += '. Last Row: ' + responseData.data.last_processed_row;
+            
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                navigate("/subdivisionlist");
+                setShow(false);
+              }
+            });
+          } else {
+            swal('Error: ' + responseData.error);
+            setShow(false);
+          }
           getbuilderlist();
         } catch (error) {
         
@@ -6251,7 +6266,7 @@ const handleSortClose = () => setShowSort(false);
       
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Permit CSV Data</Modal.Title>
+          <Modal.Title>Import Subdivision CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">
