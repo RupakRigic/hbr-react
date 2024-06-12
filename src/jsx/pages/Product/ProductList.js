@@ -878,7 +878,7 @@ const HandleFilterForm = (e) =>
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_last_12_Month, 'price_changes_last_12_Month');
     
-    setProductList(filtered);
+    setProductList(filtered.slice(0, 100));
   };
   
   useEffect(() => {

@@ -31,7 +31,7 @@ const CCAPNList = () => {
 
     const handleClose = () => {
         setShow(false);
-        GetCCAPNList();
+        // GetCCAPNList();
     }
 
     const stringifySortConfig = (sortConfig) => {
