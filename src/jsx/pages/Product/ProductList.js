@@ -744,25 +744,25 @@ const handleUploadClick = async () => {
     fileReader.onload = async () => {
       var iFile = fileReader.result;
       setSelectedFile(iFile);
-      console.log(iFile);
       const inputData = {
         csv: iFile,
       };
+      console.log(inputData);
       try {
         let responseData = await AdminProductService.import(inputData).json();
         setSelectedFile("");
         document.getElementById("fileInput").value = null;
         setLoading(false);
-        if (responseData.data) {
+        if (responseData.message) {
           console.log(responseData);
-          let message = responseData.data.message;
-          if (responseData.data.failed_records > 0) {
-              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
+          let message = responseData.message;
+          if (responseData.failed_records > 0) {
+              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
               message += ' Problematic Record Rows: ' + problematicRows+'.';
           }
-          message += '. Record Imported: ' + responseData.data.successful_records;
-          message += '. Failed Record Count: ' + responseData.data.failed_records;
-          message += '. Last Row: ' + responseData.data.last_processed_row;
+          message += '. Record Imported: ' + responseData.successful_records;
+          message += '. Failed Record Count: ' + responseData.failed_records;
+          message += '. Last Row: ' + responseData.last_processed_row;
 
           swal(message).then((willDelete) => {
               if (willDelete) {
@@ -771,7 +771,8 @@ const handleUploadClick = async () => {
               }
           });
       } else {
-          swal('Error: ' + responseData.error);
+        console.log(responseData);
+          swal('Error: ' + responseData);
           setShow(false);
       }
         getbuilderlist();
@@ -883,7 +884,7 @@ const HandleFilterForm = (e) =>
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQuery.price_changes_last_12_Month, 'price_changes_last_12_Month');
     
-    setProductList(filtered);
+    setProductList(filtered.slice(0, 100));
   };
   
   useEffect(() => {
@@ -1024,10 +1025,10 @@ const HandleFilterForm = (e) =>
                         role="group"
                         aria-label="Basic example"
                       >
-                        <button class="btn btn-secondary cursor-none">
+                        {/* <button class="btn btn-secondary cursor-none">
                           {" "}
                           <i class="fas fa-search"></i>
-                        </button>
+                        </button> */}
                         {/* <Form.Control
                           type="text"
                           style={{

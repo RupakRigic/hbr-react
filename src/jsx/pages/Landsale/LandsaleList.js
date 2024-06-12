@@ -811,10 +811,10 @@ useEffect(() => {
                         role="group"
                         aria-label="Basic example"
                       >
-                        <button class="btn btn-secondary cursor-none">
+                        {/* <button class="btn btn-secondary cursor-none">
                           {" "}
                           <i class="fas fa-search"></i>{" "}
-                        </button>
+                        </button> */}
                         {/* <Form.Control
                           type="text"
                           style={{

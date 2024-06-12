@@ -567,7 +567,7 @@ const handleSortClose = () => setShowSort(false);
             mappedRow[header] = row.sqft_group;
             break;
           case 'Price Group':
-            mappedRow[header] = row.price_group;
+            mappedRow[header] = row.price_group.group;
             break;
           case 'Month Net Sold':
             mappedRow[header] = row.month_net_sold;
@@ -5703,7 +5703,7 @@ const handleSortClose = () => setShowSort(false);
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
                                   }
                                   {column.id == "price Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.price_group}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.price_group.group}</td>
                                   }
                                   {column.id == "month Net Sold" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
