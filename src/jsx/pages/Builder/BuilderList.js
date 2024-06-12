@@ -774,36 +774,53 @@ const handleSortClose = () => setShowSort(false);
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
+
+  const CHUNK_SIZE = 2 * 1024 * 1024;
+
   const handleUploadClick = async () => {
     const file = selectedFile;
 
     if (file && file.type === "text/csv") {
-      setLoading(true);
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = async () => {
-        var iFile = fileReader.result;
-        setSelectedFile(iFile);
-        console.log(iFile);
-        const inputData = {
-          csv: iFile,
-        };
+      setIsLoading(true);
+      setSelectedFileError("");
+
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      let currentChunk = 0;
+
+      while (currentChunk < totalChunks) {
+        const start = currentChunk * CHUNK_SIZE;
+        const end = Math.min(file.size, start + CHUNK_SIZE);
+        const fileChunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", fileChunk);
+        formData.append("chunkIndex", currentChunk);
+        formData.append("totalChunks", totalChunks);
+        formData.append("fileName", file.name);
+
         try {
-          let responseData = await AdminBuilderService.import(inputData).json();
+          const response = await AdminBuilderService.import(formData);
+         
+          if (response.status !== 200) {
+            throw new Error('HTTPError');
+          }
+
+          currentChunk++;
+          console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
-          setLoading(false);
-          if (responseData.data) {
-            console.log(responseData);
-            let message = responseData.data.message;
-            if (responseData.data.failed_records > 0) {
-              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-                message += ' Problematic Record Rows: ' + problematicRows+'.';
+          setIsLoading(false);
+
+          if (response.data) {
+            console.log(response.data);
+            let message = response.data.message;
+            if (response.data.failed_records > 0) {
+              const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
             }
-            message += '. Record Imported: ' + responseData.data.successful_records;
-            message += '. Failed Record Count: ' + responseData.data.failed_records;
-            message += '. Last Row: ' + responseData.data.last_processed_row;
-            
+            message += '. Record Imported: ' + response.data.successful_records;
+            message += '. Failed Record Count: ' + response.data.failed_records;
+            message += '. Last Row: ' + response.data.last_processed_row;
             swal(message).then((willDelete) => {
               if (willDelete) {
                 navigate("/builderlist");
@@ -811,8 +828,12 @@ const handleSortClose = () => setShowSort(false);
               }
             });
           } else {
-            swal('Error: ' + responseData.error);
-            setShow(false);
+            swal('Error: ' + response.data.error).then((willDelete) => {
+              if (willDelete) {
+                navigate("/builderlist");
+                setShow(false);
+              }
+            });
           }
           getbuilderlist();
         } catch (error) {
@@ -821,17 +842,23 @@ const handleSortClose = () => setShowSort(false);
             setSelectedFile("");
             setError(errorJson.message);
             document.getElementById("fileInput").value = null;
-            setLoading(false);
+            setIsLoading(false);
+          } else {
+            swal('Error: ' + error.name).then((willDelete) => {
+              if (willDelete) {
+                navigate("/builderlist");
+                setShow(false);
+              }
+            });
           }
         }
       };
-
-      setSelectedFileError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
     }
   };
+
   const [items, setItems] = useState(['Item 1', 'Item 2', 'Item 3']);
   const [colSeq, setcolSeq] = useState(["Logo","Website", "Builder Name", "Company Type","LV office Phone", "LV office Email","LV office address", "LV office City", "LV office Zip","Current Division President","Current Land Acquisitions","Corporate Office Address 1","Corporate Office City","Corporate Office State", "Corporate Office Zip","Stock Market", "Stock Symbol","Active Communities","Closing This Year","Permits This Year","Net Sales this year", "Current Avg Base Price","Median Closing Price This Year ",  "Median Closing Price Last Year","Avg Net Sales Per Month This Year ","Avg Closings Per Month This Year","Total Closings", "Total Permits","Total Net Sales", "Date Of First Closing","Date Of Latest Closing"]);
   const handlBuilderClick = (e) => {

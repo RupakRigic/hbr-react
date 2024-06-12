@@ -1,5 +1,7 @@
 
-import clientAuth from "../../clientAuth"
+import clientAuth from "../../clientAuth";
+import axios from "axios";
+
 export default {
     index: (page=1,sortConfig='',searchQuery = '') => clientAuth.get(`admin/trafficsale/index?page=${page}${sortConfig}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/trafficsale/update/${id}`, { json: userData }),
@@ -11,6 +13,11 @@ export default {
     export: () => clientAuth.get(`admin/trafficsale/export`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/trafficsale/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/trafficsale/bulkdestroy/${id}`),
-    import: (userData) => clientAuth.post(`admin/trafficsale/import`, { json: userData }),
+    import: (formData) => axios.post(`${process.env.REACT_APP_IMAGE_URL}api/admin/trafficsale/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${JSON.parse(localStorage.getItem("usertoken"))}`,
+        }
+    }),
 
 };

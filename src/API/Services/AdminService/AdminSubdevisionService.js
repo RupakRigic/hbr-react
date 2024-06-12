@@ -1,5 +1,7 @@
 import client from "../../client";
-import clientAuth from "../../clientAuth"
+import clientAuth from "../../clientAuth";
+import axios from "axios";
+
 export default {
     index: (page=1,sortConfig='',searchQuery = '') => clientAuth.get(`admin/subdivision/index?page=${page}${sortConfig}${searchQuery}`),
     update: (id, userData) => clientAuth.post(`admin/subdivision/update/${id}`, { json: userData }),
@@ -11,7 +13,12 @@ export default {
     getRoleFieldList:()=> clientAuth.get(`admin/subdivision/access-list`),
     export: () => clientAuth.get(`admin/subdivision/export`),
     getByBuilderId: (filterQuery='') => clientAuth.get(`admin/subdivision/list-for-google-map${filterQuery}`),
-    import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
+    import: (formData) => axios.post(`${process.env.REACT_APP_IMAGE_URL}api/admin/subdivision/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${JSON.parse(localStorage.getItem("usertoken"))}`,
+        }
+    }),
     put: (id, userData) => clientAuth.put(`admin/subdivision/soldout/${id}`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/subdivision/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/subdivision/bulkdestroy/${id}`),

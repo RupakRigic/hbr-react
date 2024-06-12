@@ -184,7 +184,7 @@ const CCAPNList = () => {
                             }
                         });
                     } else {
-                        swal('Error: ' + response.error).then((willDelete) => {
+                        swal('Error: ' + response.data.error).then((willDelete) => {
                             if (willDelete) {
                                 navigate("/ccapn");
                                 setShow(false);

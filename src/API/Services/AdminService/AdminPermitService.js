@@ -1,5 +1,5 @@
 import client from "../../client";
-import clientAuth from "../../clientAuth"
+import clientAuth from "../../clientAuth";
 import axios from "axios";
 
 export default {
@@ -15,9 +15,9 @@ export default {
     import: (formData) => axios.post(`${process.env.REACT_APP_IMAGE_URL}api/admin/permit/import`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${JSON.parse(localStorage.getItem("usertoken"))}`, // Assuming the token is stored in localStorage
+          'Authorization': `Bearer ${JSON.parse(localStorage.getItem("usertoken"))}`,
         }
-      }),
+    }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/permit/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/permit/bulkdestroy/${id}`),
 

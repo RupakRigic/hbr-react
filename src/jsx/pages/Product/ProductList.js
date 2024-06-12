@@ -729,64 +729,91 @@ const ProductList = () => {
 const handleFileChange = async (e) => {
   setSelectedFile(e.target.files[0]);
 };
-const handleUploadClick = async () => {
-  const file = selectedFile;
 
-  if (file && file.type === "text/csv") {
-    setLoading(true);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = async () => {
-      var iFile = fileReader.result;
-      setSelectedFile(iFile);
-      console.log(iFile);
-      const inputData = {
-        csv: iFile,
-      };
-      try {
-        let responseData = await AdminProductService.import(inputData).json();
-        setSelectedFile("");
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-        if (responseData.data) {
-          console.log(responseData);
-          let message = responseData.data.message;
-          if (responseData.data.failed_records > 0) {
-              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows+'.';
+const CHUNK_SIZE = 2 * 1024 * 1024;
+
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+
+    if (file && file.type === "text/csv") {
+      setIsLoading(true);
+      setSelectedFileError("");
+
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      let currentChunk = 0;
+
+      while (currentChunk < totalChunks) {
+        const start = currentChunk * CHUNK_SIZE;
+        const end = Math.min(file.size, start + CHUNK_SIZE);
+        const fileChunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", fileChunk);
+        formData.append("chunkIndex", currentChunk);
+        formData.append("totalChunks", totalChunks);
+        formData.append("fileName", file.name);
+
+        try {
+          const response = await AdminProductService.import(formData);
+         
+          if (response.status !== 200) {
+            throw new Error('HTTPError');
           }
-          message += '. Record Imported: ' + responseData.data.successful_records;
-          message += '. Failed Record Count: ' + responseData.data.failed_records;
-          message += '. Last Row: ' + responseData.data.last_processed_row;
 
-          swal(message).then((willDelete) => {
-              if (willDelete) {
-                  navigate("/productList");
-                  setShow(false);
-              }
-          });
-      } else {
-          swal('Error: ' + responseData.error);
-          setShow(false);
-      }
-        getbuilderlist();
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = error.response.json();
+          currentChunk++;
+          console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
           setSelectedFile("");
-          setError(errorJson.message);
           document.getElementById("fileInput").value = null;
-          setLoading(false);
-        }
-      }
-    };
+          setIsLoading(false);
 
-    setSelectedFileError("");
-  } else {
-    setSelectedFile("");
-    setSelectedFileError("Please select a CSV file.");
-  }
-};
+          if (response.data) {
+            console.log(response.data);
+            let message = response.data.message;
+            if (response.data.failed_records > 0) {
+              const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
+            }
+            message += '. Record Imported: ' + response.data.successful_records;
+            message += '. Failed Record Count: ' + response.data.failed_records;
+            message += '. Last Row: ' + response.data.last_processed_row;
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                navigate("/productList");
+                setShow(false);
+              }
+            });
+          } else {
+            swal('Error: ' + response.data.error).then((willDelete) => {
+              if (willDelete) {
+                navigate("/productList");
+                setShow(false);
+              }
+            });
+          }
+          getproductList();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setIsLoading(false);
+          } else {
+            swal('Error: ' + error.name).then((willDelete) => {
+              if (willDelete) {
+                navigate("/productList");
+                setShow(false);
+              }
+            });
+          }
+        }
+      };
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+
 const handlBuilderClick = (e) => {
   setShow(true);
 };

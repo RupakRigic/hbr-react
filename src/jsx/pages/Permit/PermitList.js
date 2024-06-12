@@ -643,57 +643,88 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
+
+  const CHUNK_SIZE = 2 * 1024 * 1024;
+
   const handleUploadClick = async () => {
-    if (selectedFile && selectedFile.type === "text/csv") {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("csv", selectedFile);
+    const file = selectedFile;
 
-      try {
-        const response = await AdminPermitService.import(formData);
+    if (file && file.type === "text/csv") {
+      setIsLoading(true);
+      setSelectedFileError("");
 
-        if (response.status !== 200) {
-          throw new Error('HTTPError');
-        }
+      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+      let currentChunk = 0;
 
-        setSelectedFile(null);
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-        if (response.data) {
-          console.log(response);
-          let message = response.data.message;
-          if (response.data.failed_records > 0) {
-              const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows+'.';
+      while (currentChunk < totalChunks) {
+        const start = currentChunk * CHUNK_SIZE;
+        const end = Math.min(file.size, start + CHUNK_SIZE);
+        const fileChunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", fileChunk);
+        formData.append("chunkIndex", currentChunk);
+        formData.append("totalChunks", totalChunks);
+        formData.append("fileName", file.name);
+
+        try {
+          const response = await AdminPermitService.import(formData);
+         
+          if (response.status !== 200) {
+            throw new Error('HTTPError');
           }
-          message += '. Record Imported: ' + response.data.successful_records;
-          message += '. Failed Record Count: ' + response.data.failed_records;
-          message += '. Last Row: ' + response.data.last_processed_row;
 
-          swal(message).then((willDelete) => {
+          currentChunk++;
+          console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
+          setSelectedFile("");
+          document.getElementById("fileInput").value = null;
+          setIsLoading(false);
+
+          if (response.data) {
+            console.log(response.data);
+            let message = response.data.message;
+            if (response.data.failed_records > 0) {
+              const problematicRows = response.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
+            }
+            message += '. Record Imported: ' + response.data.successful_records;
+            message += '. Failed Record Count: ' + response.data.failed_records;
+            message += '. Last Row: ' + response.data.last_processed_row;
+            swal(message).then((willDelete) => {
               if (willDelete) {
-                  navigate("/productList");
-                  setShow(false);
+                navigate("/permitlist");
+                setShow(false);
               }
-          });
-      } else {
-          swal('Error: ' + response.error);
-          setShow(false);
-      }
-        getbuilderlist();
-      } catch (error) {
-        let errorMessage = "An error occurred. Please try again.";
-        if (error.response && error.response.data) {
-          errorMessage = error.response.data.message;
+            });
+          } else {
+            swal('Error: ' + response.data.error).then((willDelete) => {
+              if (willDelete) {
+                navigate("/permitlist");
+                setShow(false);
+              }
+            });
+          }
+          getPermitList();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setIsLoading(false);
+          } else {
+            swal('Error: ' + error.name).then((willDelete) => {
+              if (willDelete) {
+                navigate("/permitlist");
+                setShow(false);
+              }
+            });
+          }
         }
-        setSelectedFile(null);
-        setError(errorMessage);
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-      }
+      };
     } else {
-      setSelectedFile(null);
-      setError("Please select a CSV file.");
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
     }
   };
 
