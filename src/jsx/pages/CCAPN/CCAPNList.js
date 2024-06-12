@@ -31,7 +31,7 @@ const CCAPNList = () => {
 
     const handleClose = () => {
         setShow(false);
-        GetCCAPNList();
+        // GetCCAPNList();
     }
     const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
