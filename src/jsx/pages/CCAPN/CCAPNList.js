@@ -33,6 +33,9 @@ const CCAPNList = () => {
         setShow(false);
         GetCCAPNList();
     }
+    const SyestemUserRole = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
 
     const stringifySortConfig = (sortConfig) => {
         return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
@@ -228,6 +231,11 @@ const CCAPNList = () => {
                                         <div className="d-flex text-nowrap justify-content-between align-items-center">
                                             <h4 className="heading mb-0">CCAPNs List</h4>
                                         </div>
+
+                                        {SyestemUserRole == "Data Uploader" ||
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
                                         <div>
                                             <Button
                                                 className="btn-sm me-1"
@@ -237,6 +245,7 @@ const CCAPNList = () => {
                                                 Import
                                             </Button>
                                         </div>
+                      )}
                                     </div>
                                     <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                                         <div className="dataTables_info">

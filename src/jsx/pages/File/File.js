@@ -27,6 +27,10 @@ const File = () => {
       }
   };
   
+  const SyestemUserRole = localStorage.getItem("user")
+  ? JSON.parse(localStorage.getItem("user")).role
+  : "";
+
   const handleRemoveSelected = () => {
       const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
       setSortConfig(newSortConfig);
@@ -223,25 +227,25 @@ const File = () => {
   const handleCallback = () => {
     getproductList();
   };
-  const debouncedHandleSearch = useRef(
-    debounce((value) => {
-      setSearchQuery(value);
-    }, 1000)
-  ).current;
+  // const debouncedHandleSearch = useRef(
+  //   debounce((value) => {
+  //     setSearchQuery(value);
+  //   }, 1000)
+  // ).current;
 
-  useEffect(() => {
-    getproductList();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   getproductList();
+  // }, [searchQuery]);
 
-  const HandleSearch = (e) => {
-    setIsLoading(true);
-    const query = e.target.value.trim();
-    if (query) {
-      debouncedHandleSearch(`?q=${query}`);
-    } else {
-      setSearchQuery("");
-    }
-  };
+  // const HandleSearch = (e) => {
+  //   setIsLoading(true);
+  //   const query = e.target.value.trim();
+  //   if (query) {
+  //     debouncedHandleSearch(`?q=${query}`);
+  //   } else {
+  //     setSearchQuery("");
+  //   }
+  // };
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -328,7 +332,7 @@ const File = () => {
                           {" "}
                           <i class="fas fa-search"></i>{" "}
                         </button>
-                        <Form.Control
+                        {/* <Form.Control
                           type="text"
                           style={{
                             borderTopLeftRadius: "0",
@@ -336,7 +340,7 @@ const File = () => {
                           }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
-                        />
+                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -347,6 +351,10 @@ const File = () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
+                    {SyestemUserRole == "Data Uploader" ||
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
                     <div>
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
@@ -374,6 +382,7 @@ const File = () => {
                         + Add File
                       </Link>
                     </div>
+                      )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -580,6 +589,7 @@ const File = () => {
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
+              <option value="User">Standard User</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

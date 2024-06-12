@@ -1633,7 +1633,7 @@ const handleSortClose = () => setShowSort(false);
                         role="group"
                         aria-label="Basic example"
                       >
-                        <button class="btn btn-secondary cursor-none">
+                        {/* <button class="btn btn-secondary cursor-none">
                           {" "}
                           <i class="fas fa-search"></i>
                         </button>
@@ -1646,7 +1646,7 @@ const handleSortClose = () => setShowSort(false);
                           }}
                           // onChange={HandleSearch}
                           placeholder="Quick Search"
-                        />
+                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -1660,7 +1660,7 @@ const handleSortClose = () => setShowSort(false);
 
                     <div className="mt-3">
                       {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ? (
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
                         ""
                       ) : (
                         <div className="d-flex">
@@ -3907,6 +3907,7 @@ const handleSortClose = () => setShowSort(false);
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
+              <option value="User">Standard User</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

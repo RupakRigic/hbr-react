@@ -34,6 +34,11 @@ import { MultiSelect } from "react-multi-select-component";
 
 const ProductList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
+
+  const SyestemUserRole = localStorage.getItem("user")
+  ? JSON.parse(localStorage.getItem("user")).role
+  : "";
+
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -597,14 +602,14 @@ const ProductList = () => {
   //   getproductList();
   // }, [searchQuery]);
 
-  const HandleSearch = (e) => {
-    setIsLoading(true);
-    const query = e.target.value.trim();
-    debouncedHandleSearch(`&q=${query}`);
-  };
-  useEffect(() => {
-    setSearchQuery(filterString());
-  }, [filterQuery]);
+  // const HandleSearch = (e) => {
+  //   setIsLoading(true);
+  //   const query = e.target.value.trim();
+  //   debouncedHandleSearch(`&q=${query}`);
+  // };
+  // useEffect(() => {
+  //   setSearchQuery(filterString());
+  // }, [filterQuery]);
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -613,12 +618,12 @@ const ProductList = () => {
       [name]: value,
     }));
   };
-  const HandleSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      subdivision_name: selectedOption.name,
-    }));
-  };
+  // const HandleSelectChange = (selectedOption) => {
+  //   setFilterQuery((prevFilterQuery) => ({
+  //     ...prevFilterQuery,
+  //     subdivision_name: selectedOption.name,
+  //   }));
+  // };
 
   const filterString = () => {
     const queryString = Object.keys(filterQuery)
@@ -1023,7 +1028,7 @@ const HandleFilterForm = (e) =>
                           {" "}
                           <i class="fas fa-search"></i>
                         </button>
-                        <Form.Control
+                        {/* <Form.Control
                           type="text"
                           style={{
                             borderTopLeftRadius: "0",
@@ -1031,7 +1036,7 @@ const HandleFilterForm = (e) =>
                           }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
-                        />
+                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -1042,7 +1047,10 @@ const HandleFilterForm = (e) =>
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                          
+                                   {SyestemUserRole == "Data Uploader" ||
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
                     <div className="d-flex" style={{marginTop: "10px"}}>
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
@@ -1114,6 +1122,7 @@ const HandleFilterForm = (e) =>
                         Bulk Delete
                       </button>
                     </div>
+                      )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                       <div className="dataTables_info">
@@ -2512,6 +2521,7 @@ const HandleFilterForm = (e) =>
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
+              <option value="User">Standard User</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

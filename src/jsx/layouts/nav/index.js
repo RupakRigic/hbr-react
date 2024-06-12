@@ -14,7 +14,7 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3 }) => {
   const onClick = (name) => setToggle(toggle === name ? "" : name);
   let sidebar = null;
   const loginRole = JSON.parse(localStorage.getItem('user')).role;
-  if (loginRole === "Admin") {
+  if (loginRole === "Admin" || loginRole === "Standard User" ) {
     sidebar = <SideBar />;
   }if(loginRole=='Data Uploader'){
     sidebar = <DataUploaderSideBar />;

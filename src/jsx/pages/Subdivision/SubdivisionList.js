@@ -34,6 +34,11 @@ import { MultiSelect } from "react-multi-select-component";
 
 
 const SubdivisionList = () => {
+
+  const SyestemUserRole = localStorage.getItem("user")
+  ? JSON.parse(localStorage.getItem("user")).role
+  : "";
+
   const [excelLoading, setExcelLoading] = useState(true);
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
@@ -819,11 +824,11 @@ const handleSortClose = () => setShowSort(false);
   }, []);
 
   console.log(filterQuery);
-  const debouncedHandleSearch = useRef(
-    debounce((value) => {
-      setSearchQuery(value);
-    }, 1000)
-  ).current;
+  // const debouncedHandleSearch = useRef(
+  //   debounce((value) => {
+  //     setSearchQuery(value);
+  //   }, 1000)
+  // ).current;
 
   // useEffect(() => {
   //   getbuilderlist();
@@ -835,11 +840,11 @@ const handleSortClose = () => setShowSort(false);
       getbuilderlist(currentPage,searchQuery);
     };
 
-  const HandleSearch = (e) => {
-    setIsLoading(true);
-    const query = e.target.value.trim();
-    debouncedHandleSearch(`&q=${query}`);
-  };
+  // const HandleSearch = (e) => {
+  //   setIsLoading(true);
+  //   const query = e.target.value.trim();
+  //   debouncedHandleSearch(`&q=${query}`);
+  // };
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -3697,6 +3702,10 @@ const handleSortClose = () => setShowSort(false);
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
+                    {SyestemUserRole == "Data Uploader" ||
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
                     <div className="d-flex" style={{marginTop: "10px"}}>
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
@@ -3774,6 +3783,7 @@ const handleSortClose = () => setShowSort(false);
                         Bulk Delete
                       </button>
                     </div>
+                      )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                       <div className="dataTables_info">
@@ -6980,6 +6990,8 @@ const handleSortClose = () => setShowSort(false);
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
+              <option value="User">Standard User</option>
+
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

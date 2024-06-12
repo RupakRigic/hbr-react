@@ -26,7 +26,9 @@ import { MultiSelect } from "react-multi-select-component";
 const PermitList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
-
+  const SyestemUserRole = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
   const HandleSortDetailClick = (e) =>
     {
         setShowSort(true);
@@ -742,22 +744,22 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       }
     }
   };
-  const debouncedHandleSearch = useRef(
-    debounce((value) => {
-      setSearchQuery(value);
-    }, 1000)
-  ).current;
+  // const debouncedHandleSearch = useRef(
+  //   debounce((value) => {
+  //     setSearchQuery(value);
+  //   }, 1000)
+  // ).current;
 
-  useEffect(() => {
-    getPermitList();
-  }, [searchQuery]);
+  // useEffect(() => {
+  //   getPermitList();
+  // }, [searchQuery]);
 
-  const HandleSearch = (e) => {
-    setIsLoading(true);
-    const query = e.target.value.trim();
+  // const HandleSearch = (e) => {
+  //   setIsLoading(true);
+  //   const query = e.target.value.trim();
 
-    debouncedHandleSearch(`&=${query}`);
-  };
+  //   debouncedHandleSearch(`&=${query}`);
+  // };
 
   
     const HandleFilter = (e) => {
@@ -945,7 +947,7 @@ const handleSelectSingleChange  = (selectedItems) => {
                           {" "}
                           <i class="fas fa-search"></i>{" "}
                         </button>
-                        <Form.Control
+                        {/* <Form.Control
                           type="text"
                           style={{
                             borderTopLeftRadius: "0",
@@ -953,7 +955,7 @@ const handleSelectSingleChange  = (selectedItems) => {
                           }}
                           onChange={HandleSearch}
                           placeholder="Quick Search"
-                        />
+                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -964,6 +966,10 @@ const handleSelectSingleChange  = (selectedItems) => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
+                    {SyestemUserRole == "Data Uploader" ||
+                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
                     <div className="d-flex">
                       <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
                         Set Columns Order
@@ -1035,6 +1041,7 @@ const handleSelectSingleChange  = (selectedItems) => {
                         Bulk Delete
                       </button>
                     </div>
+                      )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                       <div className="dataTables_info">
@@ -2044,6 +2051,7 @@ const handleSelectSingleChange  = (selectedItems) => {
               <option value="Admin">Admin</option>
               <option value="Data Uploader">Data Uploader</option>
               <option value="User">User</option>
+              <option value="User">Standard User</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">
