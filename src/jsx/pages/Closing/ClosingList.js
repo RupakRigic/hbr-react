@@ -24,6 +24,7 @@ import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
+import AdminCCAPNService from "../../../API/Services/AdminService/AdminCCAPNService";
 
 
 
@@ -205,6 +206,20 @@ const ClosingList = () => {
     return fieldList.includes(fieldName.trim());
   };
 
+  const UpdateFromCcapn = async() =>{
+
+    try {
+      const response = await AdminClosingService.ccapnUpdate({});
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  }
   
   const headers = [
     { label: 'Closing Type', key: 'Closing_Type' },  
@@ -928,19 +943,10 @@ const handleSelectSingleChange  = (selectedItems) => {
                         role="group"
                         aria-label="Basic example"
                       >
-                        {/* <button class="btn btn-secondary cursor-none">
+                        <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
                           {" "}
-                          <i class="fas fa-search"></i>{" "}
-                        </button> */}
-                        {/* <Form.Control
-                          type="text"
-                          style={{
-                            borderTopLeftRadius: "0",
-                            borderBottomLeftRadius: "0",
-                          }}
-                          onChange={HandleSearch}
-                          placeholder="Quick Search"
-                        /> */}
+                              Update with CCAPNs
+                        </button>
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -1600,31 +1606,31 @@ const handleSelectSingleChange  = (selectedItems) => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.type}</td>
                                   }
                                   {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.product_type}</td>
                                   }
                                   {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.area}</td>
                                   }
                                   {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.masterplan_id}</td>
                                   }
                                   {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zipcode}</td>
                                   }
                                   {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotwidth}</td>
                                   }
                                   {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotsize}</td>
                                   }
                                   {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zoning}</td>
                                   }
                                   {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.age == "1" ? "Yes" : "No"}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.age == "1" ? "Yes" : "No"}</td>
                                   }
                                   {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.single == "1" ? "Yes" : "No"}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.single == "1" ? "Yes" : "No"}</td>
                                   }
                                   {column.id == "date Added" &&
                                     <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>

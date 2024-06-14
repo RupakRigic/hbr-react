@@ -1172,7 +1172,7 @@ const handleSortClose = () => setShowSort(false);
             swal('Error: ' + responseData.error);
             setShow(false);
           }
-          getbuilderlist();
+          getbuilderlist(currentPage, sortConfig);
         } catch (error) {
         
           if (error.name === "HTTPError") {
