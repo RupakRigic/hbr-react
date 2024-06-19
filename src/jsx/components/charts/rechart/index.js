@@ -14,14 +14,17 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 function RechartJs() {
   const [currentDisplay, setCurrentDisplay] = useState(1);
   const [value, setValue] = React.useState("1");
 
   const [filterQuery, setFilterQuery] = useState({
-    is_active: "",
-    company_type: "",
+    to: "",
+    from: "",
   });
 
   const [startDate, setStartDate] = useState("");
@@ -39,17 +42,43 @@ function RechartJs() {
     const currentDate = new Date(); // Today's date
     const currentYear = currentDate.getFullYear(); // Current year
     const firstDayOfYear = new Date(currentYear, 0, 1); // First day of the current year
-    setStartDate(firstDayOfYear.toISOString().split('T')[0]); // Format as yyyy-mm-dd
-    setEndDate(currentDate.toISOString().split('T')[0]); // Format as yyyy-mm-dd
+    const formatDate = (date) => {
+      const padToTwoDigits = (num) => num.toString().padStart(2, '0');
+      return `${padToTwoDigits(date.getMonth() + 1)}/${padToTwoDigits(date.getDate())}/${date.getFullYear()}`;
+    };
+    setStartDate(formatDate(firstDayOfYear));
+    setEndDate(formatDate(currentDate));
   }, []);
 
-  console.log(type);
-  const HandleFilter = (e) => {
-    const { name, value } = e.target;
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      [name]: value,
-    }));
+
+  const handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setStartDate(formattedDate)
+
+    } else {
+      setStartDate('')
+
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US');
+      console.log(formattedDate)
+      setEndDate(formattedDate)
+
+    } else {
+    
+      setEndDate('')
+    }
+  };
+
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
   };
 
   const [BuyerTrafficData, setBuyerTrafficdata] = useState({
@@ -720,26 +749,43 @@ function RechartJs() {
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu style={{width:"200px"}}>
+                        <Dropdown.Menu style={{width:"200px",overflow:"unset"}}>
                           <label htmlFor="start_date">From:</label>
-                          <input
+                          {/* <input
                             type="date"
                             id="start_date"
                             name="start_date"
                             className="form-control"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
+                          /> */}
+                          <DatePicker
+                            name="from"
+                            className="form-control"
+                            selected={ parseDate(startDate)}
+                            onChange={handleFilterDateFrom}
+                            dateFormat="MM/dd/yyyy"
+                            placeholderText="mm/dd/yyyy"
                           />
 
+
                           <label htmlFor="end_date">To:</label>
-                          <input
+                          {/* <input
                             type="date"
                             id="end_date"
                             name="end_date"
                             className="form-control"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
-                          />
+                          /> */}
+                            <DatePicker
+                              name="to"
+                              className="form-control"
+                              selected={parseDate(endDate)}
+                              onChange={handleFilterDateTo}
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="mm/dd/yyyy"
+                            />
                    
                         </Dropdown.Menu>
     </Dropdown>

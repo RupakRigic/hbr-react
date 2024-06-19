@@ -18,8 +18,11 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Hidden } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BuilderTable = () => {
+  
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [weekEndDates, setWeekEndDates] = useState([]);
@@ -46,11 +49,65 @@ const BuilderTable = () => {
     }
   }
   const [show, setShow] = useState(false);
-  const currentDate = moment();
-  const firstDayOfMonth = currentDate.startOf("month").format("YYYY-MM-DD");
-  const lastDayOfMonth = currentDate.endOf("month").format("YYYY-MM-DD");
-  const [startDate, setStartDate] = useState(firstDayOfMonth);
-  const [endDate, setEndDate] = useState(lastDayOfMonth);
+  
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  useEffect(() => {
+    const currentDate = new Date(); // Today's date
+    const currentYear = currentDate.getFullYear(); // Current year
+    const firstDayOfYear = new Date(currentYear, 0, 1); // First day of the current year
+
+    const formatDate = (date) => {
+      const padToTwoDigits = (num) => num.toString().padStart(2, '0');
+      return `${padToTwoDigits(date.getMonth() + 1)}/${padToTwoDigits(date.getDate())}/${date.getFullYear()}`;
+    };
+
+    setStartDate(formatDate(firstDayOfYear));
+    setEndDate(formatDate(currentDate)); // Set endDate to current date
+  }, []);
+
+  console.log(startDate);
+  console.log(endDate);
+
+  const   handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setStartDate(formattedDate)
+
+    } else {
+      setStartDate('')
+
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US');
+      console.log(formattedDate)
+      setEndDate(formattedDate)
+
+    } else {
+    
+      setEndDate('')
+    }
+  };
+
+  const parseDate = (dateString) => {
+    if (!dateString) return null;
+
+    const [month, day, year] = dateString.split('/');
+    const parsedDate = new Date(year, month - 1, day);
+
+    // Check if parsedDate is a valid Date object
+    if (isNaN(parsedDate.getTime())) {
+      return null; // Return null if parsedDate is invalid
+    }
+
+    return parsedDate;
+  };
   const [reportType, setReportType] = useState("List of Active New Home Builders");
   const [uploadReportType, setUploadReportType] = useState("List of Active New Home Builders");
   console.log(uploadReportType);
@@ -531,24 +588,42 @@ const BuilderTable = () => {
 
                           <div className="row">
                             <div className="col-md-7 d-flex align-items-center flex-column-mobile">
-                              <div className="col-md-6">
+                              <div className="col-md-5">
                                 <div className="ms-4 sm-m-0">Select Period</div>
                               </div>
                               <div className="me-2 mb-2">
-                                <input
+                                {/* <input
                                   type="date"
                                   className="form-control"
                                   onChange={(e) => setStartDate(e.target.value)}
                                   value={startDate}
-                                />
+                                /> */}
+
+                          <DatePicker
+                            name="from"
+                            className="form-control"
+                            selected={ parseDate(startDate)}
+                            onChange={handleFilterDateFrom}
+                            dateFormat="MM/dd/yyyy"
+                            placeholderText="mm/dd/yyyy"
+                          />
+
                               </div>
                               <div className="mb-2">
-                                <input
+                                {/* <input
                                   type="date"
                                   className="form-control"
                                   value={endDate}
                                   onChange={(e) => setEndDate(e.target.value)}
-                                />
+                                /> */}
+                              <DatePicker
+                              name="to"
+                              className="form-control"
+                              selected={parseDate(endDate)}
+                              onChange={handleFilterDateTo}
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="mm/dd/yyyy"
+                            />
                               </div>
                             </div>
 

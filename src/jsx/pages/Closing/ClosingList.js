@@ -25,6 +25,8 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
 import AdminCCAPNService from "../../../API/Services/AdminService/AdminCCAPNService";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 
@@ -132,38 +134,44 @@ const ClosingList = () => {
     e.preventDefault();
     console.log(555);
     getClosingList(currentPage,searchQuery);
+    setManageFilterOffcanvas(false);
   };
 
-  const HandleCancelFilter = (e) => {
+  const HandleCancelFilter = () => {
+    // Reset the filter query
     setFilterQuery({
       from: "",
       to: "",
-      address:"",
-      parcel:"",
-      closing_type:"",
-      document:"",
-      closingprice:"",
-      sublegal_name:"",
-      sellerleagal:"",
-      buyer:"",
-      lender:"",
-      loanamount:"",
-      type:"",
-      product_type:"",
-      area:"",
-      masterplan_id:"",
-      zipcode:"",
-      lotwidth:"",
-      lotsize:"",
-      zoning:"",
-      age:"",
-      single:"",
-      // id:"",
-      // subdivision_code:"",
-      created_at:""
+      address: "",
+      parcel: "",
+      closing_type: "",
+      document: "",
+      closingprice: "",
+      sublegal_name: "",
+      sellerleagal: "",
+      buyer: "",
+      lender: "",
+      loanamount: "",
+      type: "",
+      product_type: "",
+      area: "",
+      masterplan_id: "",
+      zipcode: "",
+      lotwidth: "",
+      lotsize: "",
+      zoning: "",
+      age: "",
+      single: "",
+      created_at: ""
     });
-    // getClosingList();
+  
+    setSearchQuery("");
+    setManageFilterOffcanvas(false);
   };
+  
+  useEffect(() => {
+    getClosingList();
+  }, [filterQuery, searchQuery]);
 
   const [ClosingDetails, setClosingDetails] = useState({
     subdivision: "",
@@ -515,36 +523,39 @@ const ClosingList = () => {
   };
   const bulkClosing = useRef();
 
-  const getClosingList = async (currentPage) => {
+  const getClosingList = async (currentPage = 1) => {
+    setIsLoading(true);  // Set loading state to true at the beginning of the function
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      const response = await AdminClosingService.index(currentPage,sortConfigString,searchQuery);
+      const response = await AdminClosingService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
       console.log(responseData.data);
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
-      setIsLoading(false)
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
+    } finally {
+      setIsLoading(false);  // Set loading state to false at the end of the function
     }
   };
+  
 
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getClosingList(currentPage);
-      fetchAllPages(searchQuery, sortConfig)
-    } else {
-      navigate("/");
-    }
-  }, [currentPage]);
+useEffect(() => {
+  if (localStorage.getItem("usertoken")) {
+    getClosingList(currentPage);
+    fetchAllPages(searchQuery, sortConfig);
+  } else {
+    navigate("/");
+  }
+}, [currentPage]);
+
 
   async function fetchAllPages(searchQuery, sortConfig) {
     const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
@@ -699,6 +710,46 @@ const ClosingList = () => {
       ...prevFilterQuery,
       [name]: value,
     }));
+  };
+
+
+  const handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: '',
+      }));
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
+      }));
+    }
+  };
+
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
   };
 
   const requestSort = (key) => {
@@ -1639,7 +1690,7 @@ const handleSelectSingleChange  = (selectedItems) => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
                                   }
                                   {column.id == "_fkSubID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.subdivision_code}</td>
                                   }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>
@@ -1939,23 +1990,26 @@ const handleSelectSingleChange  = (selectedItems) => {
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
-                    <input
-                      name="from"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.from}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="from"
+        className="form-control"
+        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+        onChange={handleFilterDateFrom}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
-                    <input
-                      name="to"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.to}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="to"
+        className="form-control"
+        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+        onChange={handleFilterDateTo}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">

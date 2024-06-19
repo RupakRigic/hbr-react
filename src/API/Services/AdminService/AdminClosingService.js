@@ -13,6 +13,6 @@ export default {
     export: () => clientAuth.get(`admin/closing/export`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/closing/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/closing/bulkdestroy/${id}`),
-    ccapnUpdate: (userData) => clientAuth.post(`admin/ccapn/ccapn-update`,{ json: userData }),
+    ccapnUpdate: (userData) => clientAuth.post(`admin/closing/ccapn-update`,{ json: userData }),
 
 };

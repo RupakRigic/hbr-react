@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import RechartJs from "../../components/charts/rechart";
 
 const Statistics = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
   return (
     
     <>

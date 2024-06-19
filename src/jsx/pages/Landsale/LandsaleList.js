@@ -24,6 +24,9 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Select from "react-select";
 import { MultiSelect } from "react-multi-select-component";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const LandsaleList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -140,6 +143,45 @@ const LandsaleList = () => {
     e.preventDefault();
     console.log(555);
     getLandsaleList(currentPage, searchQuery);
+    setManageFilterOffcanvas(false)
+  };
+  const handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: '',
+      }));
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
+      }));
+    }
+  };
+
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
   };
 
   const HandleCancelFilter = (e) => {
@@ -159,7 +201,7 @@ const LandsaleList = () => {
       noofunit:"",
       doc:"",
     });
-    getLandsaleList();
+    getLandsaleList(currentPage,searchQuery);
   };
 
   // const number = [...Array(npage + 1).keys()].slice(1);
@@ -1878,23 +1920,26 @@ useEffect(() => {
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
-                    <input
-                      name="from"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.from}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="from"
+        className="form-control"
+        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+        onChange={handleFilterDateFrom}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
-                    <input
-                      name="to"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.to}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="to"
+        className="form-control"
+        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+        onChange={handleFilterDateTo}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">

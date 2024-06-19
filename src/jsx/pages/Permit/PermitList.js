@@ -22,6 +22,8 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const PermitList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -154,6 +156,8 @@ useEffect(() => {
       status: "",
       subdivision_id: "",
     });
+    getPermitList(currentPage,searchQuery);
+    setShowOffcanvas(false)
   };
   
   useEffect(() => {
@@ -177,6 +181,7 @@ useEffect(() => {
       e.preventDefault();
       console.log(555);
       getPermitList(currentPage,searchQuery);
+      setManageFilterOffcanvas(false)
     };
   
 
@@ -769,6 +774,46 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
         [name]: value,
       }));
     };
+
+    
+  const handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: '',
+      }));
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
+      }));
+    }
+  };
+
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
+  };
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -2116,25 +2161,28 @@ const handleSelectSingleChange  = (selectedItems) => {
                             <form onSubmit={HandleFilterForm}>
                               <div className="row">
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">From:{" "}</label>
-                                <input
-                                    name="startDate"
-                                    type="date"
-                                    className="form-control"
-                                    value={filterQuery.startDate}
-                                    onChange={HandleFilter}
-                                />
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">To:{" "}</label>
-                                <input
-                                    name="endDate"
-                                    type="date"
-                                    className="form-control"
-                                    value={filterQuery.endDate}
-                                    onChange={HandleFilter}
-                                />
-                              </div>
+                    <label className="form-label">From:{" "}</label>
+                    <DatePicker
+        name="from"
+        className="form-control"
+        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+        onChange={handleFilterDateFrom}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}</label>
+                    <DatePicker
+        name="to"
+        className="form-control"
+        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+        onChange={handleFilterDateTo}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+                  </div>
                               {/* <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                   DATE:{" "}
