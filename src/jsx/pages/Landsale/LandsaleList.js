@@ -1410,7 +1410,7 @@ useEffect(() => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.typeofunit}</td>
                                     }
                                     {column.id == "size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit.toFixed(2)}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit}</td>
                                     }
                                     {column.id == "price Per" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per} /></td>

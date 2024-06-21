@@ -22,6 +22,7 @@ import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
+import DatePicker from "react-datepicker";
 
 
 const PriceList = () => {
@@ -624,7 +625,53 @@ const [filterQuery, setFilterQuery] = useState({
       age:"",
       single:""
     });
+    setSearchQuery("");
+    setManageFilterOffcanvas(false);
   };
+
+  useEffect(() => {
+    getpriceList();
+  }, [filterQuery, searchQuery]);
+
+  const handleFilterDateFrom = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+  
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: '',
+      }));
+    }
+  };
+  
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+  
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
+      }));
+    }
+  };
+  
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
+  };
+  
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -713,8 +760,9 @@ const [filterQuery, setFilterQuery] = useState({
   const HandleFilterForm = (e) =>
     {
       e.preventDefault();
-      console.log(555);
       getpriceList(currentPage,searchQuery);
+      setManageFilterOffcanvas(false)
+
     };
 
   const exportToExcelData = async () => {
@@ -1450,69 +1498,70 @@ const handleSelectSingleChange  = (selectedItems) => {
                                     <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
                                   }
                                   {column.id == "builder Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision &&
-                                      element.product.subdivision.builder?.name}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{ element.product && element.product && element.product.subdivision &&
+                                      element.product && element.product.subdivision.builder?.name}</td>
                                   }
                                   {column.id == "subdivision Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision &&
-                                      element.product.subdivision?.name}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision &&
+                                      element.product && element.product.subdivision?.name}</td>
                                   }
                                   {column.id == "product Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.name}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.name}</td>
                                   }
                                   {column.id == "squre Footage" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.sqft}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.sqft}</td>
                                   }
                                   {column.id == "stories" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.stories}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.stories}</td>
                                   }
                                   {column.id == "bedrooms" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.bedroom}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.bedroom}</td>
                                   }
                                   {column.id == "bathroom" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.bathroom}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.bathroom}</td>
                                   }
                                   {column.id == "garage" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.garage}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.garage}</td>
                                   }
                                   {column.id == "base Price" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.baseprice} /></td>
+                                    // <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.baseprice} /></td>
+                                    <td></td>
                                   }
                                   {column.id == "price Per SQFT" &&
                                     <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per_sqft} /></td>
                                   }
                                   {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.product_type}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.product_type}</td>
                                   }
                                   {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.area}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.area}</td>
                                   }
                                   {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.masterplan_id}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.masterplan_id}</td>
                                   }
                                   {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.zipcode}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.zipcode}</td>
                                   }
                                   {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.lotwidth}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{ element.product && element.product.subdivision.lotwidth}</td>
                                   }
                                   {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.lotsize}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.subdivision.lotsize}</td>
                                   }
                                   {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.zoning}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.subdivision.zoning}</td>
                                   }
                                   {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.age == 1 ? "Yes" : "No"}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.subdivision.age == 1 ? "Yes" : "No"}</td>
                                   }
                                   {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.subdivision.single == 1 ? "Yes" : "No"}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.subdivision.single == 1 ? "Yes" : "No"}</td>
                                   }
                                   {column.id == "__pkPriceID" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
                                   }
                                   {column.id == "_fkProductID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product.product_code}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.product_code}</td>
                                   }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>
@@ -1651,25 +1700,28 @@ const handleSelectSingleChange  = (selectedItems) => {
             <div className="">
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
-                  <div className="col-md-3 mt-3">
+                <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
-                    <input
-                      name="from"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.from}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="from"
+        className="form-control"
+        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+        onChange={handleFilterDateFrom}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
-                    <input
-                      name="to"
-                      type="date"
-                      className="form-control"
-                      value={filterQuery.to}
-                      onChange={HandleFilter}
-                    />
+                    <DatePicker
+        name="to"
+        className="form-control"
+        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+        onChange={handleFilterDateTo}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">

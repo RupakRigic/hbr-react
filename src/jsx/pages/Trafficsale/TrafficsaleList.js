@@ -23,6 +23,7 @@ import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import { MultiSelect } from "react-multi-select-component";
+import DatePicker from "react-datepicker";
 
 const TrafficsaleList = () => {
 
@@ -179,6 +180,7 @@ useEffect(() => {
     {
       e.preventDefault();
       gettrafficsaleList(currentPage,searchQuery);
+      setManageFilterOffcanvas(false)
     };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -464,8 +466,8 @@ useEffect(() => {
   }, []);
 
   const [filterQuery, setFilterQuery] = useState({
-    startDate:"",
-    endDate:"",
+    from:"",
+    to:"",
     weekending:"",
     builder_name:"",
     subdivision_name:"",
@@ -500,6 +502,10 @@ useEffect(() => {
       setCurrentPage(currentPage + 1);
     }
   }
+
+  useEffect(() => {
+    gettrafficsaleList();
+  }, [filterQuery, searchQuery]);
 
   const trafficsale = useRef();
   const stringifySortConfig = (sortConfig) => {
@@ -658,6 +664,8 @@ useEffect(() => {
       single:"",
       grosssales:"",
     });
+    setSearchQuery("");
+    setManageFilterOffcanvas(false);
   };
 
   const requestSort = (key) => {
@@ -933,6 +941,45 @@ const handleUploadClick = async () => {
 const handlBuilderClick = (e) => {
   setShow(true);
 };
+const handleFilterDateFrom = (date) => {
+  if (date) {
+    const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+    console.log(formattedDate)
+
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      from: formattedDate,
+    }));
+  } else {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      from: '',
+    }));
+  }
+};
+
+const handleFilterDateTo = (date) => {
+  if (date) {
+    const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+    console.log(formattedDate)
+
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      to: formattedDate,
+    }));
+  } else {
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      to: '',
+    }));
+  }
+};
+
+const parseDate = (dateString) => {
+  const [month, day, year] = dateString.split('/');
+  return new Date(year, month - 1, day);
+};
+
 
   return (
     <>
@@ -1836,25 +1883,28 @@ const handlBuilderClick = (e) => {
                             <form onSubmit={HandleFilterForm}>
                               <div className="row">
                               <div className="col-md-3 mt-3">
-                                <label className="form-label">From:{" "}</label>
-                                <input
-                                    name="startDate"
-                                    type="date"
-                                    className="form-control"
-                                    value={filterQuery.startDate}
-                                    onChange={HandleFilter}
-                                />
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">To:{" "}</label>
-                                <input
-                                    name="endDate"
-                                    type="date"
-                                    className="form-control"
-                                    value={filterQuery.endDate}
-                                    onChange={HandleFilter}
-                                />
-                              </div>
+                    <label className="form-label">From:{" "}</label>
+                    <DatePicker
+        name="from"
+        className="form-control"
+        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+        onChange={handleFilterDateFrom}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}</label>
+                    <DatePicker
+        name="to"
+        className="form-control"
+        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+        onChange={handleFilterDateTo}
+        dateFormat="MM/dd/yyyy"
+        placeholderText="mm/dd/yyyy"
+      />
+                  </div>
                               {/* <div className="col-md-3 mt-3">
                                   <label className="form-label">
                                   WEEK ENDING:{" "}

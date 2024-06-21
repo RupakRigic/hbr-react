@@ -77,7 +77,14 @@ const handleSortClose = () => setShowSort(false);
     zipcode:"",
     officeaddress1:"",
     coporate_officeaddress_zipcode:"",
-    stock_market:""
+    stock_market:"",
+    date_of_latest_closing:"",
+    date_of_first_closing:"",
+    total_net_sales:"",
+    total_permits:"",
+    total_closings:"",
+    median_closing_price_last_year:"",
+    median_closing_price_this_year:"",
   });
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -154,6 +161,8 @@ const handleSortClose = () => setShowSort(false);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedCompanyType, setSelectedCompanyType] = useState([]);
+
   const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
@@ -613,6 +622,7 @@ const handleSortClose = () => setShowSort(false);
     console.log(searchQuery);
     setFilter(true);
     getbuilderlist(currentPage,searchQuery);
+    setManageFilterOffcanvas(false)
   };
 
   // const HandleSearch = (e) => {
@@ -966,6 +976,14 @@ const handleSortClose = () => setShowSort(false);
     filtered = applyNumberFilter(filtered, filterQuery.current_avg_base_Price, 'current_avg_base_Price');
     filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
     filtered = applyNumberFilter(filtered, filterQuery.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.total_closings, 'total_closings');
+    filtered = applyNumberFilter(filtered, filterQuery.total_permits, 'total_permits');
+    filtered = applyNumberFilter(filtered, filterQuery.median_closing_price_last_year, 'median_closing_price_last_year');
+    filtered = applyNumberFilter(filtered, filterQuery.median_closing_price_this_year, 'median_closing_price_this_year');
+    filtered = applyNumberFilter(filtered, filterQuery.total_net_sales, 'total_net_sales');
+    filtered = applyNumberFilter(filtered, filterQuery.date_of_first_closing, 'date_of_first_closing');
+    filtered = applyNumberFilter(filtered, filterQuery.date_of_latest_closing, 'date_of_latest_closing');
+
 
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
 
@@ -1011,6 +1029,7 @@ const handleSortClose = () => setShowSort(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(value);
     setFilterQuery(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
@@ -1596,8 +1615,13 @@ const handleSortClose = () => setShowSort(false);
 };
 
   const statusOptions = [
-    { value: "1", label: "Active" },
-    { value: "0", label: "De-active" }
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const companyTypOptions = [
+    { value: "Public", label: "Public" },
+    { value: "Private", label: "Private" }
   ];
 
   const handleSelectStatusChange  = (selectedItems) => {  
@@ -1608,6 +1632,17 @@ const handleSortClose = () => setShowSort(false);
       ...prevState,
       is_active: selectedValues
   }));
+  };
+
+  const handleSelectCompanyTypeChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedCompanyType(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      company_type: selectedValues
+    }));
   };
 
   console.log("filter", filter);
@@ -4038,7 +4073,7 @@ const handleSortClose = () => setShowSort(false);
                   </div>
                   <div className="col-md-4 mt-3">
                       <label className="form-label">
-                        STATUS:{" "}
+                        ACTIVE:{" "}
                         <span className="text-danger"></span>
                       </label>
                       <MultiSelect
@@ -4064,6 +4099,7 @@ const handleSortClose = () => setShowSort(false);
                     ACTIVE COMMUNITIES :{" "}
                       <span className="text-danger"></span>
                     </label>
+
                     <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control"  onChange={HandleFilter}/>
                   </div>
                   <div className="col-md-4 mt-3">
@@ -4071,9 +4107,17 @@ const handleSortClose = () => setShowSort(false);
                     COMPANY TYPE:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/>
+                    
+                    <MultiSelect
+                        name="company_type"
+                        options={companyTypOptions}
+                        value={selectedCompanyType}
+                        onChange={handleSelectCompanyTypeChange }
+                        placeholder={"Select Company Type"} 
+                      />
+                    {/* <input  value={filterQuery.company_type} type="text" name="company_type" className="form-control" onChange={HandleFilter}/> */}
                   </div>
-                  <div className="col-md-4 mt-3">
+                  {/* <div className="col-md-4 mt-3">
                     <label className="form-label">
                     LV OFFICE CITY:{" "}
                       <span className="text-danger"></span>
@@ -4107,7 +4151,7 @@ const handleSortClose = () => setShowSort(false);
                       <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.stock_market} name="stock_market" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  </div> */}
                 </div>
               </form>        
             </div>
@@ -4157,6 +4201,34 @@ const handleSortClose = () => setShowSort(false);
                 <div className="col-md-4 mt-3 mb-3">
                   <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
                   <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">MEDIAN CLOSING PRICE THIS YEAR:{" "}</label>
+                  <input value={filterQuery.median_closing_price_this_year} name="median_closing_price_this_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">MEDIAN CLOSING PRICE LAST YEAR:{" "}</label>
+                  <input value={filterQuery.median_closing_price_last_year} name="median_closing_price_last_year" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">TOTAL CLOSINGS:{" "}</label>
+                  <input value={filterQuery.total_closings} name="total_closings" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">TOTAL PERMITS:{" "}</label>
+                  <input value={filterQuery.total_permits} name="total_permits" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">TOTAL NET SALES :{" "}</label>
+                  <input value={filterQuery.total_net_sales} name="total_net_sales" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">DATE OF FIRST CLOSING  :{" "}</label>
+                  <input value={filterQuery.date_of_first_closing} name="date_of_first_closing" className="form-control" onChange={handleInputChange}/>
+                </div>
+                <div className="col-md-4 mt-3 mb-3">
+                  <label className="form-label">DATE OF LATEST CLOSING  :{" "}</label>
+                  <input value={filterQuery.date_of_latest_closing} name="date_of_latest_closing" className="form-control" onChange={handleInputChange}/>
                 </div>
               </div>
             </div>

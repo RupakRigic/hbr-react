@@ -802,6 +802,8 @@ const HandleFilterForm = (e) =>
     e.preventDefault();
     console.log(555);
     getproductList(currentPage,searchQuery);
+    setManageFilterOffcanvas(false)
+
   };
 
   const handleOpenDialog = () => {

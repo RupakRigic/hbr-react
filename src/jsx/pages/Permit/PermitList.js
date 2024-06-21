@@ -130,8 +130,8 @@ useEffect(() => {
   const [TotalPermitListCount, setTotalPermitListCount] = useState("");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    startDate:"",
-    endDate:"",
+    from:"",
+    to:"",
     date:"",
     builder_name:"",
     subdivision_name:"",
@@ -153,11 +153,28 @@ useEffect(() => {
   });
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      status: "",
-      subdivision_id: "",
+      from:"",
+      to:"",
+      date:"",
+      builder_name:"",
+      subdivision_name:"",
+      address2:"",
+      address1:"",
+      parcel:"",
+      contractor:"",
+      sqft:"",
+      owner:"",
+      lotnumber:"",
+      permitnumber:"",
+      plan:"",
+      sublegalname:"",
+      value:"",
+      product_type:"",
+      area:"",
+      masterplan_id:"",
     });
-    getPermitList(currentPage,searchQuery);
-    setShowOffcanvas(false)
+    setSearchQuery("");
+    setManageFilterOffcanvas(false)
   };
   
   useEffect(() => {
@@ -179,7 +196,6 @@ useEffect(() => {
   const HandleFilterForm = (e) =>
     {
       e.preventDefault();
-      console.log(555);
       getPermitList(currentPage,searchQuery);
       setManageFilterOffcanvas(false)
     };
@@ -971,7 +987,11 @@ const handleSelectSingleChange  = (selectedItems) => {
 };
 
 
-  return (
+useEffect(() => {
+  getPermitList();
+}, [filterQuery, searchQuery]);
+
+return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
       <div className="container-fluid">
