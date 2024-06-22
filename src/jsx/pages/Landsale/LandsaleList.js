@@ -1591,7 +1591,7 @@ useEffect(() => {
         </div>
         <div className="offcanvas-body">
           <div className="container-fluid">
-            <div className="row">
+            {/* <div className="row">
               <div className="col-xl-4 mt-4">
                 <label className="">Subdivision :</label>
                 <div className="fw-bolder">
@@ -1736,6 +1736,37 @@ useEffect(() => {
                   <span className="fw-bold">{landSaleDetails.zip || "NA"}</span>
                 </div>
               </div>
+            </div> */}
+            <div style={{marginTop: "10px"}}>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-40" style={{width:"400px", fontSize: "25px"}}><span><b>PARCEL:</b></span>&nbsp;<span>{landSaleDetails.parcel || "NA"}</span></div>
+                <div className="fs-18"><span><b>DOC:</b></span>&nbsp;<span>{landSaleDetails.doc || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+              <label className="fs-18" style={{marginTop: "5px",width:"400px"}}><b>PRICE:</b>&nbsp;<span>{landSaleDetails.price || "NA"}</span></label><br />
+              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zipcode || "NA"}</span></label><br />
+              </div>
+              <label className="fs-18"><b>DATE:</b>&nbsp;<span>{<DateComponent date={landSaleDetails.date} /> || "NA"}
+              </span></label><br />
+              <label className="fs-18"><b>PRICE PER:</b>&nbsp;<span>{landSaleDetails.priceperunit || "NA"}</span></label><br />
+              <label className="fs-18"><b>SIZE:</b>&nbsp;<span>{landSaleDetails.noofunit || "NA"}</span></label><br />
+              <label className="fs-18"><b>LOCATION:</b>&nbsp;<span>{landSaleDetails.location || "NA"}</span></label><br />
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <span className="fw-bold" style={{fontSize: "25px"}}>
+                {landSaleDetails.subdivision && landSaleDetails.subdivision.builder?.name || "NA"}
+              </span><br />
+              <span className="fw-bold" style={{fontSize: "25px"}}>
+                {landSaleDetails.subdivision !== null && landSaleDetails.subdivision.name !== undefined
+                  ? landSaleDetails.subdivision.name
+                  : "NA"
+                }
+              </span><br />
+              <label  className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{landSaleDetails.subdivision?.product_type || "NA"}</span></label><br />
+              <label  style={{width:"400px"}} className="fs-18"><b>Area:</b>&nbsp;<span>{landSaleDetails.subdivision?.area || "NA"}</span></label>
+              <label   className="fs-18"><b>MASTERPLAN:</b>&nbsp;<span>{landSaleDetails.subdivision?.masterplan || "NA"}</span></label>
+
             </div>
           </div>
         </div>

@@ -48,7 +48,12 @@ const PermitList = () => {
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
  const [selectedValues, setSelectedValues] = useState([]);
-  
+ const [selectedArea, setSelectedArea] = useState([]);
+ const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
+ const [productTypeStatus, setProductTypeStatus] = useState([]);
+ const [seletctedZipcode, setSelectedZipcode] = useState([]);
+
+
   useEffect(() => {
     const fetchBuilderList = async () => {
       try {
@@ -297,6 +302,146 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
       subdivision_name: selectedNames
   }));
   }
+
+  const areaOption = [
+    { value: "BC", label: "BC" },
+    { value: "E", label: "E" },
+    { value: "H", label: "H" },
+    { value: "IS", label: "IS" },
+    { value: "L", label: "DET" },
+    { value: "MSQ", label: "MSQ" },
+    { value: "MV", label: "MV" },
+    { value: "NLV", label: "NLV" },
+    { value: "NW", label: "NW" },
+    { value: "P", label: "P" },
+    { value: "SO", label: "SO" },
+    { value: "SW", label: "SW" }
+  ];
+
+  const handleSelectAreaChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedArea(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      area: selectedValues
+    }));
+  };
+
+  const productTypeOptions = [
+    { value: "DET", label: "DET" },
+    { value: "ATT", label: "ATT" },
+    { value: "HR", label: "HR" },
+    { value: "AC", label: "AC" }
+  ];
+  const handleSelectProductTypeChange  = (selectedItems) => {  
+    const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+
+    setSelectedValues(selectedValues);
+    setProductTypeStatus(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      product_type: selectedNames
+  }));
+  }
+
+  const zipCodeOption = [
+    { value: "89002", label: "89002" },
+    { value: "89005", label: "89005" },
+    { value: "89011", label: "89011" },
+    { value: "89012", label: "89012" },
+    { value: "89014", label: "89014" },
+    { value: "89015", label: "89015" },
+    { value: "89018", label: "89018" },
+    { value: "89021", label: "89021" },
+    { value: "89027", label: "89027" },
+    { value: "89029", label: "89029" },
+    { value: "89030", label: "89030" },
+    { value: "89031", label: "89031" },
+    { value: "89032", label: "89032" },
+    { value: "89044", label: "89044" },
+    { value: "89044", label: "89044" },
+    { value: "89052", label: "89052" },
+    { value: "89055", label: "89055" },
+    { value: "89060", label: "89060" },
+    { value: "89061", label: "89061" },
+    { value: "89074", label: "89074" },
+    { value: "89081", label: "89081" },
+    { value: "89084", label: "89084" },
+    { value: "89085", label: "89085" },
+    { value: "89086", label: "89086" },
+  ];
+
+  const handleSelectZipcodeChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedZipcode(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      zipcode: selectedValues
+    }));
+  };
+
+  const masterPlanOption = [
+    { value: "ALIANTE", label: "ALIANTE" },
+    { value: "ANTHEM", label: "ANTHEM" },
+    { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
+    { value: "ASCAYA", label: "ASCAYA" },
+    { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
+    { value: "CANYON CREST", label: "CANYON CREST" },
+    { value: "CANYON GATE", label: "CANYON GATE" },
+    { value: "CORONADO RANCH", label: "CORONADO RANCH" },
+    { value: "ELDORADO", label: "ELDORADO" },
+    { value: "GREEN VALLEY", label: "GREEN VALLEY" },
+    { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
+    { value: "INSPIRADA", label: "INSPIRADA" },
+    { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
+    { value: "THE LAKES", label: "THE LAKES" },
+    { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
+    { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
+    { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
+    { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
+    { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
+    { value: "NEVADA RANCH", label: "NEVADA RANCH" },
+    { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
+    { value: "PROVIDENCE", label: "PROVIDENCE" },
+    { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
+    { value: "RED ROCK CC", label: "RED ROCK CC" },
+    { value: "RHODES RANCH", label: "RHODES RANCH" },
+    { value: "SEDONA RANCH", label: "SEDONA RANCH" },
+    { value: "SEVEN HILLS", label: "SEVEN HILLS"},
+    { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
+    { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
+    { value: "SKYE CANYON", label: "SKYE CANYON" },
+    { value: "SKYE HILLS", label: "SKYE HILLS" },
+    { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
+    { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
+    { value: "SUMMERLIN", label: "SUMMERLIN" },
+    { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
+    { value: "SUNSTONE", label: "SUNSTONE" },
+    { value: "TUSCANY", label: "TUSCANY" },
+    { value: "VALLEY VISTA", label: "VALLEY VISTA" },
+    { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
+    { value: "VISTA VERDE", label: "VISTA VERDE" },
+    { value: "WESTON HILLS", label: "WESTON HILLS" },
+  ];
+
+  const handleSelectMasterPlanChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedMasterPlan(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      masterplan_id: selectedValues
+    }));
+  };
+
+
+
 
   const headers = [
     { label: "Date", key: "Date" },
@@ -2282,13 +2427,13 @@ return (
                                 </label>
                                 <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
                               </div>
-                              <div className="col-md-3 mt-3">
+                              {/* <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 CONTRACTOR:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.contractor} name="contractor" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 SQUARE FOOTAGE:{" "}
@@ -2296,13 +2441,13 @@ return (
                                 </label>
                                 <input type="text" value={filterQuery.sqft} name="sqft" className="form-control" onChange={HandleFilter}/>
                               </div>
-                              <div className="col-md-3 mt-3">
+                              {/* <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 OWNER:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input type="text" value={filterQuery.owner} name="owner" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3">
                                 <label className="form-label">
                                 LOT NUMBER:{" "}
@@ -2324,47 +2469,76 @@ return (
                                 </label>
                                 <input value={filterQuery.plan} name="plan" className="form-control" onChange={HandleFilter}/>
                               </div>
-                              <div className="col-md-3 mt-3 mb-3">
+                              {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 SUB LEGAL NAME:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.sublegalname} name="sublegalname" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
+                              </div> */}
+                              {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 VALUE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.value} name="value" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 PRODUCT TYPE:{" "}
                                   <span className="text-danger"></span>
+
                                 </label>
-                                <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
+                                <MultiSelect
+                                name="product_type"
+                                options={productTypeOptions}
+                                value={productTypeStatus}
+                                onChange={handleSelectProductTypeChange }
+                                placeholder="Select Prodcut Type" 
+                              />
+                                {/* <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/> */}
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 AREA:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
+                                <MultiSelect
+                                name="area"
+                                options={areaOption}
+                                value={selectedArea}
+                                onChange={handleSelectAreaChange }
+                                placeholder="Select Area" 
+                              />
+                                {/* <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/> */}
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 MASTERPLAN:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
+                                <MultiSelect
+                                name="masterplan_id"
+                                options={masterPlanOption}
+                                value={selectedMasterPlan}
+                                onChange={handleSelectMasterPlanChange }
+                                placeholder="Select Area" 
+                              />
+                                {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/> */}
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 ZIP CODE:{" "}
                                   <span className="text-danger"></span>
                                 </label>
-                                <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
+                                <MultiSelect
+                                name="zipcode"
+                                options={zipCodeOption}
+                                value={seletctedZipcode}
+                                onChange={handleSelectZipcodeChange}
+                                placeholder="Select Zipcode" 
+                              />
+                                {/* <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/> */}
                               </div>
                               <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
@@ -2380,13 +2554,13 @@ return (
                                 </label>
                                 <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
                               </div>
-                              <div className="col-md-3 mt-3 mb-3">
+                              {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 ZONING:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3 mb-3">
                               <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
                               <MultiSelect

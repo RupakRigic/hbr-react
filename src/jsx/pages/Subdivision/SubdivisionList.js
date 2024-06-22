@@ -7331,7 +7331,7 @@ const handleSortClose = () => setShowSort(false);
                                                 </div>
     
                               <div className="col-md-3 mt-3">
-                              <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type <span className="text-danger"></span></label>
+                              <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:<span className="text-danger"></span></label>
                               <MultiSelect
                                 name="product_type"
                                 options={productTypeOptions}

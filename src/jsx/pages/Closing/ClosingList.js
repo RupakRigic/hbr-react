@@ -34,6 +34,13 @@ const ClosingList = () => {
 
   const [excelLoading, setExcelLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
+  const [selectedArea, setSelectedArea] = useState([]);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
+  const [productTypeStatus, setProductTypeStatus] = useState([]);
+  const [seletctedZipcode, setSelectedZipcode] = useState([]);
+  const [seletctedLender, setSelectedLender] = useState([]);
+  const [seletctedClosingType, setSelectedClosingType] = useState([]);
+  const [lenderList, setLenderList] = useState([]);
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -167,6 +174,17 @@ const ClosingList = () => {
   
     setSearchQuery("");
     setManageFilterOffcanvas(false);
+    setSelectedArea([]);
+    setSelectedMasterPlan([]);
+    setSelectedZipcode([]);
+    setSelectedLender([]);
+    setProductTypeStatus([])
+    setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
+    setSelectedAge([]);
+    setSelectedSingle([]);
+    setSelectedClosingType([]);
+
   };
   
   useEffect(() => {
@@ -862,6 +880,33 @@ useEffect(() => {
   }
 }, [])
 
+
+const getLenderList = async () => {
+  try {
+      let response = await AdminClosingService.lender()
+      let responseData = await response.json()
+      const formattedData = responseData.map((lender) => ({
+        label: lender.lender,
+        value: lender.lender,
+      }));  
+     setLenderList(formattedData)
+  } catch (error) {
+      if (error.name === 'HTTPError') {
+          const errorJson = await error.response.json();
+          setError(errorJson.message)
+      }
+  }
+}
+useEffect(() => {
+  if (localStorage.getItem('usertoken')) {
+    getLenderList();
+  }
+  else {
+      navigate('/');
+  }
+}, [])
+
+
 const handleOpenDialog = () => {
   setDraggedColumns(columns);
   setOpenDialog(true);
@@ -970,6 +1015,171 @@ const handleSelectSingleChange  = (selectedItems) => {
   setFilterQuery(prevState => ({
     ...prevState,
     single: selectedNames
+}));
+};
+const areaOption = [
+  { value: "BC", label: "BC" },
+  { value: "E", label: "E" },
+  { value: "H", label: "H" },
+  { value: "IS", label: "IS" },
+  { value: "L", label: "DET" },
+  { value: "MSQ", label: "MSQ" },
+  { value: "MV", label: "MV" },
+  { value: "NLV", label: "NLV" },
+  { value: "NW", label: "NW" },
+  { value: "P", label: "P" },
+  { value: "SO", label: "SO" },
+  { value: "SW", label: "SW" }
+];
+
+const handleSelectAreaChange = (selectedItems) => {
+  console.log(selectedItems);
+  const selectedValues = selectedItems.map(item => item.value).join(', ');
+  console.log(selectedValues);
+  setSelectedArea(selectedItems);
+  setFilterQuery(prevState => ({
+    ...prevState,
+    area: selectedValues
+  }));
+};
+
+const productTypeOptions = [
+  { value: "DET", label: "DET" },
+  { value: "ATT", label: "ATT" },
+  { value: "HR", label: "HR" },
+  { value: "AC", label: "AC" }
+];
+const handleSelectProductTypeChange  = (selectedItems) => {  
+  const selectedValues = selectedItems.map(item => item.value);
+  const selectedNames = selectedItems.map(item => item.value).join(', ');
+
+  setSelectedValues(selectedValues);
+  setProductTypeStatus(selectedItems);
+  setFilterQuery(prevState => ({
+    ...prevState,
+    product_type: selectedNames
+}));
+}
+
+const zipCodeOption = [
+  { value: "89002", label: "89002" },
+  { value: "89005", label: "89005" },
+  { value: "89011", label: "89011" },
+  { value: "89012", label: "89012" },
+  { value: "89014", label: "89014" },
+  { value: "89015", label: "89015" },
+  { value: "89018", label: "89018" },
+  { value: "89021", label: "89021" },
+  { value: "89027", label: "89027" },
+  { value: "89029", label: "89029" },
+  { value: "89030", label: "89030" },
+  { value: "89031", label: "89031" },
+  { value: "89032", label: "89032" },
+  { value: "89044", label: "89044" },
+  { value: "89044", label: "89044" },
+  { value: "89052", label: "89052" },
+  { value: "89055", label: "89055" },
+  { value: "89060", label: "89060" },
+  { value: "89061", label: "89061" },
+  { value: "89074", label: "89074" },
+  { value: "89081", label: "89081" },
+  { value: "89084", label: "89084" },
+  { value: "89085", label: "89085" },
+  { value: "89086", label: "89086" },
+];
+
+const handleSelectZipcodeChange = (selectedItems) => {
+  console.log(selectedItems);
+  const selectedValues = selectedItems.map(item => item.value).join(', ');
+  console.log(selectedValues);
+  setSelectedZipcode(selectedItems);
+  setFilterQuery(prevState => ({
+    ...prevState,
+    zipcode: selectedValues
+  }));
+};
+
+const masterPlanOption = [
+  { value: "ALIANTE", label: "ALIANTE" },
+  { value: "ANTHEM", label: "ANTHEM" },
+  { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
+  { value: "ASCAYA", label: "ASCAYA" },
+  { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
+  { value: "CANYON CREST", label: "CANYON CREST" },
+  { value: "CANYON GATE", label: "CANYON GATE" },
+  { value: "CORONADO RANCH", label: "CORONADO RANCH" },
+  { value: "ELDORADO", label: "ELDORADO" },
+  { value: "GREEN VALLEY", label: "GREEN VALLEY" },
+  { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
+  { value: "INSPIRADA", label: "INSPIRADA" },
+  { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
+  { value: "THE LAKES", label: "THE LAKES" },
+  { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
+  { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
+  { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
+  { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
+  { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
+  { value: "NEVADA RANCH", label: "NEVADA RANCH" },
+  { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
+  { value: "PROVIDENCE", label: "PROVIDENCE" },
+  { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
+  { value: "RED ROCK CC", label: "RED ROCK CC" },
+  { value: "RHODES RANCH", label: "RHODES RANCH" },
+  { value: "SEDONA RANCH", label: "SEDONA RANCH" },
+  { value: "SEVEN HILLS", label: "SEVEN HILLS"},
+  { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
+  { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
+  { value: "SKYE CANYON", label: "SKYE CANYON" },
+  { value: "SKYE HILLS", label: "SKYE HILLS" },
+  { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
+  { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
+  { value: "SUMMERLIN", label: "SUMMERLIN" },
+  { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
+  { value: "SUNSTONE", label: "SUNSTONE" },
+  { value: "TUSCANY", label: "TUSCANY" },
+  { value: "VALLEY VISTA", label: "VALLEY VISTA" },
+  { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
+  { value: "VISTA VERDE", label: "VISTA VERDE" },
+  { value: "WESTON HILLS", label: "WESTON HILLS" },
+];
+
+const handleSelectMasterPlanChange = (selectedItems) => {
+  console.log(selectedItems);
+  const selectedValues = selectedItems.map(item => item.value).join(', ');
+  console.log(selectedValues);
+  setSelectedMasterPlan(selectedItems);
+  setFilterQuery(prevState => ({
+    ...prevState,
+    masterplan_id: selectedValues
+  }));
+};
+
+const handleSelectLenderChange = (selectedItems) => {
+  console.log(selectedItems);
+  const selectedValues = selectedItems.map(item => item.value).join(', ');
+  console.log(selectedValues);
+  setSelectedLender(selectedItems);
+  setFilterQuery(prevState => ({
+    ...prevState,
+    lender: selectedValues
+  }));
+};
+
+console.log(filterQuery);
+
+const closingType =[
+  { value: "NEW", label: "NEW" },
+  { value: "RESALES", label: "RESALES" },
+];
+
+const handleSelectClosingTypeChange = (selectedItems) => {
+  const selectedValues = selectedItems.map(item => item.value);
+  setSelectedValues(selectedValues);
+  setSelectedClosingType(selectedItems);
+  const selectedNames = selectedItems.map(item => item.label).join(', ');
+  setFilterQuery(prevState => ({
+    ...prevState,
+    closing_type: selectedNames
 }));
 };
 
@@ -1798,7 +2008,7 @@ const handleSelectSingleChange  = (selectedItems) => {
         </div>
         <div className="offcanvas-body">
           <div className="container-fluid">
-            <div className="row">
+            {/* <div className="row">
               <div className="col-xl-4 mt-4">
                 <label className="">Subdivision :</label>
                 <div className="fw-bolder">
@@ -1881,6 +2091,54 @@ const handleSelectSingleChange  = (selectedItems) => {
                   </span>
                 </div>
               </div>
+            </div> */}
+            <div style={{marginTop: "10px"}}>
+              <span className="fw-bold" style={{fontSize: "22px"}}>
+                {ClosingDetails.subdivision.builder?.name || "NA"}
+              </span><br />
+              <span className="fw-bold" style={{fontSize: "40px"}}>
+                {ClosingDetails.subdivision !== null && ClosingDetails.subdivision.name !== undefined
+                  ? ClosingDetails.subdivision.name
+                  : "NA"
+                }
+              </span><br />
+              <label className="" style={{fontSize: "22px"}}><b>PRODUCT TYPE:</b>&nbsp;<span>{ClosingDetails.subdivision?.product_type || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.area || "NA"}</span></div>
+                <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.masterplan_id || "NA"}</span></div>
+              </div>
+              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{ClosingDetails.subdivision?.zipcode || "NA"}</span></label><br />
+              <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{ClosingDetails.subdivision?.crossstreet || "NA"}</span></label><br />
+              <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{ClosingDetails.subdivision?.juridiction || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>PARCEL:</b></span>&nbsp;<span>{ClosingDetails.parcel || "NA"}</span></div>
+                <div className="fs-18"><span><b>LENDER:</b></span>&nbsp;<span>{ClosingDetails.lender || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>ADDRESS:</b></span>&nbsp;<span>{ClosingDetails.address || "NA"}</span></div>
+                <div className="fs-18"><span><b>LOAN AMT:</b></span>&nbsp;<span>{ClosingDetails.loanamount || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>CLOSING PRICE:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.closingprice} /> ||"NA"}</span></div>
+                <div className="fs-18"><span><b>CLOSING TYPE:</b></span>&nbsp;<span>{ClosingDetails.closing_type || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>DATE:</b></span>&nbsp;<span>{<DateComponent date={ClosingDetails.closingdate} /> || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>DOC:</b></span>&nbsp;<span>{ClosingDetails.document || "NA"}</span></div>
+              </div>
+
+              <label className="fs-18"><b>BUYER:</b>&nbsp;<span>{ClosingDetails.buyer || "NA"}</span></label><br />
+              <label className="fs-18"><b>SELLER:</b>&nbsp;<span>{ClosingDetails.sellerleagal || "NA"}</span></label><br />
+              <label className="fs-18"><b>SUB LEGAL NAME:</b>&nbsp;<span>{ClosingDetails.sublegal_name || "NA"}</span></label>
+
             </div>
           </div>
         </div>
@@ -1986,7 +2244,17 @@ const handleSelectSingleChange  = (selectedItems) => {
                     <label className="form-label">
                       CLOSING TYPE:{" "}
                     </label>
-                    <input name="closing_type" value={filterQuery.closing_type} className="form-control" onChange={HandleFilter}/>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="closing_type"
+                        options={closingType}
+                        value={seletctedClosingType}
+                        onChange={handleSelectClosingTypeChange }
+                        placeholder={"Select Closing Type"} 
+                      />
+                    </Form.Group>
+
+                    {/* <input name="closing_type" value={filterQuery.closing_type} className="form-control" onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
@@ -2105,7 +2373,16 @@ const handleSelectSingleChange  = (selectedItems) => {
                     <label className="form-label">
                       LENDER:{" "}
                     </label>
-                    <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={lenderList}
+                        value={seletctedLender}
+                        onChange={handleSelectLenderChange }
+                        placeholder={"Select Lender"} 
+                      />
+                    </Form.Group>
+                    {/* <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -2119,30 +2396,63 @@ const handleSelectSingleChange  = (selectedItems) => {
                     </label>
                     <input value={filterQuery.type} name="type" className="form-control" onChange={HandleFilter}/>
                   </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      PRODUCT TYPE:{" "}
-                    </label>
-                    <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      AREA:{" "}
-                    </label>
-                    <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      MASTER PLAN:{" "}
-                    </label>
-                    <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      ZIP CODE:{" "}
-                    </label>
-                    <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                PRODUCT TYPE:{" "}
+                                  <span className="text-danger"></span>
+
+                                </label>
+                                <MultiSelect
+                                name="product_type"
+                                options={productTypeOptions}
+                                value={productTypeStatus}
+                                onChange={handleSelectProductTypeChange }
+                                placeholder="Select Prodcut Type" 
+                              />
+                                {/* <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/> */}
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                AREA:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <MultiSelect
+                                name="area"
+                                options={areaOption}
+                                value={selectedArea}
+                                onChange={handleSelectAreaChange }
+                                placeholder="Select Area" 
+                              />
+                                {/* <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/> */}
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                MASTERPLAN:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <MultiSelect
+                                name="masterplan_id"
+                                options={masterPlanOption}
+                                value={selectedMasterPlan}
+                                onChange={handleSelectMasterPlanChange }
+                                placeholder="Select Area" 
+                              />
+                                {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/> */}
+                              </div>
+                              <div className="col-md-3 mt-3 mb-3">
+                                <label className="form-label">
+                                ZIP CODE:{" "}
+                                  <span className="text-danger"></span>
+                                </label>
+                                <MultiSelect
+                                name="zipcode"
+                                options={zipCodeOption}
+                                value={seletctedZipcode}
+                                onChange={handleSelectZipcodeChange}
+                                placeholder="Select Zipcode" 
+                              />
+                                {/* <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/> */}
+                              </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       LOT WIDTH:{" "}

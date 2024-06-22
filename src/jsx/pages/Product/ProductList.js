@@ -2177,13 +2177,13 @@ const HandleFilterForm = (e) =>
                                 </label>
                                 <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
                               </div>
-                              <div className="col-md-3 mt-3 mb-3">
+                              {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 ZONING:{" "}
                                   <span className="text-danger"></span>
                                 </label>
                                 <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                              </div>
+                              </div> */}
                               <div className="col-md-3 mt-3 mb-3">
                               <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
                               <MultiSelect
@@ -2288,7 +2288,7 @@ const HandleFilterForm = (e) =>
                   </TabList>
                 </Box>
                 <TabPanel value="1" className="p-0">
-                  <div className="row">
+                  {/* <div className="row">
                     <div className="col-xl-4 mt-4">
                       <label className="">Subdivision:</label>
                       <div>
@@ -2409,8 +2409,60 @@ const HandleFilterForm = (e) =>
                           {ProductDetails.sqft || "NA"}
                         </span>
                       </div>
-                    </div>
-                  </div>
+                    </div> */}
+                  {/* </div> */}
+                  <div style={{marginTop: "10px"}}>
+              <span className="fw-bold" style={{fontSize: "22px"}}>
+                {ProductDetails.subdivision.builder?.name || "NA"}
+              </span><br />
+              <span className="fw-bold" style={{fontSize: "40px"}}>
+                {ProductDetails.subdivision !== null && ProductDetails.subdivision.name !== undefined
+                  ? ProductDetails.subdivision.name
+                  : "NA"
+                }
+              </span><br />
+              <label className="" style={{fontSize: "22px"}}><b>PRODUCT TYPE:</b>&nbsp;<span>{ProductDetails.subdivision?.product_type || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{ProductDetails.subdivision?.area || "NA"}</span></div>
+                <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{ProductDetails.subdivision?.masterplan_id || "NA"}</span></div>
+              </div>
+              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{ProductDetails.subdivision?.zipcode || "NA"}</span></label><br />
+              <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{ProductDetails.subdivision?.crossstreet || "NA"}</span></label><br />
+              <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{ProductDetails.subdivision?.juridiction || "NA"}</span></label>
+
+              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
+
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>STATUS:</b></span>&nbsp;<span>        {ProductDetails.status === 1 && "Active"}
+                          {ProductDetails.status === 0 && "Sold Out"}
+                          {ProductDetails.status === 2 && "Future"}</span></div>
+                <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.recentprice}/>
+                          ) || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>SQFT:</b></span>&nbsp;<span>{ProductDetails.sqft || "NA"}</span></div>
+                <div className="fs-18"><span><b>$ per SQFT:</b></span>&nbsp;<span>
+                {(<PriceComponent price={ProductDetails.current_price_per_sqft}/>
+                          ) || "NA"}
+                  </span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>STORIES:</b></span>&nbsp;<span>{ProductDetails.stories ||"NA"}</span></div>
+                <div className="fs-18"><span><b>PRICE CHANGE:</b></span>&nbsp;<span>{ProductDetails.pricechange || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>BEDROOMS:</b></span>&nbsp;<span>{ProductDetails.bedroom || "NA"}</span></div>
+              </div>
+              <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>BATHROOMS:</b></span>&nbsp;<span>{ProductDetails.bathroom || "NA"}</span></div>
+              </div>       
+                  <div className="d-flex" style={{marginTop: "5px"}}>
+                <div className="fs-18" style={{width: "300px"}}><span><b>GARAGE:</b></span>&nbsp;<span>{ProductDetails.garage || "NA"}</span></div>
+              </div>
+            </div>
                 </TabPanel>
                 <TabPanel value="2" className="p-0">
                   <div className="card">
