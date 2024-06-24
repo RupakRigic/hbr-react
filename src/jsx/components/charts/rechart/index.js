@@ -595,6 +595,7 @@ function RechartJs() {
       });
 
       // prepare net sale sub division wise chart data
+      console.log(responseData["net_sales_per_subdivsion"]);
       const filteredNetSaleSubWiseData = Object.entries(
         responseData["net_sales_per_subdivsion"]
       ).filter(([key, value]) => key !== "status");

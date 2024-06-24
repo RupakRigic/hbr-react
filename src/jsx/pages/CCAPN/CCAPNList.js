@@ -14,10 +14,12 @@ import { Form, Offcanvas, Row } from "react-bootstrap";
 import { MultiSelect } from "react-multi-select-component";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
+import Dropdown from "react-bootstrap/Dropdown";
 
 const CCAPNList = () => {
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleEditCheckboxChange = (e, userId) => {
     if (e.target.checked) {
@@ -31,6 +33,34 @@ const CCAPNList = () => {
       );
     }
   };
+
+  const [filterQuery, setFilterQuery] = useState({
+    parcel :"",
+    address: "",
+  });
+
+  const HandleFilter = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery((prevFilterQuery) => ({
+      ...prevFilterQuery,
+      [name]: value,
+    }));
+  };
+console.log(searchQuery);
+  const filterString = () => {
+    const queryString = Object.keys(filterQuery)
+      .map(
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+      )
+      .join("&");
+
+    return queryString ? `&${queryString}` : "";
+  };
+
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
   const [BuilderList, setBuilderList] = useState([]);
   console.log(BuilderList);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
@@ -77,7 +107,6 @@ const CCAPNList = () => {
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [Error, setError] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [fileListCount, setFileListCount] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -139,6 +168,8 @@ const CCAPNList = () => {
 
   const GetCCAPNList = async (pageNumber) => {
     setIsLoading(true);
+    
+    console.log(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -175,7 +206,7 @@ const CCAPNList = () => {
     } else {
       navigate("/");
     }
-  }, [currentPage]);
+  }, [currentPage,searchQuery]);
 
   const fetchAllPages = async (searchQuery, sortConfig) => {
     const response = await AdminCCAPNService.index(
@@ -418,6 +449,33 @@ const CCAPNList = () => {
                     SyestemUserRole == "Standard User" ? (
                       ""
                     ) : (
+                      <div className="d-flex justify-content-between">
+                        <div className="me-3">
+                <Dropdown>
+                        <Dropdown.Toggle
+                          variant="success"
+                          className="btn-sm"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa fa-filter"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu style={{width:"400px",overflow:"unset"}}>
+
+                        <label className="form-label">
+                        Parcel :
+                          </label>
+                        <input type="search" name="parcel" className="form-control"  onChange={HandleFilter} />     
+
+                        <label className="form-label">
+                        Address :
+                          </label>
+                        <input type="search" name="address"className="form-control" onChange={HandleFilter} />                        
+                   
+                        </Dropdown.Menu>
+                          </Dropdown>
+
+                      </div>
                       <div>
                         <Button
                           className="btn-sm me-1"
@@ -426,6 +484,7 @@ const CCAPNList = () => {
                         >
                           Import
                         </Button>
+                        </div>
                       </div>
                     )}
                   </div>
