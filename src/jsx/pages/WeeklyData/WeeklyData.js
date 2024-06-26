@@ -6,6 +6,7 @@ import RechartJs from "../../components/charts/rechart";
 import MainPagetitle from '../../layouts/MainPagetitle';
 import './WeeklyData.css'
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
+import ClipLoader from "react-spinners/ClipLoader";
 import { Form } from "react-bootstrap";
 
 const BuilderTable = () => {
@@ -13,6 +14,7 @@ const BuilderTable = () => {
     var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL
     const [weekEndDates, setWeekEndDates] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
     const recordsPage = 5;
     const lastIndex = currentPage * recordsPage;
     const firstIndex = lastIndex - recordsPage;
@@ -56,21 +58,24 @@ const BuilderTable = () => {
     const [BuilderCode, setBuilderCode] = useState('');
     
     const getbuilderlist = async () => {
-    
+      setIsLoading(true);
       try {
     
           const response = await AdminBuilderService.index();
           const responseData = await response.json();
-          setBuilderList(responseData.data)
+          setIsLoading(false);
+          setBuilderList(responseData.data);
     
       } catch (error) {
-          console.log(error)
+          console.log(error);
+          setIsLoading(false);
           if (error.name === 'HTTPError') {
               const errorJson = await error.response.json();
     
               setError(errorJson.message)
           }
       }
+      setIsLoading(false);
     }
     useEffect(() => {
       getbuilderlist();
@@ -87,6 +92,11 @@ const BuilderTable = () => {
                                     <div className="tbl-caption d-flex justify-content-center text-wrap align-items-center">
                                         <h4 className="heading mb-0">Enter Data Reporting</h4>
                                     </div> 
+                                    {isLoading ? (
+                                        <div className="d-flex justify-content-center align-items-center mb-5">
+                                            <ClipLoader color="#4474fc" />
+                                        </div>
+                                    ) : (
                                    <div className='dataTables_wrapper no-footer'>
                                     <p className='text-center'>Select Week ending date and click continue</p>
                                     <div className="d-flex justify-content-center mb-5">
@@ -107,7 +117,7 @@ const BuilderTable = () => {
                                     </select>
                                     </div>
                                     <Link className='mt-4' to={"/weekly-data-index"}>Continue</Link>
-                                   </div>
+                                   </div>)}
                                 </div>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ import WeeklyDataOffcanvas from "./WeeklyDataOffcanvas";
 import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import FutureSubdivisionPopup from "./FutureSubdivisionPopup";
@@ -25,6 +25,7 @@ const WeeklyDataIndex = () => {
   const number = [...Array(npage + 1).keys()].slice(1);
   const subdivision = useRef();
   const [formData, setFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCallback = () => {
     getWeeklyList();
@@ -51,6 +52,7 @@ const WeeklyDataIndex = () => {
     }
   }, []);
   const getWeeklyList = async () => {
+    setIsLoading(true);
     try {
       const response = await AdminWeeklyDataService.index(
         localStorage.getItem("enddate"),
@@ -64,9 +66,10 @@ const WeeklyDataIndex = () => {
           element.weekly_data[0].gross_sales -
           element.weekly_data[0].cancelations,
       }));
-  
+      setIsLoading(false);
       setBuilderList(updatedData);
     } catch (error) {
+      setIsLoading(false);
       console.log(444);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -75,6 +78,7 @@ const WeeklyDataIndex = () => {
         setError("An unexpected error occurred");
       }
     }
+    setIsLoading(false);
   };
   
   useEffect(() => {
@@ -244,6 +248,11 @@ const WeeklyDataIndex = () => {
                       </Link>
                       </div>
                   </div>
+                  {isLoading ? (
+                      <div className="d-flex justify-content-center align-items-center mb-5">
+                        <ClipLoader color="#4474fc" />
+                      </div>
+                    ) : (
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -481,7 +490,7 @@ const WeeklyDataIndex = () => {
                         </Link>
                       </div>
                     </div>
-                  </div>
+                  </div>)}
                 </div>
               </div>
             </div>

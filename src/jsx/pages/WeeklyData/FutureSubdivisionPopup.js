@@ -49,7 +49,8 @@ const FutureSubdivisionPopup = ({ show, handleClose }) => {
 
                 swal("Subdivision Added Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        handleClose()
+                        handleClose();
+                        window.location.reload();
                     }
                 })
 
