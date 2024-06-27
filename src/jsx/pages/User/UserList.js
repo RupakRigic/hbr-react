@@ -63,6 +63,14 @@ const UserList = () => {
     email: "",
     roles: "",
   });
+  const clearPriceDetails = () => {
+    setUserDetails({
+      builder: "",
+      name: "",
+      email: "",
+      roles: "",
+    });
+  };
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -170,6 +178,7 @@ const UserList = () => {
     role: "",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -257,15 +266,17 @@ const UserList = () => {
     getuserList();
   };
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminUserRoleService.show(id).json();
       setUserDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -830,11 +841,16 @@ const UserList = () => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearPriceDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             <div className="row">
@@ -875,7 +891,7 @@ const UserList = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}

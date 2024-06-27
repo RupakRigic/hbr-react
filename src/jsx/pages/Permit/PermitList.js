@@ -208,6 +208,7 @@ useEffect(() => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -251,6 +252,24 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     address1: "",
     address2: "",
   });
+  const clearPermitDetails = () => {
+    SetPermitDetails({
+      subdivision: "",
+      parcel: "",
+      contractor: "",
+      description: "",
+      date: "",
+      dateadded: "",
+      lotnumber: "",
+      owner: "",
+      plan: "",
+      sqft: "",
+      value: "",
+      permitnumber: "",
+      address1: "",
+      address2: "",
+    });
+  };
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -896,16 +915,17 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
     setBuilderCode(code.target.value);
   };
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminPermitService.show(id).json();
       SetPermitDetails(responseData);
       console.log(responseData);
-
-      setShowOffcanvas(true);
+      setIsFormLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -2174,11 +2194,16 @@ return (
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearPermitDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             <div style={{marginTop: "10px"}}>
@@ -2226,7 +2251,7 @@ return (
               <label className="fs-18"><b>DESCRIPTION:</b>&nbsp;<span>{PermitDetails.description || "NA"}</span></label>
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}

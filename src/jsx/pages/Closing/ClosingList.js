@@ -203,6 +203,20 @@ const ClosingList = () => {
     document: "",
   });
 
+  const clearClosingDetails = () => {
+    setClosingDetails({
+      subdivision: "",
+      sellerleagal: "",
+      address: "",
+      buyer: "",
+      lender: "",
+      closingdate: "",
+      closingprice: "",
+      loanamount: "",
+      document: "",
+    });
+  };
+
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -520,6 +534,7 @@ const ClosingList = () => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
 
   function prePage() {
     if (currentPage !== 1) {
@@ -687,16 +702,17 @@ useEffect(() => {
 
 
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminClosingService.show(id).json();
       setClosingDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -2001,11 +2017,16 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearClosingDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             {/* <div className="row">
@@ -2122,7 +2143,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
               </div>
               <div className="d-flex" style={{marginTop: "5px"}}>
                 <div className="fs-18" style={{width: "300px"}}><span><b>ADDRESS:</b></span>&nbsp;<span>{ClosingDetails.address || "NA"}</span></div>
-                <div className="fs-18"><span><b>LOAN AMT:</b></span>&nbsp;<span>{ClosingDetails.loanamount || "NA"}</span></div>
+                <div className="fs-18"><span><b>LOAN AMT:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.loanamount} /> || "NA"}</span></div>
               </div>
               <div className="d-flex" style={{marginTop: "5px"}}>
                 <div className="fs-18" style={{width: "300px"}}><span><b>CLOSING PRICE:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.closingprice} /> ||"NA"}</span></div>
@@ -2141,7 +2162,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
 
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}

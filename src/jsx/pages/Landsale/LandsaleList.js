@@ -235,6 +235,28 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     subdivision: "",
   });
 
+  const clearLandSaleDetails = () => {
+    setLandSaleDetails({
+      seller: "",
+      buyer: "",
+      location: "",
+      date: "",
+      parcel: "",
+      price: "",
+      typeofunit: "",
+      priceperunit: "",
+      noofunit: "",
+      notes: "",
+      doc: "",
+      zoning: "",
+      lat: "",
+      lng: "",
+      area: "",
+      zip: "",
+      subdivision: "",
+    });
+  };
+
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -431,6 +453,8 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
+
 
   function prePage() {
     if (currentPage !== 1) {
@@ -586,15 +610,17 @@ useEffect(() => {
     setSubdivisionCode(code.target.value);
   };
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminLandsaleService.show(id).json();
       setLandSaleDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -1584,11 +1610,16 @@ useEffect(() => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearLandSaleDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             {/* <div className="row">
@@ -1743,12 +1774,12 @@ useEffect(() => {
                 <div className="fs-18"><span><b>DOC:</b></span>&nbsp;<span>{landSaleDetails.doc || "NA"}</span></div>
               </div>
               <div className="d-flex" style={{marginTop: "5px"}}>
-              <label className="fs-18" style={{marginTop: "5px",width:"400px"}}><b>PRICE:</b>&nbsp;<span>{landSaleDetails.price || "NA"}</span></label><br />
-              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zipcode || "NA"}</span></label><br />
+              <label className="fs-18" style={{marginTop: "5px",width:"400px"}}><b>PRICE:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price} /> || "NA"}</span></label><br />
+              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zip || "NA"}</span></label><br />
               </div>
               <label className="fs-18"><b>DATE:</b>&nbsp;<span>{<DateComponent date={landSaleDetails.date} /> || "NA"}
               </span></label><br />
-              <label className="fs-18"><b>PRICE PER:</b>&nbsp;<span>{landSaleDetails.priceperunit || "NA"}</span></label><br />
+              <label className="fs-18"><b>PRICE PER:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price_per} /> || "NA"}</span></label><br />
               <label className="fs-18"><b>SIZE:</b>&nbsp;<span>{landSaleDetails.noofunit || "NA"}</span></label><br />
               <label className="fs-18"><b>LOCATION:</b>&nbsp;<span>{landSaleDetails.location || "NA"}</span></label><br />
 
@@ -1769,7 +1800,7 @@ useEffect(() => {
 
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
 
       <Offcanvas

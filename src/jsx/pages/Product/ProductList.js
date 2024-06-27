@@ -340,6 +340,7 @@ const ProductList = () => {
     price_changes_last_12_Month:"",
   });
 
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const product = useRef();
@@ -371,6 +372,23 @@ const ProductList = () => {
     recentpricesqft: "",
     sqft: "",
   });
+
+  const clearProductDetails = () => {
+    SetProductDetails({
+      subdivision: "",
+      product_code: "",
+      name: "",
+      status: "",
+      stories: "",
+      garage: "",
+      pricechange: "",
+      bathroom: "",
+      recentprice: "",
+      bedroom: "",
+      recentpricesqft: "",
+      sqft: "",
+    });
+  };
 
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -578,16 +596,17 @@ const ProductList = () => {
   }, []);
 
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminProductService.show(id).json();
       SetProductDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -2269,11 +2288,16 @@ const HandleFilterForm = (e) =>
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearProductDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -2541,7 +2565,7 @@ const HandleFilterForm = (e) =>
               </TabContext>
             </Box>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}

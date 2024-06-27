@@ -220,6 +220,19 @@ useEffect(() => {
     unsoldinventory: "",
     status: "",
   });
+  const clearTrafficDetails = () => {
+    setTrafficDetails({
+      subdivision: "",
+      weekending: "",
+      weeklytraffic: "",
+      grosssales: "",
+      cancelations: "",
+      netsales: "",
+      lotreleased: "",
+      unsoldinventory: "",
+      status: "",
+    });
+  };
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -628,6 +641,7 @@ useEffect(() => {
     grosssales:"",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
 
   function prePage() {
     if (currentPage !== 1) {
@@ -723,16 +737,17 @@ useEffect(() => {
   };
 
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminTrafficsaleService.show(id).json();
       setTrafficDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -1837,11 +1852,16 @@ const parseDate = (dateString) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearTrafficDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             <div className="row">
@@ -1922,7 +1942,7 @@ const parseDate = (dateString) => {
               </div>
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}

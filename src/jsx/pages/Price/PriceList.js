@@ -278,6 +278,13 @@ const [filterQuery, setFilterQuery] = useState({
     baseprice: "",
     date: "",
   });
+  const clearPriceDetails = () => {
+    setPriceDetails({
+      product: "",
+      baseprice: "",
+      date: "",
+    });
+  };
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -378,6 +385,7 @@ const [filterQuery, setFilterQuery] = useState({
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -412,6 +420,7 @@ const [filterQuery, setFilterQuery] = useState({
   const bulkPrice = useRef();
 
   const getpriceList = async (pageNumber) => {
+    debugger
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -487,16 +496,17 @@ const [filterQuery, setFilterQuery] = useState({
     getpriceList();
   };
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminPriceService.show(id).json();
       setPriceDetails(responseData);
+      setIsFormLoading(false);
       console.log(responseData);
-
-      setShowOffcanvas(true);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -1664,8 +1674,7 @@ const handleSelectMasterPlanChange = (selectedItems) => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.garage}</td>
                                   }
                                   {column.id == "base Price" &&
-                                    // <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.baseprice} /></td>
-                                    <td></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.baseprice} />}</td>
                                   }
                                   {column.id == "price Per SQFT" &&
                                     <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per_sqft} /></td>
@@ -1777,11 +1786,16 @@ const handleSelectMasterPlanChange = (selectedItems) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearPriceDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             {/* <div className="row">
@@ -1868,7 +1882,7 @@ const handleSelectMasterPlanChange = (selectedItems) => {
               </div>
             </div>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageFilterOffcanvas}

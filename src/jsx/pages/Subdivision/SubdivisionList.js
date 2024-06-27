@@ -663,8 +663,51 @@ const handleSortClose = () => setShowSort(false);
   });
   console.log(BuilderList);
 
+  const clearSubdivisionDetails = () => {
+    setSubdivisionDetails({
+      builder_id: "",
+      subdivision_code: "",
+      name: "",
+      status: "",
+      reporting: "",
+      product_type: "",
+      phone: "",
+      opensince: "",
+      age: "",
+      single: "",
+      firstpermitdate: "",
+      masterplan_id: "",
+      lat: "",
+      lng: "",
+      area: "",
+      juridiction: "",
+      zipcode: "",
+      parcel: "",
+      crossstreet: "",
+      totallots: "",
+      unsoldlots: "",
+      lotreleased: "",
+      lotwidth: "",
+      stadinginventory: "",
+      lotsize: "",
+      permits: "",
+      netsales: "",
+      closing: "",
+      monthsopen: "",
+      gated: "",
+      sqftgroup: "",
+      dollargroup: "",
+      masterplanfee: "",
+      lastweeklydata: "",
+      dateadded: "",
+      zoning: "",
+      gasprovider: "",
+    });
+  };
+
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   useEffect(() => {
@@ -782,14 +825,16 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const handleRowClick = async (id) => {
+    setShowOffcanvas(true);
+    setIsFormLoading(true);
     try {
       let responseData = await AdminSubdevisionService.show(id).json();
       setSubdivisionDetails(responseData);
-      setShowOffcanvas(true);
+      setIsFormLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsFormLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -6556,11 +6601,16 @@ const handleSortClose = () => setShowSort(false);
           <button
             type="button"
             className="btn-close"
-            onClick={() => setShowOffcanvas(false)}
+            onClick={() => {setShowOffcanvas(false);clearSubdivisionDetails();}}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
+        {isFormLoading ? (
+          <div className="d-flex justify-content-center align-items-center mb-5">
+            <ClipLoader color="#4474fc" />
+          </div>
+        ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -7157,7 +7207,7 @@ const handleSortClose = () => setShowSort(false);
               </TabContext>
             </Box>
           </div>
-        </div>
+        </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}
