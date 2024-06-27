@@ -2372,12 +2372,12 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                     </label>
                     <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  {/* <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SUB LEGAL NAME:{" "}
                     </label>
                     <input value={filterQuery.sublegal_name} name="sublegal_name" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  </div> */}
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SELLER LEGAL NAME:{" "}
@@ -2411,12 +2411,12 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                     </label>
                     <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter}/>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  {/* <div className="col-md-3 mt-3">
                     <label className="form-label">
                       TYPE:{" "}
                     </label>
                     <input value={filterQuery.type} name="type" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  </div> */}
                   <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 PRODUCT TYPE:{" "}
@@ -2486,12 +2486,12 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                     </label>
                     <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  {/* <div className="col-md-3 mt-3">
                     <label className="form-label">
                       ZONING:{" "}
                     </label>
                     <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                  </div>
+                  </div> */}
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       AGE RESTRICTED:{" "}

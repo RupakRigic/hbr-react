@@ -142,7 +142,9 @@ const handleSortClose = () => setShowSort(false);
     price_group:"",
     month_net_sold:"",
     year_net_sold:"",
-    opensince:""
+    opensince:"",
+    from:"",
+    to:"",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -976,7 +978,9 @@ const handleSortClose = () => setShowSort(false);
         price_group:"",
         month_net_sold:"",
         year_net_sold:"",
-        opensince:""
+        opensince:"",
+        from:"",
+        to:"",
       });
       getbuilderlist();
   };
@@ -3872,19 +3876,53 @@ const handleSortClose = () => setShowSort(false);
   }));
   }
 
-  const handleFilterDateOpen = (date) => {
+  // const handleFilterDateOpen = (date) => {
+  //   if (date) {
+  //     const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+  //     console.log(formattedDate)
+
+  //     setFilterQuery((prevFilterQuery) => ({
+  //       ...prevFilterQuery,
+  //       opensince: formattedDate,
+  //     }));
+  //   } else {
+  //     setFilterQuery((prevFilterQuery) => ({
+  //       ...prevFilterQuery,
+  //       opensince: '',
+  //     }));
+  //   }
+  // };
+
+  const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
       console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
-        opensince: formattedDate,
+        from: formattedDate,
       }));
     } else {
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
-        opensince: '',
+        from: '',
+      }));
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
       }));
     }
   };
@@ -7536,19 +7574,42 @@ const handleSortClose = () => setShowSort(false);
                               />
                                 {/* <input value={filterQuery.gasprovider} name="Gas Provider" className="form-control" onChange={HandleFilter}/> */}
                               </div>
-                              <div className="col-md-3 mt-3 mb-3">
+                              {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 OPEN SINCE:{" "}
                                   <span className="text-danger"></span>
-                                </label>
-                                <DatePicker
-        name="from"
-        className="form-control"
-        selected={filterQuery.opensince ? parseDate(filterQuery.opensince) : null}
-        onChange={handleFilterDateOpen}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />                              </div>
+                                </label> */}
+                                <div className="col-md-3 mt-3">
+                                  <label className="form-label">From:{" "}</label>
+                                  <DatePicker
+                                    name="from"
+                                    className="form-control"
+                                    selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                                    onChange={handleFilterDateFrom}
+                                    dateFormat="MM/dd/yyyy"
+                                    placeholderText="mm/dd/yyyy"
+                                  />
+                                </div>
+                                <div className="col-md-3 mt-3">
+                                  <label className="form-label">To:{" "}</label>
+                                  <DatePicker
+                                    name="to"
+                                    className="form-control"
+                                    selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                                    onChange={handleFilterDateTo}
+                                    dateFormat="MM/dd/yyyy"
+                                    placeholderText="mm/dd/yyyy"
+                                  />
+                                </div>
+                                {/* <DatePicker
+                                  name="from"
+                                  className="form-control"
+                                  selected={filterQuery.opensince ? parseDate(filterQuery.opensince) : null}
+                                  onChange={handleFilterDateOpen}
+                                  dateFormat="MM/dd/yyyy"
+                                  placeholderText="mm/dd/yyyy"
+                                />                               */}
+                                {/* </div> */}
                               {/* <div className="col-md-3 mt-3 mb-3">
                                 <label className="form-label">
                                 MASTER PLAN FEE:{" "}
@@ -7559,6 +7620,7 @@ const handleSortClose = () => setShowSort(false);
                              </div>
                              </form>
                             </div>
+                            &nbsp;
                               <div className="d-flex justify-content-between">                 
                                 <Button
                                   className="btn-sm"
