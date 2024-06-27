@@ -1877,7 +1877,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.lender}</td>
                                   }
                                   {column.id == "loan Amount" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.loanamount}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.loanamount} /></td>
                                   }
                                   {column.id == "type" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.type}</td>

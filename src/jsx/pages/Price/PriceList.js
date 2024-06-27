@@ -420,7 +420,6 @@ const [filterQuery, setFilterQuery] = useState({
   const bulkPrice = useRef();
 
   const getpriceList = async (pageNumber) => {
-    debugger
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
