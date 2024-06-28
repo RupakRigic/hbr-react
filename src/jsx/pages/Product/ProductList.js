@@ -2463,7 +2463,7 @@ const HandleFilterForm = (e) =>
                 <div className="fs-18" style={{width: "300px"}}><span><b>STATUS:</b></span>&nbsp;<span>        {ProductDetails.status === 1 && "Active"}
                           {ProductDetails.status === 0 && "Sold Out"}
                           {ProductDetails.status === 2 && "Future"}</span></div>
-                <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.recentprice}/>
+                <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.latest_base_price}/>
                           ) || "NA"}</span></div>
               </div>
               <div className="d-flex" style={{marginTop: "5px"}}>
