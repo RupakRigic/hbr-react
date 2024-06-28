@@ -116,7 +116,7 @@ const BuilderUpdate = () => {
 
                 swal("Builder Update Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/dashboard')
+                        navigate('/builderList')
                     }
                 })
 

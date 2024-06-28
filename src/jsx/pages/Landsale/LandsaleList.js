@@ -476,6 +476,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
   const getLandsaleList = async (currentPage) => {
+    setIsLoading(true);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -487,14 +488,14 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
         searchQuery
       );
       const responseData = await response.json();
+      setIsLoading(false);
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
-      setIsLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }

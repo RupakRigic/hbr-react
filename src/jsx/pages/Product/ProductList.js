@@ -1881,7 +1881,7 @@ const HandleFilterForm = (e) =>
                                       <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.current_price_per_sqft} /></td>
                                     }
                                     {column.id == "product Website" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.builder.website}</td>
                                     }
                                     {column.id == "product Type" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
