@@ -859,7 +859,8 @@ const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col 
 
           swal(message).then((willDelete) => {
               if (willDelete) {
-                  navigate("/productList");
+                  navigate("/permitlist");
+                  window.location.reload();
                   setShow(false);
               }
           });
