@@ -1644,7 +1644,7 @@ const handleSelectMasterPlanChange = (selectedItems) => {
                                 {columns.map((column) => (
                                   <>
                                   {column.id == "date" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
                                   }
                                   {column.id == "builder Name" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{ element.product && element.product && element.product.subdivision &&
