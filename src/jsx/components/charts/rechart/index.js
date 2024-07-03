@@ -418,7 +418,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: maxBuyerValue * 2,
+            // max: maxBuyerValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -471,7 +471,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: maxNetSaleValue * 2,
+            // max: maxNetSaleValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -524,7 +524,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: cancelationMaxValue * 2,
+            // max: cancelationMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -574,7 +574,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: StandingValueMaxValue * 2,
+            // max: StandingValueMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -626,7 +626,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: NetSaleSubWiseMaxValue * 2,
+            // max: NetSaleSubWiseMaxValue * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -679,7 +679,7 @@ function RechartJs() {
         scales: {
           y: {
             min: 0,
-            max: ActiveSubMax * 2,
+            // max: ActiveSubMax * 2,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -795,7 +795,7 @@ function RechartJs() {
 
           </Box>
             <Row>
-              <Col xl={4} lg={4}>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -816,9 +816,7 @@ function RechartJs() {
                  </Card.Body>
                 </Card>
               </Col>
-            {/* </Row> */}
-            {/* <Row> */}
-              <Col xl={4} lg={4}>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -829,9 +827,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            {/* </Row> */}
-            {/* <Row> */}
-              <Col xl={4} lg={4}>
+            </Row>
+            <Row>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -850,9 +848,7 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-            <Row>
-              <Col xl={4} lg={4}>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -863,7 +859,9 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-              <Col xl={4} lg={4}>
+            </Row>
+            <Row>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
@@ -882,9 +880,7 @@ function RechartJs() {
                   </Card.Body>
                 </Card>
               </Col>
-            {/* </Row> */}
-            {/* <Row> */}
-              <Col xl={4} lg={4}>
+              <Col xl={6} lg={6}>
                 {" "}
                 <Card>
                   <Card.Header>
