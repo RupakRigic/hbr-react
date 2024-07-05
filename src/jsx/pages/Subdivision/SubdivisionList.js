@@ -1,14 +1,11 @@
-import React, { useState, useRef, useEffect,useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Offcanvas, Form } from "react-bootstrap";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
-import { debounce } from "lodash";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
-import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -21,64 +18,63 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import PriceComponent from "../../components/Price/PriceComponent";
-import { Row, Col, Card } from 'react-bootstrap';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { Row } from 'react-bootstrap';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import BulkSubdivisionUpdate from "./BulkSubdivisionUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
-import Select from "react-select";
 import { Link } from 'react-router-dom';
-import GoogleMapLocator from "./GoogleMapLocator";
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 
 
 const SubdivisionList = () => {
+  const location = useLocation();
 
-  const SyestemUserRole = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user")).role
-  : "";
+  const { searchQueryByFilter, selectedStatusByFilter, selectedReportingByFilter, namebyfilter, selectedBuilderNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthbyfilter, lotsizebyfilter, selectedAgeByFilter, selectedSingleByFilter, selectedGatedByFilter, selectedJurisdicitionByFilter, seletctedGasProviderByFilter, frombyfilter, tobyfilter } = location.state || {};
 
-  const [excelLoading, setExcelLoading] = useState(true);
+  const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
+
+  const [excelLoading, setExcelLoading] = useState(false);
+
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
-        setSelectedCheckboxes(prev => [...prev, key]);
+      setSelectedCheckboxes(prev => [...prev, key]);
     } else {
-        setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
-};
+  };
+
   const addToBuilderList = () => {
-    navigate('/google-map-locator',{
+    navigate('/google-map-locator', {
       state: { subdivisionList: BuilderList },
     });
   };
 
-const handleRemoveSelected = () => {
+  const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
     setSortConfig(newSortConfig);
     setSelectedCheckboxes([]);
-};
+  };
 
-const [selectedLandSales, setSelectedLandSales] = useState([]);
-const bulkSubdivision = useRef();
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const bulkSubdivision = useRef();
 
-const handleEditCheckboxChange = (e, userId) => {
-  if (e.target.checked) {
-    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
-  } else {
-    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
-  }
-};
-const [showSort, setShowSort] = useState(false);
-const handleSortClose = () => setShowSort(false);
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  const [showSort, setShowSort] = useState(false);
+  const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
-  const [TotalBuilderListCount, setTotalBuilderListCount] = useState('');
-  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectAll, setSelectAll] = useState(false);
@@ -102,49 +98,49 @@ const handleSortClose = () => setShowSort(false);
     status: "",
     product_type: "",
     reporting: "",
-    builder_name:"",
-    name:"",
-    product_type:"",
-    area:"",
-    masterplan_id:"",
-    zipcode:"",
-    lotwidth:"",
-    lotsize:"",
-    zoning:"",
-    age:"",
-    single:"",
-    gated:"",
-    juridiction:"",
-    gasprovider:"",
-    hoafee:"",
-    masterplan_id:"",
-    months_open:"",
-    latest_lots_released:"",
-    latest_standing_inventory:"",
-    avg_sqft_all:"",
-    avg_sqft_active:"",
-    avg_base_price_all:"",
-    avg_base_price_active:"",
-    min_sqft_all:"",
-    min_sqft_active:"",
-    max_sqft_all:"",
-    max_sqft_active:"",
-    min_base_price_all:"",
-    min_sqft_active_current:"",
-    max_base_price_all:"",
-    max_sqft_active_current:"",
-    avg_net_traffic_per_month_this_year:"",
-    avg_net_sales_per_month_this_year:"",
-    avg_closings_per_month_this_year:"",
-    avg_net_sales_per_month_since_open:"",
-    avg_net_sales_per_month_last_three_months:"",
-    sqft_group:"",
-    price_group:"",
-    month_net_sold:"",
-    year_net_sold:"",
-    opensince:"",
-    from:"",
-    to:"",
+    builder_name: "",
+    name: "",
+    product_type: "",
+    area: "",
+    masterplan_id: "",
+    zipcode: "",
+    lotwidth: "",
+    lotsize: "",
+    zoning: "",
+    age: "",
+    single: "",
+    gated: "",
+    juridiction: "",
+    gasprovider: "",
+    hoafee: "",
+    masterplan_id: "",
+    months_open: "",
+    latest_lots_released: "",
+    latest_standing_inventory: "",
+    avg_sqft_all: "",
+    avg_sqft_active: "",
+    avg_base_price_all: "",
+    avg_base_price_active: "",
+    min_sqft_all: "",
+    min_sqft_active: "",
+    max_sqft_all: "",
+    max_sqft_active: "",
+    min_base_price_all: "",
+    min_sqft_active_current: "",
+    max_base_price_all: "",
+    max_sqft_active_current: "",
+    avg_net_traffic_per_month_this_year: "",
+    avg_net_sales_per_month_this_year: "",
+    avg_closings_per_month_this_year: "",
+    avg_net_sales_per_month_since_open: "",
+    avg_net_sales_per_month_last_three_months: "",
+    sqft_group: "",
+    price_group: "",
+    month_net_sold: "",
+    year_net_sold: "",
+    opensince: "",
+    from: "",
+    to: "",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -156,7 +152,7 @@ const handleSortClose = () => setShowSort(false);
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const [checkedItems, setCheckedItems] = useState({});
   const fieldList = AccessField({ tableName: "subdivisions" });
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -192,8 +188,6 @@ const handleSortClose = () => setShowSort(false);
   const [medianClosingPriceSinceOpenOption, setMedianClosingPriceSinceOpenOption] = useState("");
   const [medianClosingPriceThisYearOption, setMedianClosingPriceThisYearOption] = useState("");
 
-
-
   const [totalClosingsResult, setTotalClosingsResult] = useState(0);
   const [totalPermitsResult, setTotalPermitsResult] = useState(0);
   const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
@@ -223,19 +217,19 @@ const handleSortClose = () => setShowSort(false);
   const [medianClosingPriceSinceOpenResult, setMedianClosingPriceSinceOpenResult] = useState(0);
   const [medianClosingPriceThisYearResult, setMedianClosingPriceThisYearResult] = useState(0);
 
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState([]);
-  const [selectedReporting, setSelectedReporting] = useState([]);
-  const [selectedAge, setSelectedAge] = useState([]);
-  const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedGated, setSelectedGated] = useState([]);
-  const [productTypeStatus, setProductTypeStatus] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
+  const [selectedStatus, setSelectedStatus] = useState(selectedStatusByFilter);
+  const [selectedReporting, setSelectedReporting] = useState(selectedReportingByFilter);
+  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
+  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
+  const [selectedGated, setSelectedGated] = useState(selectedGatedByFilter);
+  const [productTypeStatus, setProductTypeStatus] = useState(productTypeStatusByFilter);
   const [selectedValues, setSelectedValues] = useState([]);
-  const [selectedArea, setSelectedArea] = useState([]);
-  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
-  const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
-  const [seletctedZipcode, setSelectedZipcode] = useState([]);
-  const [seletctedGasProvider, setSelectedGasProvider] = useState([]);
+  const [selectedArea, setSelectedArea] = useState(selectedAreaByFilter);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState(selectedMasterPlanByFilter);
+  const [selectedJurisdicition, setSelectedJurisdiction] = useState(selectedJurisdicitionByFilter);
+  const [seletctedZipcode, setSelectedZipcode] = useState(seletctedZipcodeByFilter);
+  const [seletctedGasProvider, setSelectedGasProvider] = useState(seletctedGasProviderByFilter);
 
   const headers = [
     { label: 'Status', key: 'firstname' },
@@ -298,6 +292,7 @@ const handleSortClose = () => setShowSort(false);
     { label: 'Open Since', key: 'opensince' }
 
   ];
+
   const exportColumns = [
     { label: 'Status', key: 'is_active' },
     { label: 'Reporting', key: 'reporting' },
@@ -373,37 +368,31 @@ const handleSortClose = () => setShowSort(false);
       setSelectedColumns([]);
     }
   };
- 
+
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
-  //   newdata.map((nw, i) =>
-  //   [nw === "Name" ? row.firstname : '', nw === "Surname" ? row.lastname : '', nw === "Nickname" ? row.nickname : '', nw === "ZipCode" ? row.zipcode : '', nw === "City" ? row.city : '', nw === "Registrations with check-in" ? row.with : '', nw === "Registrations without check-in" ? row.without : '', nw === "Cumulated Buy-in bounty Re-entries" ? row.reentries : '', nw === "Cumulated rakes" ? row.rakes : '']
-  // )
-   
-
   };
-  useEffect(() => {
-  }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
-  }; 
+  };
+
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns('');
-  
+
     let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-  
-    const tableData = AllBuilderListExport.map((row) => {
+
+    const tableData = BuilderList.map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -582,7 +571,7 @@ const handleSortClose = () => setShowSort(false);
             mappedRow[header] = row.year_net_sold;
             break;
           case 'Open Since':
-            mappedRow[header] = <DateComponent date={row.year_net_sold} /> ;
+            mappedRow[header] = <DateComponent date={row.year_net_sold} />;
             break;
           case 'Avg Closing Price':
             mappedRow[header] = row.avg_closing_price;
@@ -602,10 +591,10 @@ const handleSortClose = () => setShowSort(false);
       });
       return mappedRow;
     });
-  
+
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
-  
+
     // Optionally apply styles to the headers
     const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
     for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
@@ -613,9 +602,9 @@ const handleSortClose = () => setShowSort(false);
       if (!cell.s) cell.s = {};
       cell.s.font = { name: 'Calibri', sz: 11, bold: false };
     }
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sub Division List');
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Sub Division List.xlsx');
@@ -623,7 +612,7 @@ const handleSortClose = () => setShowSort(false);
     resetSelection();
     setExportModelShow(false);
   };
-  
+
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
     subdivision_code: "",
@@ -663,7 +652,6 @@ const handleSortClose = () => setShowSort(false);
     zoning: "",
     gasprovider: "",
   });
-  console.log(BuilderList);
 
   const clearSubdivisionDetails = () => {
     setSubdivisionDetails({
@@ -708,30 +696,35 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
+  }, [sortConfig]);
+
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
   }
+
   function changeCPage(id) {
     setCurrentPage(id);
   }
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
   }
-  const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
-    }
+
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  }
+
   const subdivision = useRef();
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -742,7 +735,9 @@ const handleSortClose = () => setShowSort(false);
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+
   const getbuilderlist = async (pageNumber) => {
+    setIsLoading(true);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -761,37 +756,22 @@ const handleSortClose = () => setShowSort(false);
       setBuilderListCount(responseData.total)
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
     }
+    setIsLoading(false);
   };
-  console.log(selectedBuilderName);
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
-      fetchAllPages(searchQuery, sortConfig)
     } else {
       navigate("/");
     }
-  }, [currentPage,searchQuery]);
-
-  async function fetchAllPages(searchQuery, sortConfig) {
-    const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
-  
-    for (let page = 2; page <= totalPages; page++) {
-      const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
-    }
-    setAllBuilderExport(allData);
-    setExcelLoading(false);
-  }
-
+  }, [currentPage, searchQuery]);
 
   const handleDelete = async (e) => {
     try {
@@ -822,7 +802,6 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     getbuilderlist();
   };
 
@@ -841,6 +820,7 @@ const handleSortClose = () => setShowSort(false);
       }
     }
   };
+
   const getbuilderDoplist = async () => {
     try {
       const response = await AdminBuilderService.builderDropDown();
@@ -850,17 +830,6 @@ const handleSortClose = () => setShowSort(false);
         value: builder.id,
       }));
       setBuilderListDropDown(formattedData);
-      // if (formattedData.length > 0) {
-      //   setFilterQuery(prevState => ({
-      //     ...prevState,
-      //     builder_name: formattedData[0].label
-      // }));
-
-      // setSelectedBuilderName([{
-      //   label: formattedData[0].label,
-      //   value:formattedData[0].value
-      // }]);
-      // }
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -870,53 +839,33 @@ const handleSortClose = () => setShowSort(false);
       }
     }
   };
+
   useEffect(() => {
     getbuilderDoplist();
   }, []);
 
-  console.log(filterQuery);
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 1000)
-  // ).current;
+  const HandleFilterForm = (e) => {
+    e.preventDefault();
+    setFilter(true);
+    getbuilderlist(currentPage, searchQuery);
+    setManageFilterOffcanvas(false)
 
-  // useEffect(() => {
-  //   getbuilderlist();
-  // }, [searchQuery]);
-  const HandleFilterForm = (e) =>
-    {
-      e.preventDefault();
-      setFilter(true);
-      getbuilderlist(currentPage,searchQuery);
-      setManageFilterOffcanvas(false)
-
-    };
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   debouncedHandleSearch(`&q=${query}`);
-  // };
+  };
 
   useEffect(() => {
-    setSearchQuery(filterString());
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    if (isAnyFilterApplied) {
+      setSearchQuery(filterString());
+    } else {
+      setSearchQuery(searchQueryByFilter)
+    }
   }, [filterQuery]);
-
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       [name]: value,
-    }));
-    setNormalFilter(true);
-  };
-
-  const HandleSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      builder_name: selectedOption.name,
     }));
     setNormalFilter(true);
   };
@@ -938,54 +887,55 @@ const handleSortClose = () => setShowSort(false);
         status: "",
         product_type: "",
         reporting: "",
-        builder_name:"",
-        name:"",
-        product_type:"",
-        area:"",
-        masterplan_id:"",
-        zipcode:"",
-        lotwidth:"",
-        lotsize:"",
-        zoning:"",
-        age:"",
-        single:"",
-        gated:"",
-        juridiction:"",
-        gasprovider:"",
-        hoafee:"",
-        masterplan_id:"",
-        months_open:"",
-        latest_lots_released:"",
-        latest_standing_inventory:"",
-        avg_sqft_all:"",
-        avg_sqft_active:"",
-        avg_base_price_all:"",
-        avg_base_price_active:"",
-        min_sqft_all:"",
-        min_sqft_active:"",
-        max_sqft_all:"",
-        max_sqft_active:"",
-        min_base_price_all:"",
-        min_sqft_active_current:"",
-        max_base_price_all:"",
-        max_sqft_active_current:"",
-        avg_traffic_per_month_this_year:"",
-        avg_net_sales_per_month_this_year:"",
-        avg_closings_per_month_this_year:"",
-        avg_net_sales_per_month_since_open:"",
-        avg_net_sales_per_month_last_three_months:"",
-        sqft_group:"",
-        price_group:"",
-        month_net_sold:"",
-        year_net_sold:"",
-        opensince:"",
-        from:"",
-        to:"",
+        builder_name: "",
+        name: "",
+        product_type: "",
+        area: "",
+        masterplan_id: "",
+        zipcode: "",
+        lotwidth: "",
+        lotsize: "",
+        zoning: "",
+        age: "",
+        single: "",
+        gated: "",
+        juridiction: "",
+        gasprovider: "",
+        hoafee: "",
+        masterplan_id: "",
+        months_open: "",
+        latest_lots_released: "",
+        latest_standing_inventory: "",
+        avg_sqft_all: "",
+        avg_sqft_active: "",
+        avg_base_price_all: "",
+        avg_base_price_active: "",
+        min_sqft_all: "",
+        min_sqft_active: "",
+        max_sqft_all: "",
+        max_sqft_active: "",
+        min_base_price_all: "",
+        min_sqft_active_current: "",
+        max_base_price_all: "",
+        max_sqft_active_current: "",
+        avg_traffic_per_month_this_year: "",
+        avg_net_sales_per_month_this_year: "",
+        avg_closings_per_month_this_year: "",
+        avg_net_sales_per_month_since_open: "",
+        avg_net_sales_per_month_last_three_months: "",
+        sqft_group: "",
+        price_group: "",
+        month_net_sold: "",
+        year_net_sold: "",
+        opensince: "",
+        from: "",
+        to: "",
       });
-      getbuilderlist();
+    getbuilderlist();
   };
 
   const [value, setValue] = React.useState("1");
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -993,18 +943,23 @@ const handleSortClose = () => setShowSort(false);
   const handleProductRedirect = () => {
     navigate("/productlist");
   };
+
   const handlePermitRedirect = () => {
     navigate("/permitlist");
   };
+
   const handleClosingRedirect = () => {
     navigate("/closingsalelist");
   };
+
   const handleTraficRedirect = () => {
     navigate("/trafficsalelist");
   };
+
   const handleLandRedirect = () => {
     navigate("/landsalelist");
   };
+
   const requestSort = (key) => {
     let direction = "asc";
 
@@ -1020,101 +975,11 @@ const handleSortClose = () => setShowSort(false);
     getbuilderlist(currentPage, sortConfig);
   };
 
-  const calculatedField = [
-    {
-      "Latest Lots Released": null,
-      "Latest Standing Inventory": null,
-      "Avg Sqft All": null,
-      "Avg Sqft Active": null,
-      "Avg Base Price All": null,
-      "Avg Base Price Active": null,
-      "Min Sqft All": null,
-      "Min Sqft Active": null,
-      "Max Sqft All": null,
-      "Max Sqft Active": null,
-      "Min Base Price All": null,
-      "Min Base Price Active": null,
-      "Max Base Price All": null,
-      "Max Base Price Active": null,
-      "Avg Traffic Per Month This Year": null,
-      "Avg Net Sales Per Month This Year": null,
-      "Avg Closings Per Month This Year": null,
-      "Avg Net Sales Per Month Since Open": null,
-      "Avg Net Sales Per Month Last 3 Month": null,
-      "Month Net Sold": null,
-      "Year Net Sold": null,
-      'Total Closings':null,
-      'Total Permits':null,
-      'Total Net Sales':null,
-
-
-    },
-  ];
-  
-
-  // function handleLabelExist(lable)
-  // {
-
-  //     console.log(lable);
-  //     console.log(calculatedField.some(field => field.hasOwnProperty(lable)));
-
-  //     return calculatedField.some(field => field.hasOwnProperty(lable));
- 
-  // }
-
-  // const totalSumFields = (label) => {
-  //   console.log(AllBuilderListExport);
-  //   console.log(label);
-  
-  //   // return 0 if the label doesn't exist
-  //   if (!handleLabelExist(label)) {
-  //     return 0;
-  //   }
-  
-  //   label = label.toLowerCase().replace(/\s+/g, '_');
-  
-  //   const sum = AllBuilderListExport.reduce((sum, builder) => {
-  //     return sum + (builder[label] || 0);
-  //   }, 0);
-  
-  //   return sum.toFixed(2);
-  // };
-  
-
-
-
-  const exportToExcelData = async () => {
-    try {
-        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
-        const response = await axios.get(
-          `${process.env.REACT_APP_IMAGE_URL}api/admin/subdivision/export`
-          // 'https://hbrapi.rigicgspl.com/api/admin/subdivision/export'
-
-          , {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${bearerToken}`
-            }
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'subdivision.xlsx');
-        document.body.appendChild(link);
-        link.click();
-    } catch (error) {
-        console.log(error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
-        }
-    }
-}
   const HandleRole = (e) => {
     setRole(e.target.value);
     setAccessRole(e.target.value);
   };
+
   const handleAccessForm = async (e) => {
     e.preventDefault();
     var userData = {
@@ -1176,6 +1041,7 @@ const handleSortClose = () => setShowSort(false);
       }
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getAccesslist();
@@ -1187,9 +1053,10 @@ const handleSortClose = () => setShowSort(false);
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
+
   const handleUploadClick = async () => {
     const file = selectedFile;
-  
+
     if (file && file.type === "text/csv") {
       setLoading(true);
       const fileReader = new FileReader();
@@ -1211,13 +1078,13 @@ const handleSortClose = () => setShowSort(false);
             console.log(responseData);
             let message = responseData.data.message;
             if (responseData.data.failed_records > 0) {
-                const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-                message += ' Problematic Record Rows: ' + problematicRows+'.';
+              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
             }
             message += '. Record Imported: ' + responseData.data.successful_records;
             message += '. Failed Record Count: ' + responseData.data.failed_records;
             message += '. Last Row: ' + responseData.data.last_processed_row;
-            
+
             swal(message).then((willDelete) => {
               if (willDelete) {
                 navigate("/subdivisionlist");
@@ -1230,7 +1097,6 @@ const handleSortClose = () => setShowSort(false);
           }
           getbuilderlist(currentPage, sortConfig);
         } catch (error) {
-        
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
             setSelectedFile("");
@@ -1240,13 +1106,13 @@ const handleSortClose = () => setShowSort(false);
           }
         }
       };
-  
       setSelectedFileError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
     }
   };
+
   const handlBuilderClick = (e) => {
     setShow(true);
   };
@@ -1255,17 +1121,17 @@ const handleSortClose = () => setShowSort(false);
     setDraggedColumns(columns);
     setOpenDialog(true);
   };
-  
+
   const handleCloseDialog = () => {
     setDraggedColumns(columns);
     setOpenDialog(false);
   };
-  
+
   const handleSaveDialog = () => {
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
-  
+
   const handleColumnOrderChange = (result) => {
     if (!result.destination) {
       return;
@@ -1275,7 +1141,7 @@ const handleSortClose = () => setShowSort(false);
     newColumns.splice(result.destination.index, 0, movedColumn);
     setDraggedColumns(newColumns);
   };
-  
+
   useEffect(() => {
     const mappedColumns = fieldList.map((data) => ({
       id: data.charAt(0).toLowerCase() + data.slice(1),
@@ -1283,7 +1149,7 @@ const handleSortClose = () => setShowSort(false);
     }));
     setColumns(mappedColumns);
   }, [fieldList]);
-  
+
   const toCamelCase = (str) => {
     return str
       .toLowerCase()
@@ -1292,18 +1158,13 @@ const handleSortClose = () => setShowSort(false);
         if (index === 0) {
           return word;
         }
-          return word.charAt(0).toUpperCase() + word.slice(1);
+        return word.charAt(0).toUpperCase() + word.slice(1);
       })
-    .join('');
+      .join('');
   }
-  
-  const applyFilters = () => {
-    if(AllBuilderListExport.length === 0){
-      setBuilderList(BuilderList);
-      return;
-    }
 
-    let filtered = AllBuilderListExport;
+  const applyFilters = () => {
+    let filtered = BuilderList;
 
     const applyNumberFilter = (items, query, key) => {
       if (query) {
@@ -1311,18 +1172,18 @@ const handleSortClose = () => setShowSort(false);
         let value = query;
 
         if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-            operator = query[0];
-            value = query.slice(1);
+          operator = query[0];
+          value = query.slice(1);
         }
 
         const numberValue = parseFloat(value);
         if (!isNaN(numberValue)) {
-            return items.filter(item => {
-                const itemValue = parseFloat(item[key]);
-                if (operator === '>') return itemValue > numberValue;
-                if (operator === '<') return itemValue < numberValue;
-                return itemValue === numberValue;
-            });
+          return items.filter(item => {
+            const itemValue = parseFloat(item[key]);
+            if (operator === '>') return itemValue > numberValue;
+            if (operator === '<') return itemValue < numberValue;
+            return itemValue === numberValue;
+          });
         }
       }
       return items;
@@ -1422,10 +1283,8 @@ const handleSortClose = () => setShowSort(false);
       setMonthNetSoldResult(0);
       setYearNetSoldResult(0);
     }
-
-    setBuilderList(filtered);
   };
-  
+
   useEffect(() => {
     applyFilters();
   }, [filterQuery]);
@@ -1441,328 +1300,156 @@ const handleSortClose = () => setShowSort(false);
   };
 
   const totalSumFields = (field) => {
-    if(field == "total_closings") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.total_closings || 0);
-        }, 0);
-      } else {
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.total_closings || 0);
-        }, 0);
-      }
+    if (field == "total_closings") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.total_closings || 0);
+      }, 0);
     }
-    if(field == "total_permits") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.total_permits || 0);
-        }, 0);  
-      } else {
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.total_permits || 0);
-        }, 0);
-      }
+    if (field == "total_permits") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.total_permits || 0);
+      }, 0);
     }
-    if(field == "total_net_sales") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.total_net_sales || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.total_net_sales || 0);
-        }, 0);
-      }
+    if (field == "total_net_sales") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.total_net_sales || 0);
+      }, 0);
     }
-    if(field == "months_open") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.months_open || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.months_open || 0);
-        }, 0);
-      }
+    if (field == "months_open") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.months_open || 0);
+      }, 0);
     }
-    if(field == "latest_lots_released") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.latest_lots_released || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.latest_lots_released || 0);
-        }, 0);
-      }
+    if (field == "latest_lots_released") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.latest_lots_released || 0);
+      }, 0);
     }
-    if(field == "latest_standing_inventory") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.latest_standing_inventory || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.latest_standing_inventory || 0);
-        }, 0);
-      }
+    if (field == "latest_standing_inventory") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.latest_standing_inventory || 0);
+      }, 0);
     }
-    if(field == "unsold_lots") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.unsold_lots || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.unsold_lots || 0);
-        }, 0);
-      }
+    if (field == "unsold_lots") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.unsold_lots || 0);
+      }, 0);
     }
-    if(field == "avg_sqft_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_sqft_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_sqft_all || 0);
-        }, 0);
-      }
+    if (field == "avg_sqft_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_sqft_all || 0);
+      }, 0);
     }
-    if(field == "avg_sqft_active") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_sqft_active || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_sqft_active || 0);
-        }, 0);
-      }
+    if (field == "avg_sqft_active") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_sqft_active || 0);
+      }, 0);
     }
-    if(field == "avg_base_price_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_base_price_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_base_price_all || 0);
-        }, 0);
-      }
+    if (field == "avg_base_price_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_base_price_all || 0);
+      }, 0);
     }
-    if(field == "avg_base_price_active") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_base_price_active || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_base_price_active || 0);
-        }, 0);
-      }
+    if (field == "avg_base_price_active") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_base_price_active || 0);
+      }, 0);
     }
-    if(field == "min_sqft_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.min_sqft_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.min_sqft_all || 0);
-        }, 0);
-      }
+    if (field == "min_sqft_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.min_sqft_all || 0);
+      }, 0);
     }
-    if(field == "max_sqft_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.max_sqft_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.max_sqft_all || 0);
-        }, 0);
-      }
+    if (field == "max_sqft_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.max_sqft_all || 0);
+      }, 0);
     }
-    if(field == "min_base_price_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.min_base_price_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.min_base_price_all || 0);
-        }, 0);
-      }
+    if (field == "min_base_price_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.min_base_price_all || 0);
+      }, 0);
     }
-    if(field == "min_sqft_active") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.min_sqft_active || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.min_sqft_active || 0);
-        }, 0);
-      }
+    if (field == "min_sqft_active") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.min_sqft_active || 0);
+      }, 0);
     }
-    if(field == "max_base_price_all") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.max_base_price_all || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.max_base_price_all || 0);
-        }, 0);
-      }
+    if (field == "max_base_price_all") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.max_base_price_all || 0);
+      }, 0);
     }
-    if(field == "max_sqft_active") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.max_sqft_active || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.max_sqft_active || 0);
-        }, 0);
-      }
+    if (field == "max_sqft_active") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.max_sqft_active || 0);
+      }, 0);
     }
-    if(field == "avg_net_traffic_per_month_this_year") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
-        }, 0);
-      }
+    if (field == "avg_net_traffic_per_month_this_year") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+      }, 0);
     }
-    if(field == "avg_net_sales_per_month_this_year") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_this_year || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_this_year || 0);
-        }, 0);
-      }
+    if (field == "avg_net_sales_per_month_this_year") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_this_year || 0);
+      }, 0);
     }
-    if(field == "avg_closings_per_month_this_year") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_closings_per_month_this_year || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_closings_per_month_this_year || 0);
-        }, 0);
-      }
+    if (field == "avg_closings_per_month_this_year") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_closings_per_month_this_year || 0);
+      }, 0);
     }
-    if(field == "avg_net_sales_per_month_since_open") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_since_open || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_since_open || 0);
-        }, 0);
-      }
+    if (field == "avg_net_sales_per_month_since_open") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_since_open || 0);
+      }, 0);
     }
-    if(field == "avg_net_sales_per_month_last_three_months") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
-        }, 0);
-      }
+    if (field == "avg_net_sales_per_month_last_three_months") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+      }, 0);
     }
-    if(field == "month_net_sold") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.month_net_sold || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.month_net_sold || 0);
-        }, 0);
-      }
+    if (field == "month_net_sold") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.month_net_sold || 0);
+      }, 0);
     }
-    if(field == "year_net_sold") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.year_net_sold || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.year_net_sold || 0);
-        }, 0);
-      }
+    if (field == "year_net_sold") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.year_net_sold || 0);
+      }, 0);
     }
-    if(field == "avg_closing_price") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.avg_closing_price || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.avg_closing_price || 0);
-        }, 0);
-      }
+    if (field == "avg_closing_price") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.avg_closing_price || 0);
+      }, 0);
     }
-    if(field == "permit_this_year") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.permit_this_year || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.permit_this_year || 0);
-        }, 0);
-      }
+    if (field == "permit_this_year") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.permit_this_year || 0);
+      }, 0);
     }
-    if(field == "median_closing_price_since_open") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.median_closing_price_since_open || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.median_closing_price_since_open || 0);
-        }, 0);
-      }
+    if (field == "median_closing_price_since_open") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.median_closing_price_since_open || 0);
+      }, 0);
     }
-    if(field == "median_closing_price_this_year") {
-      if(filter){
-        return BuilderList.reduce((sum, builder) => {
-          return sum + (builder.median_closing_price_this_year || 0);
-        }, 0);
-      } else{
-        return AllBuilderListExport.reduce((sum, builder) => {
-          return sum + (builder.median_closing_price_this_year || 0);
-        }, 0);
-      }
+    if (field == "median_closing_price_this_year") {
+      return BuilderList.reduce((sum, builder) => {
+        return sum + (builder.median_closing_price_this_year || 0);
+      }, 0);
     }
   };
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    if(filter){
-      return sum / BuilderList.length;
-    } else{
-      return sum / AllBuilderListExport.length;
-    }
+    return sum / BuilderList.length;
   };
 
   const handleSelectChange = (e, field) => {
     const value = e.target.value;
-    
+
     switch (field) {
       case "total_closings":
         setTotalClosingsOption(value);
@@ -1925,7 +1612,7 @@ const handleSortClose = () => setShowSort(false);
         setMedianClosingPriceThisYearOption("");
 
         setTotalClosingsResult(0);
-		    setTotalPermitsResult(0);
+        setTotalPermitsResult(0);
         setMonthsOpenResult(0);
         setLatestLotsReleasedResult(0);
         setLatestStandingInventoryResult(0);
@@ -3324,7 +3011,7 @@ const handleSortClose = () => setShowSort(false);
         }
         break;
 
-        case "avg_closing_price":
+      case "avg_closing_price":
         setAvgClosingPriceOption(value);
         setTotalClosingsOption("");
         setTotalPermitsOption("");
@@ -3387,7 +3074,7 @@ const handleSortClose = () => setShowSort(false);
         }
         break;
 
-        case "permit_this_year":
+      case "permit_this_year":
         setPermitsThisYearOption(value);
         setTotalClosingsOption("");
         setTotalPermitsOption("");
@@ -3450,7 +3137,7 @@ const handleSortClose = () => setShowSort(false);
         }
         break;
 
-        case "median_closing_price_since_open":
+      case "median_closing_price_since_open":
         setMedianClosingPriceSinceOpenOption(value);
         setTotalClosingsOption("");
         setTotalPermitsOption("");
@@ -3513,7 +3200,7 @@ const handleSortClose = () => setShowSort(false);
         }
         break;
 
-        case "median_closing_price_this_year":
+      case "median_closing_price_this_year":
         setMedianClosingPriceThisYearOption(value);
         setTotalClosingsOption("");
         setTotalPermitsOption("");
@@ -3581,8 +3268,6 @@ const handleSortClose = () => setShowSort(false);
     }
   };
 
-  
-
   const statusOptions = [
     { value: "1", label: "Active" },
     { value: "0", label: "Sold Out" },
@@ -3641,7 +3326,6 @@ const handleSortClose = () => setShowSort(false);
     }));
   };
 
-
   const masterPlanOption = [
     { value: "ALIANTE", label: "ALIANTE" },
     { value: "ANTHEM", label: "ANTHEM" },
@@ -3669,7 +3353,7 @@ const handleSortClose = () => setShowSort(false);
     { value: "RED ROCK CC", label: "RED ROCK CC" },
     { value: "RHODES RANCH", label: "RHODES RANCH" },
     { value: "SEDONA RANCH", label: "SEDONA RANCH" },
-    { value: "SEVEN HILLS", label: "SEVEN HILLS"},
+    { value: "SEVEN HILLS", label: "SEVEN HILLS" },
     { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
     { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
     { value: "SKYE CANYON", label: "SKYE CANYON" },
@@ -3696,7 +3380,6 @@ const handleSortClose = () => setShowSort(false);
       masterplan_id: selectedValues
     }));
   };
-
 
   const jurisdictionOption = [
     { value: "Boulder City", label: "Boulder City" },
@@ -3734,8 +3417,6 @@ const handleSortClose = () => setShowSort(false);
     }));
   };
 
-
-  
   const zipCodeOption = [
     { value: "89002", label: "89002" },
     { value: "89005", label: "89005" },
@@ -3774,7 +3455,6 @@ const handleSortClose = () => setShowSort(false);
     }));
   };
 
-
   const gasProviderOption = [
     { value: "SOUTHWEST GAS", label: "SOUTHWEST GAS" },
   ];
@@ -3790,8 +3470,7 @@ const handleSortClose = () => setShowSort(false);
     }));
   };
 
-
-  const handleSelectBuilderNameChange  = (selectedItems) => {  
+  const handleSelectBuilderNameChange = (selectedItems) => {
     console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
@@ -3800,10 +3479,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectStatusChange  = (selectedItems) => {  
+  const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
     setSelectedValues(selectedValues);
@@ -3811,10 +3490,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       status: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectReportingChange  = (selectedItems) => {  
+  const handleSelectReportingChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -3823,10 +3502,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       reporting: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectProductTypeChange  = (selectedItems) => {  
+  const handleSelectProductTypeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -3835,10 +3514,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       product_type: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectAgeChange  = (selectedItems) => {  
+  const handleSelectAgeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -3847,10 +3526,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectSingleChange  = (selectedItems) => {  
+  const handleSelectSingleChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -3860,10 +3539,10 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectGatedChange  = (selectedItems) => {  
+  const handleSelectGatedChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -3873,29 +3552,12 @@ const handleSortClose = () => setShowSort(false);
     setFilterQuery(prevState => ({
       ...prevState,
       gated: selectedNames
-  }));
+    }));
   }
-
-  // const handleFilterDateOpen = (date) => {
-  //   if (date) {
-  //     const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-  //     console.log(formattedDate)
-
-  //     setFilterQuery((prevFilterQuery) => ({
-  //       ...prevFilterQuery,
-  //       opensince: formattedDate,
-  //     }));
-  //   } else {
-  //     setFilterQuery((prevFilterQuery) => ({
-  //       ...prevFilterQuery,
-  //       opensince: '',
-  //     }));
-  //   }
-  // };
 
   const handleFilterDateFrom = (date) => {
     if (date) {
-      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      const formattedDate = date.toLocaleDateString('en-US');
       console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
@@ -3912,7 +3574,7 @@ const handleSortClose = () => setShowSort(false);
 
   const handleFilterDateTo = (date) => {
     if (date) {
-      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      const formattedDate = date.toLocaleDateString('en-US');
       console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
@@ -3926,10 +3588,12 @@ const handleSortClose = () => setShowSort(false);
       }));
     }
   };
+
   const parseDate = (dateString) => {
     const [month, day, year] = dateString.split('/');
     return new Date(year, month - 1, day);
   };
+
   return (
     <>
       <MainPagetitle
@@ -3951,32 +3615,6 @@ const handleSortClose = () => setShowSort(false);
                         role="group"
                         aria-label="Basic example"
                       >
-                        {/* <button class="btn btn-secondary cursor-none">
-                          {" "}
-                          <i class="fas fa-search"></i>
-                        </button>
-                        <Form.Control
-                          type="text"
-                          style={{
-                            borderTopLeftRadius: "0",
-                            borderBottomLeftRadius: "0",
-                          }}
-                          onChange={HandleSearch}
-                          placeholder="Quick Search"
-                        /> */}
-
-            
-                                      {/* <Form.Group controlId="tournamentList">
-                                    <MultiSelect
-                                      name="builder_name"
-                                      options={builderListDropDown}
-                                      value={selectedBuilderName}
-                                      onChange={handleSelectBuilderNameChange }
-                                      placeholder={"Select Builder Name"} 
-                                    />
-                                  </Form.Group> */}
-
-                   
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -3988,156 +3626,153 @@ const handleSortClose = () => setShowSort(false);
                       />
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
-                      ) : (
-                    <div className="d-flex" style={{marginTop: "10px"}}>
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                        Set Columns Order
-                      </button>
-                    <Button
-                            className="btn-sm me-1"
-                            variant="secondary"
-                            onClick={HandleSortDetailClick}
-                          >
-                            <i class="fa-solid fa-sort"></i>
-                          </Button>
-                    <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1"> 
-                      {excelLoading ? 
-                        <div class="spinner-border spinner-border-sm" role="status" /> 
-                        :
-                        <i class="fas fa-file-excel" />
-                      }
-                    </button>
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                   
-                    <Button
-  className="btn btn-primary btn-sm me-1"
-  onClick={addToBuilderList}
->
-  <i className="fa fa-map-marker" aria-hidden="true"></i>
-</Button>
-
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                        <i className="fa fa-filter" />
-                      </button>   
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >
-                        Import
-                      </Button>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => subdivision.current.showEmployeModal()}
-                      >
-                        + Add Subdivision
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulkSubdivision.current.showEmployeModal()}
-                      >
-                        Bulk Edit
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedLandSales);
+                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                      ""
+                    ) : (
+                      <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                          Set Columns Order
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={HandleSortDetailClick}
+                        >
+                          <i class="fa-solid fa-sort"></i>
+                        </Button>
+                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
+                            :
+                            <i class="fas fa-file-excel" />
                           }
-                        }) : ""}
-                      >
-                        Bulk Delete
-                      </button>
-                    </div>
-                      )}
+                        </button>
+
+                        <Button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={addToBuilderList}
+                        >
+                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                        </Button>
+
+                        <button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={() => setManageAccessOffcanvas(true)}
+                        >
+                          {" "}
+                          Field Access
+                        </button>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                          <i className="fa fa-filter" />
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={handlBuilderClick}
+                        >
+                          Import
+                        </Button>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => subdivision.current.showEmployeModal()}
+                        >
+                          + Add Subdivision
+                        </Link>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => bulkSubdivision.current.showEmployeModal()}
+                        >
+                          Bulk Edit
+                        </Link>
+                        <button
+                          className="btn btn-danger btn-sm me-1"
+                          style={{ marginLeft: "3px" }}
+                          onClick={() => selectedLandSales.length > 0 ? swal({
+                            title: "Are you sure?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                          }).then((willDelete) => {
+                            if (willDelete) {
+                              handleBulkDelete(selectedLandSales);
+                            }
+                          }) : ""}
+                        >
+                          Bulk Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {BuilderListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {BuilderListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
+                    </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -4153,7 +3788,7 @@ const handleSortClose = () => setShowSort(false);
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                          <th>
+                            <th>
                               <input
                                 type="checkbox"
                                 style={{
@@ -4172,163 +3807,164 @@ const handleSortClose = () => setShowSort(false);
                             </th>
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
-                                column.id == "builder" ? "builderName" : 
-                                column.id == "product Type" ? "product_type" : 
-                                column.id == "master Plan" ? "masterplan_id" : 
-                                column.id == "total Lots" ? "totallots" : 
-                                column.id == "lot Width" ? "lotwidth" : 
-                                column.id == "lot Size" ? "lotsize" : 
-                                column.id == "age Restricted" ? "age" : 
-                                column.id == "all Single Story" ? "single" : 
-                                column.id == "latitude" ? "lat" : 
-                                column.id == "longitude" ? "lng" : 
-                                column.id == "gas Provider" ? "gasprovider" : 
-                                column.id == "hOA Fee" ? "hoafee" : 
-                                column.id == "master Plan Fee" ? "masterplanfee" : 
-                                column.id == "parcel Group" ? "parcel" : 
-                                column.id == "date Added" ? "created_at" : 
-                                column.id == "__pkSubID" ? "subdivision_code" : 
-                                column.id == "_fkBuilderID" ? "builder_code" : 
-                                column.id == "total Closings" ? "total_closings" : 
-                                column.id == "total Permits" ? "total_permits" : 
-                                column.id == "total Net Sales" ? "total_net_sales" : 
-                                column.id == "months Open" ? "months_open" : 
-                                column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
-                                column.id == "latest Lots Released" ? "latest_lots_released" : 
-                                column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
-                                column.id == "unsold Lots" ? "unsold_lots" : 
-                                column.id == "avg Sqft All" ? "avg_sqft_all" : 
-                                column.id == "avg Sqft Active" ? "avg_sqft_active" : 
-                                column.id == "avg Base Price All" ? "avg_base_price_all" : 
-                                column.id == "avg Base Price Active" ? "avg_base_price_active" : 
-                                column.id == "min Sqft All" ? "min_sqft_all" : 
-                                column.id == "max Sqft All" ? "max_sqft_all" : 
-                                column.id == "max Sqft Active" ? "max_sqft_active_current" : 
-                                column.id == "min Base Price All" ? "min_base_price_all" : 
-                                column.id == "min Sqft Active" ? "min_sqft_active_current" : 
-                                column.id == "max Base Price All" ? "max_base_price_all" : 
-                                column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
-                                column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
-                                column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
-                                column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
-                                column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
-                                column.id == "max Week Ending" ? "max_week_ending" : 
-                                column.id == "min Week Ending" ? "min_week_ending" : 
-                                column.id == "sqft Group" ? "sqft_group" : 
-                                column.id == "price Group" ? "price_group" : 
-                                column.id == "month Net Sold" ? "month_net_sold" : 
-                                column.id == "year Net Sold" ? "year_net_sold" : 
-                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}>
+                                column.id == "builder" ? "builderName" :
+                                column.id == "product Type" ? "product_type" :
+                                column.id == "master Plan" ? "masterplan_id" :
+                                column.id == "total Lots" ? "totallots" :
+                                column.id == "lot Width" ? "lotwidth" :
+                                column.id == "lot Size" ? "lotsize" :
+                                column.id == "age Restricted" ? "age" :
+                                column.id == "all Single Story" ? "single" :
+                                column.id == "latitude" ? "lat" :
+                                column.id == "longitude" ? "lng" :
+                                column.id == "gas Provider" ? "gasprovider" :
+                                column.id == "hOA Fee" ? "hoafee" :
+                                column.id == "master Plan Fee" ? "masterplanfee" :
+                                column.id == "parcel Group" ? "parcel" :
+                                column.id == "date Added" ? "created_at" :
+                                column.id == "__pkSubID" ? "subdivision_code" :
+                                column.id == "_fkBuilderID" ? "builder_code" :
+                                column.id == "total Closings" ? "total_closings" :
+                                column.id == "total Permits" ? "total_permits" :
+                                column.id == "total Net Sales" ? "total_net_sales" :
+                                column.id == "months Open" ? "months_open" :
+                                column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
+                                column.id == "latest Lots Released" ? "latest_lots_released" :
+                                column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
+                                column.id == "unsold Lots" ? "unsold_lots" :
+                                column.id == "avg Sqft All" ? "avg_sqft_all" :
+                                column.id == "avg Sqft Active" ? "avg_sqft_active" :
+                                column.id == "avg Base Price All" ? "avg_base_price_all" :
+                                column.id == "avg Base Price Active" ? "avg_base_price_active" :
+                                column.id == "min Sqft All" ? "min_sqft_all" :
+                                column.id == "max Sqft All" ? "max_sqft_all" :
+                                column.id == "max Sqft Active" ? "max_sqft_active_current" :
+                                column.id == "min Base Price All" ? "min_base_price_all" :
+                                column.id == "min Sqft Active" ? "min_sqft_active_current" :
+                                column.id == "max Base Price All" ? "max_base_price_all" :
+                                column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
+                                column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                                column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                                column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
+                                column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
+                                column.id == "max Week Ending" ? "max_week_ending" :
+                                column.id == "min Week Ending" ? "min_week_ending" :
+                                column.id == "sqft Group" ? "sqft_group" :
+                                column.id == "price Group" ? "price_group" :
+                                column.id == "month Net Sold" ? "month_net_sold" :
+                                column.id == "year Net Sold" ? "year_net_sold" :
+                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
+                              >
                                 <strong>
-                           
+
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "builder" ? "builderName" : 
-                                      column.id == "product Type" ? "product_type" : 
-                                      column.id == "master Plan" ? "masterplan_id" : 
-                                      column.id == "total Lots" ? "totallots" : 
-                                      column.id == "lot Width" ? "lotwidth" : 
-                                      column.id == "lot Size" ? "lotsize" : 
-                                      column.id == "age Restricted" ? "age" : 
-                                      column.id == "all Single Story" ? "single" : 
-                                      column.id == "latitude" ? "lat" : 
-                                      column.id == "longitude" ? "lng" : 
-                                      column.id == "gas Provider" ? "gasprovider" : 
-                                      column.id == "hOA Fee" ? "hoafee" : 
-                                      column.id == "master Plan Fee" ? "masterplanfee" : 
-                                      column.id == "parcel Group" ? "parcel" : 
-                                      column.id == "date Added" ? "created_at" : 
-                                      column.id == "__pkSubID" ? "subdivision_code" : 
-                                      column.id == "_fkBuilderID" ? "builder_code" : 
-                                      column.id == "total Closings" ? "total_closings" : 
-                                      column.id == "total Permits" ? "total_permits" : 
-                                      column.id == "total Net Sales" ? "total_net_sales" : 
-                                      column.id == "months Open" ? "months_open" : 
-                                      column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
-                                      column.id == "latest Lots Released" ? "latest_lots_released" : 
-                                      column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
-                                      column.id == "unsold Lots" ? "unsold_lots" : 
-                                      column.id == "avg Sqft All" ? "avg_sqft_all" : 
-                                      column.id == "avg Sqft Active" ? "avg_sqft_active" : 
-                                      column.id == "avg Base Price All" ? "avg_base_price_all" : 
-                                      column.id == "avg Base Price Active" ? "avg_base_price_active" : 
-                                      column.id == "min Sqft All" ? "min_sqft_all" : 
-                                      column.id == "max Sqft All" ? "max_sqft_all" : 
-                                      column.id == "max Sqft Active" ? "max_sqft_active_current" : 
-                                      column.id == "min Base Price All" ? "min_base_price_all" : 
-                                      column.id == "min Sqft Active" ? "min_sqft_active_current" : 
-                                      column.id == "max Base Price All" ? "max_base_price_all" : 
-                                      column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
-                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
-                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
-                                      column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
-                                      column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
-                                      column.id == "max Week Ending" ? "max_week_ending" : 
-                                      column.id == "min Week Ending" ? "min_week_ending" : 
-                                      column.id == "sqft Group" ? "sqft_group" : 
-                                      column.id == "price Group" ? "price_group" : 
-                                      column.id == "month Net Sold" ? "month_net_sold" : 
-                                      column.id == "year Net Sold" ? "year_net_sold" : 
-                                      column.id == "avg Closing Price" ? "avg_closing_price" : 
+                                      column.id == "builder" ? "builderName" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "total Lots" ? "totallots" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "latitude" ? "lat" :
+                                      column.id == "longitude" ? "lng" :
+                                      column.id == "gas Provider" ? "gasprovider" :
+                                      column.id == "hOA Fee" ? "hoafee" :
+                                      column.id == "master Plan Fee" ? "masterplanfee" :
+                                      column.id == "parcel Group" ? "parcel" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "__pkSubID" ? "subdivision_code" :
+                                      column.id == "_fkBuilderID" ? "builder_code" :
+                                      column.id == "total Closings" ? "total_closings" :
+                                      column.id == "total Permits" ? "total_permits" :
+                                      column.id == "total Net Sales" ? "total_net_sales" :
+                                      column.id == "months Open" ? "months_open" :
+                                      column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
+                                      column.id == "latest Lots Released" ? "latest_lots_released" :
+                                      column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
+                                      column.id == "unsold Lots" ? "unsold_lots" :
+                                      column.id == "avg Sqft All" ? "avg_sqft_all" :
+                                      column.id == "avg Sqft Active" ? "avg_sqft_active" :
+                                      column.id == "avg Base Price All" ? "avg_base_price_all" :
+                                      column.id == "avg Base Price Active" ? "avg_base_price_active" :
+                                      column.id == "min Sqft All" ? "min_sqft_all" :
+                                      column.id == "max Sqft All" ? "max_sqft_all" :
+                                      column.id == "max Sqft Active" ? "max_sqft_active_current" :
+                                      column.id == "min Base Price All" ? "min_base_price_all" :
+                                      column.id == "min Sqft Active" ? "min_sqft_active_current" :
+                                      column.id == "max Base Price All" ? "max_base_price_all" :
+                                      column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
+                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                                      column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
+                                      column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
+                                      column.id == "max Week Ending" ? "max_week_ending" :
+                                      column.id == "min Week Ending" ? "min_week_ending" :
+                                      column.id == "sqft Group" ? "sqft_group" :
+                                      column.id == "price Group" ? "price_group" :
+                                      column.id == "month Net Sold" ? "month_net_sold" :
+                                      column.id == "year Net Sold" ? "year_net_sold" :
+                                      column.id == "avg Closing Price" ? "avg_closing_price" :
                                       column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                     ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
-                                          column.id == "builder" ? "builderName" : 
-                                          column.id == "product Type" ? "product_type" : 
-                                          column.id == "master Plan" ? "masterplan_id" : 
-                                          column.id == "total Lots" ? "totallots" : 
-                                          column.id == "lot Width" ? "lotwidth" : 
-                                          column.id == "lot Size" ? "lotsize" : 
-                                          column.id == "age Restricted" ? "age" : 
-                                          column.id == "all Single Story" ? "single" : 
-                                          column.id == "latitude" ? "lat" : 
-                                          column.id == "longitude" ? "lng" : 
-                                          column.id == "gas Provider" ? "gasprovider" : 
-                                          column.id == "hOA Fee" ? "hoafee" : 
-                                          column.id == "master Plan Fee" ? "masterplanfee" : 
-                                          column.id == "parcel Group" ? "parcel" : 
-                                          column.id == "date Added" ? "created_at" : 
-                                          column.id == "__pkSubID" ? "subdivision_code" : 
-                                          column.id == "_fkBuilderID" ? "builder_code" : 
-                                          column.id == "total Closings" ? "total_closings" : 
-                                          column.id == "total Permits" ? "total_permits" : 
-                                          column.id == "total Net Sales" ? "total_net_sales" : 
-                                          column.id == "months Open" ? "months_open" : 
-                                          column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" : 
-                                          column.id == "latest Lots Released" ? "latest_lots_released" : 
-                                          column.id == "latest Standing Inventory" ? "latest_standing_inventory" : 
-                                          column.id == "unsold Lots" ? "unsold_lots" : 
-                                          column.id == "avg Sqft All" ? "avg_sqft_all" : 
-                                          column.id == "avg Sqft Active" ? "avg_sqft_active" : 
-                                          column.id == "avg Base Price All" ? "avg_base_price_all" : 
-                                          column.id == "avg Base Price Active" ? "avg_base_price_active" : 
-                                          column.id == "min Sqft All" ? "min_sqft_all" : 
-                                          column.id == "max Sqft All" ? "max_sqft_all" : 
-                                          column.id == "max Sqft Active" ? "max_sqft_active_current" : 
-                                          column.id == "min Base Price All" ? "min_base_price_all" : 
-                                          column.id == "min Sqft Active" ? "min_sqft_active_current" : 
-                                          column.id == "max Base Price All" ? "max_base_price_all" : 
-                                          column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" : 
-                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" : 
-                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" : 
-                                          column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" : 
-                                          column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" : 
-                                          column.id == "max Week Ending" ? "max_week_ending" : 
-                                          column.id == "min Week Ending" ? "min_week_ending" : 
-                                          column.id == "sqft Group" ? "sqft_group" : 
-                                          column.id == "price Group" ? "price_group" : 
-                                          column.id == "month Net Sold" ? "month_net_sold" : 
-                                          column.id == "year Net Sold" ? "year_net_sold" : 
+                                          column.id == "builder" ? "builderName" :
+                                          column.id == "product Type" ? "product_type" :
+                                          column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "total Lots" ? "totallots" :
+                                          column.id == "lot Width" ? "lotwidth" :
+                                          column.id == "lot Size" ? "lotsize" :
+                                          column.id == "age Restricted" ? "age" :
+                                          column.id == "all Single Story" ? "single" :
+                                          column.id == "latitude" ? "lat" :
+                                          column.id == "longitude" ? "lng" :
+                                          column.id == "gas Provider" ? "gasprovider" :
+                                          column.id == "hOA Fee" ? "hoafee" :
+                                          column.id == "master Plan Fee" ? "masterplanfee" :
+                                          column.id == "parcel Group" ? "parcel" :
+                                          column.id == "date Added" ? "created_at" :
+                                          column.id == "__pkSubID" ? "subdivision_code" :
+                                          column.id == "_fkBuilderID" ? "builder_code" :
+                                          column.id == "total Closings" ? "total_closings" :
+                                          column.id == "total Permits" ? "total_permits" :
+                                          column.id == "total Net Sales" ? "total_net_sales" :
+                                          column.id == "months Open" ? "months_open" :
+                                          column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
+                                          column.id == "latest Lots Released" ? "latest_lots_released" :
+                                          column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
+                                          column.id == "unsold Lots" ? "unsold_lots" :
+                                          column.id == "avg Sqft All" ? "avg_sqft_all" :
+                                          column.id == "avg Sqft Active" ? "avg_sqft_active" :
+                                          column.id == "avg Base Price All" ? "avg_base_price_all" :
+                                          column.id == "avg Base Price Active" ? "avg_base_price_active" :
+                                          column.id == "min Sqft All" ? "min_sqft_all" :
+                                          column.id == "max Sqft All" ? "max_sqft_all" :
+                                          column.id == "max Sqft Active" ? "max_sqft_active_current" :
+                                          column.id == "min Base Price All" ? "min_base_price_all" :
+                                          column.id == "min Sqft Active" ? "min_sqft_active_current" :
+                                          column.id == "max Base Price All" ? "max_base_price_all" :
+                                          column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
+                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                                          column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
+                                          column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
+                                          column.id == "max Week Ending" ? "max_week_ending" :
+                                          column.id == "min Week Ending" ? "min_week_ending" :
+                                          column.id == "sqft Group" ? "sqft_group" :
+                                          column.id == "price Group" ? "price_group" :
+                                          column.id == "month Net Sold" ? "month_net_sold" :
+                                          column.id == "year Net Sold" ? "year_net_sold" :
                                           column.id == "parcel" ? "parcel" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
-                                    </span>
+                                      </span>
                                     ) : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
                                   )}
                                 </strong>
-                                
+
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
                                   column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "total Lots" &&
                                   column.id !== "lot Width" && column.id !== "lot Size" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" &&
@@ -4338,1463 +3974,275 @@ const handleSortClose = () => setShowSort(false);
                                   column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
                                 ) && (
                                     <>
-                                    
-                                      <select value={column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption : 
-                                        column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption : 
+                                      <select value={column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption :
+                                        column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
                                         column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
                                         column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
                                         column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
                                         column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
-                                        column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption : 
+                                        column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption :
                                         column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
-                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption : 
+                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption :
                                         column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
                                         column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
                                         column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
                                         column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
-                                        column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""} 
-                                      style={{cursor: "pointer", marginLeft: '10px'}} 
-                                      onChange={(e) => column.id == "total Closings" ? handleSelectChange(e, "total_closings") : 
-                                        column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                        column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
-                                        column.id == "months Open" ? handleSelectChange(e, "months_open") :
-                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
-                                        column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
-                                        column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
-                                        column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
-                                        column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
-                                        column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
-                                        column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
-                                        column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
-                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
-                                        column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
-                                        column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
-                                        column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
-                                        column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
-                                        column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
-                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
-                                        column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
-                                        column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
-                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") : 
-                                        column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") : 
-                                        column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") : 
-                                        column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") : 
-                                        column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""}>
+                                        column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
+                                        
+                                        style={{ cursor: "pointer", marginLeft: '10px' }}
+                                        
+                                        onChange={(e) => column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                          column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                          column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
+                                          column.id == "months Open" ? handleSelectChange(e, "months_open") :
+                                          column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
+                                          column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
+                                          column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
+                                          column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
+                                          column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
+                                          column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
+                                          column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
+                                          column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
+                                          column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
+                                          column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
+                                          column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
+                                          column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
+                                          column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
+                                          column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
+                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                          column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
+                                          column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
+                                          column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
+                                          column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
+                                          column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
+                                          column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
+                                          column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
+                                          column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
+                                        }
+                                      >
                                         <option value="" disabled>CALCULATION</option>
                                         <option value="sum">Sum</option>
                                         <option value="avg">Avg</option>
                                       </select>
-                                      
                                       <br />
                                     </>
                                   )}
                               </th>
                             ))}
-                            {/* <th>
-                              <strong>Open Since</strong>
-                            </th> */
-                          }
-                            {/* {checkFieldExist("Status") && (
-                              <th onClick={() => requestSort("status")}>
-                                <strong> Status</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "status"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "status"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Reporting") && (
-                              <th onClick={() => requestSort("reporting")}>
-                                <strong> Reporting</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "reporting"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "reporting"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Builder") && (
-                              <th onClick={() => requestSort("builderName")}>
-                                <strong> Builder</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "builderName"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "builderName"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Name") && (
-                              <th onClick={() => requestSort("name")}>
-                                <strong> Name</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "name"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "name"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Product Type") && (
-                              <th onClick={() => requestSort("product_type")}>
-                                <strong> Product Type</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "product_type"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "product_type"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Area") && (
-                              <th onClick={() => requestSort("area")}>
-                                <strong> Area</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "area"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "area"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Product Type") && (
-                              <th onClick={() => requestSort("masterplan_id")}>
-                                <strong> Masterplan</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "masterplan_id"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "masterplan_id"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Zipcode") && (
-                              <th onClick={() => requestSort("zipcode")}>
-                                <strong> Zipcode</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "zipcode"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "zipcode"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Total Lots") && (
-                              <th onClick={() => requestSort("totallots")}>
-                                <strong> Total Lots</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "totallots"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "totallots"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Lot Width") && (
-                              <th onClick={() => requestSort("lotwidth")}>
-                                <strong>Lot Width</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "lotwidth"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "lotwidth"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Lot Size") && (
-                              <th onClick={() => requestSort("lotsize")}>
-                                <strong> Lot Size</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "lotsize"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "lotsize"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Zoning") && (
-                              <th onClick={() => requestSort("zoning")}>
-                                <strong> Zoning</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "zoning"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "zoning"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Age Restricted") && (
-                              <th onClick={() => requestSort("age")}>
-                                <strong> Age Restricted</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "age"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "age"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("All Single Story") && (
-                              <th onClick={() => requestSort("single")}>
-                                <strong> All Single Story</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "single"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "single"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Gated") && (
-                              <th onClick={() => requestSort("gated")}>
-                                <strong> Gated</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "gated"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "gated"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Location") && (
-                              <th>
-                                <strong> Location</strong>
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Juridiction") && (
-                              <th onClick={() => requestSort("juridiction")}>
-                                <strong> Juridiction</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "juridiction"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "juridiction"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Latitude") && (
-                              <th onClick={() => requestSort("lat")}>
-                                <strong>Latitude</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "lat"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "lat"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Longitude") && (
-                              <th onClick={() => requestSort("lng")}>
-                                <strong> Longitude</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "lng"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "lng"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Gas Provider") && (
-                              <th onClick={() => requestSort("gasprovider")}>
-                                <strong> Gas Provider</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "gasprovider"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "gasprovider"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("HOA Fee") && (
-                              <th onClick={() => requestSort("hoafee")}>
-                                <strong> HOA Fee</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "hoafee"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "hoafee"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Masterplan Fee") && (
-                              <th onClick={() => requestSort("masterplanfee")}>
-                                <strong> Masterplan Fee</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "masterplanfee"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "masterplanfee"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Parcel Group") && (
-                              <th onClick={() => requestSort("parcel")}>
-                                <strong> Parcel Group</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "parcel"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "parcel"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Phone") && (
-                              <th onClick={() => requestSort("phone")}>
-                                <strong> Phone</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "phone"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "phone"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Website") && (
-                              <th>
-                                <strong> Website</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "website"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "website"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Date Added") && (
-                              <th onClick={() => requestSort("created_at")}>
-                                <strong> Date Added</strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "created_at"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "created_at"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("__pkSubID") && (
-                              <th
-                                onClick={() => requestSort("subdivision_code")}
-                              >
-                                <strong> __pkSubID </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "subdivision_code"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "subdivision_code"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("_fkBuilderID") && (
-                              <th onClick={() => requestSort("builder_code")}>
-                                <strong> _fkBuilderID </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "builder_code"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "builder_code"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist("Total Closings") && (
-                            <th onClick={() => requestSort("total_closings")}>
-                                <strong> Total Closings </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "total_closings"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "total_closings"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                            {/* {checkFieldExist("Total Permits") && (                     
-                              <th onClick={() => requestSort("total_permits")}>
-                                <strong> Total Permits </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "total_permits"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "total_permits"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                              {/* {checkFieldExist("Total Net Sales") && (
-                              <th onClick={() => requestSort("total_net_sales")}>
-                                <strong> Total Net Sales </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "total_net_sales"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "total_net_sales"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Months Open") && (
-                              <th onClick={() => requestSort("months_open")}>
-                                <strong> Months Open </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "months_open"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "months_open"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                              {/* {checkFieldExist("Latest Traffic/Sales Data") && (
-                              <th onClick={() => requestSort("latest_traffic_data")}>
-                                <strong> Latest Traffic/Sales Data </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "latest_traffic_data"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "latest_traffic_data"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                             )} */}
-
-                              {/* {checkFieldExist("Latest Lots Released") && (
-                              <th onClick={() => requestSort("latest_lots_released")}>
-                                <strong> Latest Lots Released </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "latest_lots_released"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "latest_lots_released"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Latest Standing Inventory") && (
-                              <th onClick={() => requestSort("latest_standing_inventory")}>
-                                <strong> Latest Standing Inventory </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "latest_standing_inventory"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "latest_standing_inventory"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Unsold Lots") && (
-                              <th onClick={() => requestSort("unsold_lots")}>
-                                <strong> Unsold Lots </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "unsold_lots"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "unsold_lots"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Avg Sqft All") && (
-                              <th onClick={() => requestSort("avg_sqft_all")}>
-                                <strong> Avg Sqft All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_sqft_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_sqft_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Avg Sqft Active") && (
-                              <th onClick={() => requestSort("avg_sqft_active")}>
-                                <strong> Avg Sqft Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_sqft_active"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_sqft_active"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                            )} */}
-
-                              {/* {checkFieldExist("Avg Base Price All") && (
-                              <th onClick={() => requestSort("avg_base_price_all")}>
-                                <strong> Avg Base Price All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_base_price_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_base_price_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Avg Base Price Active") && (
-                              <th onClick={() => requestSort("avg_base_price_active")}>
-                                <strong> Avg Base Price Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_base_price_active"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_base_price_active"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Min Sqft All") && (
-                              <th onClick={() => requestSort("min_sqft_all")}>
-                                <strong> Min Sqft All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "min_sqft_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "min_sqft_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Min Sqft Active") && (
-                              <th onClick={() => requestSort("min_sqft_active")}>
-                                <strong> Min Sqft Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "min_sqft_active"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "min_sqft_active"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Max Sqft All") && (
-                              <th onClick={() => requestSort("max_sqft_all")}>
-                                <strong> Max Sqft All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "max_sqft_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "max_sqft_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Max Sqft Active") && (
-                              <th onClick={() => requestSort("max_sqft_active")}>
-                                <strong> Max Sqft Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "max_sqft_active"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "max_sqft_active"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                                   )} */}
-
-                              {/* {checkFieldExist("Min Base Price All") && (
-                              <th onClick={() => requestSort("min_base_price_all")}>
-                                <strong> Min Base Price All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "min_base_price_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "min_base_price_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Min Sqft Active") && (
-                              <th onClick={() => requestSort("min_sqft_active_current")}>
-                                <strong> Min Sqft Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "min_sqft_active_current"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "min_sqft_active_current"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-                              
-                              {/* {checkFieldExist("Max Base Price All") && (
-                              <th onClick={() => requestSort("max_base_price_all")}>
-                                <strong> Max Base Price All </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "max_base_price_all"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "max_base_price_all"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Max Sqft Active") && (
-                              <th onClick={() => requestSort("max_sqft_active_current")}>
-                                <strong> Max Sqft Active </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "max_sqft_active_current"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "max_sqft_active_current"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Avg Net Traffic Per Month This Year") && (
-                              <th onClick={() => requestSort("avg_net_traffic_per_month_this_year")}>
-                                <strong> Avg Net Traffic Per Month This Year </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_net_traffic_per_month_this_year"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_net_traffic_per_month_this_year"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Avg Net Sales Per Month This Year") && (
-                              <th onClick={() => requestSort("avg_net_sales_per_month_this_year")}>
-                                <strong> Avg Net Sales Per Month This Year </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_net_sales_per_month_this_year"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_net_sales_per_month_this_year"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                             )} */}
-
-                              {/* {checkFieldExist("Avg Closings Per Month This Year") && (
-                              <th onClick={() => requestSort("avg_closings_per_month_this_year")}>
-                                <strong> Avg Closings Per Month This Year </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_closings_per_month_this_year"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_closings_per_month_this_year"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Avg Net Sales Per Month Since Open") && (
-                              <th onClick={() => requestSort("avg_net_sales_per_month_since_open")}>
-                                <strong> Avg Net Sales Per Month Since Open </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_net_sales_per_month_since_open"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_net_sales_per_month_since_open"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Avg Net Sales Per Month Last 3 Months") && (
-                              <th onClick={() => requestSort("avg_net_sales_per_month_last_three_months")}>
-                                <strong> Avg Net Sales Per Month Last 3 Months </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "avg_net_sales_per_month_last_three_months"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "avg_net_sales_per_month_last_three_months"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Max Week Ending") && (
-                              <th onClick={() => requestSort("max_week_ending")}>
-                                <strong> Max Week Ending </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "max_week_ending"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "max_week_ending"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Min Week Ending") && (
-                              <th onClick={() => requestSort("min_week_ending")}>
-                                <strong> Min Week Ending </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "min_week_ending"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "min_week_ending"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                                )} */}
-
-                              {/* {checkFieldExist("Sqft Group") && (
-                              <th onClick={() => requestSort("sqft_group")}>
-                                <strong> Sqft Group </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "sqft_group"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "sqft_group"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                               )} */}
-
-                              {/* {checkFieldExist("Price Group") && (
-                              <th onClick={() => requestSort("price_group")}>
-                                <strong> Price Group </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "price_group"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "price_group"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Month Net Sold") && (
-                              <th onClick={() => requestSort("month_net_sold")}>
-                                <strong> Month Net Sold </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "month_net_sold"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "month_net_sold"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              )} */}
-
-                              {/* {checkFieldExist("Year Net Sold") && (
-                              <th onClick={() => requestSort("year_net_sold")}>
-                                <strong> Year Net Sold </strong>
-                                {sortConfig.some(
-                                    (item) => item.key === "year_net_sold"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "year_net_sold"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                              </th>
-                              
-                            )} */}
-
-                            {/* {checkFieldExist("Action") && (
-                              <th>
-                                {" "}
-                                <strong> Action </strong>
-                              </th>
-                            )} */}
-
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                        {!excelLoading &&
-                          <tr>
-                            <td></td>
-                            <td></td>
-                            {columns.map((column) => (
-                              <>
-                                {column.id == "status" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "reporting" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "builder" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "name" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "product Type" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "area" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "master Plan" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "zip Code" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "total Lots" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "lot Width" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "lot Size" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "zoning" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "age Restricted" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "all Single Story" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "gated" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "cross Streets" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "juridiction" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "latitude" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "longitude" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "gas Provider" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "hOA Fee" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "master Plan Fee" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "parcel Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "phone" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "website" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "date Added" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "__pkSubID" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "_fkBuilderID" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "total Closings" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{totalClosingsResult.toFixed(2)}</td>
-                                }
-                                {column.id == "total Permits" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{totalPermitsResult.toFixed(2)}</td>
-                                }
-                                {column.id == "total Net Sales" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{totalNetSalesResult.toFixed(2)}</td>
-                                }
-                                {column.id == "months Open" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{monthsOpenResult.toFixed(2)}</td>
-                                }
-                                {column.id == "latest Traffic/Sales Data" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "latest Lots Released" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{latestLotsReleasedResult.toFixed(2)}</td>
-                                }
-                                {column.id == "latest Standing Inventory" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{latestStandingInventoryResult.toFixed(2)}</td>
-                                }
-                                {column.id == "unsold Lots" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{unsoldLotsResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Sqft All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Sqft Active" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Base Price All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Base Price Active" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceActiveResult.toFixed(2)}</td>
-                                }
-                                {column.id == "min Sqft All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "max Sqft All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "min Base Price All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{minBasePriceAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "min Sqft Active" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftActiveResult.toFixed(2)}</td>
-                                }
-                                {column.id == "max Base Price All" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{maxBasePriceAllResult.toFixed(2)}</td>
-                                }
-                                {column.id == "max Sqft Active" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftActiveResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Traffic Per Month This Year" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Net Sales Per Month This Year" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Closings Per Month This Year" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Net Sales Per Month Since Open" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
-                                }
-                                {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
-                                }
-                                {column.id == "max Week Ending" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "min Week Ending" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "sqft Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "price Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "month Net Sold" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{monthNetSoldResult.toFixed(2)}</td>
-                                }
-                                {column.id == "year Net Sold" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{yearNetSoldResult.toFixed(2)}</td>
-                                }
-                                {column.id == "open Since" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "avg Closing Price" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingPriceResult.toFixed(2)}</td>
-                                }
-                                {column.id == "permits This Year" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
-                                }
-                                {column.id == "median Closing Price Since Open" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceSinceOpenResult.toFixed(2)}</td>
-                                }
-                                {column.id == "median Closing Price This Year" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
-                                }
-                                {column.id == "action" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                              </>
-                            ))}
-                          </tr>}
-                          {/* {!excelLoading &&
-                          <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td style={{textAlign: "center"}}>{totalClosingsResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{totalPermitsResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{totalNetSalesResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{monthsOpenResult.toFixed(2)}</td>
-                            <td></td>
-                            <td style={{textAlign: "center"}}>{latestLotsReleasedResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{latestStandingInventoryResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{unsoldLotsResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgSqftAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgSqftActiveResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgBasePriceAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgBasePriceActiveResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{minSqftAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{maxSqftAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{minBasePriceAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{minSqftActiveResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{maxBasePriceAllResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{maxSqftActiveResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
-                            <td style={{textAlign: "center"}}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td style={{textAlign: "center"}}>{monthNetSoldResult}</td>
-                            <td style={{textAlign: "center"}}>{yearNetSoldResult}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>} */}
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "status" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "reporting" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "builder" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "total Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "gated" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "cross Streets" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "juridiction" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "latitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "longitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "gas Provider" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "hOA Fee" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan Fee" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "parcel Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "phone" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "website" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "__pkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "_fkBuilderID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "total Closings" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{totalClosingsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "total Permits" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{totalPermitsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "total Net Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{totalNetSalesResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "months Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{monthsOpenResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "latest Traffic/Sales Data" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "latest Lots Released" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{latestLotsReleasedResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "latest Standing Inventory" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{latestStandingInventoryResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "unsold Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{unsoldLotsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Base Price Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceActiveResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "min Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{minSqftAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "max Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{maxSqftAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "min Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{minBasePriceAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "min Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{minSqftActiveResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "max Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{maxBasePriceAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "max Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{maxSqftActiveResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Traffic Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Closings Per Month This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month Since Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "max Week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "min Week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "sqft Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "price Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "month Net Sold" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{monthNetSoldResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "year Net Sold" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{yearNetSoldResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "open Since" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "avg Closing Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgClosingPriceResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "permits This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "median Closing Price Since Open" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceSinceOpenResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "median Closing Price This Year" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>}
                           {BuilderList !== null && BuilderList.length > 0 ? (
                             BuilderList.map((element, index) => (
                               <tr
-                              onClick={(e) => {
-                                if(e.target.type !== "checkbox"){
-                                  handleRowClick(element.id);
-                                }
-                              }}
-                              style={{
-                                textAlign: "center",
-                                cursor: "pointer",
-                              }}
+                                onClick={(e) => {
+                                  if (e.target.type !== "checkbox") {
+                                    handleRowClick(element.id);
+                                  }
+                                }}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
                               >
                                 <td>
                                   <input
@@ -5805,253 +4253,244 @@ const handleSortClose = () => setShowSort(false);
                                       cursor: "pointer",
                                     }}
                                   />
-                              </td>
+                                </td>
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
-                                  {column.id == "status" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      {element.status === 1 && "Active"}
-                                      {element.status === 0 && "Sold Out"}
-                                      {element.status === 2 && "Future"}
-                                    </td>
-                                  }
-                                  {column.id == "reporting" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      {element.reporting === 1 && "Yes"}
-                                      {element.reporting === 0 && "No"} 
-                                    </td>
-                                  }
-                                  {column.id == "builder" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.name}</td>
-                                  }
-                                  {column.id == "name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
-                                  }
-                                  {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
-                                  }
-                                  {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
-                                  }
-                                  {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
-                                  }
-                                  {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
-                                  }
-                                  {column.id == "total Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.totallots}</td>
-                                  }
-                                  {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
-                                  }
-                                  {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
-                                  }
-                                  {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
-                                  }
-                                  {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      {element.age === 1 && "Yes"}
-                                      {element.age === 0 && "No"}
-                                    </td>
-                                  }
-                                  {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      {element.single === 1 && "Yes"}
-                                      {element.single === 0 && "No"}
-                                    </td>
-                                  }
-                                  {column.id == "gated" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      {element.gated === 1 && "Yes"}
-                                      {element.gated === 0 && "No"}
-                                    </td>
-                                  }
-                                  {column.id == "cross Streets" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
-                                  }
-                                  {column.id == "juridiction" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
-                                  }
-                                  {column.id == "latitude" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
-                                  }
-                                  {column.id == "longitude" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
-                                  }
-                                  {column.id == "gas Provider" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.gasprovider}</td>
-                                  }
-                                  {column.id == "hOA Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
-                                  }
-                                  {column.id == "master Plan Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
-                                  }
-                                  {column.id == "parcel Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
-                                  }
-                                  {column.id == "phone" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
-                                  }
-                                  {column.id == "website" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.website}</td>
-                                  }
-                                  {column.id == "date Added" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
-                                  }
-                                  {column.id == "__pkSubID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
-                                  }
-                                  {column.id == "_fkBuilderID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
-                                  }
-                                  {column.id == "total Closings" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
-                                  }
-                                  {column.id == "total Permits" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
-                                  }
-                                  {column.id == "total Net Sales" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
-                                  }
-                                  {column.id == "months Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.months_open}</td>
-                                  }
-                                  {column.id == "latest Traffic/Sales Data" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.latest_traffic_data} /></td>
-                                  }
-                                  {column.id == "latest Lots Released" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_lots_released}</td>
-                                  }
-                                  {column.id == "latest Standing Inventory" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_standing_inventory}</td>
-                                  }
-                                  {column.id == "unsold Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.unsold_lots}</td>
-                                  }
-                                  {column.id == "avg Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_all}</td>
-                                  }
-                                  {column.id == "avg Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_active}</td>
-                                  }
-                                  {column.id == "avg Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
-                                  }
-                                  {column.id == "avg Base Price Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
-                                  }
-                                  {column.id == "min Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_all}</td>
-                                  }
-                                  {column.id == "max Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_all}</td>
-                                  }
-                                  {column.id == "min Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
-                                  }
-                                  {column.id == "min Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_active}</td>
-                                  }
-                                  {column.id == "max Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
-                                  }
-                                  {column.id == "max Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
-                                  }
-                                  {column.id == "avg Traffic Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
-                                  }
-                                  {column.id == "avg Net Sales Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
-                                  }
-                                  {column.id == "avg Closings Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
-                                  }
-                                  {column.id == "avg Net Sales Per Month Since Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_since_open}</td>
-                                  }
-                                  {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_last_three_months}</td>
-                                  }
-                                  {column.id == "max Week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
-                                  }
-                                  {column.id == "min Week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
-                                  }
-                                  {column.id == "sqft Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
-                                  }
-                                  {column.id == "price Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.price_group.group}</td>
-                                  }
-                                  {column.id == "month Net Sold" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
-                                  }
-                                  {column.id == "year Net Sold" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
-                                  }
+                                    {column.id == "status" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.status === 1 && "Active"}
+                                        {element.status === 0 && "Sold Out"}
+                                        {element.status === 2 && "Future"}
+                                      </td>
+                                    }
+                                    {column.id == "reporting" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.reporting === 1 && "Yes"}
+                                        {element.reporting === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "builder" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.name}</td>
+                                    }
+                                    {column.id == "name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                    }
+                                    {column.id == "product Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
+                                    }
+                                    {column.id == "master Plan" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
+                                    }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
+                                    }
+                                    {column.id == "total Lots" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.totallots}</td>
+                                    }
+                                    {column.id == "lot Width" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
+                                    }
+                                    {column.id == "lot Size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
+                                    }
+                                    {column.id == "zoning" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
+                                    }
+                                    {column.id == "age Restricted" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.age === 1 && "Yes"}
+                                        {element.age === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "all Single Story" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.single === 1 && "Yes"}
+                                        {element.single === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "gated" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.gated === 1 && "Yes"}
+                                        {element.gated === 0 && "No"}
+                                      </td>
+                                    }
+                                    {column.id == "cross Streets" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
+                                    }
+                                    {column.id == "juridiction" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
+                                    }
+                                    {column.id == "latitude" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
+                                    }
+                                    {column.id == "longitude" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
+                                    }
+                                    {column.id == "gas Provider" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.gasprovider}</td>
+                                    }
+                                    {column.id == "hOA Fee" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
+                                    }
+                                    {column.id == "master Plan Fee" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
+                                    }
+                                    {column.id == "parcel Group" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                    }
+                                    {column.id == "phone" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
+                                    }
+                                    {column.id == "website" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.website}</td>
+                                    }
+                                    {column.id == "date Added" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
+                                    }
+                                    {column.id == "__pkSubID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
+                                    }
+                                    {column.id == "_fkBuilderID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
+                                    }
+                                    {column.id == "total Closings" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
+                                    }
+                                    {column.id == "total Permits" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
+                                    }
+                                    {column.id == "total Net Sales" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
+                                    }
+                                    {column.id == "months Open" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.months_open}</td>
+                                    }
+                                    {column.id == "latest Traffic/Sales Data" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.latest_traffic_data} /></td>
+                                    }
+                                    {column.id == "latest Lots Released" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_lots_released}</td>
+                                    }
+                                    {column.id == "latest Standing Inventory" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_standing_inventory}</td>
+                                    }
+                                    {column.id == "unsold Lots" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.unsold_lots}</td>
+                                    }
+                                    {column.id == "avg Sqft All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_all}</td>
+                                    }
+                                    {column.id == "avg Sqft Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_active}</td>
+                                    }
+                                    {column.id == "avg Base Price All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
+                                    }
+                                    {column.id == "avg Base Price Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
+                                    }
+                                    {column.id == "min Sqft All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_all}</td>
+                                    }
+                                    {column.id == "max Sqft All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_all}</td>
+                                    }
+                                    {column.id == "min Base Price All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
+                                    }
+                                    {column.id == "min Sqft Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_active}</td>
+                                    }
+                                    {column.id == "max Base Price All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
+                                    }
+                                    {column.id == "max Sqft Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
+                                    }
+                                    {column.id == "avg Traffic Per Month This Year" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
+                                    }
+                                    {column.id == "avg Net Sales Per Month This Year" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
+                                    }
+                                    {column.id == "avg Closings Per Month This Year" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
+                                    }
+                                    {column.id == "avg Net Sales Per Month Since Open" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_since_open}</td>
+                                    }
+                                    {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_last_three_months}</td>
+                                    }
+                                    {column.id == "max Week Ending" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
+                                    }
+                                    {column.id == "min Week Ending" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
+                                    }
+                                    {column.id == "sqft Group" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
+                                    }
+                                    {column.id == "price Group" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_group.group}</td>
+                                    }
+                                    {column.id == "month Net Sold" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
+                                    }
+                                    {column.id == "year Net Sold" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
+                                    }
                                     {column.id == "open Since" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince}/></td>
-                                  }
-                                  {column.id == "avg Closing Price" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price}/></td>
-                                  }
-                                  {column.id == "permits This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
-                                  }
-                                  {column.id == "median Closing Price Since Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open}/></td>
-                                  }
-                                  {column.id == "median Closing Price This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year}/></td>
-                                  }
+                                      <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince} /></td>
+                                    }
+                                    {column.id == "avg Closing Price" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price} /></td>
+                                    }
+                                    {column.id == "permits This Year" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
+                                    }
+                                    {column.id == "median Closing Price Since Open" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open} /></td>
+                                    }
+                                    {column.id == "median Closing Price This Year" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year} /></td>
+                                    }
 
-                                  {column.id == "action" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      <div>
-                                        <Link
-                                          to={`/subdivisionUpdate/${element.id}`}
-                                          className="btn btn-primary shadow btn-xs sharp me-1"
-                                        >
-                                          <i className="fas fa-pencil-alt"></i>
-                                        </Link>
-                                        <Link
-                                          onClick={() =>
-                                            swal({
-                                              title: "Are you sure?",
-                                              icon: "warning",
-                                              buttons: true,
-                                              dangerMode: true,
-                                            }).then((willDelete) => {
-                                              if (willDelete) {
-                                                handleDelete(element.id);
-                                              }
-                                            })
-                                          }
-                                          className="btn btn-danger shadow btn-xs sharp"
-                                        >
-                                          <i className="fa fa-trash"></i>
-                                        </Link>
-                                      </div>
-                                    </td>
-                                  }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div>
+                                          <Link
+                                            to={`/subdivisionUpdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </div>
+                                      </td>
+                                    }
                                   </>
                                 ))}
-                                  
-                                    {/* <td style={{ textAlign: "center" }}>{element.opensince}</td> */}
-                                  
-
-                                {/* {checkFieldExist("__pkSubID") && (
-                                  <td>{element.subdivision_code}</td>
-                                )} */}
-                                {/* <td>{element.min_sqft_active_current}</td> */}
-                                {/* <td>{element.max_sqft_active_current}</td> */}
                               </tr>
                             ))
                           ) : (
@@ -6062,482 +4501,6 @@ const handleSortClose = () => setShowSort(false);
                             </tr>
                           )}
                         </tbody>
-                        {/* <tbody>
-                          {!excelLoading && 
-                            <tr>
-                              <td></td>
-                              <td></td>
-                              {columns.map((column) => (
-                                <>
-                                {column.id == "status" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "reporting" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "builder" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "name" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "product Type" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "area" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "master Plan" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "zip Code" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "total Lots" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "lot Width" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "lot Size" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "zoning" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "age Restricted" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "all Single Story" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "gated" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "cross Streets" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "juridiction" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "latitude" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "longitude" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "gas Provider" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "hOA Fee" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "master Plan Fee" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "parcel Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "phone" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "website" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "date Added" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "__pkSubID" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "_fkBuilderID" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "total Closings" &&
-                                  <td  key={ filter ? BuilderList.total_closings : AllBuilderListExport.total_closings} style={{ textAlign: "center" }}>
-                                    <select 
-                                        value={totalClosingsOption} 
-                                        onChange={(e) => handleSelectChange(e, "total_closings")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br/>
-                                      <span>{totalClosingsResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "total Permits" &&
-                                  <td key={filter ? BuilderList.total_permits : AllBuilderListExport.total_permits} style={{ textAlign: "center" }}>
-                                    <select
-                                      value={totalPermitsOption}
-                                      onChange={(e) => handleSelectChange(e, "total_permits")}
-                                      placeholder="CALCULATE"
-                                    >
-                                      <option value="" disabled>CALCULATE</option>
-                                      <option value="sum">Sum</option>
-                                      <option value="avg">Avg</option>
-                                    </select>
-                                    <br />
-                                    <span>{totalPermitsResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "total Net Sales" &&
-                                  <td key={filter ? BuilderList.total_net_sales : AllBuilderListExport.total_net_sales} style={{ textAlign: "center" }}>
-                                    <select
-                                      value={totalNetSalesOption}
-                                      onChange={(e) => handleSelectChange(e, "total_net_sales")}
-                                      placeholder="CALCULATE"
-                                    >
-                                      <option value="" disabled>CALCULATE</option>
-                                      <option value="sum">Sum</option>
-                                      <option value="avg">Avg</option>
-                                    </select>
-                                    <br />
-                                    <span>{totalNetSalesResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "months Open" &&
-                                  <td key={filter ? BuilderList.months_open : AllBuilderListExport.months_open} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={monthsOpenOption}
-                                        onChange={(e) => handleSelectChange(e, "months_open")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{monthsOpenResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "latest Traffic/Sales Data" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "latest Lots Released" &&
-                                  <td key={filter ? BuilderList.latest_lots_released : AllBuilderListExport.latest_lots_released} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={latestLotsReleasedOption}
-                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{latestLotsReleasedResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "latest Standing Inventory" &&
-                                  <td key={filter ? BuilderList.latest_standing_inventory : AllBuilderListExport.latest_standing_inventory} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={latestStandingInventoryOption}
-                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{latestStandingInventoryResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "unsold Lots" &&
-                                  <td key={filter ? BuilderList.unsold_lots : AllBuilderListExport.unsold_lots} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={unsoldLotsOption}
-                                        onChange={(e) => handleSelectChange(e, "latest_lots_released")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{unsoldLotsResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Sqft All" &&
-                                  <td key={filter ? BuilderList.avg_sqft_all : AllBuilderListExport.avg_sqft_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={avgSqftAllOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_sqft_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgSqftAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Sqft Active" &&
-                                  <td key={filter ? BuilderList.avg_sqft_active : AllBuilderListExport.avg_sqft_active} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={avgSqftActiveOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_sqft_active")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgSqftActiveResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Base Price All" &&
-                                  <td key={filter ? BuilderList.avg_base_price_all : AllBuilderListExport.avg_base_price_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={avgBasePriceAllOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_base_price_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgBasePriceAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Base Price Active" &&
-                                  <td key={filter ? BuilderList.avg_base_price_active : AllBuilderListExport.avg_base_price_active} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={avgBasePriceActiveOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_base_price_active")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgBasePriceActiveResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "min Sqft All" &&
-                                  <td key={filter ? BuilderList.min_sqft_all : AllBuilderListExport.min_sqft_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={minSqftAllOption}
-                                        onChange={(e) => handleSelectChange(e, "min_sqft_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{minSqftAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "max Sqft All" &&
-                                  <td key={filter ? BuilderList.max_sqft_all : AllBuilderListExport.max_sqft_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={maxSqftAllOption}
-                                        onChange={(e) => handleSelectChange(e, "max_sqft_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{maxSqftAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "min Base Price All" &&
-                                  <td key={filter ? BuilderList.min_base_price_all : AllBuilderListExport.min_base_price_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={minBasePriceAllOption}
-                                        onChange={(e) => handleSelectChange(e, "min_base_price_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{minBasePriceAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "min Sqft Active" &&
-                                  <td key={filter ? BuilderList.min_sqft_active : AllBuilderListExport.min_sqft_active} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={minSqftActiveOption}
-                                        onChange={(e) => handleSelectChange(e, "min_sqft_active")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{minSqftActiveResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "max Base Price All" &&
-                                  <td key={filter ? BuilderList.max_base_price_all : AllBuilderListExport.max_base_price_all} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={maxBasePriceAllOption}
-                                        onChange={(e) => handleSelectChange(e, "max_base_price_all")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{maxBasePriceAllResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "max Sqft Active" &&
-                                  <td key={filter ? BuilderList.max_sqft_active : AllBuilderListExport.max_sqft_active} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={maxSqftActiveOption}
-                                        onChange={(e) => handleSelectChange(e, "max_sqft_active")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{maxSqftActiveResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Traffic Per Month This Year" &&
-                                  <td key={filter ? BuilderList.avg_net_traffic_per_month_this_year : AllBuilderListExport.avg_net_traffic_per_month_this_year} style={{ textAlign: "center" }}>
-                                      <select
-                                        value={avgNetTrafficPerMonthThisYearOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_net_traffic_per_month_this_year")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Net Sales Per Month This Year" &&
-                                  <td key={filter ? BuilderList.avg_net_sales_per_month_this_year : AllBuilderListExport.avg_net_sales_per_month_this_year} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={avgNetSalesPerMonthThisYearOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_this_year")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Closings Per Month This Year" &&
-                                  <td key={filter ? BuilderList.avg_closings_per_month_this_year : AllBuilderListExport.avg_closings_per_month_this_year} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={avgClosingsPerMonthThisYearOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_closings_per_month_this_year")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgClosingsPerMonthThisYearResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Net Sales Per Month Since Open" &&
-                                  <td key={filter ? BuilderList.avg_net_sales_per_month_since_open : AllBuilderListExport.avg_net_sales_per_month_since_open} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={avgNetSalesPerMonthSinceOpenOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_since_open")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                  <td key={filter ? BuilderList.avg_net_sales_per_month_last_three_months : AllBuilderListExport.avg_net_sales_per_month_last_three_months} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={avgNetSalesPerMonthLastThreeMonthsOption}
-                                        onChange={(e) => handleSelectChange(e, "avg_net_sales_per_month_last_three_months")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "max Week Ending" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "min Week Ending" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "sqft Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "price Group" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "month Net Sold" &&
-                                  <td key={filter ? BuilderList.month_net_sold : AllBuilderListExport.month_net_sold} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={monthNetSoldOption}
-                                        onChange={(e) => handleSelectChange(e, "month_net_sold")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{monthNetSoldResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                {column.id == "year Net Sold" &&
-                                  <td key={filter ? BuilderList.year_net_sold : AllBuilderListExport.year_net_sold} style={{ textAlign: "center" }}>
-                                    <select
-                                        value={yearNetSoldOption}
-                                        onChange={(e) => handleSelectChange(e, "year_net_sold")}
-                                        placeholder="CALCULATE"
-                                      >
-                                        <option value="" disabled>CALCULATE</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                      <span>{yearNetSoldResult.toFixed(2)}</span>
-                                  </td>
-                                }
-                                  {column.id == "open Since" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                                {column.id == "action" &&
-                                  <td key={column.id} style={{ textAlign: "center" }}></td>
-                                }
-                              </>
-                            ))}
-                          </tr>}
-                        </tbody> */}
                       </table>
                     )}
                   </div>
@@ -6552,14 +4515,14 @@ const handleSortClose = () => setShowSort(false);
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
-    <BulkSubdivisionUpdate
+      <BulkSubdivisionUpdate
         ref={bulkSubdivision}
         Title="Bulk Edit Subdivision sale"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />
-      
-    <Modal show={show} onHide={handleClose}>
+
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Subdivision CSV Data</Modal.Title>
         </Modal.Header>
@@ -6589,30 +4552,30 @@ const handleSortClose = () => setShowSort(false);
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                  <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                      <span>{col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -6622,7 +4585,7 @@ const handleSortClose = () => setShowSort(false);
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>
@@ -6639,7 +4602,7 @@ const handleSortClose = () => setShowSort(false);
           <button
             type="button"
             className="btn-close"
-            onClick={() => {setShowOffcanvas(false);clearSubdivisionDetails();}}
+            onClick={() => { setShowOffcanvas(false); clearSubdivisionDetails(); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -6649,603 +4612,603 @@ const handleSortClose = () => setShowSort(false);
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-            <Box sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box>
-                  <TabList
-                    onChange={handleChange}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label="Subdivision Details" value="1" />
-                    <Tab label="Products" value="2" />
-                    <Tab label="Permits" value="3" />
-                    <Tab label="Traffic & Sales" value="4" />
-                    <Tab label="Closings" value="5" />
-                    <Tab label="Land Sales" value="6" />
-                  </TabList>
-                </Box>
-                <TabPanel value="1" className="p-0">
-                  <div className="d-flex">
+          <div className="offcanvas-body">
+            <div className="container-fluid">
+              <Box sx={{ width: "100%", typography: "body1" }}>
+                <TabContext value={value}>
+                  <Box>
+                    <TabList
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <Tab label="Subdivision Details" value="1" />
+                      <Tab label="Products" value="2" />
+                      <Tab label="Permits" value="3" />
+                      <Tab label="Traffic & Sales" value="4" />
+                      <Tab label="Closings" value="5" />
+                      <Tab label="Land Sales" value="6" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="1" className="p-0">
+                    <div className="d-flex">
 
-                    <div style={{width: "60%"}}>
+                      <div style={{ width: "60%" }}>
 
-                      <div style={{marginTop: "10px"}}>
-                        <span className="fw-bold fs-20">
-                          {SubdivisionDetails.builder && SubdivisionDetails.builder.name !== undefined
-                            ? SubdivisionDetails.builder.name
-                            : "NA"}
-                        </span><br />
-                        <span className="fw-bold fs-30">
-                          {SubdivisionDetails.name || "NA"}
-                        </span><br />
-                        <span className="fs-18">
-                          {SubdivisionDetails.builder?.website || "NA"}
-                        </span><br />
-                      
-                        <label className="fs-18" style={{marginTop: "10px"}}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
-                        <label className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{SubdivisionDetails.product_type || "NA"}</span></label><br />
-                        <label className="fs-18"><b>OPEN SINCE:</b>&nbsp;<span>{SubdivisionDetails.opensince || "NA"}</span></label><br />
-                        <label className="fs-18"><b>AGE RESTRICTED:</b>&nbsp;
-                          <span className="fw-bold">
-                            {SubdivisionDetails.reporting === 0 && "No"}
-                            {SubdivisionDetails.reporting === 1 && "Yes"}
-                            {SubdivisionDetails.reporting === "" && "NA"}
-                          </span>
-                        </label><br />
-                        <label className="fs-18"><b>ALL SINGLE-STORY:</b>&nbsp;
-                          <span className="fw-bold">
-                            {SubdivisionDetails.reporting === 0 && "No"}
-                            {SubdivisionDetails.reporting === 1 && "Yes"}
-                            {SubdivisionDetails.reporting === "" && "NA"}
-                          </span>
-                        </label><br />
-                        <label className="fs-18"><b>GATED:</b>&nbsp;<span>{SubdivisionDetails.gated || "NA"}</span></label>
+                        <div style={{ marginTop: "10px" }}>
+                          <span className="fw-bold fs-20">
+                            {SubdivisionDetails.builder && SubdivisionDetails.builder.name !== undefined
+                              ? SubdivisionDetails.builder.name
+                              : "NA"}
+                          </span><br />
+                          <span className="fw-bold fs-30">
+                            {SubdivisionDetails.name || "NA"}
+                          </span><br />
+                          <span className="fs-18">
+                            {SubdivisionDetails.builder?.website || "NA"}
+                          </span><br />
 
-                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "0px", marginBottom: "10px"}}></hr>
-
-                        <div className="d-flex" style={{marginTop: "5px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
-                          <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
-                        </div>
-                        <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{SubdivisionDetails.zipcode || "NA"}</span></label><br />
-                        <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{SubdivisionDetails.crossstreet || "NA"}</span></label><br />
-                        <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{SubdivisionDetails.juridiction || "NA"}</span></label>
-                        <div className="d-flex" style={{marginTop: "0px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>LATITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lat || "NA"}</span></div>
-                          <div className="fs-18"><span><b>LONGITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lng || "NA"}</span></div>
-                        </div>
-                        <label className="fs-18" style={{marginTop: "5px"}}><b>PARCEL:</b>&nbsp;<span>{SubdivisionDetails.parcel || "NA"}</span></label>
-
-                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "0px", marginBottom: "10px"}}></hr>
-
-                        <div className="d-flex" style={{marginTop: "5px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>TOTAL LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.totallots || "NA"}</span></div>
-                          <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.lotreleased || "NA"}</span></div>
-                        </div>
-                        <div className="d-flex" style={{marginTop: "5px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsoldlots || "NA"}</span></div>
-                          <div className="fs-18"><span><b>STANDING INVENTORY:</b></span>&nbsp;<span>{SubdivisionDetails.stadinginventory || "NA"}</span></div>
-                        </div>
-                        <div className="d-flex" style={{marginTop: "5px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>LOT WIDTH:</b></span>&nbsp;<span>{SubdivisionDetails.lotwidth || "NA"}</span></div>
-                          <div className="fs-18"><span><b>LOT SIZE:</b></span>&nbsp;<span>{SubdivisionDetails.lotsize || "NA"}</span></div>
-                        </div>
-
-                        <hr style={{borderTop:"2px solid black", width: "80%",marginTop: "5px", marginBottom: "10px"}}></hr>
-
-                        <div className="d-flex" style={{marginTop: "5px"}}>
-                          <div className="fs-18" style={{width: "180px"}}><span><b>HOA FEE:</b></span>&nbsp;<span>{SubdivisionDetails.hoafee || "NA"}</span></div>
-                          <div className="fs-18"><span><b>MASTER PLAN FEE:</b></span>&nbsp;<span>{SubdivisionDetails.masterplanfee || "NA"}</span></div>
-                        </div>
-                        <label className="fs-18" style={{marginTop: "5px", marginBottom: "5px"}}><b>GAS PROVIDER:</b>&nbsp;<span>{SubdivisionDetails.gasprovider || "NA"}</span></label><br />
-                        <label className="fs-18"><b>ZONING:</b>&nbsp;<span>{SubdivisionDetails.zoning || "NA"}</span></label>
-
-                      </div>
-                    </div>
-
-                    <div style={{width: "40%"}}>
-
-                      <div className="d-flex" style={{marginTop: "10px"}}>
-                        <div style={{width: "50%"}}>
-                          <label className="fs-20" style={{marginBottom: "0px"}}><b>STATUS:</b></label>
-                          <div>
-                            <span className="" style={{marginTop: "1px"}}>
-                              {SubdivisionDetails.status === 1 && "Active"}
-                              {SubdivisionDetails.status === 0 && "De-acitve"}
-                              {SubdivisionDetails.status === 2 && "Future"}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                        <label className="fs-20" style={{marginBottom: "0px"}}><b>REPORTING?:</b></label>
-                          <div>
-                            <span className="" style={{marginTop: "1px"}}>
-                              {SubdivisionDetails.reporting === 1 && "Yes"}
+                          <label className="fs-18" style={{ marginTop: "10px" }}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
+                          <label className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{SubdivisionDetails.product_type || "NA"}</span></label><br />
+                          <label className="fs-18"><b>OPEN SINCE:</b>&nbsp;<span>{SubdivisionDetails.opensince || "NA"}</span></label><br />
+                          <label className="fs-18"><b>AGE RESTRICTED:</b>&nbsp;
+                            <span className="fw-bold">
                               {SubdivisionDetails.reporting === 0 && "No"}
+                              {SubdivisionDetails.reporting === 1 && "Yes"}
+                              {SubdivisionDetails.reporting === "" && "NA"}
                             </span>
+                          </label><br />
+                          <label className="fs-18"><b>ALL SINGLE-STORY:</b>&nbsp;
+                            <span className="fw-bold">
+                              {SubdivisionDetails.reporting === 0 && "No"}
+                              {SubdivisionDetails.reporting === 1 && "Yes"}
+                              {SubdivisionDetails.reporting === "" && "NA"}
+                            </span>
+                          </label><br />
+                          <label className="fs-18"><b>GATED:</b>&nbsp;<span>{SubdivisionDetails.gated || "NA"}</span></label>
+
+                          <hr style={{ borderTop: "2px solid black", width: "80%", marginTop: "0px", marginBottom: "10px" }}></hr>
+
+                          <div className="d-flex" style={{ marginTop: "5px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>AREA:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
+                            <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
+                          </div>
+                          <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIP CODE:</b>&nbsp;<span>{SubdivisionDetails.zipcode || "NA"}</span></label><br />
+                          <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{SubdivisionDetails.crossstreet || "NA"}</span></label><br />
+                          <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{SubdivisionDetails.juridiction || "NA"}</span></label>
+                          <div className="d-flex" style={{ marginTop: "0px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>LATITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lat || "NA"}</span></div>
+                            <div className="fs-18"><span><b>LONGITUDE:</b></span>&nbsp;<span>{SubdivisionDetails.lng || "NA"}</span></div>
+                          </div>
+                          <label className="fs-18" style={{ marginTop: "5px" }}><b>PARCEL:</b>&nbsp;<span>{SubdivisionDetails.parcel || "NA"}</span></label>
+
+                          <hr style={{ borderTop: "2px solid black", width: "80%", marginTop: "0px", marginBottom: "10px" }}></hr>
+
+                          <div className="d-flex" style={{ marginTop: "5px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>TOTAL LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.totallots || "NA"}</span></div>
+                            <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.lotreleased || "NA"}</span></div>
+                          </div>
+                          <div className="d-flex" style={{ marginTop: "5px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsoldlots || "NA"}</span></div>
+                            <div className="fs-18"><span><b>STANDING INVENTORY:</b></span>&nbsp;<span>{SubdivisionDetails.stadinginventory || "NA"}</span></div>
+                          </div>
+                          <div className="d-flex" style={{ marginTop: "5px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>LOT WIDTH:</b></span>&nbsp;<span>{SubdivisionDetails.lotwidth || "NA"}</span></div>
+                            <div className="fs-18"><span><b>LOT SIZE:</b></span>&nbsp;<span>{SubdivisionDetails.lotsize || "NA"}</span></div>
+                          </div>
+
+                          <hr style={{ borderTop: "2px solid black", width: "80%", marginTop: "5px", marginBottom: "10px" }}></hr>
+
+                          <div className="d-flex" style={{ marginTop: "5px" }}>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>HOA FEE:</b></span>&nbsp;<span>{SubdivisionDetails.hoafee || "NA"}</span></div>
+                            <div className="fs-18"><span><b>MASTER PLAN FEE:</b></span>&nbsp;<span>{SubdivisionDetails.masterplanfee || "NA"}</span></div>
+                          </div>
+                          <label className="fs-18" style={{ marginTop: "5px", marginBottom: "5px" }}><b>GAS PROVIDER:</b>&nbsp;<span>{SubdivisionDetails.gasprovider || "NA"}</span></label><br />
+                          <label className="fs-18"><b>ZONING:</b>&nbsp;<span>{SubdivisionDetails.zoning || "NA"}</span></label>
+
+                        </div>
+                      </div>
+
+                      <div style={{ width: "40%" }}>
+
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                          <div style={{ width: "50%" }}>
+                            <label className="fs-20" style={{ marginBottom: "0px" }}><b>STATUS:</b></label>
+                            <div>
+                              <span className="" style={{ marginTop: "1px" }}>
+                                {SubdivisionDetails.status === 1 && "Active"}
+                                {SubdivisionDetails.status === 0 && "De-acitve"}
+                                {SubdivisionDetails.status === 2 && "Future"}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="fs-20" style={{ marginBottom: "0px" }}><b>REPORTING?:</b></label>
+                            <div>
+                              <span className="" style={{ marginTop: "1px" }}>
+                                {SubdivisionDetails.reporting === 1 && "Yes"}
+                                {SubdivisionDetails.reporting === 0 && "No"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="fs-20" style={{ marginBottom: "0px" }}><b>CURRENT AVG BASE ASKING $:</b></label>
+                          <div >
+                            <span className="">{<PriceComponent price={SubdivisionDetails.avg_base_price_active} /> || "NA"}</span>
+                          </div>
+                          <label className="fs-20"><b>CURRENT AVG SQFT:</b>&nbsp;<span style={{ fontSize: "16px" }}>{SubdivisionDetails.avg_sqft_active || "NA"}</span></label>
+                        </div>
+
+                        <div style={{ border: "1px solid black", marginTop: "10px" }}>
+                          <div style={{ marginLeft: "5px" }}>
+                            <label className="fs-20" style={{ marginBottom: "0px" }}><b>TOTAL SINCE OPEN:</b></label><br />
+                            <label style={{ marginLeft: "15px" }}>NET SALES:&nbsp;{SubdivisionDetails.total_net_sales || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>PERMITS:&nbsp;{SubdivisionDetails.total_permits || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;{SubdivisionDetails.total_closings || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_since_open || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:&nbsp;</label><br />
+                            <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_since_open} /> || "NA"}</label><br />
+
+                            <label className="fs-20" style={{ marginBottom: "0px" }}><b>THIS YEAR:</b></label><br />
+                            <label style={{ marginLeft: "15px" }}>NET SALES:&nbsp;{SubdivisionDetails.year_net_sold || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>PERMITS:&nbsp;{SubdivisionDetails.permit_this_year || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;</label><br />
+                            <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year} /> || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:&nbsp;{SubdivisionDetails.avg_closings_per_month_this_year || "NA"}</label><br />
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </TabPanel>
+                  <TabPanel value="2" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th>
+                                    <strong>No.</strong>
+                                  </th>
+                                  <th>
+                                    <strong>Name</strong>
+                                  </th>
+                                  <th>
+                                    <strong>Product Code</strong>
+                                  </th>
+                                  <th>
+                                    <strong>Stories</strong>
+                                  </th>
+                                  <th>
+                                    <strong>Recent Price</strong>
+                                  </th>
+                                  <th>
+                                    <strong>Recent Price SQFT</strong>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.products &&
+                                  Array.isArray(SubdivisionDetails.products) &&
+                                  SubdivisionDetails.products.length > 0 ? (
+                                  SubdivisionDetails.products.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleProductRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.name}</td>
+                                        <td>{element.product_code}</td>
+                                        <td>{element.stories}</td>
+                                        <td>{element.recentprice}</td>
+                                        <td>{element.recentpricesqft}</td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
-
-                      <div>
-                        <label className="fs-20" style={{ marginBottom: "0px"}}><b>CURRENT AVG BASE ASKING $:</b></label>
-                        <div >
-                          <span className="">{<PriceComponent price={SubdivisionDetails.avg_base_price_active} /> || "NA"}</span>
-                        </div>
-                        <label className="fs-20"><b>CURRENT AVG SQFT:</b>&nbsp;<span style={{fontSize: "16px"}}>{SubdivisionDetails.avg_sqft_active || "NA"}</span></label>
-                      </div>
-
-                      <div style={{border : "1px solid black", marginTop: "10px"}}>
-                        <div style={{marginLeft: "5px"}}>
-                          <label className="fs-20" style={{marginBottom: "0px"}}><b>TOTAL SINCE OPEN:</b></label><br />
-                          <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{SubdivisionDetails.total_net_sales || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{SubdivisionDetails.total_permits || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;{SubdivisionDetails.total_closings || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_since_open || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;</label><br />
-                          <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_since_open}/> || "NA"}</label><br />
-
-                          <label className="fs-20" style={{marginBottom: "0px"}}><b>THIS YEAR:</b></label><br />
-                          <label style={{marginLeft: "15px"}}>NET SALES:&nbsp;{SubdivisionDetails.year_net_sold || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>PERMITS:&nbsp;{SubdivisionDetails.permit_this_year || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>CLOSINGS:&nbsp;</label><br />
-                          <label style={{marginLeft: "15px"}}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year}/> || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
-                          <label style={{marginLeft: "15px"}}>CLOSINGS PER MO:&nbsp;{SubdivisionDetails.avg_closings_per_month_this_year || "NA"}</label><br />
-                        </div>
-                      </div>
-
                     </div>
-
-                  </div>
-                </TabPanel>
-                <TabPanel value="2" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                        <div
-                          id="employee-tbl_wrapper"
-                          className="dataTables_wrapper no-footer"
-                        >
-                          <table
-                            id="empoloyees-tblwrapper"
-                            className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                  </TabPanel>
+                  <TabPanel value="3" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
                           >
-                            <thead>
-                              <tr style={{ textAlign: "center" }}>
-                                <th>
-                                  <strong>No.</strong>
-                                </th>
-                                <th>
-                                  <strong>Name</strong>
-                                </th>
-                                <th>
-                                  <strong>Product Code</strong>
-                                </th>
-                                <th>
-                                  <strong>Stories</strong>
-                                </th>
-                                <th>
-                                  <strong>Recent Price</strong>
-                                </th>
-                                <th>
-                                  <strong>Recent Price SQFT</strong>
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody style={{ textAlign: "center" }}>
-                              {SubdivisionDetails.products &&
-                              Array.isArray(SubdivisionDetails.products) &&
-                              SubdivisionDetails.products.length > 0 ? (
-                                SubdivisionDetails.products.map(
-                                  (element, index) => (
-                                    <tr
-                                      onClick={handleProductRedirect}
-                                      key={element.id}
-                                      style={{
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      <td>{index + 1}</td>
-                                      <td>{element.name}</td>
-                                      <td>{element.product_code}</td>
-                                      <td>{element.stories}</td>
-                                      <td>{element.recentprice}</td>
-                                      <td>{element.recentpricesqft}</td>
-                                    </tr>
-                                  )
-                                )
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="7"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    No data found
-                                  </td>
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th>No.</th>
+                                  <th>Permit Number</th>
+                                  <th>Owner</th>
+                                  <th>Contractor</th>
+                                  <th>Description</th>
+                                  <th>Address</th>
                                 </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="3" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                        <div
-                          id="employee-tbl_wrapper"
-                          className="dataTables_wrapper no-footer"
-                        >
-                          <table
-                            id="empoloyees-tblwrapper"
-                            className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                          >
-                            <thead>
-                              <tr style={{ textAlign: "center" }}>
-                                <th>No.</th>
-                                <th>Permit Number</th>
-                                <th>Owner</th>
-                                <th>Contractor</th>
-                                <th>Description</th>
-                                <th>Address</th>
-                              </tr>
-                            </thead>
-                            <tbody style={{ textAlign: "center" }}>
-                              {SubdivisionDetails.get_permits &&
-                              Array.isArray(SubdivisionDetails.get_permits) &&
-                              SubdivisionDetails.get_permits.length > 0 ? (
-                                SubdivisionDetails.get_permits.map(
-                                  (element, index) => (
-                                    <tr
-                                      onClick={() =>
-                                        handlePermitRedirect(element.id)
-                                      }
-                                      key={element.id}
-                                      style={{
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      <td>{index + 1}</td>
-                                      <td>{element.permitnumber}</td>
-                                      <td>{element.owner}</td>
-                                      <td>{element.contractor}</td>
-                                      <td>{element.description}</td>
-                                      <td>{element.address1}</td>
-                                    </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.get_permits &&
+                                  Array.isArray(SubdivisionDetails.get_permits) &&
+                                  SubdivisionDetails.get_permits.length > 0 ? (
+                                  SubdivisionDetails.get_permits.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={() =>
+                                          handlePermitRedirect(element.id)
+                                        }
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.permitnumber}</td>
+                                        <td>{element.owner}</td>
+                                        <td>{element.contractor}</td>
+                                        <td>{element.description}</td>
+                                        <td>{element.address1}</td>
+                                      </tr>
+                                    )
                                   )
-                                )
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="7"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    No data found
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="4" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                        <div
-                          id="employee-tbl_wrapper"
-                          className="dataTables_wrapper no-footer"
-                        >
-                          <table
-                            id="empoloyees-tblwrapper"
-                            className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                          >
-                            <thead>
-                              <tr style={{ textAlign: "center" }}>
-                                {" "}
-                                <th>No.</th>
-                                <th>Week Ending</th>
-                                <th>Weekly Traffic</th>
-                                <th>Gross Sales</th>
-                                <th>Cancelations</th>
-                                <th>Net Sales</th>
-                                <th>Lot Released</th>
-                                <th>Unsold Inventory</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody style={{ textAlign: "center" }}>
-                              {SubdivisionDetails.traficSales &&
-                              Array.isArray(SubdivisionDetails.traficSales) &&
-                              SubdivisionDetails.traficSales.length > 0 ? (
-                                SubdivisionDetails.traficSales.map(
-                                  (element, index) => (
-                                    <tr
-                                      onClick={handleTraficRedirect}
-                                      key={element.id}
-                                      style={{
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                      }}
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
                                     >
-                                      <td>{index + 1}</td>
-                                      <td>{element.weekending}</td>
-                                      <td>{element.weeklytraffic}</td>
-                                      <td>{element.grosssales}</td>
-                                      <td>{element.cancelations}</td>
-                                      <td>{element.netsales}</td>
-                                      <td>{element.lotreleased}</td>
-                                      <td>{element.unsoldinventory}</td>
-                                      <td>
-                                        <div className="d-flex justify-content-center">
-                                          <Link
-                                            to={`/trafficsaleupdate/${element.id}`}
-                                            className="btn btn-primary shadow btn-xs sharp me-1"
-                                          >
-                                            <i className="fas fa-pencil-alt"></i>
-                                          </Link>
-                                          <Link
-                                            onClick={() =>
-                                              swal({
-                                                title: "Are you sure?",
-
-                                                icon: "warning",
-                                                buttons: true,
-                                                dangerMode: true,
-                                              }).then((willDelete) => {
-                                                if (willDelete) {
-                                                  handleDelete(element.id);
-                                                }
-                                              })
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  )
-                                )
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="9"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    No data found
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="5" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                        <div
-                          id="employee-tbl_wrapper"
-                          className="dataTables_wrapper no-footer"
-                        >
-                          <table
-                            id="empoloyees-tblwrapper"
-                            className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                  </TabPanel>
+                  <TabPanel value="4" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
                           >
-                            <thead>
-                              <tr style={{ textAlign: "center" }}>
-                                <th>No.</th>
-                                <th>Seller Leagal</th>
-                                <th>Address</th>
-                                <th>Buyer</th>
-                                <th>Closing Date</th>
-                                <th>Closing Price</th>
-                                <th>Loan Amount</th>
-                                <th>Document</th>
-                                <th>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody style={{ textAlign: "center" }}>
-                              {SubdivisionDetails.get_closing &&
-                              Array.isArray(SubdivisionDetails.get_closing) &&
-                              SubdivisionDetails.get_closing.length > 0 ? (
-                                SubdivisionDetails.get_closing.map(
-                                  (element, index) => (
-                                    <tr
-                                      onClick={handleClosingRedirect}
-                                      key={element.id}
-                                      style={{
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      <td>{index + 1}</td>
-                                      <td>{element.sellerleagal}</td>
-                                      <td>{element.address}</td>
-                                      <td>{element.buyer}</td>
-                                      <td>{element.closingdate}</td>
-                                      <td>{element.closingprice}</td>
-                                      <td>{element.loanamount}</td>
-                                      <td>{element.document}</td>
-                                      <td>
-                                        <div className="d-flex justify-content-center">
-                                          <Link
-                                            to={`/closingsaleupdate/${element.id}`}
-                                            className="btn btn-primary shadow btn-xs sharp me-1"
-                                          >
-                                            <i className="fas fa-pencil-alt"></i>
-                                          </Link>
-                                          <Link
-                                            onClick={() =>
-                                              swal({
-                                                title: "Are you sure?",
-
-                                                icon: "warning",
-                                                buttons: true,
-                                                dangerMode: true,
-                                              }).then((willDelete) => {
-                                                if (willDelete) {
-                                                  handleDelete(element.id);
-                                                }
-                                              })
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  )
-                                )
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="7"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    No data found
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="6" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                        <div
-                          id="employee-tbl_wrapper"
-                          className="dataTables_wrapper no-footer"
-                        >
-                          <table
-                            id="empoloyees-tblwrapper"
-                            className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                          >
-                            <thead>
-                              <tr style={{ textAlign: "center" }}>
-                                <th>
-                                  <strong> No. </strong>
-                                </th>
-                                <th>
-                                  <strong>Seller</strong>
-                                </th>
-                                <th>
-                                  <strong> Buyer</strong>
-                                </th>
-                                <th>
-                                  <strong> Location</strong>
-                                </th>
-                                <th>
-                                  <strong> Notes</strong>
-                                </th>
-                                <th>
-                                  <strong> Price</strong>
-                                </th>
-                                <th>
-                                  <strong> date</strong>
-                                </th>
-
-                                <th>
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
                                   {" "}
-                                  <strong>Action</strong>
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody style={{ textAlign: "center" }}>
-                              {SubdivisionDetails.landsales &&
-                              Array.isArray(SubdivisionDetails.landsales) &&
-                              SubdivisionDetails.landsales.length > 0 ? (
-                                SubdivisionDetails.landsales.map(
-                                  (element, index) => (
-                                    <tr
-                                      onClick={handleLandRedirect}
-                                      key={element.id}
-                                      style={{
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      {" "}
-                                      <td>{index + 1}</td>
-                                      <td>{element.seller}</td>
-                                      <td>{element.buyer}</td>
-                                      <td>{element.location}</td>
-                                      <td>{element.notes}</td>
-                                      <td>{element.price}</td>
-                                      <td>{element.date}</td>
-                                      <td>
-                                        <div className="d-flex justify-content-center">
-                                          <Link
-                                            to={`/landsaleupdate/${element.id}`}
-                                            className="btn btn-primary shadow btn-xs sharp me-1"
-                                          >
-                                            <i className="fas fa-pencil-alt"></i>
-                                          </Link>
-                                          <Link
-                                            onClick={() =>
-                                              swal({
-                                                title: "Are you sure?",
-
-                                                icon: "warning",
-                                                buttons: true,
-                                                dangerMode: true,
-                                              }).then((willDelete) => {
-                                                if (willDelete) {
-                                                  handleDelete(element.id);
-                                                }
-                                              })
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  )
-                                )
-                              ) : (
-                                <tr>
-                                  <td
-                                    colSpan="7"
-                                    style={{ textAlign: "center" }}
-                                  >
-                                    No data found
-                                  </td>
+                                  <th>No.</th>
+                                  <th>Week Ending</th>
+                                  <th>Weekly Traffic</th>
+                                  <th>Gross Sales</th>
+                                  <th>Cancelations</th>
+                                  <th>Net Sales</th>
+                                  <th>Lot Released</th>
+                                  <th>Unsold Inventory</th>
+                                  <th>Action</th>
                                 </tr>
-                              )}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.traficSales &&
+                                  Array.isArray(SubdivisionDetails.traficSales) &&
+                                  SubdivisionDetails.traficSales.length > 0 ? (
+                                  SubdivisionDetails.traficSales.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleTraficRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.weekending}</td>
+                                        <td>{element.weeklytraffic}</td>
+                                        <td>{element.grosssales}</td>
+                                        <td>{element.cancelations}</td>
+                                        <td>{element.netsales}</td>
+                                        <td>{element.lotreleased}</td>
+                                        <td>{element.unsoldinventory}</td>
+                                        <td>
+                                          <div className="d-flex justify-content-center">
+                                            <Link
+                                              to={`/trafficsaleupdate/${element.id}`}
+                                              className="btn btn-primary shadow btn-xs sharp me-1"
+                                            >
+                                              <i className="fas fa-pencil-alt"></i>
+                                            </Link>
+                                            <Link
+                                              onClick={() =>
+                                                swal({
+                                                  title: "Are you sure?",
+
+                                                  icon: "warning",
+                                                  buttons: true,
+                                                  dangerMode: true,
+                                                }).then((willDelete) => {
+                                                  if (willDelete) {
+                                                    handleDelete(element.id);
+                                                  }
+                                                })
+                                              }
+                                              className="btn btn-danger shadow btn-xs sharp"
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Link>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="9"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </div>
-        </div>)}
+                  </TabPanel>
+                  <TabPanel value="5" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th>No.</th>
+                                  <th>Seller Leagal</th>
+                                  <th>Address</th>
+                                  <th>Buyer</th>
+                                  <th>Closing Date</th>
+                                  <th>Closing Price</th>
+                                  <th>Loan Amount</th>
+                                  <th>Document</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.get_closing &&
+                                  Array.isArray(SubdivisionDetails.get_closing) &&
+                                  SubdivisionDetails.get_closing.length > 0 ? (
+                                  SubdivisionDetails.get_closing.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleClosingRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.sellerleagal}</td>
+                                        <td>{element.address}</td>
+                                        <td>{element.buyer}</td>
+                                        <td>{element.closingdate}</td>
+                                        <td>{element.closingprice}</td>
+                                        <td>{element.loanamount}</td>
+                                        <td>{element.document}</td>
+                                        <td>
+                                          <div className="d-flex justify-content-center">
+                                            <Link
+                                              to={`/closingsaleupdate/${element.id}`}
+                                              className="btn btn-primary shadow btn-xs sharp me-1"
+                                            >
+                                              <i className="fas fa-pencil-alt"></i>
+                                            </Link>
+                                            <Link
+                                              onClick={() =>
+                                                swal({
+                                                  title: "Are you sure?",
+
+                                                  icon: "warning",
+                                                  buttons: true,
+                                                  dangerMode: true,
+                                                }).then((willDelete) => {
+                                                  if (willDelete) {
+                                                    handleDelete(element.id);
+                                                  }
+                                                })
+                                              }
+                                              className="btn btn-danger shadow btn-xs sharp"
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Link>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+                  <TabPanel value="6" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th>
+                                    <strong> No. </strong>
+                                  </th>
+                                  <th>
+                                    <strong>Seller</strong>
+                                  </th>
+                                  <th>
+                                    <strong> Buyer</strong>
+                                  </th>
+                                  <th>
+                                    <strong> Location</strong>
+                                  </th>
+                                  <th>
+                                    <strong> Notes</strong>
+                                  </th>
+                                  <th>
+                                    <strong> Price</strong>
+                                  </th>
+                                  <th>
+                                    <strong> date</strong>
+                                  </th>
+
+                                  <th>
+                                    {" "}
+                                    <strong>Action</strong>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.landsales &&
+                                  Array.isArray(SubdivisionDetails.landsales) &&
+                                  SubdivisionDetails.landsales.length > 0 ? (
+                                  SubdivisionDetails.landsales.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleLandRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        {" "}
+                                        <td>{index + 1}</td>
+                                        <td>{element.seller}</td>
+                                        <td>{element.buyer}</td>
+                                        <td>{element.location}</td>
+                                        <td>{element.notes}</td>
+                                        <td>{element.price}</td>
+                                        <td>{element.date}</td>
+                                        <td>
+                                          <div className="d-flex justify-content-center">
+                                            <Link
+                                              to={`/landsaleupdate/${element.id}`}
+                                              className="btn btn-primary shadow btn-xs sharp me-1"
+                                            >
+                                              <i className="fas fa-pencil-alt"></i>
+                                            </Link>
+                                            <Link
+                                              onClick={() =>
+                                                swal({
+                                                  title: "Are you sure?",
+
+                                                  icon: "warning",
+                                                  buttons: true,
+                                                  dangerMode: true,
+                                                }).then((willDelete) => {
+                                                  if (willDelete) {
+                                                    handleDelete(element.id);
+                                                  }
+                                                })
+                                              }
+                                              className="btn btn-danger shadow btn-xs sharp"
+                                            >
+                                              <i className="fa fa-trash"></i>
+                                            </Link>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+                </TabContext>
+              </Box>
+            </div>
+          </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}
@@ -7293,12 +5256,6 @@ const handleSortClose = () => setShowSort(false);
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            // defaultChecked={(() => {
-                            //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
-                            //   return isChecked;
-                            // })()}
                             checked={checkedItems[element.field_name]}
                             onChange={handleCheckboxChange}
                             name={element.field_name}
@@ -7307,7 +5264,7 @@ const handleSortClose = () => setShowSort(false);
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                          {element.field_name}
+                            {element.field_name}
                           </label>
                         </div>
                       </div>
@@ -7343,403 +5300,315 @@ const handleSortClose = () => setShowSort(false);
 
         <div className="offcanvas-body">
           <div className="container-fluid">
-          <div className="">
-                            <form onSubmit={HandleFilterForm}>
-                              <div className="row">
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                    STATUS:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <MultiSelect
-                                     name="status"
-                                     options={statusOptions}
-                                      value={selectedStatus}
-                                      onChange={handleSelectStatusChange }
-                                     placeholder={"Select Status"} 
-                                  />
-                                  {/* <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="status"
-                                    onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Sold Out</option>
-                                    <option value="2">Future</option>
-                                  </select> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                    REPORTING:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <MultiSelect
-                                     name="reporting"
-                                     options={reportingOptions}
-                                      value={selectedReporting}
-                                      onChange={handleSelectReportingChange }
-                                     placeholder={"Select Reporting"} 
-                                  />
-                                  {/* <select
-                                    className="default-select form-control"
-                                    value={filterQuery.is_active}
-                                    name="reporting"
-                                    onChange={HandleFilter}
-                                  >
-                                    <option value="">All</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                  </select> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                NAME :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.name} name="name" className="form-control"  onChange={HandleFilter}/>
-                              </div>
+            <div className="">
+              <form onSubmit={HandleFilterForm}>
+                <div className="row">
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      STATUS:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="status"
+                      options={statusOptions}
+                      value={selectedStatus}
+                      onChange={handleSelectStatusChange}
+                      placeholder={"Select Status"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      REPORTING:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="reporting"
+                      options={reportingOptions}
+                      value={selectedReporting}
+                      onChange={handleSelectReportingChange}
+                      placeholder={"Select Reporting"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      NAME :{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
+                  </div>
 
 
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                               BUILDER NAME :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <Form.Group controlId="tournamentList">
-                                    <MultiSelect
-                                      name="builder_name"
-                                      options={builderListDropDown}
-                                      value={selectedBuilderName}
-                                      onChange={handleSelectBuilderNameChange }
-                                      placeholder={"Select Builder Name"} 
-                                    />
-                                  </Form.Group>                
-                                                </div>
-    
-                              <div className="col-md-3 mt-3">
-                              <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:<span className="text-danger"></span></label>
-                              <MultiSelect
-                                name="product_type"
-                                options={productTypeOptions}
-                                value={productTypeStatus}
-                                onChange={handleSelectProductTypeChange }
-                                placeholder="Select Status" 
-                              />
-                                {/* <select className="default-select form-control" name="product_type" onChange={HandleFilter} >
-                                    <option value="">Select Product Type</option>
-                                     <option value="DET">DET</option>
-                                    <option value="ATT">ATT</option>
-                                    <option value="HR">HR</option>
-                                    <option value="AC">AC</option>
-                                </select>  */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                AREA:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="area"
-                                options={areaOption}
-                                value={selectedArea}
-                                onChange={handleSelectAreaChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input name="area" value={filterQuery.area} className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                MASTER PLAN:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="masterplan_id"
-                                options={masterPlanOption}
-                                value={selectedMasterPlan}
-                                onChange={handleSelectMasterPlanChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                ZIP CODE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="zipcode"
-                                options={zipCodeOption}
-                                value={seletctedZipcode}
-                                onChange={handleSelectZipcodeChange}
-                                placeholder="Select Zipcode" 
-                              />
-                                {/* <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                LOT WIDTH:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                LOT SIZE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              {/* <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                ZONING:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                              </div> */}
-                              <div className="col-md-3 mt-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
-                              <MultiSelect
-                                name="age"
-                                options={ageOptions}
-                                value={selectedAge}
-                                onChange={handleSelectAgeChange }
-                                placeholder={"Select Age"} 
-                              />
-                              {/* <select className="default-select form-control" name="age" onChange={HandleFilter} >
-                                    <option value="">Select age Restricted</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                              </select>     */}
-                              </div>
-                              <div className="col-md-3 mt-3 ">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
-                              <MultiSelect
-                                name="single"
-                                options={singleOptions}
-                                value={selectedSingle}
-                                onChange={handleSelectSingleChange }
-                                placeholder={"Select Single"} 
-                              />
-                                    {/* <select className="default-select form-control" name="single" onChange={HandleFilter} >
-                                        <option value="">Select Story</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>     */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput28" className="form-label">GATED:{" "}</label>
-                              <MultiSelect
-                                name="gated"
-                                options={gatedOptions}
-                                value={selectedGated}
-                                onChange={handleSelectGatedChange }
-                                placeholder={"Select Gated"} 
-                              />
-                                    {/* <select className="default-select form-control" 
-                                    onChange={HandleFilter} 
-                                    value={filterQuery.gated}
-                                    name="gated"
-                                    > 
-                                        <option value="">Select Gate</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select> */}
-                                                                    </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                JURISDICTION:{" "}
-                                </label>
-                                <MultiSelect
-                                name="juridiction"
-                                options={jurisdictionOption}
-                                value={selectedJurisdicition}
-                                onChange={handleSelectJurisdictionChange}
-                                placeholder="Select Juridiction" 
-                              />
-                                {/* <input value={filterQuery.juridiction} name="juridiction" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                GAS PROVIDER:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="gasprovider"
-                                options={gasProviderOption}
-                                value={seletctedGasProvider}
-                                onChange={handleGasProviderChange}
-                                placeholder="Select Gas Provider" 
-                              />
-                                {/* <input value={filterQuery.gasprovider} name="Gas Provider" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              {/* <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                OPEN SINCE:{" "}
-                                  <span className="text-danger"></span>
-                                </label> */}
-                                <div className="col-md-3 mt-3">
-                                  <label className="form-label">From:{" "}</label>
-                                  <DatePicker
-                                    name="from"
-                                    className="form-control"
-                                    selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                                    onChange={handleFilterDateFrom}
-                                    dateFormat="MM/dd/yyyy"
-                                    placeholderText="mm/dd/yyyy"
-                                  />
-                                </div>
-                                <div className="col-md-3 mt-3">
-                                  <label className="form-label">To:{" "}</label>
-                                  <DatePicker
-                                    name="to"
-                                    className="form-control"
-                                    selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                                    onChange={handleFilterDateTo}
-                                    dateFormat="MM/dd/yyyy"
-                                    placeholderText="mm/dd/yyyy"
-                                  />
-                                </div>
-                                {/* <DatePicker
-                                  name="from"
-                                  className="form-control"
-                                  selected={filterQuery.opensince ? parseDate(filterQuery.opensince) : null}
-                                  onChange={handleFilterDateOpen}
-                                  dateFormat="MM/dd/yyyy"
-                                  placeholderText="mm/dd/yyyy"
-                                />                               */}
-                                {/* </div> */}
-                              {/* <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                MASTER PLAN FEE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.masterplanfee} name="masterplanfee" className="form-control" onChange={HandleFilter}/>
-                              </div> */}
-                             </div>
-                             </form>
-                            </div>
-                            &nbsp;
-                              <div className="d-flex justify-content-between">                 
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>    
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>       
-                            </div>
-                            <br/>
-                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
-                            <>
-                            <h5 className="">Calculation Filter Options</h5>
-                            <div className="border-top">
-                              <div className="row">
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MONTHS OPEN:{" "}</label>
-                                  <input style={{marginTop: "20px"}} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">LATEST LOTS RELEASED:{" "}</label>
-                                  <input style={{marginTop: "20px"}} value={filterQuery.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">LATEST STANDING INVENTORY:{" "}</label>
-                                  <input value={filterQuery.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG SQFT ALL:{" "}</label>
-                                  <input style={{marginTop: "20px"}} value={filterQuery.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG SQFT ACTIVE:{" "}</label>
-                                  <input value={filterQuery.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG BASE PRICE ALL:{" "}</label>
-                                  <input value={filterQuery.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG BASE PRICE ACTIVE:{" "}</label>
-                                  <input value={filterQuery.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MIN SQFT ALL:{" "}</label>
-                                  <input value={filterQuery.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
-                                  <input value={filterQuery.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MAX SQFT ALL:{" "}</label>
-                                  <input value={filterQuery.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MAX SQFT ACTIVE:{" "}</label>
-                                  <input value={filterQuery.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MIN BASE PRICE ALL:{" "}</label>
-                                  <input value={filterQuery.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MIN BASE PRICE ACTIVE:{" "}</label>
-                                  <input value={filterQuery.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MAX BASE PRICE ALL:{" "}</label>
-                                  <input value={filterQuery.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MAX BASE PRICE ACTIVE:{" "}</label>
-                                  <input value={filterQuery.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
-                                </div><div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
-                                  <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:{" "}</label>
-                                  <input value={filterQuery.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:{" "}</label>
-                                  <input value={filterQuery.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                {/* <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">SQFT GROUP:{" "}</label>
-                                  <input type="text" value={filterQuery.sqft_group} name="sqft_group" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">PRICE GROUP:{" "}</label>
-                                  <input type="text" value={filterQuery.price_group} name="price_group" className="form-control" onChange={handleInputChange} />
-                                </div> */}
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">MONTH NET SOLD:{" "}</label>
-                                  <input value={filterQuery.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
-                                </div>
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">YEAR NET SOLD:{" "}</label>
-                                  <input value={filterQuery.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
-                                </div>
-                              </div>
-                            </div></>}
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      BUILDER NAME :{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderListDropDown}
+                        value={selectedBuilderName}
+                        onChange={handleSelectBuilderNameChange}
+                        placeholder={"Select Builder Name"}
+                      />
+                    </Form.Group>
+                  </div>
+
+                  <div className="col-md-3 mt-3">
+                    <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:<span className="text-danger"></span></label>
+                    <MultiSelect
+                      name="product_type"
+                      options={productTypeOptions}
+                      value={productTypeStatus}
+                      onChange={handleSelectProductTypeChange}
+                      placeholder="Select Status"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      AREA:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="area"
+                      options={areaOption}
+                      value={selectedArea}
+                      onChange={handleSelectAreaChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      MASTER PLAN:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="masterplan_id"
+                      options={masterPlanOption}
+                      value={selectedMasterPlan}
+                      onChange={handleSelectMasterPlanChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      ZIP CODE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="zipcode"
+                      options={zipCodeOption}
+                      value={seletctedZipcode}
+                      onChange={handleSelectZipcodeChange}
+                      placeholder="Select Zipcode"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LOT WIDTH:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      LOT SIZE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                    <MultiSelect
+                      name="age"
+                      options={ageOptions}
+                      value={selectedAge}
+                      onChange={handleSelectAgeChange}
+                      placeholder={"Select Age"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 ">
+                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                    <MultiSelect
+                      name="single"
+                      options={singleOptions}
+                      value={selectedSingle}
+                      onChange={handleSelectSingleChange}
+                      placeholder={"Select Single"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label htmlFor="exampleFormControlInput28" className="form-label">GATED:{" "}</label>
+                    <MultiSelect
+                      name="gated"
+                      options={gatedOptions}
+                      value={selectedGated}
+                      onChange={handleSelectGatedChange}
+                      placeholder={"Select Gated"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      JURISDICTION:{" "}
+                    </label>
+                    <MultiSelect
+                      name="juridiction"
+                      options={jurisdictionOption}
+                      value={selectedJurisdicition}
+                      onChange={handleSelectJurisdictionChange}
+                      placeholder="Select Juridiction"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      GAS PROVIDER:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="gasprovider"
+                      options={gasProviderOption}
+                      value={seletctedGasProvider}
+                      onChange={handleGasProviderChange}
+                      placeholder="Select Gas Provider"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">From:{" "}</label>
+                    <DatePicker
+                      name="from"
+                      className="form-control"
+                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}</label>
+                    <DatePicker
+                      name="to"
+                      className="form-control"
+                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+            &nbsp;
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                onClick={HandleCancelFilter}
+                variant="secondary"
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                onClick={HandleFilterForm}
+                variant="primary"
+              >
+                Filter
+              </Button>
+            </div>
+            <br />
+            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+              <>
+                <h5 className="">Calculation Filter Options</h5>
+                <div className="border-top">
+                  <div className="row">
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MONTHS OPEN:{" "}</label>
+                      <input style={{ marginTop: "20px" }} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">LATEST LOTS RELEASED:{" "}</label>
+                      <input style={{ marginTop: "20px" }} value={filterQuery.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">LATEST STANDING INVENTORY:{" "}</label>
+                      <input value={filterQuery.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG SQFT ALL:{" "}</label>
+                      <input style={{ marginTop: "20px" }} value={filterQuery.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG SQFT ACTIVE:{" "}</label>
+                      <input value={filterQuery.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG BASE PRICE ALL:{" "}</label>
+                      <input value={filterQuery.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG BASE PRICE ACTIVE:{" "}</label>
+                      <input value={filterQuery.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MIN SQFT ALL:{" "}</label>
+                      <input value={filterQuery.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
+                      <input value={filterQuery.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MAX SQFT ALL:{" "}</label>
+                      <input value={filterQuery.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MAX SQFT ACTIVE:{" "}</label>
+                      <input value={filterQuery.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MIN BASE PRICE ALL:{" "}</label>
+                      <input value={filterQuery.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MIN BASE PRICE ACTIVE:{" "}</label>
+                      <input value={filterQuery.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MAX BASE PRICE ALL:{" "}</label>
+                      <input value={filterQuery.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MAX BASE PRICE ACTIVE:{" "}</label>
+                      <input value={filterQuery.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:{" "}</label>
+                      <input value={filterQuery.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
+                      <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                    </div><div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
+                      <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:{" "}</label>
+                      <input value={filterQuery.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:{" "}</label>
+                      <input value={filterQuery.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">MONTH NET SOLD:{" "}</label>
+                      <input value={filterQuery.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
+                    </div>
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">YEAR NET SOLD:{" "}</label>
+                      <input value={filterQuery.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
+                    </div>
+                  </div>
+                </div></>}
           </div>
         </div>
       </Offcanvas>
@@ -7751,45 +5620,45 @@ const handleSortClose = () => setShowSort(false);
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => { resetSelection(); setExportModelShow(false); }}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-              <li>
-                <label className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={selectAll}
-                    onChange={handleSelectAllToggle}
-                  />
+            <Row>
+              <ul className='list-unstyled'>
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
                     Select All
-                </label>
-              </li>
-            {exportColumns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  checked={selectedColumns.includes(col.label)}
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
+                  <li key={col.label}>
+                    <label className='form-check'>
+                      <input
+                        type="checkbox"
+                        className='form-check-input'
+                        checked={selectedColumns.includes(col.label)}
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
       </Modal>
