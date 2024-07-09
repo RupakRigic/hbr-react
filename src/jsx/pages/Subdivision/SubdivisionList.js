@@ -72,7 +72,8 @@ const SubdivisionList = () => {
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
 
@@ -99,13 +100,13 @@ const SubdivisionList = () => {
     product_type: "",
     reporting: "",
     builder_name: "",
-    name: "",
+    name: namebyfilter ? namebyfilter : "",
     product_type: "",
     area: "",
     masterplan_id: "",
     zipcode: "",
-    lotwidth: "",
-    lotsize: "",
+    lotwidth: lotwidthbyfilter ? lotwidthbyfilter : "",
+    lotsize: lotsizebyfilter ? lotsizebyfilter : "",
     zoning: "",
     age: "",
     single: "",
@@ -139,8 +140,8 @@ const SubdivisionList = () => {
     month_net_sold: "",
     year_net_sold: "",
     opensince: "",
-    from: "",
-    to: "",
+    from: frombyfilter ? frombyfilter : "",
+    to: tobyfilter ? tobyfilter : "",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -766,12 +767,22 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    setIsAnyFilterApplied(isAnyFilterApplied);
+    if (isAnyFilterApplied) {
+      setSearchQuery(filterString());
+    } else {
+      setSearchQuery(searchQuery);
+    }
+  }, [filterQuery]);
+
+  useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getbuilderlist(currentPage);
     } else {
       navigate("/");
     }
-  }, [currentPage, searchQuery]);
+  }, [currentPage]);
 
   const handleDelete = async (e) => {
     try {
@@ -851,15 +862,6 @@ const SubdivisionList = () => {
     setManageFilterOffcanvas(false)
 
   };
-
-  useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQueryByFilter)
-    }
-  }, [filterQuery]);
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -5612,11 +5614,6 @@ const SubdivisionList = () => {
           </div>
         </div>
       </Offcanvas>
-      <SubdivisionOffcanvas
-        ref={subdivision}
-        Title="Add Subdivision"
-        parentCallback={handleCallback}
-      />
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>

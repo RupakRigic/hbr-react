@@ -88,21 +88,21 @@ const FilterSubdivision = () => {
                 searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
                 selectedStatusByFilter,
                 selectedReportingByFilter,
-                name: filterQuery.name,
+                namebyfilter: filterQuery.name,
                 selectedBuilderNameByFilter,
                 productTypeStatusByFilter,
                 selectedAreaByFilter,
                 selectedMasterPlanByFilter,
                 seletctedZipcodeByFilter,
-                lotwidth: filterQuery.lotwidth,
-                lotsize: filterQuery.lotsize,
+                lotwidthbyfilter: filterQuery.lotwidth,
+                lotsizebyfilter: filterQuery.lotsize,
                 selectedAgeByFilter,
                 selectedSingleByFilter,
                 selectedGatedByFilter,
                 selectedJurisdicitionByFilter,
                 seletctedGasProviderByFilter,
-                from: filterQuery.from ? parseDate(filterQuery.from) : null,
-                to: filterQuery.to ? parseDate(filterQuery.to) : null
+                frombyfilter: filterQuery.from ? parseDate(filterQuery.from) : null,
+                tobyfilter: filterQuery.to ? parseDate(filterQuery.to) : null
             }
         });
     };

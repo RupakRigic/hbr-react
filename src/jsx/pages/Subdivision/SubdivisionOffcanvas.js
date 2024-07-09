@@ -50,27 +50,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
         setGate(e.target.value);
     }
 
-    const getbuilderlist = async () => {
-
-        try {
-
-            const response = await AdminBuilderService.index();
-            const responseData = await response.json();
-            setBuilderList(responseData.data)
-
-        } catch (error) {
-            console.log(error)
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-
-                setError(errorJson.message)
-            }
-        }
-    }
-    useEffect(() => {
-        getbuilderlist();
-    }, [])
-
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddSubdivision(true)
