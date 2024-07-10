@@ -393,6 +393,7 @@ function RechartJs() {
       const BuyerDate = filteredBuyerData.map(([key]) => key);
       const buyerValue = filteredBuyerData.map(([, value]) => value);
       const maxBuyerValue = Math.max(...buyerValue);
+      const minBuyerValue = Math.min(...buyerValue);
 
       console.log(buyerValue);
       setBuyerTrafficdata({
@@ -417,8 +418,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: maxBuyerValue * 2,
+            min: minBuyerValue,
+            max: maxBuyerValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -444,6 +445,7 @@ function RechartJs() {
       const netSaleWeekDate = filteredNetSaleData.map(([key]) => key);
       const netSaleValue = filteredNetSaleData.map(([, value]) => value);
       const maxNetSaleValue = Math.max(...netSaleValue);
+      const minNetSaleValue = Math.min(...netSaleValue);
 
       console.log(netSaleWeekDate);
             console.log(netSaleWeekDate);
@@ -470,8 +472,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: maxNetSaleValue * 2,
+            min: minNetSaleValue,
+            max: maxNetSaleValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -501,6 +503,8 @@ function RechartJs() {
       );
 
       const cancelationMaxValue = Math.max(...cancelationValue);
+      const cancelationMinValue = Math.max(...cancelationValue);
+
       setCanclelationData({
         defaultFontFamily: "Poppins",
         labels: cancelationWeekDate,
@@ -523,8 +527,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: cancelationMaxValue * 2,
+            min: cancelationMinValue,
+            max: cancelationMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -551,6 +555,8 @@ function RechartJs() {
       const StandingValue = filteredStandingData.map(([, value]) => value);
 
       const StandingValueMaxValue = Math.max(...StandingValue);
+      const StandingValueMinValue = Math.min(...StandingValue);
+
       setStandingData({
         defaultFontFamily: "Poppins",
         labels: StandingWeekDate,
@@ -573,8 +579,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: StandingValueMaxValue * 2,
+            min: StandingValueMinValue,
+            max: StandingValueMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -603,6 +609,8 @@ function RechartJs() {
       const NetSaleValue = filteredNetSaleSubWiseData.map(([, value]) => value);
 
       const NetSaleSubWiseMaxValue = Math.max(...NetSaleValue);
+      const NetSaleSubWiseMinValue = Math.min(...NetSaleValue);
+
       setNetSaleSubWisData({
         defaultFontFamily: "Poppins",
         labels: SubdivisionName,
@@ -625,8 +633,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: NetSaleSubWiseMaxValue * 2,
+            min: NetSaleSubWiseMinValue,
+            max: NetSaleSubWiseMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -656,6 +664,8 @@ function RechartJs() {
       const ActiveSubValue = filteredActiveSub.map(([, value]) => value);
 
       const ActiveSubMax = Math.max(...ActiveSubValue);
+      const ActiveSubMin = Math.min(...ActiveSubValue);
+
       setActiveSubData({
         defaultFontFamily: "Poppins",
         labels: activeSubLevels,
@@ -678,8 +688,8 @@ function RechartJs() {
         },
         scales: {
           y: {
-            min: 0,
-            // max: ActiveSubMax * 2,
+            min: ActiveSubMin,
+            max: ActiveSubMin,
             ticks: {
               beginAtZero: true,
               padding: 0,
