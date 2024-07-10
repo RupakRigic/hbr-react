@@ -611,11 +611,11 @@ const ProductList = () => {
       }
     }
   };
-  const debouncedHandleSearch = useRef(
-    debounce((value) => {
-      setSearchQuery(value);
-    }, 1000)
-  ).current;
+  // const debouncedHandleSearch = useRef(
+  //   debounce((value) => {
+  //     setSearchQuery(value);
+  //   }, 1000)
+  // ).current;
 
   // useEffect(() => {
   //   getproductList();

@@ -16,12 +16,13 @@ export const MenuList = [
         // classsChange: 'mm-collapse',
         iconStyle: SVGICON.Pages,
         to: '/builderList',
+        // to: '/filterbuilder',
 
     },
     {
         title: 'Subdivisions',
         iconStyle: SVGICON.Finance,
-        to: '/subdivisionlist',
+        to: '/filtersubdivision',
     },
 
     {

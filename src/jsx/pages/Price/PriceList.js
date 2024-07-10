@@ -725,24 +725,32 @@ const [filterQuery, setFilterQuery] = useState({
           console.log(responseData)
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          if (responseData.data) {
-            console.log(responseData);
-            let message = responseData.data.message;
-            if (responseData.data.failed_records > 0) {
-                const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-                message += ' Problematic Record Rows: ' + problematicRows+'.';
-            }
-            message += '. Record Imported: ' + responseData.data.successful_records;
-            message += '. Failed Record Count: ' + responseData.data.failed_records;
-            message += '. Last Row: ' + responseData.data.last_processed_row;
-
-
-            swal(message).then((willDelete) => {
-              if (willDelete) {
-                navigate("/priceList");
-                setShow(false);
+          if (responseData) {
+            if(responseData.errors) {
+              let message = responseData.message;
+              if (responseData.failed_records > 0) {
+                  const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+                  message += ' Problematic Record Rows: ' + problematicRows+'.';
               }
-            });
+              message += '. Record Imported: ' + responseData.successful_records;
+              message += '. Failed Record Count: ' + responseData.failed_records;
+              message += '. Last Row: ' + responseData.last_processed_row;
+
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  navigate("/priceList");
+                  setShow(false);
+                }
+              });
+              
+            } else {
+              swal(responseData.message).then((willDelete) => {
+                if (willDelete) {
+                  navigate("/priceList");
+                  setShow(false);
+                }
+              });
+            }
           } else {
             swal('Error: ' + responseData.error);
             setShow(false);

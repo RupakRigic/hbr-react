@@ -40,6 +40,8 @@ import PriceUpdate from "./pages/Price/PriceUpdate";
 import BuilderUpdate from "./pages/Builder/BuilderUpdate";
 import GoogleMapLocator from "./pages/Subdivision/GoogleMapLocator";
 import CCAPNList from "./pages/CCAPN/CCAPNList";
+import FilterBuilder from "./pages/Builder/FilterBuilder";
+import FilterSubdivision from "./pages/Subdivision/FilterSubdivision";
 const allroutes = [
   // Dashboard
   { url: "", component: <Login /> },
@@ -149,6 +151,16 @@ const allroutes = [
   {
     url: "/ccapn",
     component: <CCAPNList />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filterbuilder",
+    component: <FilterBuilder />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filtersubdivision",
+    component: <FilterSubdivision />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
 ];
