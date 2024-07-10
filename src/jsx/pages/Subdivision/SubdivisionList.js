@@ -943,7 +943,8 @@ const SubdivisionList = () => {
     setSelectedGated([]);
     setSelectedJurisdiction([]);
     setSelectedGasProvider([]);
-    getbuilderlist(1, "", "");
+    getbuilderlist(1, sortConfig, "");
+    setManageFilterOffcanvas(false);
   };
 
   const [value, setValue] = React.useState("1");
