@@ -278,6 +278,18 @@ const FilterSubdivision = () => {
             from: "",
             to: "",
         });
+        setSelectedStatusByFilter([]);
+        setSelectedReportingByFilter([]);
+        setSelectedBuilderNameByFilter([]);
+        setProductTypeStatusByFilter([]);
+        setSelectedAreaByFilter([]);
+        setSelectedMasterPlanByFilter([]);
+        setSelectedZipcodeByFilter([]);
+        setSelectedAgeByFilter([]);
+        setSelectedSingleByFilter([]);
+        setSelectedGatedByFilter([]);
+        setSelectedJurisdictionByFilter([]);
+        setSelectedGasProviderByFilter([]);
     };
 
     const statusOptions = [

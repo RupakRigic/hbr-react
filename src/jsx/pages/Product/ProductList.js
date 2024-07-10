@@ -319,6 +319,7 @@ const ProductList = () => {
 
   const [filterQuery, setFilterQuery] = useState({
     status:"",
+    builder_name:"",
     subdivision_name:"",
     name:"",
     sqft:"",
@@ -438,7 +439,8 @@ const ProductList = () => {
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
-  const getproductList = async (pageNumber) => {
+  const getproductList = async (pageNumber, searchQuery) => {
+    setIsLoading(true);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -450,14 +452,14 @@ const ProductList = () => {
         searchQuery,
       );
       const responseData = await response.json();
-      setLoading(false);
+      setIsLoading(false);  
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductsListCount(responseData.total);
-      setIsLoading(false);  
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
+        setIsLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -478,6 +480,50 @@ const ProductList = () => {
     setExcelLoading(false);
   }
 
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [filterQuery]);
+
+  useEffect(() => {
+    fetchBuilderList();
+    getbuilderlist();
+  }, []);
+  
+  const fetchBuilderList = async () => {
+    try {
+      const response = await AdminBuilderService.builderDropDown();
+      const data = await response.json();
+      const formattedData = data.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderDropDown(formattedData);
+    } catch (error) {
+      console.log("Error fetching builder list:", error);
+    }
+  };
+
+  const getbuilderlist = async () => {
+    try {
+      const response = await AdminSubdevisionService.index(searchQuery);
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      setBuilderList(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message);
+      }
+    }
+  };
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -626,9 +672,7 @@ const ProductList = () => {
   //   const query = e.target.value.trim();
   //   debouncedHandleSearch(`&q=${query}`);
   // };
-  // useEffect(() => {
-  //   setSearchQuery(filterString());
-  // }, [filterQuery]);
+  
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -659,6 +703,7 @@ const ProductList = () => {
     setFilterQuery({
       status:"",
       builder_name:"",
+      subdivision_name:"",
       name:"",
       sqft:"",
       stories:"",
@@ -678,6 +723,13 @@ const ProductList = () => {
       price_changes_since_open:"",
       price_changes_last_12_Month:"",
     });
+    setSelectedStatus([]);
+    setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
+    setSelectedAge([]);
+    setSelectedSingle([]);
+    setManageFilterOffcanvas(false);
+    getproductList(1, '');  
   };
   const handlePriceClick = () => {
     navigate("/pricelist");
@@ -697,31 +749,6 @@ const ProductList = () => {
     getproductList(currentPage, sortConfig);
   };
 
-  const getbuilderlist = async () => {
-    try {
-      const response = await AdminSubdevisionService.index(searchQuery);
-      const responseData = await response.json();
-      const formattedData = responseData.data.map((subdivision) => ({
-        label: subdivision.name,
-        value: subdivision.id,
-      }));
-      setBuilderList(formattedData);
-      setIsLoading(false);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getbuilderlist();
-    } else {
-      navigate("/");
-    }
-  }, []);
   const exportToExcelData = async () => {
     try {
         const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
@@ -907,10 +934,6 @@ const HandleFilterForm = (e) =>
     
     setProductList(filtered.slice(0, 100));
   };
-  
-  useEffect(() => {
-    applyFilters();
-  }, [filterQuery]);
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
@@ -919,24 +942,6 @@ const HandleFilterForm = (e) =>
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
  const [selectedValues, setSelectedValues] = useState([]);
-  
-  useEffect(() => {
-    const fetchBuilderList = async () => {
-      try {
-        const response = await AdminBuilderService.builderDropDown();
-        const data = await response.json();
-        const formattedData = data.map((builder) => ({
-          label: builder.name,
-          value: builder.id,
-        }));
-        setBuilderDropDown(formattedData);
-      } catch (error) {
-        console.log("Error fetching builder list:", error);
-      }
-    };
-
-    fetchBuilderList();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
