@@ -737,7 +737,7 @@ const SubdivisionList = () => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
 
-  const getbuilderlist = async (pageNumber) => {
+  const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
     try {
       let sortConfigString = "";
@@ -778,7 +778,7 @@ const SubdivisionList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist(currentPage);
+      getbuilderlist(currentPage, sortConfig, searchQuery);
     } else {
       navigate("/");
     }
@@ -858,9 +858,8 @@ const SubdivisionList = () => {
   const HandleFilterForm = (e) => {
     e.preventDefault();
     setFilter(true);
-    getbuilderlist(currentPage, searchQuery);
+    getbuilderlist(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false)
-
   };
 
   const HandleFilter = (e) => {
@@ -884,56 +883,67 @@ const SubdivisionList = () => {
   };
 
   const HandleCancelFilter = (e) => {
-    setFilterQuery(
-      {
-        status: "",
-        product_type: "",
-        reporting: "",
-        builder_name: "",
-        name: "",
-        product_type: "",
-        area: "",
-        masterplan_id: "",
-        zipcode: "",
-        lotwidth: "",
-        lotsize: "",
-        zoning: "",
-        age: "",
-        single: "",
-        gated: "",
-        juridiction: "",
-        gasprovider: "",
-        hoafee: "",
-        masterplan_id: "",
-        months_open: "",
-        latest_lots_released: "",
-        latest_standing_inventory: "",
-        avg_sqft_all: "",
-        avg_sqft_active: "",
-        avg_base_price_all: "",
-        avg_base_price_active: "",
-        min_sqft_all: "",
-        min_sqft_active: "",
-        max_sqft_all: "",
-        max_sqft_active: "",
-        min_base_price_all: "",
-        min_sqft_active_current: "",
-        max_base_price_all: "",
-        max_sqft_active_current: "",
-        avg_traffic_per_month_this_year: "",
-        avg_net_sales_per_month_this_year: "",
-        avg_closings_per_month_this_year: "",
-        avg_net_sales_per_month_since_open: "",
-        avg_net_sales_per_month_last_three_months: "",
-        sqft_group: "",
-        price_group: "",
-        month_net_sold: "",
-        year_net_sold: "",
-        opensince: "",
-        from: "",
-        to: "",
-      });
-    getbuilderlist();
+    setFilterQuery({
+      status: "",
+      product_type: "",
+      reporting: "",
+      builder_name: "",
+      name: "",
+      product_type: "",
+      area: "",
+      masterplan_id: "",
+      zipcode: "",
+      lotwidth: "",
+      lotsize: "",
+      zoning: "",
+      age: "",
+      single: "",
+      gated: "",
+      juridiction: "",
+      gasprovider: "",
+      hoafee: "",
+      masterplan_id: "",
+      months_open: "",
+      latest_lots_released: "",
+      latest_standing_inventory: "",
+      avg_sqft_all: "",
+      avg_sqft_active: "",
+      avg_base_price_all: "",
+      avg_base_price_active: "",
+      min_sqft_all: "",
+      min_sqft_active: "",
+      max_sqft_all: "",
+      max_sqft_active: "",
+      min_base_price_all: "",
+      min_sqft_active_current: "",
+      max_base_price_all: "",
+      max_sqft_active_current: "",
+      avg_traffic_per_month_this_year: "",
+      avg_net_sales_per_month_this_year: "",
+      avg_closings_per_month_this_year: "",
+      avg_net_sales_per_month_since_open: "",
+      avg_net_sales_per_month_last_three_months: "",
+      sqft_group: "",
+      price_group: "",
+      month_net_sold: "",
+      year_net_sold: "",
+      opensince: "",
+      from: "",
+      to: "",
+    });
+    setSelectedStatus([]);
+    setSelectedReporting([]);
+    setSelectedBuilderName([]);
+    setProductTypeStatus([]);
+    setSelectedArea([]);
+    setSelectedMasterPlan([]);
+    setSelectedZipcode([]);
+    setSelectedAge([]);
+    setSelectedSingle([]);
+    setSelectedGated([]);
+    setSelectedJurisdiction([]);
+    setSelectedGasProvider([]);
+    getbuilderlist(1, "", "");
   };
 
   const [value, setValue] = React.useState("1");
@@ -974,7 +984,7 @@ const SubdivisionList = () => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
-    getbuilderlist(currentPage, sortConfig);
+    getbuilderlist(currentPage, sortConfig, searchQuery);
   };
 
   const HandleRole = (e) => {
