@@ -76,7 +76,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         }
       };
       useEffect(() => {
-        getsubdivisionlist();
+        // getsubdivisionlist();
       }, []);
 
     // const GetSubdivision = async (id) => {

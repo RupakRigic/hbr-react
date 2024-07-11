@@ -15,8 +15,7 @@ export const MenuList = [
         title: 'Builders',
         // classsChange: 'mm-collapse',
         iconStyle: SVGICON.Pages,
-        to: '/builderList',
-        // to: '/filterbuilder',
+        to: '/filterbuilder',
 
     },
     {

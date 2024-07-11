@@ -46,6 +46,7 @@ const FilterSubdivision = () => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
         } else {
+            navigate("/");
         }
     }, []);
 

@@ -15,7 +15,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
-import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import PriceComponent from "../../components/Price/PriceComponent";
 import { Row } from 'react-bootstrap';
@@ -739,6 +738,7 @@ const SubdivisionList = () => {
 
   const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -788,7 +788,7 @@ const SubdivisionList = () => {
     try {
       let responseData = await AdminSubdevisionService.destroy(e).json();
       if (responseData.status === true) {
-        getbuilderlist();
+        getbuilderlist(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -802,7 +802,7 @@ const SubdivisionList = () => {
     try {
       let responseData = await AdminSubdevisionService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getbuilderlist();
+        getbuilderlist(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -832,7 +832,7 @@ const SubdivisionList = () => {
     }
   };
 
-  const getbuilderDoplist = async () => {
+  const GetBuilderDropDownList = async () => {
     try {
       const response = await AdminBuilderService.builderDropDown();
       const responseData = await response.json();
@@ -852,14 +852,14 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    getbuilderDoplist();
+    GetBuilderDropDownList();
   }, []);
 
   const HandleFilterForm = (e) => {
     e.preventDefault();
     setFilter(true);
     getbuilderlist(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false)
+    setManageFilterOffcanvas(false);
   };
 
   const HandleFilter = (e) => {
@@ -883,6 +883,7 @@ const SubdivisionList = () => {
   };
 
   const HandleCancelFilter = (e) => {
+    setFilter(false);
     setFilterQuery({
       status: "",
       product_type: "",
@@ -985,7 +986,7 @@ const SubdivisionList = () => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
-    getbuilderlist(currentPage, sortConfig, searchQuery);
+    getbuilderlist(currentPage, newSortConfig, searchQuery);
   };
 
   const HandleRole = (e) => {
@@ -1299,7 +1300,9 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    applyFilters();
+    if(filter) {
+      applyFilters();
+    }
   }, [filterQuery]);
 
   const handleInputChange = (e) => {
