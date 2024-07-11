@@ -16,5 +16,6 @@ export default {
     bulkupdate: (id, userData) => clientAuth.put(`admin/subdivision/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/subdivision/bulkdestroy/${id}`),
     getByBuilderId: (builderId) => clientAuth.get(`admin/subdivision/bybuilder/${builderId}`),
-    buildersubdivisiondropdwon: () => clientAuth.get(`admin/subdivision/builder/subdivision/list`),
+    subdivisionDropDown: () => clientAuth.get(`admin/subdivision/builder/subdivision/list`),
+
 };

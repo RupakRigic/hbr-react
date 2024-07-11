@@ -1,50 +1,49 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-
 import swal from "sweetalert";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 const PermitOffcanvas = forwardRef((props, ref) => {
-
+    const navigate = useNavigate();
 
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddProduct(true)
         }
     }));
 
-    const navigate = useNavigate()
-    const getSubdivisionList = async () => {
-
+    const GetSubdivisionDropDownList = async () => {
         try {
-
-            const response = await AdminSubdevisionService.index()
-            const responseData = await response.json()
-            SetSubdivisionList(responseData.data)
-
+            const response = await AdminSubdevisionService.subdivisionDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            SetSubdivisionList(formattedData);
         } catch (error) {
-            if (error.name === 'HTTPError') {
+            console.log("Error fetching subdivision list:", error);
+            if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
+    };
+
     useEffect(() => {
-        getSubdivisionList();
+        GetSubdivisionDropDownList();
     }, [])
 
     const handleSubdivisionCode = code => {
-
         setSubdivisionCode(code.target.value);
-
     }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -69,30 +68,23 @@ const PermitOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminLandsaleService.store(userData).json();
             if (data.status === true) {
-
                 swal("Landsale Create Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
-                        setAddProduct(false)
+                        setAddProduct(false);
+                        navigate('/landsalelist');
                     }
                 })
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
-
-
-
-
         }
-
-
     }
+    
     return (
         <>
             <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
@@ -106,27 +98,22 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="offcanvas-body">
                     <div className="container-fluid">
-
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Subdivision<span className="text-danger"></span></label>
                                     <Form.Group controlId="tournamentList">
-
                                         <Form.Select
                                             onChange={handleSubdivisionCode}
                                             value={SubdivisionCode}
                                             className="default-select form-control"
                                         >
                                             <option value=''>Select Subdivision</option>
-                                            {
-                                                SubdivisionList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
+                                            {SubdivisionList.map((element) => (
+                                                <option value={element.value}>{element.label}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
-
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Seller <span className="text-danger">*</span></label>
@@ -145,8 +132,6 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <input type="date" name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 
-
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel <span className="text-danger"></span></label>
                                     <input type="number" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
@@ -155,8 +140,6 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput7" className="form-label"> Price <span className="text-danger"></span></label>
                                     <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
-
-
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Type of Unit<span className="text-danger"></span></label>
@@ -201,7 +184,6 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <input type="number" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>

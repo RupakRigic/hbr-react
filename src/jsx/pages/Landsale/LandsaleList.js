@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import LandsaleOffcanvas from "./LandsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -10,48 +9,45 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import Modal from "react-bootstrap/Modal";
 import { Offcanvas, Form, Row } from "react-bootstrap";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
-import axios from "axios";
-import { DownloadTableExcel, downloadExcel } from "react-export-table-to-excel";
-import TrafficsaleList from "../Trafficsale/TrafficsaleList";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkLandsaleUpdate from "./BulkLandsaleUpdate";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import Select from "react-select";
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
 const LandsaleList = () => {
-  const [excelLoading, setExcelLoading] = useState(true);
-  const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
+  const location = useLocation();
+
+  const { searchQueryByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, sellerByFilter, buyerByFilter, locationByFilter, notesByFilter, priceByFilter, fromByFilter, toByFilter, priceperunitByFilter, parcelByFilter, docByFilter, noofunitByFilter, typeofunitByFilter } = location.state || {};
+
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  }
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
-    const handleSortCheckboxChange = (e, key) => {
-      if (e.target.checked) {
-          setSelectedCheckboxes(prev => [...prev, key]);
-      } else {
-          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-      }
   };
   const SyestemUserRole = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user")).role
-  : "";
-  
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
+
   const handleRemoveSelected = () => {
-      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-      setSortConfig(newSortConfig);
-      setSelectedCheckboxes([]);
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
   };
   const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
+  const handleSortClose = () => setShowSort(false);
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -60,7 +56,6 @@ const LandsaleList = () => {
   const [LandsaleList, setLandsaleList] = useState([]);
   console.log("LandsaleList", LandsaleList);
   const [landSaleListCount, setlandSaleListCount] = useState("");
-  const [TotalLandsaleListCount, setTotallandSaleListCount] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const resetSelection = () => {
@@ -79,54 +74,53 @@ const LandsaleList = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
-  const [BuilderList, setBuilderList] = useState([]);
-  const [BuilderCode, setBuilderCode] = useState("");
-  const [SubdivisionList, setSubdivisionList] = useState([]);
-  const [SubdivisionCode, setSubdivisionCode] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    builder_name:"",
-    subdivision_name:"",
-    seller:"",
-    buyer:"",
-    location:"",
-    notes:"",
-    from:"",
-    to:"",
-    parcel:"",
-    price:"",
-    typeofunit:"",
-    priceperunit:"",
-    noofunit:"",
-    doc:"",
+    builder_name: "",
+    subdivision_name: "",
+    seller: sellerByFilter ? sellerByFilter : "",
+    buyer: buyerByFilter ? buyerByFilter : "",
+    location: locationByFilter ? locationByFilter : "",
+    notes: notesByFilter ? notesByFilter : "",
+    from: fromByFilter ? fromByFilter : "",
+    to: toByFilter ? toByFilter : "",
+    parcel: parcelByFilter ? parcelByFilter : "",
+    price: priceByFilter ? priceByFilter : "",
+    typeofunit: typeofunitByFilter ? typeofunitByFilter : "",
+    priceperunit: priceperunitByFilter ? priceperunitByFilter : "",
+    noofunit: noofunitByFilter ? noofunitByFilter : "",
+    doc: docByFilter ? docByFilter : "",
   });
-  const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [builderListDropDown, setBuilderListDropDown] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
   const [selectedValues, setSelectedValues] = useState([]);
+  const [sortConfig, setSortConfig] = useState([]);
 
   useEffect(() => {
-    const fetchBuilderList = async () => {
-      try {
-        const response = await AdminBuilderService.builderDropDown();
-        const data = await response.json();
-        const formattedData = data.map((builder) => ({
-          label: builder.name,
-          value: builder.id,
-        }));
-        setBuilderDropDown(formattedData);
-      } catch (error) {
-        console.log("Error fetching builder list:", error);
-      }
-    };
-
-    fetchBuilderList();
-  }, []);
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+  }, [sortConfig]);
 
   useEffect(() => {
-    setSearchQuery(filterString());
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    setIsAnyFilterApplied(isAnyFilterApplied);
+    if (isAnyFilterApplied) {
+      setSearchQuery(filterString());
+    } else {
+      setSearchQuery(searchQuery);
+    }
   }, [filterQuery]);
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getLandsaleList(currentPage, sortConfig, searchQuery);
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
 
   const filterString = () => {
     const queryString = Object.keys(filterQuery)
@@ -139,11 +133,11 @@ const LandsaleList = () => {
     return queryString ? `&${queryString}` : "";
   };
 
-  const HandleFilterForm = (e) =>{
+  const HandleFilterForm = (e) => {
     e.preventDefault();
     console.log(555);
-    getLandsaleList(currentPage, searchQuery);
-    setManageFilterOffcanvas(false)
+    getLandsaleList(currentPage, sortConfig, searchQuery);
+    setManageFilterOffcanvas(false);
   };
   const handleFilterDateFrom = (date) => {
     if (date) {
@@ -186,32 +180,26 @@ const LandsaleList = () => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      builder_name:"",
-      subdivision_name:"",
-      seller:"",
-      buyer:"",
-      location:"",
-      notes:"",
-      from:"",
-      to:"",
-      parcel:"",
-      price:"",
-      typeofunit:"",
-      priceperunit:"",
-      noofunit:"",
-      doc:"",
+      builder_name: "",
+      subdivision_name: "",
+      seller: "",
+      buyer: "",
+      location: "",
+      notes: "",
+      from: "",
+      to: "",
+      parcel: "",
+      price: "",
+      typeofunit: "",
+      priceperunit: "",
+      noofunit: "",
+      doc: "",
     });
-    getLandsaleList(currentPage,searchQuery);
+    setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
+    getLandsaleList(1, sortConfig, "");
+    setManageFilterOffcanvas(false);
   };
-
-  // const number = [...Array(npage + 1).keys()].slice(1);
-  const [sortConfig, setSortConfig] = useState([]);
-
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
-
-const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -267,14 +255,10 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
-  console.log("columns",columns);
+  console.log("columns", columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
-  console.log("selectedLandSales",selectedLandSales);
-
-  useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
-  }, [fieldList]);
+  console.log("selectedLandSales", selectedLandSales);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
@@ -324,15 +308,15 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
 
   const handleDownloadExcel = () => {
     setExportModelShow(false);
-    setSelectedColumns("");  
+    setSelectedColumns("");
     let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-  
-    const tableData = AllLandsaleListExport.map((row) => {
+
+    const tableData = LandsaleList.map((row) => {
       return tableHeaders.map((header) => {
         switch (header) {
           case "Builder Name":
@@ -348,26 +332,26 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
           case "Notes":
             return row.notes || '';
           case "Price":
-          return row.price ? `${row.price}/${row.typeofunit}` : '';
+            return row.price ? `${row.price}/${row.typeofunit}` : '';
           case "Size":
             return row.noofunit ? `${row.noofunit}` : 0;
           case "Price Per":
-          return row.price_per ? `${row.price_per}/${row.typeofunit}` : '';
+            return row.price_per ? `${row.price_per}/${row.typeofunit}` : '';
           case "Size MS":
-          return row.typeofunit ? `${row.typeofunit}` : '';
+            return row.typeofunit ? `${row.typeofunit}` : '';
           case "Date":
-          return row.date ? `${row.date}` : '';
+            return row.date ? `${row.date}` : '';
           default:
             return '';
         }
       });
     });
-  
+
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Land sales');
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Land_sales.xlsx');
@@ -375,7 +359,7 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     resetSelection();
     setExportModelShow(false);
   };
-  
+
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -406,6 +390,45 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
       }
     }
   };
+
+  const GetBuilderDropDownList = async () => {
+    try {
+      const response = await AdminBuilderService.builderDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderListDropDown(formattedData);
+    } catch (error) {
+      console.log("Error fetching builder list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+      }
+    }
+  };
+
+  const GetSubdivisionDropDownList = async () => {
+    try {
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      setSubdivisionListDropDown(formattedData);
+    } catch (error) {
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+      }
+    }
+  };
+
+  useEffect(() => {
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -475,8 +498,9 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
-  const getLandsaleList = async (currentPage) => {
+  const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -499,29 +523,8 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
         setError(errorJson.message);
       }
     }
+    setIsLoading(false);
   };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getLandsaleList(currentPage);
-      fetchAllPages(searchQuery, sortConfig)
-    } else {
-      navigate("/");
-    }
-  }, [currentPage]);
-
-  async function fetchAllPages(searchQuery, sortConfig) {
-    const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
-    for (let page = 2; page <= totalPages; page++) {
-      const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
-    }
-    setAllLandsaleListExport(allData);
-    setExcelLoading(false);
-  }
 
   const handleDelete = async (e) => {
     try {
@@ -555,61 +558,6 @@ const [AllLandsaleListExport, setAllLandsaleListExport] = useState([]);
     getLandsaleList();
   };
 
-  const getbuilderlist = async () => {
-    try {
-      let response = await AdminBuilderService.index();
-      let responseData = await response.json();
-      setBuilderList(responseData.data);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
-    }
-  };
-  useEffect(() => {
-    getbuilderlist();
-  }, []);
-
-  useEffect(() => {
-    getbuilderlist();
-  }, []);
-
-  const getSubdivisionList = async () => {
-    try {
-        let response = await AdminSubdevisionService.index()
-        let responseData = await response.json()
-        const formattedData = responseData.data.map((subdivision) => ({
-          label: subdivision.name,
-          value: subdivision.id,
-        }));
-        setSubdivisionList(formattedData)
-    } catch (error) {
-        if (error.name === 'HTTPError') {
-            const errorJson = await error.response.json();
-            setError(errorJson.message)
-        }
-    }
-}
-useEffect(() => {
-  if (localStorage.getItem('usertoken')) {
-    getSubdivisionList();
-  }
-  else {
-    navigate('/');
-  }
-}, [])
-
-  const handleModalClick = () => {
-    navigate("/report-list");
-  };
-  const handleBuilderCode = (code) => {
-    setBuilderCode(code.target.value);
-  };
-  const handleSubdivisionCode = (code) => {
-    setSubdivisionCode(code.target.value);
-  };
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);
     setIsFormLoading(true);
@@ -627,26 +575,6 @@ useEffect(() => {
     }
   };
 
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 300)
-  // ).current;
-
-  // useEffect(() => {
-  //   getLandsaleList();
-  // }, [searchQuery]);
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   if (query) {
-  //     debouncedHandleSearch(`?q=${query}`);
-  //   } else {
-  //     setSearchQuery("");
-  //   }
-  // };
-
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -655,14 +583,7 @@ useEffect(() => {
     }));
   };
 
-  const HandleSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      builder_name: selectedOption.name,
-    }));
-  };
-
-  const handleSelectBuilderNameChange  = (selectedItems) => {  
+  const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
@@ -670,10 +591,10 @@ useEffect(() => {
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
-  }));
+    }));
   }
 
-  const handleSelectSubdivisionNameChange  = (selectedItems) => {  
+  const handleSelectSubdivisionNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
@@ -682,15 +603,8 @@ useEffect(() => {
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
-  }));
-  }
-
-  const HandleSubSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      subdivision_name: selectedOption.name,
     }));
-  };
+  }
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -704,39 +618,10 @@ useEffect(() => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
-    getLandsaleList(currentPage, sortConfig);
+    getLandsaleList(currentPage, newSortConfig, searchQuery);
   };
 
-  const exportToExcelData = async () => {
-    try {
-      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
-      const response = await axios.get(
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/builder/export`,
-        // 'https://hbrapi.rigicgspl.com/api/admin/builder/export'
-        {
-          responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "landsales.xlsx");
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.log(error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
-      }
-    }
-  };
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -760,7 +645,7 @@ useEffect(() => {
           document.getElementById("fileInput").value = null;
           setLoading(false);
           if (responseData) {
-            if(responseData.message) {
+            if (responseData.message) {
               let message = responseData.message;
               swal(message).then((willDelete) => {
                 if (willDelete) {
@@ -772,12 +657,12 @@ useEffect(() => {
               let message = responseData.message;
               if (responseData.failed_records > 0) {
                 const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
-                message += ' Problematic Record Rows: ' + problematicRows+'.';
+                message += ' Problematic Record Rows: ' + problematicRows + '.';
               }
               message += '. Record Imported: ' + responseData.successful_records;
               message += '. Failed Record Count: ' + responseData.failed_records;
               message += '. Last Row: ' + responseData.last_processed_row;
-  
+
               swal(message).then((willDelete) => {
                 if (willDelete) {
                   navigate("/landsalelist");
@@ -860,9 +745,9 @@ useEffect(() => {
         if (index === 0) {
           return word;
         }
-          return word.charAt(0).toUpperCase() + word.slice(1);
+        return word.charAt(0).toUpperCase() + word.slice(1);
       })
-    .join('');
+      .join('');
   }
 
   return (
@@ -886,19 +771,6 @@ useEffect(() => {
                         role="group"
                         aria-label="Basic example"
                       >
-                        {/* <button class="btn btn-secondary cursor-none">
-                          {" "}
-                          <i class="fas fa-search"></i>{" "}
-                        </button> */}
-                        {/* <Form.Control
-                          type="text"
-                          style={{
-                            borderTopLeftRadius: "0",
-                            borderBottomLeftRadius: "0",
-                          }}
-                          onChange={HandleSearch}
-                          placeholder="Quick Search"
-                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -910,150 +782,143 @@ useEffect(() => {
                       />
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
-                      ) : (
-                    <div style={{marginTop: "10px"}}>
-                      {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                        Set Columns Order
-                      </button>
-                    
-                      <Button
-                            className="btn-sm me-1"
-                            variant="secondary"
-                            onClick={HandleSortDetailClick}
-                          >
-                            <i class="fa-solid fa-sort"></i>
-                     </Button>
-                      <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
-                        {excelLoading ? 
-                          <div class="spinner-border spinner-border-sm" role="status" /> 
-                          :
-                          <i class="fas fa-file-excel" />
-                        }
-                      </button>
+                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                      ""
+                    ) : (
+                      <div style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                          Set Columns Order
+                        </button>
 
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                        <i className="fa fa-filter" />
-                      </button>
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >
-                        Import
-                      </Button>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => landsale.current.showEmployeModal()}
-                      >
-                        + Add Land Sale
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulklandsale.current.showEmployeModal()}
-                      >
-                        Bulk Edit
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedLandSales);
-                          }
-                        }) : ""}
-                      >
-                        Bulk Delete
-                      </button>
-                    </div>
-                      )}
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={HandleSortDetailClick}
+                        >
+                          <i class="fa-solid fa-sort"></i>
+                        </Button>
+                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1">
+                          <i class="fas fa-file-excel" />
+                        </button>
+
+                        <button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={() => setManageAccessOffcanvas(true)}
+                        >
+                          {" "}
+                          Field Access
+                        </button>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                          <i className="fa fa-filter" />
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={handlBuilderClick}
+                        >
+                          Import
+                        </Button>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => landsale.current.showEmployeModal()}
+                        >
+                          + Add Land Sale
+                        </Link>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => bulklandsale.current.showEmployeModal()}
+                        >
+                          Bulk Edit
+                        </Link>
+                        <button
+                          className="btn btn-danger btn-sm me-1"
+                          style={{ marginLeft: "3px" }}
+                          onClick={() => selectedLandSales.length > 0 ? swal({
+                            title: "Are you sure?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                          }).then((willDelete) => {
+                            if (willDelete) {
+                              handleBulkDelete(selectedLandSales);
+                            }
+                          }) : ""}
+                        >
+                          Bulk Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {landSaleListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {landSaleListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
                     </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -1089,271 +954,33 @@ useEffect(() => {
 
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
-                                column.id == "sIZE MS" ? "typeofunit" : 
-                                column.id == "sIZE" ? "noofunit" : 
-                                 toCamelCase(column.id)) : ""}>
+                                column.id == "sIZE MS" ? "typeofunit" :
+                                  column.id == "sIZE" ? "noofunit" :
+                                    toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                  (item) => item.key === (
-                                    column.id == "sIZE MS" ? "typeofunit" : 
-                                    column.id == "sIZE" ? "noofunit" : 
-                                    toCamelCase(column.id))
-                                ) ? (
-                                  <span>
-                                    {column.id != "action" && sortConfig.find(
-                                      (item) => item.key === (
-                                        column.id == "sIZE MS" ? "typeofunit" : 
-                                        column.id == "sIZE" ? "noofunit" : 
-                                         toCamelCase(column.id))
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  column.id != "action" && <span>↑↓</span>
-                                )}
+                                    (item) => item.key === (
+                                      column.id == "sIZE MS" ? "typeofunit" :
+                                        column.id == "sIZE" ? "noofunit" :
+                                          toCamelCase(column.id))
+                                  ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === (
+                                          column.id == "sIZE MS" ? "typeofunit" :
+                                            column.id == "sIZE" ? "noofunit" :
+                                              toCamelCase(column.id))
+                                      ).direction === "asc"
+                                        ? "↑"
+                                        : "↓"}
+                                    </span>
+                                  ) : (
+                                    column.id != "action" && <span>↑↓</span>
+                                  )}
                                 </strong>
                               </th>
                             ))}
-
-                            {/* {checkFieldExist("Builder Name") && (
-                              <th onClick={() => requestSort("builderName")}>
-                                Builder Name
-                                {sortConfig.some(
-                                  (item) => item.key === "builderName"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "builderName"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Subdivision Name") && (
-                              <th
-                                onClick={() => requestSort("subdivisionName")}
-                              >
-                                Subdivision Name
-                                {sortConfig.some(
-                                  (item) => item.key === "subdivisionName"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "subdivisionName"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Seller") && (
-                              <th onClick={() => requestSort("seller")}>
-                                <strong>
-                                  Seller
-                                  {sortConfig.some(
-                                    (item) => item.key === "seller"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "seller"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Buyer") && (
-                              <th onClick={() => requestSort("buyer")}>
-                                <strong>
-                                  {" "}
-                                  Buyer
-                                  {sortConfig.some(
-                                    (item) => item.key === "buyer"
-                                  ) ? (
-                                    <span>
-                                      {sortConfig.find(
-                                        (item) => item.key === "buyer"
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  ) : (
-                                    <span>↑↓</span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Location") && (
-                              <th onClick={() => requestSort("location")}>
-                                <strong>
-                                  {" "}
-                                  Location
-                                  {sortConfig.some(
-                                  (item) => item.key === "location"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "location"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Notes") && (
-                              <th onClick={() => requestSort("notes")}>
-                                <strong>
-                                  Notes
-                                  {sortConfig.key !== "notes" ? "↑↓" : ""}
-                                  {sortConfig.key === "notes" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Price") && (
-                              <th onClick={() => requestSort("price")}>
-                                <strong>
-                                  {" "}
-                                  Price
-                                  {sortConfig.some(
-                                  (item) => item.key === "price"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "price"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Date") && (
-                            )}{" "}
-                            {checkFieldExist("Price") && (
-                              <th onClick={() => requestSort("noofunit")}>
-                                <strong>
-                                  {" "}
-                                  SIZE
-                                  {sortConfig.some(
-                                  (item) => item.key === "noofunit"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "noofunit"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Price") && (
-                              <th onClick={() => requestSort("price_per")}>
-                                <strong>
-                                  {" "}
-                                  Price Per
-                                  {sortConfig.some(
-                                  (item) => item.key === "price_per"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "price_per"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                              {checkFieldExist("Price") && (
-                              <th onClick={() => requestSort("typeofunit")}>
-                                <strong>
-                                  {" "}
-                                  Size MS
-                                  {sortConfig.some(
-                                  (item) => item.key === "typeofunit"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "typeofunit"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Date") && (
-                              <th onClick={() => requestSort("date")}>
-                                <strong>
-                                  {" "}
-                                  Date
-                                  {sortConfig.some(
-                                  (item) => item.key === "date"
-                                ) ? (
-                                  <span>
-                                    {sortConfig.find(
-                                      (item) => item.key === "date"
-                                    ).direction === "asc"
-                                      ? "↑"
-                                      : "↓"}
-                                  </span>
-                                ) : (
-                                  <span>↑↓</span>
-                                )}
-                                </strong>
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Action") && (
-                              <th>
-                                {" "}
-                                <strong>Action</strong>
-                              </th>
-                            )} */}
-
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -1361,7 +988,7 @@ useEffect(() => {
                             LandsaleList.map((element, index) => (
                               <tr
                                 onClick={(e) => {
-                                  if(e.target.type !== "checkbox"){
+                                  if (e.target.type !== "checkbox") {
                                     handleRowClick(element.id);
                                   }
                                 }}
@@ -1402,15 +1029,12 @@ useEffect(() => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
                                     }
                                     {column.id == "price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price} />
-                                        {/* /{" "}
-                                        {element.typeofunit} */}
-                                      </td>
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price} /></td>
                                     }
                                     {column.id == "date" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
                                     }
-                                    {column.id == "action" && 
+                                    {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div className="d-flex justify-content-center">
                                           <Link
@@ -1451,7 +1075,7 @@ useEffect(() => {
                                     {column.id == "doc" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.doc}</td>
                                     }
-                                      {column.id == "parcel" &&
+                                    {column.id == "parcel" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
                                     }
                                     {column.id == "zip Code" &&
@@ -1459,95 +1083,6 @@ useEffect(() => {
                                     }
                                   </>
                                 ))}
-
-                                {/* {checkFieldExist("Builder Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision.builder?.name}
-                                  </td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Subdivision Name") && (
-                                  <td>
-                                    {element.subdivision &&
-                                      element.subdivision?.name}
-                                  </td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Seller") && (
-                                  <td>{element.seller}</td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Buyer") && (
-                                  <td>{element.buyer}</td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Location") && (
-                                  <td>{element.location}</td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Notes") && (
-                                  <td>{element.notes}</td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Price") && (
-                                  <td>
-                                    <PriceComponent price={element.price} />{" "}
-                                  </td>
-                                )}{" "}
-                                  {checkFieldExist("Price") && (
-                                  <td>
-                                    {element.noofunit}
-                                  </td>
-                                )}{" "}
-                                {checkFieldExist("Price") && (
-                                  <td>
-                                    <PriceComponent price={element.price_per} />
-                                  </td>
-                                )}{" "}
-                                  {checkFieldExist("Price") && (
-                                  <td>
-                                      {element.typeofunit}
-                                  </td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Date") && (
-                                  <td>
-                                    <DateComponent date={element.date} />
-                                  </td>
-                                )}{" "} */}
-
-                                {/* {checkFieldExist("Action") && (
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        to={`/landsaleupdate/${element.id}`}
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                      >
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </Link>
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                )} */}
-
                               </tr>
                             ))
                           ) : (
@@ -1617,7 +1152,7 @@ useEffect(() => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => {setShowOffcanvas(false);clearLandSaleDetails();}}
+            onClick={() => { setShowOffcanvas(false); clearLandSaleDetails(); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -1627,187 +1162,41 @@ useEffect(() => {
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-            {/* <div className="row">
-              <div className="col-xl-4 mt-4">
-                <label className="">Subdivision :</label>
-                <div className="fw-bolder">
-                  {landSaleDetails.subdivision !== null &&
-                  landSaleDetails.subdivision.name !== undefined
+          <div className="offcanvas-body">
+            <div className="container-fluid">
+              <div style={{ marginTop: "10px" }}>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-40" style={{ width: "400px", fontSize: "25px" }}><span><b>PARCEL:</b></span>&nbsp;<span>{landSaleDetails.parcel || "NA"}</span></div>
+                  <div className="fs-18"><span><b>DOC:</b></span>&nbsp;<span>{landSaleDetails.doc || "NA"}</span></div>
+                </div>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <label className="fs-18" style={{ marginTop: "5px", width: "400px" }}><b>PRICE:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price} /> || "NA"}</span></label><br />
+                  <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zip || "NA"}</span></label><br />
+                </div>
+                <label className="fs-18"><b>DATE:</b>&nbsp;<span>{<DateComponent date={landSaleDetails.date} /> || "NA"}
+                </span></label><br />
+                <label className="fs-18"><b>PRICE PER:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price_per} /> || "NA"}</span></label><br />
+                <label className="fs-18"><b>SIZE:</b>&nbsp;<span>{landSaleDetails.noofunit || "NA"}</span></label><br />
+                <label className="fs-18"><b>LOCATION:</b>&nbsp;<span>{landSaleDetails.location || "NA"}</span></label><br />
+
+                <hr style={{ borderTop: "2px solid black", width: "60%", marginTop: "10px" }}></hr>
+
+                <span className="fw-bold" style={{ fontSize: "25px" }}>
+                  {landSaleDetails.subdivision && landSaleDetails.subdivision.builder?.name || "NA"}
+                </span><br />
+                <span className="fw-bold" style={{ fontSize: "25px" }}>
+                  {landSaleDetails.subdivision !== null && landSaleDetails.subdivision.name !== undefined
                     ? landSaleDetails.subdivision.name
-                    : "NA"}
-                </div>
-              </div>
+                    : "NA"
+                  }
+                </span><br />
+                <label className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{landSaleDetails.subdivision?.product_type || "NA"}</span></label><br />
+                <label style={{ width: "400px" }} className="fs-18"><b>Area:</b>&nbsp;<span>{landSaleDetails.subdivision?.area || "NA"}</span></label>
+                <label className="fs-18"><b>MASTERPLAN:</b>&nbsp;<span>{landSaleDetails.subdivision?.masterplan || "NA"}</span></label>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Seller :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.seller || "NA"}
-                  </span>
-                </div>
               </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Buyer :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.buyer || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Location :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.location || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Date :</label>
-                <div>
-                  <span className="fw-bold">
-                    {<DateComponent date={landSaleDetails.date} /> || "NA"}
-                  </span>
-                </div>
-              </div>
-              <div className="col-xl-4 mt-4">
-                <label className="">Parcel :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.parcel || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Price :</label>
-                <div>
-                  <span className="fw-bold">
-                    {<PriceComponent price={landSaleDetails.price} /> || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Type of Unit :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.typeofunit || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Price Per Unit :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.priceperunit || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">No. Of Unit :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.noofunit || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Notes :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.notes || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Doc :</label>
-                <div>
-                  <span className="fw-bold">{landSaleDetails.doc || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Zoning :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.zoning || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Latitude :</label>
-                <div>
-                  <span className="fw-bold">{landSaleDetails.lat || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Longitude :</label>
-                <div>
-                  <span className="fw-bold">{landSaleDetails.lng || "NA"}</span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Area :</label>
-                <div>
-                  <span className="fw-bold">
-                    {landSaleDetails.area || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Zipcode :</label>
-                <div>
-                  <span className="fw-bold">{landSaleDetails.zip || "NA"}</span>
-                </div>
-              </div>
-            </div> */}
-            <div style={{marginTop: "10px"}}>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-40" style={{width:"400px", fontSize: "25px"}}><span><b>PARCEL:</b></span>&nbsp;<span>{landSaleDetails.parcel || "NA"}</span></div>
-                <div className="fs-18"><span><b>DOC:</b></span>&nbsp;<span>{landSaleDetails.doc || "NA"}</span></div>
-              </div>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-              <label className="fs-18" style={{marginTop: "5px",width:"400px"}}><b>PRICE:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price} /> || "NA"}</span></label><br />
-              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zip || "NA"}</span></label><br />
-              </div>
-              <label className="fs-18"><b>DATE:</b>&nbsp;<span>{<DateComponent date={landSaleDetails.date} /> || "NA"}
-              </span></label><br />
-              <label className="fs-18"><b>PRICE PER:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price_per} /> || "NA"}</span></label><br />
-              <label className="fs-18"><b>SIZE:</b>&nbsp;<span>{landSaleDetails.noofunit || "NA"}</span></label><br />
-              <label className="fs-18"><b>LOCATION:</b>&nbsp;<span>{landSaleDetails.location || "NA"}</span></label><br />
-
-              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
-
-              <span className="fw-bold" style={{fontSize: "25px"}}>
-                {landSaleDetails.subdivision && landSaleDetails.subdivision.builder?.name || "NA"}
-              </span><br />
-              <span className="fw-bold" style={{fontSize: "25px"}}>
-                {landSaleDetails.subdivision !== null && landSaleDetails.subdivision.name !== undefined
-                  ? landSaleDetails.subdivision.name
-                  : "NA"
-                }
-              </span><br />
-              <label  className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{landSaleDetails.subdivision?.product_type || "NA"}</span></label><br />
-              <label  style={{width:"400px"}} className="fs-18"><b>Area:</b>&nbsp;<span>{landSaleDetails.subdivision?.area || "NA"}</span></label>
-              <label   className="fs-18"><b>MASTERPLAN:</b>&nbsp;<span>{landSaleDetails.subdivision?.masterplan || "NA"}</span></label>
-
             </div>
-          </div>
-        </div>)}
+          </div>)}
       </Offcanvas>
 
       <Offcanvas
@@ -1855,12 +1244,6 @@ useEffect(() => {
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            // defaultChecked={(() => {
-                            //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
-                            //   return isChecked;
-                            // })()}
                             checked={checkedItems[element.field_name]}
                             onChange={handleCheckboxChange}
                             name={element.field_name}
@@ -1915,23 +1298,12 @@ useEffect(() => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="builder_name"
-                        options={builderDropDown}
+                        options={builderListDropDown}
                         value={selectedBuilderName}
-                        onChange={handleSelectBuilderNameChange }
-                        placeholder={"Select Builder Name"} 
+                        onChange={handleSelectBuilderNameChange}
+                        placeholder={"Select Builder Name"}
                       />
                     </Form.Group>
-                    {/* <Form.Group controlId="tournamentList">
-                      <Select
-                        options={builderDropDown}
-                        onChange={HandleSelectChange}
-                        getOptionValue={(option) => option.name}
-                        getOptionLabel={(option) => option.name}
-                        isMulti
-                        value={builderDropDown.name}
-                        name="builder_name"
-                      ></Select>
-                    </Form.Group> */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1940,146 +1312,96 @@ useEffect(() => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
-                        onChange={handleSelectSubdivisionNameChange }
-                        placeholder={"Select Subdivision Name"} 
+                        onChange={handleSelectSubdivisionNameChange}
+                        placeholder={"Select Subdivision Name"}
                       />
                     </Form.Group>
-                    {/* <Form.Group controlId="tournamentList">
-                      <Select
-                        options={SubdivisionList}
-                        onChange={HandleSubSelectChange}
-                        getOptionValue={(option) => option.name}
-                        getOptionLabel={(option) => option.name}
-                        value={SubdivisionList.name}
-                        name="subdivision_name"
-                      ></Select>
-                    </Form.Group>                               */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SELLER:{" "}
                     </label>
-                    <input name="seller" value={filterQuery.seller} className="form-control" onChange={HandleFilter}/>
+                    <input name="seller" value={filterQuery.seller} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BUYER:{" "}
                     </label>
-                    <input name="buyer" value={filterQuery.buyer} className="form-control" onChange={HandleFilter}/>
+                    <input name="buyer" value={filterQuery.buyer} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       LOCATION:{" "}
                     </label>
-                    <input name="location" value={filterQuery.location} className="form-control" onChange={HandleFilter}/>
+                    <input name="location" value={filterQuery.location} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       Notes:{" "}
                     </label>
-                    <input name="notes" value={filterQuery.notes} className="form-control" onChange={HandleFilter}/>
+                    <input name="notes" value={filterQuery.notes} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PRICE:{" "}
                     </label>
-                    <input name="price" value={filterQuery.price} className="form-control" onChange={HandleFilter}/>
+                    <input name="price" value={filterQuery.price} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
                     <DatePicker
-        name="from"
-        className="form-control"
-        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-        onChange={handleFilterDateFrom}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
+                      name="from"
+                      className="form-control"
+                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
 
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
                     <DatePicker
-        name="to"
-        className="form-control"
-        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-        onChange={handleFilterDateTo}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
+                      name="to"
+                      className="form-control"
+                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PRICE PER:{" "}
                     </label>
-                    <input name="priceperunit" value={filterQuery.priceperunit} className="form-control" onChange={HandleFilter}/>
+                    <input name="priceperunit" value={filterQuery.priceperunit} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PARCEL:{" "}
                     </label>
-                    <input name="parcel" value={filterQuery.parcel} className="form-control" onChange={HandleFilter}/>
+                    <input name="parcel" value={filterQuery.parcel} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       DOC:{" "}
                     </label>
-                    <input name="doc" value={filterQuery.doc} className="form-control" onChange={HandleFilter}/>
+                    <input name="doc" value={filterQuery.doc} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SIZE:{" "}
                     </label>
-                    <input name="noofunit" value={filterQuery.noofunit} className="form-control" onChange={HandleFilter}/>
+                    <input name="noofunit" value={filterQuery.noofunit} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SIZE MS:{" "}
                     </label>
-                    <input name="typeofunit" value={filterQuery.typeofunit} className="form-control" onChange={HandleFilter}/>
+                    <input name="typeofunit" value={filterQuery.typeofunit} className="form-control" onChange={HandleFilter} />
                   </div>
-                  
-                  
-                  
-                  
-                  {/* <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    zoning:{" "}
-                    </label>
-                    <input name="zoning" value={filterQuery.zoning} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    lat:{" "}
-                    </label>
-                    <input name="lat" value={filterQuery.lat} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    lng:{" "}
-                    </label>
-                    <input name="lng" value={filterQuery.lng} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    area:{" "}
-                    </label>
-                    <input name="area" value={filterQuery.area} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    zip:{" "}
-                    </label>
-                    <input name="zip" value={filterQuery.zip} className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                    subdivision_id:{" "}
-                    </label>
-                    <input name="subdivision_id" value={filterQuery.subdivision_id} className="form-control" onChange={HandleFilter}/>
-                  </div> */}
                 </div>
               </form>
             </div>
@@ -2125,7 +1447,7 @@ useEffect(() => {
                       checked={selectAll}
                       onChange={handleSelectAllToggle}
                     />
-                      Select All
+                    Select All
                   </label>
                 </li>
                 {exportColumns.map((col) => (
@@ -2160,30 +1482,30 @@ useEffect(() => {
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                      <span>{col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -2193,7 +1515,7 @@ useEffect(() => {
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>

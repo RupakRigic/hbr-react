@@ -42,6 +42,8 @@ import GoogleMapLocator from "./pages/Subdivision/GoogleMapLocator";
 import CCAPNList from "./pages/CCAPN/CCAPNList";
 import FilterBuilder from "./pages/Builder/FilterBuilder";
 import FilterSubdivision from "./pages/Subdivision/FilterSubdivision";
+import FilterLandSales from "./pages/Landsale/FilterLandSales";
+
 const allroutes = [
   // Dashboard
   { url: "", component: <Login /> },
@@ -161,6 +163,11 @@ const allroutes = [
   {
     url: "/filtersubdivision",
     component: <FilterSubdivision />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filterlandsales",
+    component: <FilterLandSales />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
 ];

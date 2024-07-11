@@ -62,7 +62,7 @@ export const MenuList = [
     {
         title: 'Land Sales',
         iconStyle: SVGICON.ProjectsSidbar,
-        to: '/landsalelist',
+        to: '/filterlandsales',
     },
     {
         title: 'Reports',
