@@ -157,7 +157,7 @@ const FilterLandSales = () => {
         setSelectedBuilderNameByFilter(selectedItems);
         setFilterQuery(prevState => ({
             ...prevState,
-            name: selectedNames
+            builder_name: selectedNames
         }));
     };
 
@@ -167,7 +167,7 @@ const FilterLandSales = () => {
         setSelectedSubdivisionNameByFilter(selectedItems);
         setFilterQuery(prevState => ({
             ...prevState,
-            name: selectedNames
+            subdivision_name: selectedNames
         }));
     };
 

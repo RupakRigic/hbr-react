@@ -97,8 +97,9 @@ const LandsaleList = () => {
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
-  const [selectedValues, setSelectedValues] = useState([]);
   const [sortConfig, setSortConfig] = useState([]);
+  const [AllProductListExport, setAllBuilderExport] = useState([]);
+  const [excelLoading, setExcelLoading] = useState(true);
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -316,7 +317,7 @@ const LandsaleList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = LandsaleList.map((row) => {
+    const tableData = AllProductListExport.map((row) => {
       return tableHeaders.map((header) => {
         switch (header) {
           case "Builder Name":
@@ -494,10 +495,13 @@ const LandsaleList = () => {
   }
 
   const landsale = useRef();
+
   const bulklandsale = useRef();
+
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+
   const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
@@ -516,6 +520,12 @@ const LandsaleList = () => {
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
+      if(responseData.total > 100) {
+        FetchAllPages(searchQuery, sortConfig);
+      } else {
+        setExcelLoading(false);
+        setAllBuilderExport(responseData.data);
+      }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
@@ -525,6 +535,24 @@ const LandsaleList = () => {
     }
     setIsLoading(false);
   };
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const FetchAllPages = async (searchQuery, sortConfig) => {
+    setExcelLoading(true);
+    const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      await delay(1000);
+      const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+    setExcelLoading(false);
+  }
 
   const handleDelete = async (e) => {
     try {
@@ -584,10 +612,8 @@ const LandsaleList = () => {
   };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
-    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -595,11 +621,8 @@ const LandsaleList = () => {
   }
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
-
-    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
@@ -797,8 +820,12 @@ const LandsaleList = () => {
                         >
                           <i class="fa-solid fa-sort"></i>
                         </Button>
-                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1">
-                          <i class="fas fa-file-excel" />
+                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                          {excelLoading ? 
+                            <div class="spinner-border spinner-border-sm" role="status" /> 
+                            :
+                            <i class="fas fa-file-excel" />
+                          }
                         </button>
 
                         <button
