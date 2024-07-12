@@ -1,95 +1,102 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import AdminSubdivisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
+
 const ProductOffcanvas = forwardRef((props, ref) => {
-
-
+    const navigate = useNavigate();
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
     const [ProductCode, setProductCode] = useState('');
     const [ProductList, setProductList] = useState([]);
-
     const [builderList, setBuilderList] = useState([]);
     const [BuilderCode, setBuilderCode] = useState('');
-
     const [subDivisionList, setSubDivisionList] = useState([]);
     const [SubDivisionCode, setDivisionCode] = useState('');
 
     useEffect(() => {
-        getBuilderList()
-        getProductList();
-    }, [])
+        GetBuilderDropDownList();
+        GetProductDropDownList();
+    }, []);
+
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddProduct(true)
         }
     }));
-    const getBuilderList = async () => {
+
+    const GetBuilderDropDownList = async () => {
         try {
-            const response = await AdminBuilderService.index()
-            const responseData = await response.json()
-            setBuilderList(responseData.data)
+            const response = await AdminBuilderService.builderDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
+            }));
+            setBuilderList(formattedData);
         } catch (error) {
-            if (error.name === 'HTTPError') {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
-    const navigate = useNavigate()
-    const getProductList = async () => {
+    };
 
+    const GetProductDropDownList = async () => {
         try {
-
-            const response = await AdminProductService.index()
-            const responseData = await response.json()
-            setProductList(responseData.data)
-
+            const response = await AdminProductService.productDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((product) => ({
+                label: product.name,
+                value: product.id,
+            }));
+            setProductList(formattedData);
         } catch (error) {
-            if (error.name === 'HTTPError') {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
-    const handleProductCode = code => {
+    };
+
+    const handleProductCode = (code) => {
         setProductCode(code.target.value);
-    }
-    const handleBuilderCode = async(event) => {
-        setBuilderCode(event.target.value)
+    };
+
+    const handleBuilderCode = async (event) => {
+        setBuilderCode(event.target.value);
         try {
             const response = await AdminSubdivisionService.getByBuilderId(event.target.value)
-            const responseData = await response.json()
-            setSubDivisionList(responseData.data)
+            const responseData = await response.json();
+            setSubDivisionList(responseData);
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
-    
-    const handleSubDivisionCode = async(event) => {
-        setDivisionCode(event.target.value)
+    };
+
+    const handleSubDivisionCode = async (event) => {
+        setDivisionCode(event.target.value);
         try {
             const response = await AdminProductService.getBySubDivisionId(event.target.value)
-            const responseData = await response.json()
-            setProductList(responseData.data)
+            const responseData = await response.json();
+            setProductList(responseData.data);
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
-    
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -100,32 +107,24 @@ const ProductOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminPriceService.store(userData).json();
             if (data.status === true) {
-
                 swal("Product Price Create Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        setAddProduct(false)
+                        setAddProduct(false);
                         props.parentCallback();
-
+                        navigate('/priceList');
                     }
                 })
                 setError('');
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
-
-
-
-
         }
+    };
 
-
-    }
     return (
         <>
             <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
@@ -139,10 +138,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="offcanvas-body">
                     <div className="container-fluid">
-
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                            <div className="col-xl-4 mb-3">
+                                <div className="col-xl-4 mb-3">
                                     <label className="form-label">Builder<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
                                         <Form.Select
@@ -151,11 +149,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                             className="default-select form-control"
                                         >
                                             <option value=''>Select Builder</option>
-                                            {
-                                                builderList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
+                                            {builderList.map((element) => (
+                                                <option value={element.value}>{element.label}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </div>
@@ -168,11 +164,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                             className="default-select form-control"
                                         >
                                             <option value=''>Select Sub Division</option>
-                                            {
-                                                subDivisionList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
+                                            {subDivisionList.map((element) => (
+                                                <option value={element.id}>{element.name}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </div>
@@ -185,11 +179,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                             className="default-select form-control"
                                         >
                                             <option value=''>Select Product</option>
-                                            {
-                                                ProductList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
+                                            {ProductList.map((element) => (
+                                                <option value={element.value}>{element.label}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </div>
@@ -202,7 +194,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                     <input type="date" name='date' className="form-control" id="exampleFormControlInput9" placeholder="" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>

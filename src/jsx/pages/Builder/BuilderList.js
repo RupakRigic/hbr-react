@@ -28,7 +28,7 @@ const BuilderTable = () => {
 
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
-  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelLoading, setExcelLoading] = useState(true);
 
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
@@ -284,7 +284,7 @@ const BuilderTable = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = BuilderList.map((row) => {
+    const tableData = AllBuilderListExport.map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -498,6 +498,12 @@ const BuilderTable = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderListCount(responseData.total);
       setIsLoading(false);
+      if(responseData.total > 100) {
+        FetchAllPages(searchQuery, sortConfig);
+      } else {
+        setExcelLoading(false);
+        setAllBuilderExport(responseData.data);
+      }
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -526,6 +532,24 @@ const BuilderTable = () => {
       navigate("/");
     }
   }, [currentPage]);
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const FetchAllPages = async (searchQuery, sortConfig) => {
+    setExcelLoading(true);
+    const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      await delay(1000);
+      const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+    setExcelLoading(false);
+  }
 
   function prePage() {
     if (currentPage !== 1) {

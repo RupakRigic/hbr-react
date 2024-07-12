@@ -33,8 +33,8 @@ const SubdivisionList = () => {
   const { searchQueryByFilter, selectedStatusByFilter, selectedReportingByFilter, namebyfilter, selectedBuilderNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthbyfilter, lotsizebyfilter, selectedAgeByFilter, selectedSingleByFilter, selectedGatedByFilter, selectedJurisdicitionByFilter, seletctedGasProviderByFilter, frombyfilter, tobyfilter } = location.state || {};
 
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
-
-  const [excelLoading, setExcelLoading] = useState(false);
+  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
+  const [excelLoading, setExcelLoading] = useState(true);
 
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
@@ -392,7 +392,7 @@ const SubdivisionList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = BuilderList.map((row) => {
+    const tableData = AllBuilderListExport.map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -754,7 +754,13 @@ const SubdivisionList = () => {
       setIsLoading(false);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
-      setBuilderListCount(responseData.total)
+      setBuilderListCount(responseData.total);
+      if(responseData.total > 100) {
+        FetchAllPages(searchQuery, sortConfig);
+      } else {
+        setExcelLoading(false);
+        setAllBuilderExport(responseData.data);
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -783,6 +789,24 @@ const SubdivisionList = () => {
       navigate("/");
     }
   }, [currentPage]);
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const FetchAllPages = async (searchQuery, sortConfig) => {
+    setExcelLoading(true);
+    const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    const responseData = await response.json();
+    const totalPages = Math.ceil(responseData.total / recordsPage);
+    let allData = responseData.data;
+    for (let page = 2; page <= totalPages; page++) {
+      await delay(1000);
+      const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      const pageData = await pageResponse.json();
+      allData = allData.concat(pageData.data);
+    }
+    setAllBuilderExport(allData);
+    setExcelLoading(false);
+  }
 
   const handleDelete = async (e) => {
     try {

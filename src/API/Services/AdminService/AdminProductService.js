@@ -13,5 +13,5 @@ export default {
     import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/product/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/product/bulkdestroy/${id}`),
-
+    productDropDown:()=> clientAuth.get(`admin/product/list/dropdown`),
 };

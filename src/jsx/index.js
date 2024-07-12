@@ -43,6 +43,7 @@ import CCAPNList from "./pages/CCAPN/CCAPNList";
 import FilterBuilder from "./pages/Builder/FilterBuilder";
 import FilterSubdivision from "./pages/Subdivision/FilterSubdivision";
 import FilterLandSales from "./pages/Landsale/FilterLandSales";
+import FilterBasePrice from "./pages/Price/FilterBasePrice";
 
 const allroutes = [
   // Dashboard
@@ -168,6 +169,11 @@ const allroutes = [
   {
     url: "/filterlandsales",
     component: <FilterLandSales />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filterbaseprice",
+    component: <FilterBasePrice />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
 ];

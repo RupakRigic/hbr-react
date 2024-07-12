@@ -45,7 +45,7 @@ export const MenuList = [
         title: 'Base Prices',
         // classsChange: 'mm-collapse',
         iconStyle: SVGICON.Pages,
-        to: '/priceList',
+        to: '/filterbaseprice',
 
     },
     {
