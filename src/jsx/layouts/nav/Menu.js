@@ -27,7 +27,7 @@ export const MenuList = [
     {
         title: 'Products',
         iconStyle: SVGICON.CoreHr,
-        to: '/productlist',
+        to: '/filterproducts',
     },
 
     {

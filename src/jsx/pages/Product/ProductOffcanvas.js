@@ -9,38 +9,46 @@ import { Offcanvas, Form } from "react-bootstrap";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import swal from "sweetalert";
+
 const ProductOffcanvas = forwardRef((props, ref) => {
+  const navigate = useNavigate();
   const [Error, setError] = useState("");
   const [addProduct, setAddProduct] = useState(false);
   const [SubdivisionCode, setSubdivisionCode] = useState("");
   const [SubdivisionList, SetSubdivisionList] = useState([]);
+
   useImperativeHandle(ref, () => ({
     showEmployeModal() {
       setAddProduct(true);
     },
   }));
 
-  const navigate = useNavigate();
-  const getSubdivisionList = async () => {
+  const GetSubdivisionDropDownList = async () => {
     try {
-      const response = await AdminSubdevisionService.index();
+      const response = await AdminSubdevisionService.subdivisionDropDown();
       const responseData = await response.json();
-      SetSubdivisionList(responseData.data);
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData);
     } catch (error) {
+      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(errorJson.message);
+        console.log(errorJson);
       }
     }
   };
+
   useEffect(() => {
-    getSubdivisionList();
+    GetSubdivisionDropDownList();
   }, []);
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code.target.value);
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -64,6 +72,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
           if (willDelete) {
             setAddProduct(false);
             props.parentCallback();
+            navigate("/productlist");
           }
         });
       }
@@ -77,6 +86,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
       }
     }
   };
+
   return (
     <>
       <Offcanvas
@@ -113,7 +123,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     >
                       <option value="">Select Subdivision</option>
                       {SubdivisionList.map((element) => (
-                        <option value={element.id}>{element.name}</option>
+                        <option value={element.value}>{element.label}</option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -174,7 +184,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     Status <span className="text-danger">*</span>
                   </label>
                   <select className="default-select form-control" name="status">
-                    {/* <option data-display="Select">Please select</option> */}
                     <option value="">All</option>
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>

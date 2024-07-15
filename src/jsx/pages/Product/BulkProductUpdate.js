@@ -25,24 +25,46 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }));
     const navigate = useNavigate();
 
-    const getsubdivisionlist = async () => {
-        
-        try {
-          let response = await AdminSubdevisionService.index();
-          let responseData = await response.json();
-    
-          SetSubdivisionList(responseData.data);
-        } catch (error) {
-          if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-    
-            setError(errorJson.message);
-          }
+    const GetSubdivisionDropDownList = async () => {
+      try {
+        const response = await AdminSubdevisionService.subdivisionDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.data.map((subdivision) => ({
+          label: subdivision.name,
+          value: subdivision.id,
+        }));
+        SetSubdivisionList(formattedData);
+      } catch (error) {
+        console.log("Error fetching subdivision list:", error);
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          console.log(errorJson);
         }
-      };
-      useEffect(() => {
-        getsubdivisionlist();
-      }, []);
+      }
+    };
+  
+    useEffect(() => {
+      GetSubdivisionDropDownList();
+    }, []);
+
+    // const getsubdivisionlist = async () => {
+        
+    //     try {
+    //       let response = await AdminSubdevisionService.index();
+    //       let responseData = await response.json();
+    
+    //       SetSubdivisionList(responseData.data);
+    //     } catch (error) {
+    //       if (error.name === "HTTPError") {
+    //         const errorJson = await error.response.json();
+    
+    //         setError(errorJson.message);
+    //       }
+    //     }
+    //   };
+    //   useEffect(() => {
+    //     getsubdivisionlist();
+    //   }, []);
 
     // const GetSubdivision = async (id) => {
     //     try {
@@ -93,8 +115,8 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
               if(willDelete){
                 try {
                   var userData = {
-                      subdivision_id: SubdivisionCode.id
-                        ? SubdivisionCode.id
+                      subdivision_id: SubdivisionCode.value
+                        ? SubdivisionCode.value
                         : ProductList.subdivision_id,
                       product_code: event.target.product_code.value,
                       name: event.target.name.value,
@@ -158,7 +180,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                             options={SubdivisionList}
                             onChange={handleSubdivisionCode}
                             getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
+                            getOptionLabel={(option) => option.label}
                             value={SubdivisionCode}
                           ></Select>
                         </Form.Group>
