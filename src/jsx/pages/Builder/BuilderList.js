@@ -926,6 +926,13 @@ const BuilderTable = () => {
   }
 
   const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+
+    if(!isAnyFilterApplied) {
+      getbuilderlist(currentPage, sortConfig, searchQueryByFilter);
+      return;
+    }
+
     let filtered = BuilderList;
 
     const applyNumberFilter = (items, query, key) => {
@@ -963,14 +970,11 @@ const BuilderTable = () => {
     filtered = applyNumberFilter(filtered, filterQuery.median_closing_price_this_year, 'median_closing_price_this_year');
     filtered = applyNumberFilter(filtered, filterQuery.total_net_sales, 'total_net_sales');
     filtered = applyNumberFilter(filtered, filterQuery.date_of_first_closing, 'date_of_first_closing');
-    filtered = applyNumberFilter(filtered, filterQuery.date_of_latest_closing, 'date_of_latest_closing');
-
-
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    filtered = applyNumberFilter(filtered, filterQuery.date_of_latest_closing, 'date_of_latest_closing');    
 
     if (isAnyFilterApplied && !normalFilter) {
       setBuilderList(filtered.slice(0, 100));
-      setFilter(true);
+      setFilter(false);
       setNormalFilter(false);
     } else {
       setBuilderList(filtered.slice(0, 100));

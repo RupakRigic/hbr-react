@@ -96,24 +96,22 @@ const SubdivisionList = () => {
 
   const [filterQuery, setFilterQuery] = useState({
     status: "",
-    product_type: "",
     reporting: "",
-    builder_name: "",
     name: namebyfilter ? namebyfilter : "",
+    builder_name: "",
     product_type: "",
     area: "",
     masterplan_id: "",
     zipcode: "",
     lotwidth: lotwidthbyfilter ? lotwidthbyfilter : "",
     lotsize: lotsizebyfilter ? lotsizebyfilter : "",
-    zoning: "",
     age: "",
     single: "",
     gated: "",
     juridiction: "",
     gasprovider: "",
-    hoafee: "",
-    masterplan_id: "",
+    from: frombyfilter ? frombyfilter : "",
+    to: tobyfilter ? tobyfilter : "",
     months_open: "",
     latest_lots_released: "",
     latest_standing_inventory: "",
@@ -134,13 +132,13 @@ const SubdivisionList = () => {
     avg_closings_per_month_this_year: "",
     avg_net_sales_per_month_since_open: "",
     avg_net_sales_per_month_last_three_months: "",
-    sqft_group: "",
-    price_group: "",
     month_net_sold: "",
     year_net_sold: "",
+    zoning: "",
+    hoafee: "",
+    sqft_group: "",
+    price_group: "",
     opensince: "",
-    from: frombyfilter ? frombyfilter : "",
-    to: tobyfilter ? tobyfilter : "",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -1202,6 +1200,13 @@ const SubdivisionList = () => {
   }
 
   const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+
+    if(!isAnyFilterApplied) {
+      getbuilderlist(currentPage, sortConfig, searchQueryByFilter);
+      return;
+    }
+
     let filtered = BuilderList;
 
     const applyNumberFilter = (items, query, key) => {
@@ -1260,8 +1265,6 @@ const SubdivisionList = () => {
         item.price_group.toString().includes(filterQuery.price_group)
       );
     }
-
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
 
     if (isAnyFilterApplied && !normalFilter) {
       setBuilderList(filtered.slice(0, 100));

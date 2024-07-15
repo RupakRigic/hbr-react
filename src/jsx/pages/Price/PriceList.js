@@ -466,7 +466,6 @@ const PriceList = () => {
   const bulkPrice = useRef();
 
   const getpriceList = async (pageNumber, sortConfig, searchQuery) => {
-    debugger
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);

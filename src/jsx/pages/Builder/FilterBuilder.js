@@ -16,6 +16,19 @@ const FilterBuilder = () => {
         is_active: "",
         active_communities: "",
         company_type: "",
+        closing_this_year: "",
+        permits_this_year: "",
+        net_sales_this_year: "",
+        current_avg_base_Price: "",
+        avg_net_sales_per_month_this_year: "",
+        avg_closings_per_month_this_year: "",
+        median_closing_price_this_year: "",
+        median_closing_price_last_year: "",
+        total_closings: "",
+        total_permits: "",
+        total_net_sales: "",
+        date_of_first_closing: "",
+        date_of_latest_closing: "",
     });
 
     useEffect(() => {
@@ -115,7 +128,19 @@ const FilterBuilder = () => {
             is_active: "",
             active_communities: "",
             company_type: "",
-            city: "",
+            closing_this_year: "",
+            permits_this_year: "",
+            net_sales_this_year: "",
+            current_avg_base_Price: "",
+            avg_net_sales_per_month_this_year: "",
+            avg_closings_per_month_this_year: "",
+            median_closing_price_this_year: "",
+            median_closing_price_last_year: "",
+            total_closings: "",
+            total_permits: "",
+            total_net_sales: "",
+            date_of_first_closing: "",
+            date_of_latest_closing: "",
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedStatusByFilter([]);
