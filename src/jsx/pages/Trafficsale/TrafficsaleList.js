@@ -689,7 +689,7 @@ const TrafficsaleList = () => {
     }
     setAllTrafficistExport(allData);
     setExcelLoading(false);
-  }
+  };
 
   const handleDelete = async (e) => {
     try {

@@ -1,73 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import ClosingOffcanvas from "./ClosingOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import Button from "react-bootstrap/Button";
 import { Offcanvas, Form, Row } from "react-bootstrap";
-import { debounce } from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
-import PermitList from "../Permit/PermitList";
 import PriceComponent from "../../components/Price/PriceComponent";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
-import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel'; 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkClosingUpdate from "./BulkClosingUpdate";
-import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
-import AdminCCAPNService from "../../../API/Services/AdminService/AdminCCAPNService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
-
 const ClosingList = () => {
+  const location = useLocation();
+
+  const { searchQueryByFilter, seletctedClosingTypeByFilter, fromByFilter, toByFilter, documentByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, closingpriceByFilter, addressByFilter, parcelByFilter, sellerleagalByFilter, buyerByFilter, seletctedLenderByFilter, loanamountByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthByFilter, lotsizeByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
 
   const [excelLoading, setExcelLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
-  const [selectedArea, setSelectedArea] = useState([]);
-  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
-  const [productTypeStatus, setProductTypeStatus] = useState([]);
-  const [seletctedZipcode, setSelectedZipcode] = useState([]);
-  const [seletctedLender, setSelectedLender] = useState([]);
-  const [seletctedClosingType, setSelectedClosingType] = useState([]);
+  const [selectedArea, setSelectedArea] = useState(selectedAreaByFilter);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState(selectedMasterPlanByFilter);
+  const [productTypeStatus, setProductTypeStatus] = useState(productTypeStatusByFilter);
+  const [seletctedZipcode, setSelectedZipcode] = useState(seletctedZipcodeByFilter);
+  const [seletctedLender, setSelectedLender] = useState(seletctedLenderByFilter);
+  const [seletctedClosingType, setSelectedClosingType] = useState(seletctedClosingTypeByFilter);
   const [lenderList, setLenderList] = useState([]);
-
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
-
   const [showSort, setShowSort] = useState(false);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [AllClosingListExport, setAllClosingListExport] = useState([]);
-  const SyestemUserRole = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).role
-    : "";
-
-  const HandleSortDetailClick = (e) =>{
-    setShowSort(true);
-    }
-    const handleSortCheckboxChange = (e, key) => {
-      if (e.target.checked) {
-          setSelectedCheckboxes(prev => [...prev, key]);
-      } else {
-          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-      }
-  };
-  
-
-  
-      
-  const [Error, setError] = useState(""); 
+  const [Error, setError] = useState("");
   const [ClosingList, setClosingList] = useState([]);
   const [closingListCount, setClosingListCount] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,10 +49,6 @@ const ClosingList = () => {
   const number = [...Array(npage + 1).keys()].slice(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const resetSelection = () => {
-    setSelectAll(false);
-    setSelectedColumns([]);
-  };
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectedFileError, setSelectedFileError] = useState("");
   const [show, setShow] = useState(false);
@@ -90,40 +57,128 @@ const ClosingList = () => {
   const handleClose = () => setShow(false);
   const navigate = useNavigate();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    subdivision_name:"",
-    builder_name:"",
-    from:"",
-    to:"",
-    address:"",
-    parcel:"",
-    closing_type:"",
-    document:"",
-    closingprice:"",
-    sublegal_name:"",
-    sellerleagal:"",
-    buyer:"",
-    lender:"",
-    loanamount:"",
-    type:"",
-    product_type:"",
-    area:"",
-    masterplan_id:"",
-    zipcode:"",
-    lotwidth:"",
-    lotsize:"",
-    zoning:"",
-    age:"",
-    single:"",
-    // id:"",
-    // subdivision_code:"",
-    created_at:""
+    closing_type: "",
+    from: fromByFilter ? fromByFilter : "",
+    to: toByFilter ? toByFilter : "",
+    document: documentByFilter ? documentByFilter : "",
+    builder_name: "",
+    subdivision_name: "",
+    closingprice: closingpriceByFilter ? closingpriceByFilter : "",
+    address: addressByFilter ? addressByFilter : "",
+    parcel: parcelByFilter ? parcelByFilter : "",
+    sellerleagal: sellerleagalByFilter ? sellerleagalByFilter : "",
+    buyer: buyerByFilter ? buyerByFilter : "",
+    lender_name: "",
+    loanamount: loanamountByFilter ? loanamountByFilter : "",
+    product_type: "",
+    area: "",
+    masterplan_id: "",
+    zipcode: "",
+    lotwidth: lotwidthByFilter ? lotwidthByFilter : "",
+    lotsize: lotsizeByFilter ? lotsizeByFilter : "",
+    age: "",
+    single: ""
   });
+  const [ClosingDetails, setClosingDetails] = useState({
+    subdivision: "",
+    sellerleagal: "",
+    address: "",
+    buyer: "",
+    lender: "",
+    closingdate: "",
+    closingprice: "",
+    loanamount: "",
+    document: "",
+  });
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
+  const fieldList = AccessField({ tableName: "closing" });
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
+  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
+  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
+  const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
-    setSearchQuery(filterString());
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+  }, [sortConfig]);
+
+  useEffect(() => {
+    if (seletctedClosingTypeByFilter != undefined && seletctedClosingTypeByFilter.length > 0) {
+      handleSelectClosingTypeChange(seletctedClosingTypeByFilter);
+    }
+    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
+      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    }
+    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
+      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    }
+    if (seletctedLenderByFilter != undefined && seletctedLenderByFilter.length > 0) {
+      handleSelectLenderChange(seletctedLenderByFilter);
+    }
+    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
+      handleSelectProductTypeChange(productTypeStatusByFilter);
+    }
+    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
+      handleSelectAreaChange(selectedAreaByFilter);
+    }
+    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
+      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    }
+    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
+      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    }
+    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
+      handleSelectAgeChange(selectedAgeByFilter);
+    }
+    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
+      handleSelectSingleChange(selectedSingleByFilter);
+    }
+  }, [ seletctedClosingTypeByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, seletctedLenderByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+
+  const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
+
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  };
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+  };
+
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
+
+  useEffect(() => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    setIsAnyFilterApplied(isAnyFilterApplied);
+    if (isAnyFilterApplied) {
+      setSearchQuery(filterString());
+    } else {
+      setSearchQuery(searchQuery);
+    }
   }, [filterQuery]);
 
   const filterString = () => {
@@ -137,71 +192,58 @@ const ClosingList = () => {
     return queryString ? `&${queryString}` : "";
   };
 
-  const HandleFilterForm = (e) =>{
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getClosingList(currentPage, sortConfig, searchQuery);
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
+
+  const HandleFilterForm = (e) => {
     e.preventDefault();
     console.log(555);
-    getClosingList(currentPage,searchQuery);
+    getClosingList(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
   };
 
   const HandleCancelFilter = () => {
-    // Reset the filter query
     setFilterQuery({
+      closing_type: "",
       from: "",
       to: "",
+      document: "",
+      builder_name: "",
+      subdivision_name: "",
+      closingprice: "",
       address: "",
       parcel: "",
-      closing_type: "",
-      document: "",
-      closingprice: "",
-      sublegal_name: "",
       sellerleagal: "",
       buyer: "",
-      lender: "",
+      lender_name: "",
       loanamount: "",
-      type: "",
       product_type: "",
       area: "",
       masterplan_id: "",
       zipcode: "",
       lotwidth: "",
       lotsize: "",
-      zoning: "",
       age: "",
-      single: "",
-      created_at: ""
+      single: ""
     });
-  
-    setSearchQuery("");
-    setManageFilterOffcanvas(false);
+    setSelectedClosingType([]);
+    setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
+    setSelectedLender([]);
+    setProductTypeStatus([]);
     setSelectedArea([]);
     setSelectedMasterPlan([]);
     setSelectedZipcode([]);
-    setSelectedLender([]);
-    setProductTypeStatus([])
-    setSelectedBuilderName([]);
-    setSelectedSubdivisionName([]);
     setSelectedAge([]);
     setSelectedSingle([]);
-    setSelectedClosingType([]);
-
+    setManageFilterOffcanvas(false);
+    getClosingList(1, sortConfig, "");
   };
-  
-  useEffect(() => {
-    getClosingList();
-  }, [filterQuery, searchQuery]);
-
-  const [ClosingDetails, setClosingDetails] = useState({
-    subdivision: "",
-    sellerleagal: "",
-    address: "",
-    buyer: "",
-    lender: "",
-    closingdate: "",
-    closingprice: "",
-    loanamount: "",
-    document: "",
-  });
 
   const clearClosingDetails = () => {
     setClosingDetails({
@@ -217,19 +259,6 @@ const ClosingList = () => {
     });
   };
 
-  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
-  const [accessList, setAccessList] = useState({});
-  const [accessRole, setAccessRole] = useState("Admin");
-  const [accessForm, setAccessForm] = useState({});
-  const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: "closing" });
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [columns, setColumns] = useState([]);
-  const [draggedColumns, setDraggedColumns] = useState(columns);
-  const [selectedLandSales, setSelectedLandSales] = useState([]);
-
   const handleRemoveSelected = () => {
     const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
     setSortConfig(newSortConfig);
@@ -238,16 +267,11 @@ const ClosingList = () => {
 
   const handleSortClose = () => setShowSort(false);
 
-  useEffect(() => {
-    console.log('fieldList data : ',fieldList); // You can now use fieldList in this component
-  }, [fieldList]);
-
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
 
-  const UpdateFromCcapn = async() =>{
-
+  const UpdateFromCcapn = async () => {
     try {
       const response = await AdminClosingService.ccapnUpdate({});
       const responseData = await response.json();
@@ -260,95 +284,60 @@ const ClosingList = () => {
       }
     }
   }
-  
+
   const headers = [
-    { label: 'Closing Type', key: 'Closing_Type' },  
-    { label: 'Closing Date', key: 'Closing_Date' }, 
-    { label: 'Doc', key: 'Doc' }, 
-    { label: 'Builder Name', key: 'Builder_Name' }, 
-    { label: 'Subdivision Name', key: 'Subdivision_Name' }, 
-    { label: 'Closing Price', key: 'Closing+Price' }, 
-    { label: 'Address', key: 'Address' }, 
-    { label: 'Parcel Number', key: 'Parcel_Number' }, 
-    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' }, 
-    { label: 'Seller Legal Name', key: 'Seller_Legal Name' }, 
-    { label: 'Buyer Name', key: 'Buyer_Name' }, 
-    { label: 'Lender', key: 'Lender' }, 
-    { label: 'Loan Amount', key: 'Loan_Amount' }, 
-    { label: 'Type', key: 'Type' }, 
-    { label: 'Product Type', key: 'Product_Type' }, 
-    { label: 'Area', key: 'Area' }, 
-    { label: 'Master Plan', key: 'Master_Plan' }, 
-    { label: 'Zip Code', key: 'Zip_Code' }, 
-    { label: 'Lot Width', key: 'Lot_Width' }, 
-    { label: 'Lot Size', key: 'Lot_Size' }, 
-    { label: 'Zoning', key: 'Zoning' }, 
-    { label: 'Age Restricted', key: 'Age_Restricted' }, 
-    { label: 'All Single Story', key: 'All_Single_Story' },  
-    { label: 'Fk Sub Id', key: 'fkSubID' }, 
-     
+    { label: 'Closing Type', key: 'Closing_Type' },
+    { label: 'Closing Date', key: 'Closing_Date' },
+    { label: 'Doc', key: 'Doc' },
+    { label: 'Builder Name', key: 'Builder_Name' },
+    { label: 'Subdivision Name', key: 'Subdivision_Name' },
+    { label: 'Closing Price', key: 'Closing+Price' },
+    { label: 'Address', key: 'Address' },
+    { label: 'Parcel Number', key: 'Parcel_Number' },
+    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' },
+    { label: 'Seller Legal Name', key: 'Seller_Legal Name' },
+    { label: 'Buyer Name', key: 'Buyer_Name' },
+    { label: 'Lender', key: 'Lender' },
+    { label: 'Loan Amount', key: 'Loan_Amount' },
+    { label: 'Type', key: 'Type' },
+    { label: 'Product Type', key: 'Product_Type' },
+    { label: 'Area', key: 'Area' },
+    { label: 'Master Plan', key: 'Master_Plan' },
+    { label: 'Zip Code', key: 'Zip_Code' },
+    { label: 'Lot Width', key: 'Lot_Width' },
+    { label: 'Lot Size', key: 'Lot_Size' },
+    { label: 'Zoning', key: 'Zoning' },
+    { label: 'Age Restricted', key: 'Age_Restricted' },
+    { label: 'All Single Story', key: 'All_Single_Story' },
+    { label: 'Fk Sub Id', key: 'fkSubID' },
   ];
+
   const exportColumns = [
-    { label: 'Closing Type', key: 'Closing_Type' },  
-    { label: 'Closing Date', key: 'Closing_Date' }, 
-    { label: 'Doc', key: 'Doc' }, 
-    { label: 'Builder Name', key: 'Builder_Name' }, 
-    { label: 'Subdivision Name', key: 'Subdivision_Name' }, 
-    { label: 'Closing Price', key: 'Closing+Price' }, 
-    { label: 'Address', key: 'Address' }, 
-    { label: 'Parcel Number', key: 'Parcel_Number' }, 
-    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' }, 
-    { label: 'Seller Legal Name', key: 'Seller_Legal Name' }, 
-    { label: 'Buyer Name', key: 'Buyer_Name' }, 
-    { label: 'Lender', key: 'Lender' }, 
-    { label: 'Loan Amount', key: 'Loan_Amount' }, 
-    { label: 'Type', key: 'Type' }, 
-    { label: 'Product Type', key: 'Product_Type' }, 
-    { label: 'Area', key: 'Area' }, 
-    { label: 'Master Plan', key: 'Master_Plan' }, 
-    { label: 'Zip Code', key: 'Zip_Code' }, 
-    { label: 'Lot Width', key: 'Lot_Width' }, 
-    { label: 'Lot Size', key: 'Lot_Size' }, 
-    { label: 'Zoning', key: 'Zoning' }, 
-    { label: 'Age Restricted', key: 'Age_Restricted' }, 
-    { label: 'All Single Story', key: 'All_Single_Story' },  
-    { label: 'Fk Sub Id', key: 'fkSubID' }, 
+    { label: 'Closing Type', key: 'Closing_Type' },
+    { label: 'Closing Date', key: 'Closing_Date' },
+    { label: 'Doc', key: 'Doc' },
+    { label: 'Builder Name', key: 'Builder_Name' },
+    { label: 'Subdivision Name', key: 'Subdivision_Name' },
+    { label: 'Closing Price', key: 'Closing+Price' },
+    { label: 'Address', key: 'Address' },
+    { label: 'Parcel Number', key: 'Parcel_Number' },
+    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' },
+    { label: 'Seller Legal Name', key: 'Seller_Legal Name' },
+    { label: 'Buyer Name', key: 'Buyer_Name' },
+    { label: 'Lender', key: 'Lender' },
+    { label: 'Loan Amount', key: 'Loan_Amount' },
+    { label: 'Type', key: 'Type' },
+    { label: 'Product Type', key: 'Product_Type' },
+    { label: 'Area', key: 'Area' },
+    { label: 'Master Plan', key: 'Master_Plan' },
+    { label: 'Zip Code', key: 'Zip_Code' },
+    { label: 'Lot Width', key: 'Lot_Width' },
+    { label: 'Lot Size', key: 'Lot_Size' },
+    { label: 'Zoning', key: 'Zoning' },
+    { label: 'Age Restricted', key: 'Age_Restricted' },
+    { label: 'All Single Story', key: 'All_Single_Story' },
+    { label: 'Fk Sub Id', key: 'fkSubID' },
   ];
-  const calculatedField = [
-    {
-      "Active Communities": null,
-      "Closing This Year": null,
-      "Permits This Year": null,
-      "Net Sales this year": null,
-      "Current Avg Base Price": null,
-      "Median Closing Price This Year": null,
-      "Median Closing Price Last Year": null,
-      "Avg Net Sales Per Month This Year ": null,
-      "Avg Closings Per Month This Year": null,
-      "Total Closings": null,
-      "Total Permits": null,
-      "Total Net Sales": null,
-    },
-  ];
-
-  function handleLabelExist(lable)
-  {
-
-    return calculatedField.some(field => field.hasOwnProperty(lable));
- 
-  }
-
-  const totalSumFields = (label) => {
-    if (!handleLabelExist(label)) {
-      return 0;
-    }
-    label = label
-    .toLowerCase()      
-    .replace(/\s+/g, '_');
-    return AllClosingListExport.reduce((sum, builder) => {
-      return sum + (builder[label] || 0);
-    }, 0);
-  };
 
   const handleSelectAllToggle = () => {
     const newSelectAll = !selectAll;
@@ -364,22 +353,22 @@ const ClosingList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log(updatedColumns);
-    setSelectedColumns(updatedColumns);  
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
-  };  
+  };
 
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns("");
-  
+
     let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-  
+
     const tableData = AllClosingListExport.map((row) => {
       return tableHeaders.map((header) => {
         switch (header) {
@@ -436,19 +425,19 @@ const ClosingList = () => {
         }
       });
     });
-  
+
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-  
+
     const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
     for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
       const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
       if (!cell.s) cell.s = {};
       cell.s.font = { name: 'Calibri', sz: 11, bold: false };
     }
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Closing');
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Closing.xlsx');
@@ -462,6 +451,7 @@ const ClosingList = () => {
     setRole(e.target.value);
     setAccessRole(e.target.value);
   };
+
   const handleAccessForm = async (e) => {
     e.preventDefault();
     var userData = {
@@ -525,6 +515,7 @@ const ClosingList = () => {
       }
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getAccesslist();
@@ -533,69 +524,75 @@ const ClosingList = () => {
     }
   }, []);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
-
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
+
   function changeCPage(id) {
     setCurrentPage(id);
-  }
+  };
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   const closingsale = useRef();
+
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
+
   const bulkClosing = useRef();
 
-  const getClosingList = async (currentPage = 1) => {
-    setIsLoading(true);  // Set loading state to true at the beginning of the function
+  const getClosingList = async (currentPage, sortConfig, searchQuery) => {
+    setIsLoading(true);
+    setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      const response = await AdminClosingService.index(currentPage, sortConfigString, searchQuery);
+      const response = await AdminClosingService.index(
+        currentPage, 
+        sortConfigString, 
+        searchQuery
+      );
       const responseData = await response.json();
-      console.log(responseData.data);
+      setIsLoading(false);
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
+      if(responseData.total > 100) {
+        FetchAllPages(searchQuery, sortConfig);
+      } else {
+        setExcelLoading(false);
+        setAllClosingListExport(responseData.data);
+      }
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
     } finally {
-      setIsLoading(false);  // Set loading state to false at the end of the function
+      setIsLoading(false);
     }
   };
-  
 
-useEffect(() => {
-  if (localStorage.getItem("usertoken")) {
-    getClosingList(currentPage);
-    fetchAllPages(searchQuery, sortConfig);
-  } else {
-    navigate("/");
-  }
-}, [currentPage]);
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-
-  async function fetchAllPages(searchQuery, sortConfig) {
+  const FetchAllPages = async (searchQuery, sortConfig) => {
+    setExcelLoading(true);
     const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
     const responseData = await response.json();
     const totalPages = Math.ceil(responseData.total / recordsPage);
     let allData = responseData.data;
     for (let page = 2; page <= totalPages; page++) {
+      await delay(1000);
       const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
@@ -635,6 +632,7 @@ useEffect(() => {
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
+
   const handleUploadClick = async () => {
     const file = selectedFile;
     console.log(file);
@@ -658,21 +656,21 @@ useEffect(() => {
           if (responseData.data) {
             let message = responseData.data.message;
             if (responseData.data.failed_records > 0) {
-                const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-                message += ' Problematic Record Rows: ' + problematicRows+'.';
+              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
             }
             message += '. Record Imported: ' + responseData.data.successful_records;
             message += '. Failed Record Count: ' + responseData.data.failed_records;
             message += '. Last Row: ' + responseData.data.last_processed_row;
 
             swal(message).then((willDelete) => {
-                if (willDelete) {
-                    navigate("/closingsalelist");
-                }
+              if (willDelete) {
+                navigate("/closingsalelist");
+              }
             });
-        } else {
+          } else {
             swal('Error: ' + responseData.error);
-        }
+          }
           getClosingList();
         } catch (error) {
           if (error.name === "HTTPError") {
@@ -684,7 +682,7 @@ useEffect(() => {
           }
         }
       };
-  
+
       setSelectedFileError("");
     } else {
       setSelectedFile("");
@@ -717,26 +715,6 @@ useEffect(() => {
       }
     }
   };
-
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 1000)
-  // ).current;
-
-  // useEffect(() => {
-  //   getClosingList();
-  // }, [searchQuery]);
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   if (query) {
-  //     debouncedHandleSearch(`?q=${query}`);
-  //   } else {
-  //     setSearchQuery("");
-  //   }
-  // };
 
   const HandleFilter = (e) => {
     const { name, value } = e.target;
@@ -797,107 +775,100 @@ useEffect(() => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
-    getClosingList(currentPage, sortConfig);
+    getClosingList(currentPage, newSortConfig, searchQuery);
   };
 
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
 
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
 
-  const exportToExcelData = async () => {
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
+  };
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  useEffect(() => {
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
+
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join('');
+  };
+
+  const GetBuilderDropDownList = async () => {
     try {
-        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
-        const response = await axios.get(
-          `${process.env.REACT_APP_IMAGE_URL}api/admin/closing/export`
-          // 'https://hbrapi.rigicgspl.com/api/admin/closing/export'
-
-          ,
-           {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${bearerToken}`
-            }
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'closings.xlsx');
-        document.body.appendChild(link);
-        link.click();
+        const response = await AdminBuilderService.builderDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.map((builder) => ({
+            label: builder.name,
+            value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
     } catch (error) {
-        console.log(error);
+        console.log("Error fetching builder list:", error);
         if (error.name === "HTTPError") {
             const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+            console.log(errorJson);
         }
     }
-}
-
-const HandleSelectChange = (selectedOption) => {
-  setFilterQuery((prevFilterQuery) => ({
-    ...prevFilterQuery,
-    builder_name: selectedOption.name,
-  }));
 };
 
-const HandleSubSelectChange = (selectedOption) => {
-  setFilterQuery((prevFilterQuery) => ({
-    ...prevFilterQuery,
-    subdivision_name: selectedOption.name,
-  }));
-};
-
-const [builderDropDown, setBuilderDropDown] = useState([]);
-const [SubdivisionList, SetSubdivisionList] = useState([]);
-const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
-const [selectedAge, setSelectedAge] = useState([]);
-const [selectedSingle, setSelectedSingle] = useState([]);
-const [selectedValues, setSelectedValues] = useState([]);
-  
-useEffect(() => {
-  const fetchBuilderList = async () => {
+const GetSubdivisionDropDownList = async () => {
     try {
-      const response = await AdminBuilderService.builderDropDown();
-      const data = await response.json();
-      const formattedData = data.map((builder) => ({
-        label: builder.name,
-        value: builder.id,
-      }));
-      setBuilderDropDown(formattedData);
+        const response = await AdminSubdevisionService.subdivisionDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.data.map((subdivision) => ({
+            label: subdivision.name,
+            value: subdivision.id,
+        }));
+        SetSubdivisionList(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
+        console.log("Error fetching subdivision list:", error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+        }
     }
-  };
-  fetchBuilderList();
-}, []);
+};
 
-const getSubdivisionList = async () => {
-  try {
-      let response = await AdminSubdevisionService.index()
-      let responseData = await response.json()
-      const formattedData = responseData.data.map((subdivision) => ({
-        label: subdivision.name,
-        value: subdivision.id,
-      }));
-      SetSubdivisionList(formattedData)
-  } catch (error) {
-      if (error.name === 'HTTPError') {
-          const errorJson = await error.response.json();
-          setError(errorJson.message)
-      }
-  }
-}
-useEffect(() => {
-  if (localStorage.getItem('usertoken')) {
-      getSubdivisionList();
-  }
-  else {
-      navigate('/');
-  }
-}, [])
-
-
-const getLenderList = async () => {
+const GetLenderList = async () => {
   try {
       let response = await AdminClosingService.lender()
       let responseData = await response.json()
@@ -909,295 +880,236 @@ const getLenderList = async () => {
   } catch (error) {
       if (error.name === 'HTTPError') {
           const errorJson = await error.response.json();
-          setError(errorJson.message)
+          console.log(errorJson.message);
       }
   }
-}
-useEffect(() => {
-  if (localStorage.getItem('usertoken')) {
-    getLenderList();
+};
+
+  useEffect(() => {
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
+    GetLenderList();
+  }, []);
+
+  const ageOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const singleOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const handleSelectBuilderNameChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+    }));
   }
-  else {
-      navigate('/');
+
+  const handleSelectSubdivisionNameChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSubdivisionName(selectedItems);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      subdivision_name: selectedNames
+    }));
   }
-}, [])
 
+  const handleSelectAgeChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedAge(selectedItems);
 
-const handleOpenDialog = () => {
-  setDraggedColumns(columns);
-  setOpenDialog(true);
-};
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      age: selectedNames
+    }));
+  };
 
-const handleCloseDialog = () => {
-  setDraggedColumns(columns);
-  setOpenDialog(false);
-};
+  const handleSelectSingleChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSingle(selectedItems);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      single: selectedNames
+    }));
+  };
 
-const handleSaveDialog = () => {
-  setColumns(draggedColumns);
-  setOpenDialog(false);
-};
+  const areaOption = [
+    { value: "BC", label: "BC" },
+    { value: "E", label: "E" },
+    { value: "H", label: "H" },
+    { value: "IS", label: "IS" },
+    { value: "L", label: "DET" },
+    { value: "MSQ", label: "MSQ" },
+    { value: "MV", label: "MV" },
+    { value: "NLV", label: "NLV" },
+    { value: "NW", label: "NW" },
+    { value: "P", label: "P" },
+    { value: "SO", label: "SO" },
+    { value: "SW", label: "SW" }
+  ];
 
-const handleColumnOrderChange = (result) => {
-  if (!result.destination) {
-    return;
-  }
-  const newColumns = Array.from(draggedColumns);
-  const [movedColumn] = newColumns.splice(result.source.index, 1);
-  newColumns.splice(result.destination.index, 0, movedColumn);
-  setDraggedColumns(newColumns);
-};
-const handleEditCheckboxChange = (e, userId) => {
-  if (e.target.checked) {
-    setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
-  } else {
-    setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
-  }
-};
+  const handleSelectAreaChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedArea(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      area: selectedValues
+    }));
+  };
 
+  const productTypeOptions = [
+    { value: "DET", label: "DET" },
+    { value: "ATT", label: "ATT" },
+    { value: "HR", label: "HR" },
+    { value: "AC", label: "AC" }
+  ];
 
-useEffect(() => {
-  const mappedColumns = fieldList.map((data) => ({
-    id: data.charAt(0).toLowerCase() + data.slice(1),
-    label: data
-  }));
-  setColumns(mappedColumns);
-}, [fieldList]);
+  const handleSelectProductTypeChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
 
-const toCamelCase = (str) => {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map((word, index) => {
-      if (index === 0) {
-        return word;
-      }
-        return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-  .join('');
-};
+    setSelectedValues(selectedValues);
+    setProductTypeStatus(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      product_type: selectedNames
+    }));
+  };
 
+  const zipCodeOption = [
+    { value: "89002", label: "89002" },
+    { value: "89005", label: "89005" },
+    { value: "89011", label: "89011" },
+    { value: "89012", label: "89012" },
+    { value: "89014", label: "89014" },
+    { value: "89015", label: "89015" },
+    { value: "89018", label: "89018" },
+    { value: "89021", label: "89021" },
+    { value: "89027", label: "89027" },
+    { value: "89029", label: "89029" },
+    { value: "89030", label: "89030" },
+    { value: "89031", label: "89031" },
+    { value: "89032", label: "89032" },
+    { value: "89044", label: "89044" },
+    { value: "89044", label: "89044" },
+    { value: "89052", label: "89052" },
+    { value: "89055", label: "89055" },
+    { value: "89060", label: "89060" },
+    { value: "89061", label: "89061" },
+    { value: "89074", label: "89074" },
+    { value: "89081", label: "89081" },
+    { value: "89084", label: "89084" },
+    { value: "89085", label: "89085" },
+    { value: "89086", label: "89086" },
+  ];
 
+  const handleSelectZipcodeChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedZipcode(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      zipcode: selectedValues
+    }));
+  };
 
-const ageOptions = [
-  { value: "1", label: "Yes" },
-  { value: "0", label: "No" }
-];
+  const masterPlanOption = [
+    { value: "ALIANTE", label: "ALIANTE" },
+    { value: "ANTHEM", label: "ANTHEM" },
+    { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
+    { value: "ASCAYA", label: "ASCAYA" },
+    { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
+    { value: "CANYON CREST", label: "CANYON CREST" },
+    { value: "CANYON GATE", label: "CANYON GATE" },
+    { value: "CORONADO RANCH", label: "CORONADO RANCH" },
+    { value: "ELDORADO", label: "ELDORADO" },
+    { value: "GREEN VALLEY", label: "GREEN VALLEY" },
+    { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
+    { value: "INSPIRADA", label: "INSPIRADA" },
+    { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
+    { value: "THE LAKES", label: "THE LAKES" },
+    { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
+    { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
+    { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
+    { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
+    { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
+    { value: "NEVADA RANCH", label: "NEVADA RANCH" },
+    { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
+    { value: "PROVIDENCE", label: "PROVIDENCE" },
+    { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
+    { value: "RED ROCK CC", label: "RED ROCK CC" },
+    { value: "RHODES RANCH", label: "RHODES RANCH" },
+    { value: "SEDONA RANCH", label: "SEDONA RANCH" },
+    { value: "SEVEN HILLS", label: "SEVEN HILLS" },
+    { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
+    { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
+    { value: "SKYE CANYON", label: "SKYE CANYON" },
+    { value: "SKYE HILLS", label: "SKYE HILLS" },
+    { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
+    { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
+    { value: "SUMMERLIN", label: "SUMMERLIN" },
+    { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
+    { value: "SUNSTONE", label: "SUNSTONE" },
+    { value: "TUSCANY", label: "TUSCANY" },
+    { value: "VALLEY VISTA", label: "VALLEY VISTA" },
+    { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
+    { value: "VISTA VERDE", label: "VISTA VERDE" },
+    { value: "WESTON HILLS", label: "WESTON HILLS" },
+  ];
 
-const singleOptions = [
-  { value: "1", label: "Yes" },
-  { value: "0", label: "No" }
-];
+  const handleSelectMasterPlanChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedMasterPlan(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      masterplan_id: selectedValues
+    }));
+  };
 
-const handleSelectBuilderNameChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedBuilderName(selectedItems);
-  const selectedNames = selectedItems.map(item => item.label).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    builder_name: selectedNames
-}));
-}
+  const handleSelectLenderChange = (selectedItems) => {
+    console.log(selectedItems);
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    console.log(selectedValues);
+    setSelectedLender(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      lender: selectedValues
+    }));
+  };
 
-const handleSelectSubdivisionNameChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedSubdivisionName(selectedItems);
-  const selectedNames = selectedItems.map(item => item.label).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    subdivision_name: selectedNames
-}));
-}
+  const closingType = [
+    { value: "NEW", label: "NEW" },
+    { value: "RESALES", label: "RESALES" },
+  ];
 
-const handleSelectAgeChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedAge(selectedItems);
-
-  const selectedNames = selectedItems.map(item => item.value).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    age: selectedNames
-}));
-};
-
-const handleSelectSingleChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedSingle(selectedItems);
-  const selectedNames = selectedItems.map(item => item.value).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    single: selectedNames
-}));
-};
-const areaOption = [
-  { value: "BC", label: "BC" },
-  { value: "E", label: "E" },
-  { value: "H", label: "H" },
-  { value: "IS", label: "IS" },
-  { value: "L", label: "DET" },
-  { value: "MSQ", label: "MSQ" },
-  { value: "MV", label: "MV" },
-  { value: "NLV", label: "NLV" },
-  { value: "NW", label: "NW" },
-  { value: "P", label: "P" },
-  { value: "SO", label: "SO" },
-  { value: "SW", label: "SW" }
-];
-
-const handleSelectAreaChange = (selectedItems) => {
-  console.log(selectedItems);
-  const selectedValues = selectedItems.map(item => item.value).join(', ');
-  console.log(selectedValues);
-  setSelectedArea(selectedItems);
-  setFilterQuery(prevState => ({
-    ...prevState,
-    area: selectedValues
-  }));
-};
-
-const productTypeOptions = [
-  { value: "DET", label: "DET" },
-  { value: "ATT", label: "ATT" },
-  { value: "HR", label: "HR" },
-  { value: "AC", label: "AC" }
-];
-const handleSelectProductTypeChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  const selectedNames = selectedItems.map(item => item.value).join(', ');
-
-  setSelectedValues(selectedValues);
-  setProductTypeStatus(selectedItems);
-  setFilterQuery(prevState => ({
-    ...prevState,
-    product_type: selectedNames
-}));
-}
-
-const zipCodeOption = [
-  { value: "89002", label: "89002" },
-  { value: "89005", label: "89005" },
-  { value: "89011", label: "89011" },
-  { value: "89012", label: "89012" },
-  { value: "89014", label: "89014" },
-  { value: "89015", label: "89015" },
-  { value: "89018", label: "89018" },
-  { value: "89021", label: "89021" },
-  { value: "89027", label: "89027" },
-  { value: "89029", label: "89029" },
-  { value: "89030", label: "89030" },
-  { value: "89031", label: "89031" },
-  { value: "89032", label: "89032" },
-  { value: "89044", label: "89044" },
-  { value: "89044", label: "89044" },
-  { value: "89052", label: "89052" },
-  { value: "89055", label: "89055" },
-  { value: "89060", label: "89060" },
-  { value: "89061", label: "89061" },
-  { value: "89074", label: "89074" },
-  { value: "89081", label: "89081" },
-  { value: "89084", label: "89084" },
-  { value: "89085", label: "89085" },
-  { value: "89086", label: "89086" },
-];
-
-const handleSelectZipcodeChange = (selectedItems) => {
-  console.log(selectedItems);
-  const selectedValues = selectedItems.map(item => item.value).join(', ');
-  console.log(selectedValues);
-  setSelectedZipcode(selectedItems);
-  setFilterQuery(prevState => ({
-    ...prevState,
-    zipcode: selectedValues
-  }));
-};
-
-const masterPlanOption = [
-  { value: "ALIANTE", label: "ALIANTE" },
-  { value: "ANTHEM", label: "ANTHEM" },
-  { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
-  { value: "ASCAYA", label: "ASCAYA" },
-  { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
-  { value: "CANYON CREST", label: "CANYON CREST" },
-  { value: "CANYON GATE", label: "CANYON GATE" },
-  { value: "CORONADO RANCH", label: "CORONADO RANCH" },
-  { value: "ELDORADO", label: "ELDORADO" },
-  { value: "GREEN VALLEY", label: "GREEN VALLEY" },
-  { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
-  { value: "INSPIRADA", label: "INSPIRADA" },
-  { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
-  { value: "THE LAKES", label: "THE LAKES" },
-  { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
-  { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
-  { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
-  { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
-  { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
-  { value: "NEVADA RANCH", label: "NEVADA RANCH" },
-  { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
-  { value: "PROVIDENCE", label: "PROVIDENCE" },
-  { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
-  { value: "RED ROCK CC", label: "RED ROCK CC" },
-  { value: "RHODES RANCH", label: "RHODES RANCH" },
-  { value: "SEDONA RANCH", label: "SEDONA RANCH" },
-  { value: "SEVEN HILLS", label: "SEVEN HILLS"},
-  { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
-  { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
-  { value: "SKYE CANYON", label: "SKYE CANYON" },
-  { value: "SKYE HILLS", label: "SKYE HILLS" },
-  { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
-  { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
-  { value: "SUMMERLIN", label: "SUMMERLIN" },
-  { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
-  { value: "SUNSTONE", label: "SUNSTONE" },
-  { value: "TUSCANY", label: "TUSCANY" },
-  { value: "VALLEY VISTA", label: "VALLEY VISTA" },
-  { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
-  { value: "VISTA VERDE", label: "VISTA VERDE" },
-  { value: "WESTON HILLS", label: "WESTON HILLS" },
-];
-
-const handleSelectMasterPlanChange = (selectedItems) => {
-  console.log(selectedItems);
-  const selectedValues = selectedItems.map(item => item.value).join(', ');
-  console.log(selectedValues);
-  setSelectedMasterPlan(selectedItems);
-  setFilterQuery(prevState => ({
-    ...prevState,
-    masterplan_id: selectedValues
-  }));
-};
-
-const handleSelectLenderChange = (selectedItems) => {
-  console.log(selectedItems);
-  const selectedValues = selectedItems.map(item => item.value).join(', ');
-  console.log(selectedValues);
-  setSelectedLender(selectedItems);
-  setFilterQuery(prevState => ({
-    ...prevState,
-    lender: selectedValues
-  }));
-};
-
-console.log(filterQuery);
-
-const closingType =[
-  { value: "NEW", label: "NEW" },
-  { value: "RESALES", label: "RESALES" },
-];
-
-const handleSelectClosingTypeChange = (selectedItems) => {
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedClosingType(selectedItems);
-  const selectedNames = selectedItems.map(item => item.label).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    closing_type: selectedNames
-}));
-};
+  const handleSelectClosingTypeChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedClosingType(selectedItems);
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      closing_type: selectedNames
+    }));
+  };
 
   return (
     <>
@@ -1222,7 +1134,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                       >
                         <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
                           {" "}
-                              Update with CCAPNs
+                          Update with CCAPNs
                         </button>
                       </div>
                       <ColumnReOrderPopup
@@ -1235,150 +1147,147 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                       />
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
-                      ) : (
-                    <div className="d-flex" style={{marginTop: "10px"}}>
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                      Set Columns Order
-                    </button>
-                    <Button
-                            className="btn-sm me-1"
-                            variant="secondary"
-                            onClick={HandleSortDetailClick}
-                          >
-                            <i class="fa-solid fa-sort"></i>
-                     </Button>                
-                    <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1"> 
-                      {excelLoading ? 
-                        <div class="spinner-border spinner-border-sm" role="status" /> 
-                        :
-                        <i class="fas fa-file-excel" />
-                      }
-                    </button>
-
-
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                        <i className="fa fa-filter" />
-                      </button>
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >
-                        Import
-                      </Button>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => closingsale.current.showEmployeModal()}
-                      >
-                        + Add Closing
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulkClosing.current.showEmployeModal()}
-                      >
-                        Bulk Edit
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedLandSales);
+                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                      ""
+                    ) : (
+                      <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                          Set Columns Order
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={HandleSortDetailClick}
+                        >
+                          <i class="fa-solid fa-sort"></i>
+                        </Button>
+                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1">
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
+                            :
+                            <i class="fas fa-file-excel" />
                           }
-                        }) : ""}
-                      >
-                        Bulk Delete
-                      </button>
-                    </div>
-                      )}
+                        </button>
+
+
+                        <button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={() => setManageAccessOffcanvas(true)}
+                        >
+                          {" "}
+                          Field Access
+                        </button>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                          <i className="fa fa-filter" />
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={handlBuilderClick}
+                        >
+                          Import
+                        </Button>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => closingsale.current.showEmployeModal()}
+                        >
+                          + Add Closing
+                        </Link>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => bulkClosing.current.showEmployeModal()}
+                        >
+                          Bulk Edit
+                        </Link>
+                        <button
+                          className="btn btn-danger btn-sm me-1"
+                          style={{ marginLeft: "3px" }}
+                          onClick={() => selectedLandSales.length > 0 ? swal({
+                            title: "Are you sure?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                          }).then((willDelete) => {
+                            if (willDelete) {
+                              handleBulkDelete(selectedLandSales);
+                            }
+                          }) : ""}
+                        >
+                          Bulk Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {closingListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {closingListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
                     </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -1394,7 +1303,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                          <th>
+                            <th>
                               <input
                                 type="checkbox"
                                 style={{
@@ -1411,419 +1320,56 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                             <th>No.</th>
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
-                                column.id == "closing Type" ? "closing_type" : 
-                                column.id == "closing Price" ? "closingprice" : 
-                                column.id == "Parcel Number" ? "parcel" : 
-                                column.id == "sub Legal Name" ? "subdivisionName" : 
-                                column.id == "seller Legal Name" ? "sellerleagal" : 
-                                column.id == "buyer Name" ? "buyer" : 
+                                column.id == "closing Type" ? "closing_type" :
+                                column.id == "closing Price" ? "closingprice" :
+                                column.id == "Parcel Number" ? "parcel" :
+                                column.id == "sub Legal Name" ? "subdivisionName" :
+                                column.id == "seller Legal Name" ? "sellerleagal" :
+                                column.id == "buyer Name" ? "buyer" :
                                 column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "closing Type" ? "closing_type" : 
-                                      column.id == "closing Price" ? "closingprice" : 
-                                      column.id == "sub Legal Name" ? "subdivisionName" : 
-                                      column.id == "seller Legal Name" ? "sellerleagal" : 
-                                      column.id == "buyer Name" ? "buyer" : 
+                                      column.id == "closing Type" ? "closing_type" :
+                                      column.id == "closing Price" ? "closingprice" :
+                                      column.id == "sub Legal Name" ? "subdivisionName" :
+                                      column.id == "seller Legal Name" ? "sellerleagal" :
+                                      column.id == "buyer Name" ? "buyer" :
                                       column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
-                                    ) ? (
+                                  ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
-                                          column.id == "closing Type" ? "closing_type" : 
-                                          column.id == "closing Price" ? "closingprice" : 
-                                          column.id == "sub Legal Name" ? "subdivisionName" : 
-                                          column.id == "seller Legal Name" ? "sellerleagal" : 
-                                          column.id == "buyer Name" ? "buyer" : 
+                                          column.id == "closing Type" ? "closing_type" :
+                                          column.id == "closing Price" ? "closingprice" :
+                                          column.id == "sub Legal Name" ? "subdivisionName" :
+                                          column.id == "seller Legal Name" ? "sellerleagal" :
+                                          column.id == "buyer Name" ? "buyer" :
                                           column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
-                                        ).direction === "asc" ? "↑" : "↓"}
+                                      ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                    ) : (
+                                  ) : (
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
                             ))}
-                            {/* {checkFieldExist("Closing Type") && (
-                              <th onClick={() => requestSort("closing_type")}>
-                                Closing Type
-                             {sortConfig.key !== "closing_type" ? "↑↓" : ""}
-                                {sortConfig.key === "closing_type" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Closing Date") && (
-                              <th onClick={() => requestSort("closingdate")}>
-                                Closing Date
-                                {sortConfig.key !== "closingdate" ? "↑↓" : ""}
-                                {sortConfig.key === "closingdate" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Doc") && (
-                            )}{" "}
-                            {checkFieldExist("Closing Date Actual") && (
-                              <th onClick={() => requestSort("closingdate")}>
-                                Closing Date
-                                {sortConfig.key !== "closingdate" ? "↑↓" : ""}
-                                {sortConfig.key === "closingdate" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "}
-                            {checkFieldExist("Doc") && (
-                              <th onClick={() => requestSort("document")}>
-                                Doc
-                                {sortConfig.key !== "document" ? "↑↓" : ""}
-                                {sortConfig.key === "document" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Builder Name") && (
-                              <th onClick={() => requestSort("builderName")}>
-                                Builder Name
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Subdivision Name") && (
-                              <th
-                                onClick={() => requestSort("subdivisionName")}
-                              >
-                                Subdivision Name
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Closing Price") && (
-                              <th onClick={() => requestSort("closingprice")}>
-                                Closing Price
-                                {sortConfig.key !== "closingprice" ? "↑↓" : ""}
-                                {sortConfig.key === "closingprice" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Address") && (
-                              <th onClick={() => requestSort("address")}>
-                                Address
-                                {sortConfig.key !== "address" ? "↑↓" : ""}
-                                {sortConfig.key === "address" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Parcel Number") && 
-                            <th onClick={() => requestSort("parcel")}>
-                              Parcel Number                              
-                              {sortConfig.key !== "parcel" ? "↑↓" : ""}
-                                {sortConfig.key === "parcel" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                            </th>
-                            } */}
-
-                            {/* {checkFieldExist("Sub Legal Name") && (
-                              <th
-                                onClick={() => requestSort("subdivisionName")}
-                              >
-                                Sub Legal Name
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Seller Legal Name") && (
-                              <th onClick={() => requestSort("sellerleagal")}>
-                                Seller Legal Name
-                                {sortConfig.key !== "sellerleagal" ? "↑↓" : ""}
-                                {sortConfig.key === "sellerleagal" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Buyer Name") && (
-                              <th onClick={() => requestSort("buyer")}>
-                                Buyer Name
-                                {sortConfig.key !== "buyer" ? "↑↓" : ""}
-                                {sortConfig.key === "buyer" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Lender") && (
-                              <th>
-                                Lender
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Loan Amount") && (
-                              <th onClick={() => requestSort("loanamount")}>
-                                Loan Amount
-                                {sortConfig.key !== "loanamount" ? "↑↓" : ""}
-                                {sortConfig.key === "loanamount" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Type") && (
-                              <th>
-                                Type
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Product Type") && (
-                              <th>
-                                Product Type{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Area") && (
-                              <th>
-                                Area
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Master Plan") && (
-                              <th>
-                                Master Plan
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Zip Code") && (
-                              <th>
-                                Zip Code{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}{" "}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Lot Width") && (
-                              <th>
-                                Lot Width{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}{" "}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Lot Size") && (
-                              <th>
-                                Lot Size{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Zoning") && (
-                              <th>
-                                Zoning{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}{" "}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Age Restricted") && (
-                              <th>
-                                Age Restricted{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("All Single Story") && (
-                              <th>
-                                All Single Story{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Date Added") && (
-                              <th>
-                                Date Added{" "}
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("__pkRecordID") && (
-                              <th>
-                                __pkRecordID
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("_fkSubID") && (
-                              <th>
-                                _fkSubID
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
-                            
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {ClosingList !== null && ClosingList.length > 0 ? (
                             ClosingList.map((element, index) => (
                               <tr
-                              onClick={(e) => {
-                                if(e.target.type !== "checkbox"){
-                                  handleRowClick(element.id);
-                                }
-                              }}
-                              style={{
-                                textAlign: "center",
-                                cursor: "pointer",
-                              }}
+                                onClick={(e) => {
+                                  if (e.target.type !== "checkbox") {
+                                    handleRowClick(element.id);
+                                  }
+                                }}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
                               >
                                 <td>
                                   <input
@@ -1838,115 +1384,115 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
-                                  {column.id == "closing Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.closing_type}</td>
-                                  }
-                                  {column.id == "closing Date" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.closingdate} /></td>
-                                  }
-                                  {column.id == "doc" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.document}</td>
-                                  }
-                                  {column.id == "builder Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
-                                      element.subdivision.builder?.name}</td>
-                                  }
-                                  {column.id == "subdivision Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
-                                      element.subdivision?.name}</td>
-                                  }
-                                  {column.id == "closing Price" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.closingprice} /></td>
-                                  }
-                                  {column.id == "address" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.address}</td>
-                                  }
-                                  {column.id == "parcel Number" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
-                                  }
-                                  {column.id == "sub Legal Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
-                                  }
-                                  {column.id == "seller Legal Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sellerleagal}</td>
-                                  }
-                                  {column.id == "buyer Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.buyer}</td>
-                                  }
-                                  {column.id == "lender" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lender}</td>
-                                  }
-                                  {column.id == "loan Amount" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.loanamount} /></td>
-                                  }
-                                  {column.id == "type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.type}</td>
-                                  }
-                                  {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.product_type}</td>
-                                  }
-                                  {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.area}</td>
-                                  }
-                                  {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.masterplan_id}</td>
-                                  }
-                                  {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zipcode}</td>
-                                  }
-                                  {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotwidth}</td>
-                                  }
-                                  {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotsize}</td>
-                                  }
-                                  {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zoning}</td>
-                                  }
-                                  {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.age == "1" ? "Yes" : "No"}</td>
-                                  }
-                                  {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.single == "1" ? "Yes" : "No"}</td>
-                                  }
-                                  {column.id == "date Added" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
-                                  }
-                                  {column.id == "__pkRecordID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
-                                  }
-                                  {column.id == "_fkSubID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.subdivision_code}</td>
-                                  }
-                                  {column.id == "action" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      <div className="d-flex justify-content-center">
-                                        <Link
-                                          to={`/closingsaleupdate/${element.id}`}
-                                          className="btn btn-primary shadow btn-xs sharp me-1"
-                                        >
-                                          <i className="fas fa-pencil-alt"></i>
-                                        </Link>
-                                        <Link
-                                          onClick={() =>
-                                            swal({
-                                              title: "Are you sure?",
-                                              icon: "warning",
-                                              buttons: true,
-                                              dangerMode: true,
-                                            }).then((willDelete) => {
-                                              if (willDelete) {
-                                                handleDelete(element.id);
-                                              }
-                                            })
-                                          }
-                                          className="btn btn-danger shadow btn-xs sharp"
-                                        >
-                                          <i className="fa fa-trash"></i>
-                                        </Link>
-                                      </div>
-                                    </td>
-                                  }
+                                    {column.id == "closing Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.closing_type}</td>
+                                    }
+                                    {column.id == "closing Date" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.closingdate} /></td>
+                                    }
+                                    {column.id == "doc" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.document}</td>
+                                    }
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                        element.subdivision.builder?.name}</td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                        element.subdivision?.name}</td>
+                                    }
+                                    {column.id == "closing Price" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.closingprice} /></td>
+                                    }
+                                    {column.id == "address" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.address}</td>
+                                    }
+                                    {column.id == "parcel Number" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                    }
+                                    {column.id == "sub Legal Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
+                                    }
+                                    {column.id == "seller Legal Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sellerleagal}</td>
+                                    }
+                                    {column.id == "buyer Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.buyer}</td>
+                                    }
+                                    {column.id == "lender" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lender}</td>
+                                    }
+                                    {column.id == "loan Amount" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.loanamount} /></td>
+                                    }
+                                    {column.id == "type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.type}</td>
+                                    }
+                                    {column.id == "product Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.product_type}</td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.area}</td>
+                                    }
+                                    {column.id == "master Plan" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.masterplan_id}</td>
+                                    }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zipcode}</td>
+                                    }
+                                    {column.id == "lot Width" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotwidth}</td>
+                                    }
+                                    {column.id == "lot Size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.lotsize}</td>
+                                    }
+                                    {column.id == "zoning" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zoning}</td>
+                                    }
+                                    {column.id == "age Restricted" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.age == "1" ? "Yes" : "No"}</td>
+                                    }
+                                    {column.id == "all Single Story" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.single == "1" ? "Yes" : "No"}</td>
+                                    }
+                                    {column.id == "date Added" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                    }
+                                    {column.id == "__pkRecordID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                    }
+                                    {column.id == "_fkSubID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.subdivision_code}</td>
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div className="d-flex justify-content-center">
+                                          <Link
+                                            to={`/closingsaleupdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </div>
+                                      </td>
+                                    }
                                   </>
                                 ))}
                               </tr>
@@ -1968,18 +1514,21 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           </div>
         </div>
       </div>
+
       <ClosingOffcanvas
         ref={closingsale}
         Title="Add Closing"
         parentCallback={handleCallback}
       />
+
       <BulkClosingUpdate
         ref={bulkClosing}
         Title="Bulk Edit Closings"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />
-    <Modal show={show} onHide={handleClose}>
+
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Closings CSV Data</Modal.Title>
         </Modal.Header>
@@ -2004,6 +1553,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
@@ -2017,7 +1567,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => {setShowOffcanvas(false);clearClosingDetails();}}
+            onClick={() => { setShowOffcanvas(false); clearClosingDetails(); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -2027,143 +1577,60 @@ const handleSelectClosingTypeChange = (selectedItems) => {
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-            {/* <div className="row">
-              <div className="col-xl-4 mt-4">
-                <label className="">Subdivision :</label>
-                <div className="fw-bolder">
-                  {ClosingDetails.subdivision !== null &&
-                  ClosingDetails.subdivision.name !== undefined
+          <div className="offcanvas-body">
+            <div className="container-fluid">
+              <div style={{ marginTop: "10px" }}>
+                <span className="fw-bold" style={{ fontSize: "22px" }}>
+                  {ClosingDetails.subdivision.builder?.name || "NA"}
+                </span><br />
+                <span className="fw-bold" style={{ fontSize: "40px" }}>
+                  {ClosingDetails.subdivision !== null && ClosingDetails.subdivision.name !== undefined
                     ? ClosingDetails.subdivision.name
-                    : "NA"}
+                    : "NA"
+                  }
+                </span><br />
+                <label className="" style={{ fontSize: "22px" }}><b>PRODUCT TYPE:</b>&nbsp;<span>{ClosingDetails.subdivision?.product_type || "NA"}</span></label>
+
+                <hr style={{ borderTop: "2px solid black", width: "60%", marginTop: "10px" }}></hr>
+
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "180px" }}><span><b>AREA:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.area || "NA"}</span></div>
+                  <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.masterplan_id || "NA"}</span></div>
                 </div>
-              </div>
+                <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIP CODE:</b>&nbsp;<span>{ClosingDetails.subdivision?.zipcode || "NA"}</span></label><br />
+                <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{ClosingDetails.subdivision?.crossstreet || "NA"}</span></label><br />
+                <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{ClosingDetails.subdivision?.juridiction || "NA"}</span></label>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Seller Leagal :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.sellerleagal || "NA"}
-                  </span>
+                <hr style={{ borderTop: "2px solid black", width: "60%", marginTop: "10px" }}></hr>
+
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "300px" }}><span><b>PARCEL:</b></span>&nbsp;<span>{ClosingDetails.parcel || "NA"}</span></div>
+                  <div className="fs-18"><span><b>LENDER:</b></span>&nbsp;<span>{ClosingDetails.lender || "NA"}</span></div>
                 </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Address :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.address || "NA"}
-                  </span>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "300px" }}><span><b>ADDRESS:</b></span>&nbsp;<span>{ClosingDetails.address || "NA"}</span></div>
+                  <div className="fs-18"><span><b>LOAN AMT:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.loanamount} /> || "NA"}</span></div>
                 </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Buyer :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.buyer || "NA"}
-                  </span>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "300px" }}><span><b>CLOSING PRICE:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.closingprice} /> || "NA"}</span></div>
+                  <div className="fs-18"><span><b>CLOSING TYPE:</b></span>&nbsp;<span>{ClosingDetails.closing_type || "NA"}</span></div>
                 </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Lender :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.lender || "NA"}
-                  </span>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "300px" }}><span><b>DATE:</b></span>&nbsp;<span>{<DateComponent date={ClosingDetails.closingdate} /> || "NA"}</span></div>
                 </div>
-              </div>
-              <div className="col-xl-4 mt-4">
-                <label className="">Closing Date :</label>
-                <div>
-                  <span className="fw-bold">
-                    {<DateComponent date={ClosingDetails.closingdate} /> ||
-                      "NA"}
-                  </span>
+                <div className="d-flex" style={{ marginTop: "5px" }}>
+                  <div className="fs-18" style={{ width: "300px" }}><span><b>DOC:</b></span>&nbsp;<span>{ClosingDetails.document || "NA"}</span></div>
                 </div>
-              </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Closing Price :</label>
-                <div>
-                  <span className="fw-bold">
-                    {<PriceComponent price={ClosingDetails.closingprice} /> ||
-                      "NA"}
-                  </span>
-                </div>
-              </div>
+                <label className="fs-18"><b>BUYER:</b>&nbsp;<span>{ClosingDetails.buyer || "NA"}</span></label><br />
+                <label className="fs-18"><b>SELLER:</b>&nbsp;<span>{ClosingDetails.sellerleagal || "NA"}</span></label><br />
+                <label className="fs-18"><b>SUB LEGAL NAME:</b>&nbsp;<span>{ClosingDetails.sublegal_name || "NA"}</span></label>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Loan Amount :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.loanamount || "NA"}
-                  </span>
-                </div>
               </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Document :</label>
-                <div>
-                  <span className="fw-bold">
-                    {ClosingDetails.document || "NA"}
-                  </span>
-                </div>
-              </div>
-            </div> */}
-            <div style={{marginTop: "10px"}}>
-              <span className="fw-bold" style={{fontSize: "22px"}}>
-                {ClosingDetails.subdivision.builder?.name || "NA"}
-              </span><br />
-              <span className="fw-bold" style={{fontSize: "40px"}}>
-                {ClosingDetails.subdivision !== null && ClosingDetails.subdivision.name !== undefined
-                  ? ClosingDetails.subdivision.name
-                  : "NA"
-                }
-              </span><br />
-              <label className="" style={{fontSize: "22px"}}><b>PRODUCT TYPE:</b>&nbsp;<span>{ClosingDetails.subdivision?.product_type || "NA"}</span></label>
-
-              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
-
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "180px"}}><span><b>AREA:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.area || "NA"}</span></div>
-                <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{ClosingDetails.subdivision?.masterplan_id || "NA"}</span></div>
-              </div>
-              <label className="fs-18" style={{marginTop: "5px"}}><b>ZIP CODE:</b>&nbsp;<span>{ClosingDetails.subdivision?.zipcode || "NA"}</span></label><br />
-              <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{ClosingDetails.subdivision?.crossstreet || "NA"}</span></label><br />
-              <label className="fs-18"><b>JURISDICTION:</b>&nbsp;<span>{ClosingDetails.subdivision?.juridiction || "NA"}</span></label>
-
-              <hr style={{borderTop:"2px solid black", width: "60%", marginTop: "10px"}}></hr>
-
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "300px"}}><span><b>PARCEL:</b></span>&nbsp;<span>{ClosingDetails.parcel || "NA"}</span></div>
-                <div className="fs-18"><span><b>LENDER:</b></span>&nbsp;<span>{ClosingDetails.lender || "NA"}</span></div>
-              </div>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "300px"}}><span><b>ADDRESS:</b></span>&nbsp;<span>{ClosingDetails.address || "NA"}</span></div>
-                <div className="fs-18"><span><b>LOAN AMT:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.loanamount} /> || "NA"}</span></div>
-              </div>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "300px"}}><span><b>CLOSING PRICE:</b></span>&nbsp;<span>{<PriceComponent price={ClosingDetails.closingprice} /> ||"NA"}</span></div>
-                <div className="fs-18"><span><b>CLOSING TYPE:</b></span>&nbsp;<span>{ClosingDetails.closing_type || "NA"}</span></div>
-              </div>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "300px"}}><span><b>DATE:</b></span>&nbsp;<span>{<DateComponent date={ClosingDetails.closingdate} /> || "NA"}</span></div>
-              </div>
-              <div className="d-flex" style={{marginTop: "5px"}}>
-                <div className="fs-18" style={{width: "300px"}}><span><b>DOC:</b></span>&nbsp;<span>{ClosingDetails.document || "NA"}</span></div>
-              </div>
-
-              <label className="fs-18"><b>BUYER:</b>&nbsp;<span>{ClosingDetails.buyer || "NA"}</span></label><br />
-              <label className="fs-18"><b>SELLER:</b>&nbsp;<span>{ClosingDetails.sellerleagal || "NA"}</span></label><br />
-              <label className="fs-18"><b>SUB LEGAL NAME:</b>&nbsp;<span>{ClosingDetails.sublegal_name || "NA"}</span></label>
-
             </div>
-          </div>
-        </div>)}
+          </div>)}
       </Offcanvas>
+
       <Offcanvas
         show={manageAccessOffcanvas}
         onHide={setManageAccessOffcanvas}
@@ -2209,12 +1676,6 @@ const handleSelectClosingTypeChange = (selectedItems) => {
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            // defaultChecked={(() => {
-                            //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
-                            //   return isChecked;
-                            // })()}
                             checked={checkedItems[element.field_name]}
                             onChange={handleCheckboxChange}
                             name={element.field_name}
@@ -2237,6 +1698,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           </div>
         </div>
       </Offcanvas>
+
       <Offcanvas
         show={manageFilterOffcanvas}
         onHide={setManageFilterOffcanvas}
@@ -2262,274 +1724,172 @@ const handleSelectClosingTypeChange = (selectedItems) => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      CLOSING TYPE:{" "}
-                    </label>
+                    <label className="form-label">CLOSING TYPE:{" "}</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="closing_type"
                         options={closingType}
                         value={seletctedClosingType}
-                        onChange={handleSelectClosingTypeChange }
-                        placeholder={"Select Closing Type"} 
+                        onChange={handleSelectClosingTypeChange}
+                        placeholder={"Select Closing Type"}
                       />
                     </Form.Group>
-
-                    {/* <input name="closing_type" value={filterQuery.closing_type} className="form-control" onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
                     <DatePicker
-        name="from"
-        className="form-control"
-        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-        onChange={handleFilterDateFrom}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
+                      name="from"
+                      className="form-control"
+                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
 
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
                     <DatePicker
-        name="to"
-        className="form-control"
-        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-        onChange={handleFilterDateTo}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
+                      name="to"
+                      className="form-control"
+                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      DOC:{" "}
-                    </label>
-                    <input name="document" value={filterQuery.document} className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">DOC:{" "}</label>
+                    <input name="document" value={filterQuery.document} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      BUILDER NAME:{" "}
-                    </label>
+                    <label className="form-label">BUILDER NAME:{" "}</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="builder_name"
                         options={builderDropDown}
                         value={selectedBuilderName}
-                        onChange={handleSelectBuilderNameChange }
-                        placeholder={"Select Builder Name"} 
+                        onChange={handleSelectBuilderNameChange}
+                        placeholder={"Select Builder Name"}
                       />
                     </Form.Group>
-                    {/* <Form.Group controlId="tournamentList">
-                      <Select
-                        options={builderDropDown}
-                        onChange={HandleSelectChange}
-                        getOptionValue={(option) => option.name}
-                        getOptionLabel={(option) => option.name}
-                        value={builderDropDown.name}
-                        name="builder_name"
-                      ></Select>
-                    </Form.Group> */}
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      SUBDIVISION NAME:{" "}
-                    </label>
+                    <label className="form-label">SUBDIVISION NAME:{" "}</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
                         options={SubdivisionList}
                         value={selectedSubdivisionName}
-                        onChange={handleSelectSubdivisionNameChange }
-                        placeholder={"Select Subdivision Name"} 
+                        onChange={handleSelectSubdivisionNameChange}
+                        placeholder={"Select Subdivision Name"}
                       />
                     </Form.Group>
-                    {/* <Form.Group controlId="tournamentList">
-                      <Select
-                        options={SubdivisionList}
-                        onChange={HandleSubSelectChange}
-                        getOptionValue={(option) => option.name}
-                        getOptionLabel={(option) => option.name}
-                        value={SubdivisionList.name}
-                        name="subdivision_name"
-                      ></Select>
-                    </Form.Group>                               */}
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      CLOSING PRICE:{" "}
-                    </label>
-                    <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">CLOSING PRICE:{" "}</label>
+                    <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      ADDRESS:{" "}
-                    </label>
-                    <input name="address" value={filterQuery.address} className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">ADDRESS:{" "}</label>
+                    <input name="address" value={filterQuery.address} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      PARCEL NUMBER:{" "}
-                    </label>
-                    <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  {/* <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      SUB LEGAL NAME:{" "}
-                    </label>
-                    <input value={filterQuery.sublegal_name} name="sublegal_name" className="form-control" onChange={HandleFilter}/>
-                  </div> */}
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      SELLER LEGAL NAME:{" "}
-                    </label>
-                    <input value={filterQuery.sellerleagal} name="sellerleagal" className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">PARCEL NUMBER:{" "}</label>
+                    <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      BUYER NAME:{" "}
-                    </label>
-                    <input value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">SELLER LEGAL NAME:{" "}</label>
+                    <input value={filterQuery.sellerleagal} name="sellerleagal" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LENDER:{" "}
-                    </label>
+                    <label className="form-label">BUYER NAME:{" "}</label>
+                    <input value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">LENDER:{" "}</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
-                        name="subdivision_name"
+                        name="lender_name"
                         options={lenderList}
                         value={seletctedLender}
-                        onChange={handleSelectLenderChange }
-                        placeholder={"Select Lender"} 
+                        onChange={handleSelectLenderChange}
+                        placeholder={"Select Lender"}
                       />
                     </Form.Group>
-                    {/* <input value={filterQuery.lender} name="lender" className="form-control" onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LOAN AMOUNT:{" "}
-                    </label>
-                    <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">LOAN AMOUNT:{" "}</label>
+                    <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter} />
                   </div>
-                  {/* <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      TYPE:{" "}
-                    </label>
-                    <input value={filterQuery.type} name="type" className="form-control" onChange={HandleFilter}/>
-                  </div> */}
                   <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                PRODUCT TYPE:{" "}
-                                  <span className="text-danger"></span>
-
-                                </label>
-                                <MultiSelect
-                                name="product_type"
-                                options={productTypeOptions}
-                                value={productTypeStatus}
-                                onChange={handleSelectProductTypeChange }
-                                placeholder="Select Prodcut Type" 
-                              />
-                                {/* <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                AREA:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="area"
-                                options={areaOption}
-                                value={selectedArea}
-                                onChange={handleSelectAreaChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                MASTERPLAN:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="masterplan_id"
-                                options={masterPlanOption}
-                                value={selectedMasterPlan}
-                                onChange={handleSelectMasterPlanChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ZIP CODE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="zipcode"
-                                options={zipCodeOption}
-                                value={seletctedZipcode}
-                                onChange={handleSelectZipcodeChange}
-                                placeholder="Select Zipcode" 
-                              />
-                                {/* <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LOT WIDTH:{" "}
-                    </label>
-                    <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">PRODUCT TYPE:{" "}</label>
+                    <MultiSelect
+                      name="product_type"
+                      options={productTypeOptions}
+                      value={productTypeStatus}
+                      onChange={handleSelectProductTypeChange}
+                      placeholder="Select Prodcut Type"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">AREA:{" "}</label>
+                    <MultiSelect
+                      name="area"
+                      options={areaOption}
+                      value={selectedArea}
+                      onChange={handleSelectAreaChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">MASTERPLAN:{" "}</label>
+                    <MultiSelect
+                      name="masterplan_id"
+                      options={masterPlanOption}
+                      value={selectedMasterPlan}
+                      onChange={handleSelectMasterPlanChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">ZIP CODE:{" "}</label>
+                    <MultiSelect
+                      name="zipcode"
+                      options={zipCodeOption}
+                      value={seletctedZipcode}
+                      onChange={handleSelectZipcodeChange}
+                      placeholder="Select Zipcode"
+                    />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LOT SIZE:{" "}
-                    </label>
-                    <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
+                    <label className="form-label">LOT WIDTH:{" "}</label>
+                    <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                   </div>
-                  {/* <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      ZONING:{" "}
-                    </label>
-                    <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                  </div> */}
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      AGE RESTRICTED:{" "}
-                    </label>
+                    <label className="form-label">LOT SIZE:{" "}</label>
+                    <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">AGE RESTRICTED:{" "}</label>
                     <MultiSelect
                       name="age"
                       options={ageOptions}
                       value={selectedAge}
-                      onChange={handleSelectAgeChange }
-                      placeholder={"Select Age"} 
+                      onChange={handleSelectAgeChange}
+                      placeholder={"Select Age"}
                     />
-                    {/* <input value={filterQuery.age} name="age" className="form-control" onChange={HandleFilter}/> */}
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      ALL SINGLE STORY:{" "}
-                    </label>
+                    <label className="form-label">ALL SINGLE STORY:{" "}</label>
                     <MultiSelect
                       name="single"
                       options={singleOptions}
                       value={selectedSingle}
-                      onChange={handleSelectSingleChange }
-                      placeholder={"Select Single"} 
+                      onChange={handleSelectSingleChange}
+                      placeholder={"Select Single"}
                     />
-                    {/* <input value={filterQuery.single} name="single" className="form-control" onChange={HandleFilter}/> */}
                   </div>
-                  {/* <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      __pkRecordID:{" "}
-                    </label>
-                    <input value={filterQuery.id} name="id" className="form-control" onChange={HandleFilter}/>
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      _fkSubID:{" "}
-                    </label>
-                    <input value={filterQuery.subdivision_code} name="subdivision_code" className="form-control" onChange={HandleFilter}/>
-                  </div> */}
                 </div>
               </form>
             </div>
@@ -2553,81 +1913,83 @@ const handleSelectClosingTypeChange = (selectedItems) => {
           </div>
         </div>
       </Offcanvas>
+
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => { resetSelection(); setExportModelShow(false); }}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-              <li>
-                <label className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={selectAll}
-                    onChange={handleSelectAllToggle}
-                  />
+            <Row>
+              <ul className='list-unstyled'>
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
                     Select All
-                </label>
-              </li>
-            {exportColumns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  checked={selectedColumns.includes(col.label)}
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
+                  <li key={col.label}>
+                    <label className='form-check'>
+                      <input
+                        type="checkbox"
+                        className='form-check-input'
+                        checked={selectedColumns.includes(col.label)}
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
       </Modal>
-      
+
       <Modal show={showSort} onHide={HandleSortDetailClick}>
         <Modal.Header handleSortClose>
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                      style={{cursor: "pointer"}}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`} style={{cursor: "pointer"}}>
+                      <span>{col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -2637,7 +1999,7 @@ const handleSelectClosingTypeChange = (selectedItems) => {
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>

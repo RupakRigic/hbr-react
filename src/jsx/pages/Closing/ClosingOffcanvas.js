@@ -1,66 +1,53 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-
 import swal from "sweetalert";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
+
 const ClosingOffcanvas = forwardRef((props, ref) => {
-
-
+    const navigate = useNavigate();
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddProduct(true)
         }
     }));
 
-    const navigate = useNavigate()
-    const getSubdivisionList = async () => {
-
+    const GetSubdivisionDropDownList = async () => {
         try {
-
-            let response = await AdminSubdevisionService.index()
-            let responseData = await response.json()
-
-            SetSubdivisionList(responseData.data)
-
+            const response = await AdminSubdevisionService.subdivisionDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            SetSubdivisionList(formattedData);
         } catch (error) {
-            if (error.name === 'HTTPError') {
+            console.log("Error fetching subdivision list:", error);
+            if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message)
+                setError(errorJson);
             }
         }
-    }
+    };
+
     useEffect(() => {
-        if (localStorage.getItem('usertoken')) {
+        GetSubdivisionDropDownList();
+    }, []);
 
-            getSubdivisionList();
-
-        }
-        else {
-            navigate('/');
-        }
-
-
-    }, [])
-
-    const handleSubdivisionCode = code => {
-
+    const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code.target.value);
-
-    }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             var userData = {
-
                 "subdivision_id": SubdivisionCode,
                 "sellerleagal": event.target.sellerleagal.value,
                 "address": event.target.address.value,
@@ -73,30 +60,23 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminClosingService.store(userData).json();
             if (data.status === true) {
-
                 swal("Closing Sale Create Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
-                        setAddProduct(false)
+                        setAddProduct(false);
+                        navigate("/closingsalelist");
                     }
                 })
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
-
-
-
-
         }
+    };
 
-
-    }
     return (
         <>
             <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
@@ -110,27 +90,22 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="offcanvas-body">
                     <div className="container-fluid">
-
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Subdivision<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-
                                         <Form.Select
                                             onChange={handleSubdivisionCode}
                                             value={SubdivisionCode}
                                             className="default-select form-control"
                                         >
                                             <option value=''>Select Subdivision</option>
-                                            {
-                                                SubdivisionList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
+                                            {SubdivisionList.map((element) => (
+                                                <option value={element.value}>{element.label}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
-
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Seller Leagal <span className="text-danger">*</span></label>
@@ -148,9 +123,6 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput5" className="form-label"> Lender <span className="text-danger"></span></label>
                                     <input type="text" name='lender' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
-
-
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label"> Closing Date <span className="text-danger">*</span></label>
                                     <input type="date" name='closingdate' className="form-control" id="exampleFormControlInput6" placeholder="" />
@@ -159,24 +131,15 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput7" className="form-label"> Closing Price <span className="text-danger">*</span></label>
                                     <input type="number" name='closingprice' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
-
-
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Loan Amount<span className="text-danger">*</span></label>
                                     <input type="number" name='loanamount' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
-
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Document<span className="text-danger"></span></label>
                                     <input type="text" name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
-
-
-
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>

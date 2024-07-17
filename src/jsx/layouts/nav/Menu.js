@@ -51,7 +51,7 @@ export const MenuList = [
     {
         title: 'Closings',
         iconStyle: SVGICON.CoreHr,
-        to: '/closingsalelist',
+        to: '/filterclosings',
     },
     // {
     //     title: 'Statistics',

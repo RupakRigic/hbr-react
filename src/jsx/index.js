@@ -47,6 +47,7 @@ import FilterBasePrice from "./pages/Price/FilterBasePrice";
 import FilterProducts from "./pages/Product/FilterProducts";
 import FilterPermits from "./pages/Permit/FilterPermits";
 import FilterWeeklyTrafficAndSales from "./pages/Trafficsale/FilterWeeklyTrafficAndSales";
+import FilterClosings from "./pages/Closing/FilterClosings";
 
 const allroutes = [
   // Dashboard
@@ -192,6 +193,11 @@ const allroutes = [
   {
     url: "/filterweeklytrafficandsales",
     component: <FilterWeeklyTrafficAndSales />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filterclosings",
+    component: <FilterClosings />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
 ];
