@@ -39,7 +39,7 @@ export const MenuList = [
     {
         title: 'Weekly Traffic & Sales',
         iconStyle: SVGICON.GridDots,
-        to: '/trafficsalelist',
+        to: '/filterweeklytrafficandsales',
     },
     {
         title: 'Base Prices',

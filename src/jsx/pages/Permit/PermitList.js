@@ -756,7 +756,7 @@ const PermitList = () => {
     }
     setAllPermitListExport(allData);
     setExcelLoading(false);
-  }
+  };
 
   const handleDelete = async (e) => {
     try {

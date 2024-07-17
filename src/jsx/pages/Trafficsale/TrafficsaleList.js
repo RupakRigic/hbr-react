@@ -1,31 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import TrafficsaleOffcanvas from "./TrafficsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas, Form, Row  } from "react-bootstrap";
-import { debounce } from "lodash";
-import Dropdown from "react-bootstrap/Dropdown";
+import { Offcanvas, Form, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import DateComponent from "../../components/date/DateFormat";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
-import axios from "axios";
 import Modal from "react-bootstrap/Modal";
-import { DownloadTableExcel, downloadExcel } from 'react-export-table-to-excel';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkTrafficUpdate from "./BulkTrafficUpdate";
-import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 
 const TrafficsaleList = () => {
+  const location = useLocation();
+
+  const { searchQueryByFilter, fromByFilter, toByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, weeklytrafficByFilter, cancelationsByFilter, netsalesByFilter, totallotsByFilter, lotreleasedByFilter, unsoldinventoryByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthByFilter, lotsizeByFilter, zoningByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
 
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -33,174 +30,32 @@ const TrafficsaleList = () => {
   const [selectedFileError, setSelectedFileError] = useState("");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const [selectedArea, setSelectedArea] = useState([]);
-  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
-  const [productTypeStatus, setProductTypeStatus] = useState([]);
-  const [seletctedZipcode, setSelectedZipcode] = useState([]);
-
-  const SyestemUserRole = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).role
-    : "";
-  
-    const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
-    }
-    const handleSortCheckboxChange = (e, key) => {
-      if (e.target.checked) {
-          setSelectedCheckboxes(prev => [...prev, key]);
-      } else {
-          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-      }
-  };
-  
-  const handleRemoveSelected = () => {
-      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-      setSortConfig(newSortConfig);
-      setSelectedCheckboxes([]);
-  };
+  const [selectedArea, setSelectedArea] = useState(selectedAreaByFilter);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState(selectedMasterPlanByFilter);
+  const [productTypeStatus, setProductTypeStatus] = useState(productTypeStatusByFilter);
+  const [seletctedZipcode, setSelectedZipcode] = useState(seletctedZipcodeByFilter);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
   const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
-  const [selectedAge, setSelectedAge] = useState([]);
-  const [selectedSingle, setSelectedSingle] = useState([]);
- const [selectedValues, setSelectedValues] = useState([]);
-
-
-  const HandleSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      builder_name: selectedOption.name,
-    }));
-  };
-
-  const handleSelectBuilderNameChange  = (selectedItems) => {  
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
-
-    const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setFilterQuery(prevState => ({
-      ...prevState,
-      builder_name: selectedNames
-  }));
-  }
-
-  const handleSelectSubdivisionNameChange  = (selectedItems) => {  
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSubdivisionName(selectedItems);
-
-    const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setFilterQuery(prevState => ({
-      ...prevState,
-      builder_name: selectedNames
-  }));
-  }
-
-  const HandleSubSelectChange = (selectedOption) => {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      subdivision_name: selectedOption.name,
-    }));
-  };
-
-  
-  
-  useEffect(() => {
-    const fetchBuilderList = async () => {
-      try {
-        const response = await AdminBuilderService.builderDropDown();
-        const data = await response.json();
-        const formattedData = data.map((builder) => ({
-          label: builder.name,
-          value: builder.id,
-        }));
-        setBuilderDropDown(formattedData);
-      } catch (error) {
-        console.log("Error fetching builder list:", error);
-      }
-    };
-
-    fetchBuilderList();
-  }, []);
-
-  console.log(SubdivisionList);
-
-  const getSubdivisionList = async () => {
-
-    try {
-
-        let response = await AdminSubdevisionService.index()
-        let responseData = await response.json()
-        const formattedData = responseData.data.map((subdivision) => ({
-          label: subdivision.name,
-          value: subdivision.id,
-        }));
-        SetSubdivisionList(formattedData)
-
-    } catch (error) {
-        if (error.name === 'HTTPError') {
-            const errorJson = await error.response.json();
-
-            setError(errorJson.message)
-        }
-    }
-}
-useEffect(() => {
-    if (localStorage.getItem('usertoken')) {
-
-        getSubdivisionList();
-
-    }
-    else {
-        navigate('/');
-    }
-
-  
-}, [])
+  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
+  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
+  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
+  const [selectedValues, setSelectedValues] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
-  const bulkTrafficsale = useRef();
-  const handleEditCheckboxChange = (e, userId) => {
-    if (e.target.checked) {
-      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
-    } else {
-      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
-    }
-  };
-  
-
   const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
+  const handleSortClose = () => setShowSort(false);
   const navigate = useNavigate();
   const [Error, setError] = useState("");
-  const [BuilderList, setBuilderList] = useState([]);
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [trafficListCount, setTrafficListCount] = useState('');
-  const [TotaltrafficListCount, setTotalTrafficListCount] = useState('');
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
-  const HandleFilterForm = (e) =>
-    {
-      e.preventDefault();
-      gettrafficsaleList(currentPage,searchQuery);
-      setManageFilterOffcanvas(false)
-    };
-
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
   const [sortConfig, setSortConfig] = useState([]);
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const resetSelection = () => {
-    setSelectAll(false);
-    setSelectedColumns([]);
-  };
   const [AllTrafficListExport, setAllTrafficistExport] = useState([]);
-
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -220,6 +75,160 @@ useEffect(() => {
     unsoldinventory: "",
     status: "",
   });
+  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
+  const [accessList, setAccessList] = useState({});
+  const [accessRole, setAccessRole] = useState("Admin");
+  const [accessForm, setAccessForm] = useState({});
+  const [role, setRole] = useState("Admin");
+  const [checkedItems, setCheckedItems] = useState({});
+  const fieldList = AccessField({ tableName: "traffic" });
+  const [openDialog, setOpenDialog] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [filter, setFilter] = useState(false);
+  const [normalFilter, setNormalFilter] = useState(false);
+  const [filterQuery, setFilterQuery] = useState({
+    from: fromByFilter ? fromByFilter : "",
+    to: toByFilter ? toByFilter : "",
+    builder_name: "",
+    subdivision_name: "",
+    weeklytraffic: weeklytrafficByFilter ? weeklytrafficByFilter : "",
+    cancelations: cancelationsByFilter ? cancelationsByFilter : "",
+    netsales: netsalesByFilter ? netsalesByFilter : "",
+    totallots: totallotsByFilter ? totallotsByFilter : "",
+    lotreleased: lotreleasedByFilter ? lotreleasedByFilter : "",
+    unsoldinventory: unsoldinventoryByFilter ? unsoldinventoryByFilter : "",
+    product_type: "",
+    area: "",
+    masterplan_id: "",
+    zipcode: "",
+    lotwidth: lotwidthByFilter ? lotwidthByFilter : "",
+    lotsize: lotsizeByFilter ? lotsizeByFilter : "",
+    zoning: zoningByFilter ? zoningByFilter : "",
+    age: "",
+    single: "",
+    grosssales: "",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
+
+  const SyestemUserRole = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
+
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  }
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+  };
+
+  const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+  };
+
+  const handleSelectBuilderNameChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedBuilderName(selectedItems);
+
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+    }));
+    setNormalFilter(true);
+  }
+
+  const handleSelectSubdivisionNameChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSubdivisionName(selectedItems);
+
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+    }));
+    setNormalFilter(true);
+  }
+
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+  }, [sortConfig]);
+
+  useEffect(() => {
+    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
+      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    }
+    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
+      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    }
+    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
+      handleSelectProductTypeChange(productTypeStatusByFilter);
+    }
+    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
+      handleSelectAreaChange(selectedAreaByFilter);
+    }
+    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
+      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    }
+    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
+      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    }
+    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
+      handleSelectAgeChange(selectedAgeByFilter);
+    }
+    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
+      handleSelectSingleChange(selectedSingleByFilter);
+    }
+  }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+
+  useEffect(() => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    setIsAnyFilterApplied(isAnyFilterApplied);
+    if (isAnyFilterApplied) {
+      setSearchQuery(filterString());
+    } else {
+      setSearchQuery(searchQuery);
+    }
+  }, [filterQuery]);
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      gettrafficsaleList(currentPage, sortConfig, searchQuery);
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
+
+  const bulkTrafficsale = useRef();
+
+  const handleEditCheckboxChange = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
+    } else {
+      setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  const HandleFilterForm = (e) => {
+    e.preventDefault();
+    gettrafficsaleList(currentPage, sortConfig, searchQuery);
+    setManageFilterOffcanvas(false);
+  };
+
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
+
   const clearTrafficDetails = () => {
     setTrafficDetails({
       subdivision: "",
@@ -233,26 +242,10 @@ useEffect(() => {
       status: "",
     });
   };
-  const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
-  const [accessList, setAccessList] = useState({});
-  const [accessRole, setAccessRole] = useState("Admin");
-  const [accessForm, setAccessForm] = useState({});
-  const [role, setRole] = useState("Admin");
-  const [checkedItems, setCheckedItems] = useState({});
-  const fieldList = AccessField({ tableName: "traffic" });
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [columns, setColumns] = useState([]);
-  const [draggedColumns, setDraggedColumns] = useState(columns);
-
-  useEffect(() => {
-    console.log('data trafficsaleList : ',fieldList);
-  }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
-
 
   const areaOption = [
     { value: "BC", label: "BC" },
@@ -278,6 +271,7 @@ useEffect(() => {
       ...prevState,
       area: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const productTypeOptions = [
@@ -286,7 +280,8 @@ useEffect(() => {
     { value: "HR", label: "HR" },
     { value: "AC", label: "AC" }
   ];
-  const handleSelectProductTypeChange  = (selectedItems) => {  
+
+  const handleSelectProductTypeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
 
@@ -295,7 +290,8 @@ useEffect(() => {
     setFilterQuery(prevState => ({
       ...prevState,
       product_type: selectedNames
-  }));
+    }));
+    setNormalFilter(true);
   }
 
   const zipCodeOption = [
@@ -334,6 +330,7 @@ useEffect(() => {
       ...prevState,
       zipcode: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const masterPlanOption = [
@@ -363,7 +360,7 @@ useEffect(() => {
     { value: "RED ROCK CC", label: "RED ROCK CC" },
     { value: "RHODES RANCH", label: "RHODES RANCH" },
     { value: "SEDONA RANCH", label: "SEDONA RANCH" },
-    { value: "SEVEN HILLS", label: "SEVEN HILLS"},
+    { value: "SEVEN HILLS", label: "SEVEN HILLS" },
     { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
     { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
     { value: "SKYE CANYON", label: "SKYE CANYON" },
@@ -389,11 +386,12 @@ useEffect(() => {
       ...prevState,
       masterplan_id: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const headers = [
     { label: 'Week Ending', key: 'WeekEnding' },
-    { label: 'Builder Name', key: 'BuilderName' }, 
+    { label: 'Builder Name', key: 'BuilderName' },
     { label: 'Subdivision Name', key: 'SubdivisionName' },
     { label: 'Weekly Traffic', key: 'WeeklyTraffic' },
     { label: 'Weekly Gross Sales', key: 'WeeklyGrossSales' },
@@ -413,11 +411,12 @@ useEffect(() => {
     { label: 'All Single Story', key: 'AllSingleStory' },
     { label: 'Pk Record id', key: 'pkRecordID' },
     { label: 'Fk Sub id', key: 'fkSubID' },
-     
+
   ];
+
   const exportColumns = [
     { label: 'Week Ending', key: 'WeekEnding' },
-    { label: 'Builder Name', key: 'BuilderName' }, 
+    { label: 'Builder Name', key: 'BuilderName' },
     { label: 'Subdivision Name', key: 'SubdivisionName' },
     { label: 'Weekly Traffic', key: 'WeeklyTraffic' },
     { label: 'Weekly Gross Sales', key: 'WeeklyGrossSales' },
@@ -436,7 +435,7 @@ useEffect(() => {
     { label: 'Age Restricted', key: 'AgeRestricted' },
     { label: 'All Single Story', key: 'AllSingleStory' },
     { label: 'Pk Record id', key: 'pkRecordID' },
-    { label: 'Fk Sub id', key: 'fkSubID' }, 
+    { label: 'Fk Sub id', key: 'fkSubID' },
   ];
 
   const handleSelectAllToggle = () => {
@@ -453,23 +452,23 @@ useEffect(() => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-      console.log(updatedColumns);
-    setSelectedColumns(updatedColumns);  
-    setSelectAll(updatedColumns.length === exportColumns.length); 
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
   };
-  console.log('trafficsaleList : ',trafficsaleList);
+  console.log('trafficsaleList : ', trafficsaleList);
 
   const handleDownloadExcel = () => {
     setExportModelShow(false);
     setSelectedColumns("");
-  
+
     let tableHeaders;
     if (selectedColumns.length > 0) {
       tableHeaders = selectedColumns;
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-  
+
     const tableData = AllTrafficListExport.map((row) => {
       return tableHeaders.map((header) => {
         switch (header) {
@@ -520,10 +519,10 @@ useEffect(() => {
         }
       });
     });
-  
+
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-  
+
     // Optionally apply styles to the headers
     const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
     for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
@@ -531,9 +530,9 @@ useEffect(() => {
       if (!cell.s) cell.s = {};
       cell.s.font = { name: 'Calibri', sz: 11, bold: false };
     }
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Traffic & Sales List');
-  
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, 'Weekly_Traffic_Sales_List.xlsx');
@@ -541,12 +540,12 @@ useEffect(() => {
     resetSelection();
     setExportModelShow(false);
   };
-  
 
   const HandleRole = (e) => {
     setRole(e.target.value);
     setAccessRole(e.target.value);
   };
+
   const handleAccessForm = async (e) => {
     e.preventDefault();
     var userData = {
@@ -610,6 +609,7 @@ useEffect(() => {
       }
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getAccesslist();
@@ -618,84 +618,71 @@ useEffect(() => {
     }
   }, []);
 
-  const [filterQuery, setFilterQuery] = useState({
-    from:"",
-    to:"",
-    weekending:"",
-    builder_name:"",
-    subdivision_name:"",
-    weeklytraffic:"",
-    cancelations:"",
-    netsales:"",
-    lotreleased:"",
-    unsoldinventory:"",
-    product_type:"",
-    area:"",
-    masterplan_id:"",
-    zipcode:"",
-    lotwidth:"",
-    lotsize:"",
-    zoning:"",
-    age:"",
-    single:"",
-    grosssales:"",
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
-
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
+
   function changeCPage(id) {
     setCurrentPage(id);
-  }
+  };
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
-  }
-
-  useEffect(() => {
-    gettrafficsaleList();
-  }, [filterQuery, searchQuery]);
+  };
 
   const trafficsale = useRef();
+
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
-  const gettrafficsaleList = async (currentPage) => {
+
+  const gettrafficsaleList = async (currentPage, sortConfig, searchQuery) => {
+    setIsLoading(true);
+    setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      const response = await AdminTrafficsaleService.index(currentPage,sortConfigString,searchQuery);
+      const response = await AdminTrafficsaleService.index(
+        currentPage, 
+        sortConfigString, 
+        searchQuery
+      );
       const responseData = await response.json();
+      setIsLoading(false);
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setTrafficListCount(responseData.total);
-      setIsLoading(false);
+      if(responseData.total > 100) {
+        FetchAllPages(searchQuery, sortConfig);
+      } else {
+        setExcelLoading(false);
+        setAllTrafficistExport(responseData.data);
+      }
     } catch (error) {
       if (error.name === "HTTPError") {
+        setIsLoading(false);
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
-  useEffect((currentPage) => {
-    gettrafficsaleList(currentPage);
-    fetchAllPages(searchQuery, sortConfig)
-  }, [currentPage]);
 
-  async function fetchAllPages(searchQuery, sortConfig) {
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const FetchAllPages = async (searchQuery, sortConfig) => {
+    setExcelLoading(true);
     const response = await AdminTrafficsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
     const responseData = await response.json();
     const totalPages = Math.ceil(responseData.total / recordsPage);
     let allData = responseData.data;
     for (let page = 2; page <= totalPages; page++) {
+      await delay(1000);
       const pageResponse = await AdminTrafficsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
@@ -703,6 +690,7 @@ useEffect(() => {
     setAllTrafficistExport(allData);
     setExcelLoading(false);
   }
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminTrafficsaleService.destroy(e).json();
@@ -753,36 +741,13 @@ useEffect(() => {
     }
   };
 
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 1000)
-  // ).current;
-
-  // useEffect(() => {
-  //   gettrafficsaleList();
-  // }, [searchQuery]);
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   if (query) {
-  //     debouncedHandleSearch(`&q=${query}`);
-  //   } else {
-  //     setSearchQuery("");
-  //   }
-  // };
-
-  useEffect(() => {
-    setSearchQuery(filterString());
-  }, [filterQuery]);
-
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
       ...prevFilterQuery,
       [name]: value,
     }));
+    setNormalFilter(true);
   };
 
   const filterString = () => {
@@ -798,29 +763,37 @@ useEffect(() => {
 
   const HandleCancelFilter = (e) => {
     setFilterQuery({
-      startDate:"",
-      endDate:"",
-      weekending:"",
-      builder_name:"",
-      subdivision_name:"",
-      weeklytraffic:"",
-      cancelations:"",
-      netsales:"",
-      lotreleased:"",
-      unsoldinventory:"",
-      product_type:"",
-      area:"",
-      masterplan_id:"",
-      zipcode:"",
-      lotwidth:"",
-      lotsize:"",
-      zoning:"",
-      age:"",
-      single:"",
-      grosssales:"",
+      from: "",
+      to: "",
+      builder_name: "",
+      subdivision_name: "",
+      weeklytraffic: "",
+      cancelations: "",
+      netsales: "",
+      totallots: "",
+      lotreleased: "",
+      unsoldinventory: "",
+      product_type: "",
+      area: "",
+      masterplan_id: "",
+      zipcode: "",
+      lotwidth: "",
+      lotsize: "",
+      zoning: "",
+      age: "",
+      single: "",
+      grosssales: "",
     });
-    setSearchQuery("");
+    setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
+    setProductTypeStatus([]);
+    setSelectedArea([]);
+    setSelectedMasterPlan([]);
+    setSelectedZipcode([]);
+    setSelectedAge([]);
+    setSelectedSingle([]);
     setManageFilterOffcanvas(false);
+    gettrafficsaleList(1, sortConfig, "");
   };
 
   const requestSort = (key) => {
@@ -835,306 +808,302 @@ useEffect(() => {
       newSortConfig.push({ key, direction });
     }
     setSortConfig(newSortConfig);
-    gettrafficsaleList(currentPage, sortConfig);
+    gettrafficsaleList(currentPage, newSortConfig, searchQuery);
   };
 
+  const handleOpenDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(true);
+  };
 
-  const getbuilderlist = async () => {
-    try {
-      const response = await AdminSubdevisionService.index(searchQuery);
-      const responseData = await response.json();
-      setBuilderList(responseData.data);
-      setIsLoading(false);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
+  const handleCloseDialog = () => {
+    setDraggedColumns(columns);
+    setOpenDialog(false);
+  };
 
-        setError(errorJson.message);
-      }
+  const handleSaveDialog = () => {
+    setColumns(draggedColumns);
+    setOpenDialog(false);
+  };
+
+  const handleColumnOrderChange = (result) => {
+    if (!result.destination) {
+      return;
     }
+    const newColumns = Array.from(draggedColumns);
+    const [movedColumn] = newColumns.splice(result.source.index, 1);
+    newColumns.splice(result.destination.index, 0, movedColumn);
+    setDraggedColumns(newColumns);
   };
+
   useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getbuilderlist();
-    } else {
-      navigate("/");
-    }
-  }, []);
+    const mappedColumns = fieldList.map((data) => ({
+      id: data.charAt(0).toLowerCase() + data.slice(1),
+      label: data
+    }));
+    setColumns(mappedColumns);
+  }, [fieldList]);
 
-  const exportToExcelData = async () => {
-    try {
-        const bearerToken = JSON.parse(localStorage.getItem('usertoken'));
-        const response = await axios.get(
-          `${process.env.REACT_APP_IMAGE_URL}api/admin/trafficsale/export`
-          // 'https://hbrapi.rigicgspl.com/api/admin/trafficsale/export'
-
-          , {
-            responseType: 'blob',
-            headers: {
-                'Authorization': `Bearer ${bearerToken}`
-            }
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'traffics.xlsx');
-        document.body.appendChild(link);
-        link.click();
-    } catch (error) {
-        console.log(error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+  const toCamelCase = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return word;
         }
-    }
-}
-
-const handleOpenDialog = () => {
-  setDraggedColumns(columns);
-  setOpenDialog(true);
-};
-
-const handleCloseDialog = () => {
-  setDraggedColumns(columns);
-  setOpenDialog(false);
-};
-
-const handleSaveDialog = () => {
-  setColumns(draggedColumns);
-  setOpenDialog(false);
-};
-
-const handleColumnOrderChange = (result) => {
-  if (!result.destination) {
-    return;
-  }
-  const newColumns = Array.from(draggedColumns);
-  const [movedColumn] = newColumns.splice(result.source.index, 1);
-  newColumns.splice(result.destination.index, 0, movedColumn);
-  setDraggedColumns(newColumns);
-};
-
-useEffect(() => {
-  const mappedColumns = fieldList.map((data) => ({
-    id: data.charAt(0).toLowerCase() + data.slice(1),
-    label: data
-  }));
-  setColumns(mappedColumns);
-}, [fieldList]);
-
-const toCamelCase = (str) => {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map((word, index) => {
-      if (index === 0) {
-        return word;
-      }
         return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-  .join('');
-}
-
-const applyFilters = () => {
-  if(AllTrafficListExport.length === 0){
-    setTrafficsaleList(trafficsaleList);
-    return;
+      })
+      .join('');
   }
 
-  let filtered = AllTrafficListExport;
+  const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
 
-  const applyNumberFilter = (items, query, key) => {
-    if (query) {
-      let operator = '=';
-      let value = query;
+    if (AllTrafficListExport.length === 0) {
+      setTrafficsaleList(trafficsaleList);
+      return;
+    }
 
-      if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+    let filtered = AllTrafficListExport;
+
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
+
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
           operator = query[0];
           value = query.slice(1);
-      }
+        }
 
-      const numberValue = parseFloat(value);
-      if (!isNaN(numberValue)) {
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
           return items.filter(item => {
-              const itemValue = parseFloat(item[key]);
-              if (operator === '>') return itemValue > numberValue;
-              if (operator === '<') return itemValue < numberValue;
-              return itemValue === numberValue;
+            const itemValue = parseFloat(item[key]);
+            if (operator === '>') return itemValue > numberValue;
+            if (operator === '<') return itemValue < numberValue;
+            return itemValue === numberValue;
           });
-      }
-    }
-    return items;
-  };
-
-  filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
-
-  const applyDateRangeFilter = (items, startDateQuery, endDateQuery, key) => {
-      if (startDateQuery && endDateQuery) {
-          const startDate = new Date(startDateQuery);
-          const endDate = new Date(endDateQuery);
-
-          return items.filter(item => {
-              const itemDate = new Date(item[key]);
-              return itemDate >= startDate && itemDate <= endDate;
-          });
-      }
-      return items;
-  };
-
-  filtered = applyDateRangeFilter(filtered, filterQuery.startDate, filterQuery.endDate, 'weekending');
-
-  setTrafficsaleList(filtered);
-};
-
-useEffect(() => {
-applyFilters();
-}, [filterQuery]);
-
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setFilterQuery(prevFilterQuery => ({
-    ...prevFilterQuery,
-    [name]: value
-  }));
-};
-
-const ageOptions = [
-  { value: "1", label: "Yes" },
-  { value: "0", label: "No" }
-];
-
-const singleOptions = [
-  { value: "1", label: "Yes" },
-  { value: "0", label: "No" }
-];
-
-const handleSelectAgeChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedAge(selectedItems);
-
-  const selectedNames = selectedItems.map(item => item.value).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    age: selectedNames
-}));
-};
-
-const handleSelectSingleChange  = (selectedItems) => {  
-  const selectedValues = selectedItems.map(item => item.value);
-  setSelectedValues(selectedValues);
-  setSelectedSingle(selectedItems);
-
-  const selectedNames = selectedItems.map(item => item.value).join(', ');
-  setFilterQuery(prevState => ({
-    ...prevState,
-    single: selectedNames
-}));
-};
-
-const handleFileChange = async (e) => {
-  setSelectedFile(e.target.files[0]);
-};
-const handleUploadClick = async () => {
-  const file = selectedFile;
-  console.log(file);
-  if (file && file.type === "text/csv") {
-    setLoading(true);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = async () => {
-      var iFile = fileReader.result;
-      setSelectedFile(iFile);
-      console.log(iFile);
-      const inputData = {
-        csv: iFile,
-      };
-      try {
-        let responseData = await AdminTrafficsaleService.import(inputData).json();
-        setSelectedFile("");
-        document.getElementById("fileInput").value = null;
-        console.log(responseData);
-        setLoading(false);
-        if (responseData.message) {
-          let message = responseData.message;
-          if (responseData.failed_records > 0) {
-              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows+'.';
-          }
-          message += ' Record Imported: ' + responseData.successful_records;
-          message += '. Failed Record Count: ' + responseData.failed_records;
-          message += '. Last Row: ' + responseData.last_processed_row;
-
-          swal(message).then((willDelete) => {
-              if (willDelete) {
-                  navigate("/trafficsalelist");
-              }
-          });
-      } else {
-          swal('Error: ' + responseData.error);
-      }
-        gettrafficsaleList();
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = error.response.json();
-          setSelectedFile("");
-          setError(errorJson.message);
-          document.getElementById("fileInput").value = null;
-          setLoading(false);
         }
       }
+      return items;
     };
 
-    setSelectedFileError("");
-  } else {
-    setSelectedFile("");
-    setSelectedFileError("Please select a CSV file.");
-  }
+    filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
+
+    if (isAnyFilterApplied && !normalFilter) {
+      setTrafficsaleList(filtered.slice(0, 100));
+      setTrafficListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setFilter(false);
+      setNormalFilter(false);
+    } else {
+      setTrafficsaleList(filtered.slice(0, 100));
+      setTrafficListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setCurrentPage(1);
+      setFilter(false);
+      setNormalFilter(false);
+    }
+  };
+
+  useEffect(() => {
+    if (filter) {
+      applyFilters();
+    }
+  }, [filterQuery]);
+
+  const GetBuilderDropDownList = async () => {
+    try {
+        const response = await AdminBuilderService.builderDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.map((builder) => ({
+            label: builder.name,
+            value: builder.id,
+        }));
+        setBuilderDropDown(formattedData);
+    } catch (error) {
+        console.log("Error fetching builder list:", error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            console.log(errorJson);
+        }
+    }
 };
 
-const handlBuilderClick = (e) => {
-  setShow(true);
+const GetSubdivisionDropDownList = async () => {
+    try {
+        const response = await AdminSubdevisionService.subdivisionDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.data.map((subdivision) => ({
+            label: subdivision.name,
+            value: subdivision.id,
+        }));
+        SetSubdivisionList(formattedData);
+    } catch (error) {
+        console.log("Error fetching subdivision list:", error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+        }
+    }
 };
-const handleFilterDateFrom = (date) => {
-  if (date) {
-    const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-    console.log(formattedDate)
 
-    setFilterQuery((prevFilterQuery) => ({
+  useEffect(() => {
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery(prevFilterQuery => ({
       ...prevFilterQuery,
-      from: formattedDate,
+      [name]: value
     }));
-  } else {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      from: '',
+    setFilter(true);
+  };
+
+  const ageOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const singleOptions = [
+    { value: "1", label: "Yes" },
+    { value: "0", label: "No" }
+  ];
+
+  const handleSelectAgeChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedAge(selectedItems);
+
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      age: selectedNames
     }));
-  }
-};
+    setNormalFilter(true);
+  };
 
-const handleFilterDateTo = (date) => {
-  if (date) {
-    const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-    console.log(formattedDate)
+  const handleSelectSingleChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedValues(selectedValues);
+    setSelectedSingle(selectedItems);
 
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      to: formattedDate,
+    const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setFilterQuery(prevState => ({
+      ...prevState,
+      single: selectedNames
     }));
-  } else {
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      to: '',
-    }));
-  }
-};
+    setNormalFilter(true);
+  };
 
-const parseDate = (dateString) => {
-  const [month, day, year] = dateString.split('/');
-  return new Date(year, month - 1, day);
-};
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
 
+  const handleUploadClick = async () => {
+    const file = selectedFile;
+    console.log(file);
+    if (file && file.type === "text/csv") {
+      setLoading(true);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = async () => {
+        var iFile = fileReader.result;
+        setSelectedFile(iFile);
+        console.log(iFile);
+        const inputData = {
+          csv: iFile,
+        };
+        try {
+          let responseData = await AdminTrafficsaleService.import(inputData).json();
+          setSelectedFile("");
+          document.getElementById("fileInput").value = null;
+          console.log(responseData);
+          setLoading(false);
+          if (responseData.message) {
+            let message = responseData.message;
+            if (responseData.failed_records > 0) {
+              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+              message += ' Problematic Record Rows: ' + problematicRows + '.';
+            }
+            message += ' Record Imported: ' + responseData.successful_records;
+            message += '. Failed Record Count: ' + responseData.failed_records;
+            message += '. Last Row: ' + responseData.last_processed_row;
+
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                navigate("/trafficsalelist");
+              }
+            });
+          } else {
+            swal('Error: ' + responseData.error);
+          }
+          gettrafficsaleList();
+        } catch (error) {
+          if (error.name === "HTTPError") {
+            const errorJson = error.response.json();
+            setSelectedFile("");
+            setError(errorJson.message);
+            document.getElementById("fileInput").value = null;
+            setLoading(false);
+          }
+        }
+      };
+      setSelectedFileError("");
+    } else {
+      setSelectedFile("");
+      setSelectedFileError("Please select a CSV file.");
+    }
+  };
+
+  const handlBuilderClick = (e) => {
+    setShow(true);
+  };
+
+  const handleFilterDateFrom = (date) => {
+    setNormalFilter(true);
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        from: '',
+      }));
+    }
+  };
+
+  const handleFilterDateTo = (date) => {
+    setNormalFilter(true);
+    if (date) {
+      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
+      console.log(formattedDate)
+
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: formattedDate,
+      }));
+    } else {
+      setFilterQuery((prevFilterQuery) => ({
+        ...prevFilterQuery,
+        to: '',
+      }));
+    }
+  };
+
+  const parseDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
+  };
 
   return (
     <>
@@ -1159,19 +1128,6 @@ const parseDate = (dateString) => {
                         role="group"
                         aria-label="Basic example"
                       >
-                        {/* <button class="btn btn-secondary cursor-none">
-                          {" "}
-                          <i class="fas fa-search"></i>{" "}
-                        </button> */}
-                        {/* <Form.Control
-                          type="text"
-                          style={{
-                            borderTopLeftRadius: "0",
-                            borderBottomLeftRadius: "0",
-                          }}
-                          onChange={HandleSearch}
-                          placeholder="Quick Search"
-                        /> */}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -1183,149 +1139,146 @@ const parseDate = (dateString) => {
                       />
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
-                      ) : (
-                    <div className="d-flex" style={{marginTop: "10px"}}>
-                    {/* <button onClick={exportToExcelData} className="btn btn-primary btn-sm me-1"> <i class="fas fa-file-excel"></i></button> */}
-                    <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                      Set Columns Order
-                    </button>
-                    <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >
-                        Import
-                      </Button>
-                    <Button
-                            className="btn-sm me-1"
-                            variant="secondary"
-                            onClick={HandleSortDetailClick}
-                          >
-                            <i class="fa-solid fa-sort"></i>
-                     </Button>
-                    <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1"> 
-                      {excelLoading ? 
-                        <div class="spinner-border spinner-border-sm" role="status" /> 
-                        :
-                        <i class="fas fa-file-excel" />
-                      }
-                    </button>
-
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
-                      <i className="fa fa-filter" />
-                    </button> 
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => trafficsale.current.showEmployeModal()}
-                      >
-                        + Add Weekly Traffic & Sale
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulkTrafficsale.current.showEmployeModal()}
-                      >
-                        Bulk Edit
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{marginLeft: "3px"}}
-                        onClick={() => selectedLandSales.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedLandSales);
+                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                      ""
+                    ) : (
+                      <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                          Set Columns Order
+                        </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={handlBuilderClick}
+                        >
+                          Import
+                        </Button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={HandleSortDetailClick}
+                        >
+                          <i class="fa-solid fa-sort"></i>
+                        </Button>
+                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1">
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
+                            :
+                            <i class="fas fa-file-excel" />
                           }
-                        }) : ""}
-                      >
-                        Bulk Delete
-                      </button>
-                    </div>
-                      )}
+                        </button>
+
+                        <button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={() => setManageAccessOffcanvas(true)}
+                        >
+                          {" "}
+                          Field Access
+                        </button>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                          <i className="fa fa-filter" />
+                        </button>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => trafficsale.current.showEmployeModal()}
+                        >
+                          + Add Weekly Traffic & Sale
+                        </Link>
+                        <Link
+                          to={"#"}
+                          className="btn btn-primary btn-sm ms-1"
+                          data-bs-toggle="offcanvas"
+                          onClick={() => bulkTrafficsale.current.showEmployeModal()}
+                        >
+                          Bulk Edit
+                        </Link>
+                        <button
+                          className="btn btn-danger btn-sm me-1"
+                          style={{ marginLeft: "3px" }}
+                          onClick={() => selectedLandSales.length > 0 ? swal({
+                            title: "Are you sure?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                          }).then((willDelete) => {
+                            if (willDelete) {
+                              handleBulkDelete(selectedLandSales);
+                            }
+                          }) : ""}
+                        >
+                          Bulk Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {trafficListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {trafficListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
-                </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
+                    </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -1360,336 +1313,70 @@ const parseDate = (dateString) => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
                                 column.id == "week Ending" ? "weekending" :
-                                column.id == "weekly Traffic" ? "weeklytraffic" : 
-                                column.id == "weekly Gross Sales" ? "grosssales" : 
-                                column.id == "weekly Cancellations" ? "cancelations" : 
-                                column.id == "weekly Net Sales" ? "netsales" : 
-                                column.id == "age Restricted" ? "age" : 
-                                column.id == "all Single Story" ? "stories" : 
-                                column.id == "date Added" ? "created_at" : 
-                                column.id == "lot Size" ? "lotsize" : 
-                                column.id == "_fkSubID" ? "subdivisionCode" : 
+                                column.id == "weekly Traffic" ? "weeklytraffic" :
+                                column.id == "weekly Gross Sales" ? "grosssales" :
+                                column.id == "weekly Cancellations" ? "cancelations" :
+                                column.id == "weekly Net Sales" ? "netsales" :
+                                column.id == "age Restricted" ? "age" :
+                                column.id == "all Single Story" ? "stories" :
+                                column.id == "date Added" ? "created_at" :
+                                column.id == "lot Size" ? "lotsize" :
+                                column.id == "_fkSubID" ? "subdivisionCode" :
                                 column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "week Ending" ? "weekending" :
-                                      column.id == "weekly Traffic" ? "weeklytraffic" : 
-                                      column.id == "weekly Gross Sales" ? "grosssales" : 
-                                      column.id == "weekly Cancellations" ? "cancelations" : 
-                                      column.id == "weekly Net Sales" ? "netsales" : 
-                                      column.id == "age Restricted" ? "age" : 
-                                      column.id == "all Single Story" ? "stories" : 
-                                      column.id == "date Added" ? "created_at" : 
-                                      column.id == "lot Size" ? "lotsize" : 
-                                      column.id == "_fkSubID" ? "subdivisionCode" : 
-                                      column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" :toCamelCase(column.id))
-                                    ) ? (
+                                      column.id == "weekly Traffic" ? "weeklytraffic" :
+                                      column.id == "weekly Gross Sales" ? "grosssales" :
+                                      column.id == "weekly Cancellations" ? "cancelations" :
+                                      column.id == "weekly Net Sales" ? "netsales" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "stories" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "_fkSubID" ? "subdivisionCode" :
+                                      column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id))
+                                  ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (column.id == "week Ending" ? "weekending" :
-                                        column.id == "weekly Traffic" ? "weeklytraffic" : 
-                                        column.id == "weekly Gross Sales" ? "grosssales" : 
-                                        column.id == "weekly Cancellations" ? "cancelations" : 
-                                        column.id == "weekly Net Sales" ? "netsales" : 
-                                        column.id == "age Restricted" ? "age" : 
-                                        column.id == "all Single Story" ? "stories" : 
-                                        column.id == "date Added" ? "created_at" : 
-                                        column.id == "lot Size" ? "lotsize" : 
-                                        column.id == "_fkSubID" ? "subdivisionCode" : 
-                                        column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" :toCamelCase(column.id))
-                                        ).direction === "asc" ? "↑" : "↓"}
+                                          column.id == "weekly Traffic" ? "weeklytraffic" :
+                                          column.id == "weekly Gross Sales" ? "grosssales" :
+                                          column.id == "weekly Cancellations" ? "cancelations" :
+                                          column.id == "weekly Net Sales" ? "netsales" :
+                                          column.id == "age Restricted" ? "age" :
+                                          column.id == "all Single Story" ? "stories" :
+                                          column.id == "date Added" ? "created_at" :
+                                          column.id == "lot Size" ? "lotsize" :
+                                          column.id == "_fkSubID" ? "subdivisionCode" :
+                                          column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id))
+                                      ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                    ) : (
+                                  ) : (
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
                             ))}
-                            {/* {checkFieldExist("Week Ending") && (
-                              <th onClick={() => requestSort("weekending")}>
-                                Week Ending
-                                {sortConfig.key !== "weekending" ? "↑↓" : ""}
-                                {sortConfig.key === "weekending" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )} */}
-
-                            {/* {checkFieldExist(" Builder Name") && (
-                              <th onClick={() => requestSort("builderName")}>
-                                Builder Name
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist(" Subdivision Name") && (
-                              <th
-                                onClick={() => requestSort("subdivisionName")}
-                              >
-                                Subdivision Name
-                                {sortConfig.key !== "subdivisionName"
-                                  ? "↑↓"
-                                  : ""}
-                                {sortConfig.key === "subdivisionName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist(" Weekly Traffic") && (
-                              <th onClick={() => requestSort("weeklytraffic")}>
-                                Weekly Traffic
-                                {sortConfig.key !== "weeklytraffic" ? "↑↓" : ""}
-                                {sortConfig.key === "weeklytraffic" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist(" Weekly Gross Sales") && (
-                              <th onClick={() => requestSort("grosssales")}>
-                                Weekly Gross Sales
-                                {sortConfig.key !== "grosssales" ? "↑↓" : ""}
-                                {sortConfig.key === "grosssales" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Weekly Cancellations") && (
-                              <th onClick={() => requestSort("cancelations")}>
-                                Weekly Cancellations
-                                {sortConfig.key !== "cancelations" ? "↑↓" : ""}
-                                {sortConfig.key === "cancelations" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Weekly Net Sales") && (
-                              <th onClick={() => requestSort("netsales")}>
-                                Weekly Net Sales
-                                {sortConfig.key !== "netsales" ? "↑↓" : ""}
-                                {sortConfig.key === "netsales" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Total Lots") && (
-                              <th onClick={() => requestSort("lotreleased")}>
-                                Total Lots
-                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                                {sortConfig.key === "lotreleased" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Weekly Lots Release For Sale") && (
-                              <th onClick={() => requestSort("lotreleased")}>
-                                Weekly Lots Release For Sale
-                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                                {sortConfig.key === "lotreleased" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Weekly Unsold Standing Inventory") && (
-                              <th onClick={() => requestSort("lotreleased")}>
-                                Weekly Unsold Standing Inventory
-                                {sortConfig.key !== "lotreleased" ? "↑↓" : ""}
-                                {sortConfig.key === "lotreleased" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Product Type") && (
-                              <th onClick={() => requestSort("productType")}>
-                                Product Type{" "}
-                                {sortConfig.key !== "productType" ? "↑↓" : ""}
-                                {sortConfig.key === "productType" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Area") && (
-                              <th onClick={() => requestSort("area")}>
-                                Area
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Master Plan") && (
-                              <th onClick={() => requestSort("masterPlan")}>
-                                Master Plan{" "}
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Zip Code") && (
-                              <th onClick={() => requestSort("zipCode")}>
-                                Zip Code{" "}
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Lot Width") && (
-                              <th onClick={() => requestSort("lotWidth")}>
-                                <strong>Lot Width</strong>
-                                {sortConfig.key !== "lotWidth" ? "↑↓" : ""}
-                                {sortConfig.key === "lotWidth" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Lot Size") && (
-                              <th onClick={() => requestSort("lotsize")}>
-                                <strong>Lot Size</strong>
-                                {sortConfig.key !== "lotsize" ? "↑↓" : ""}
-                                {sortConfig.key === "lotsize" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Zoning") && (
-                              <th onClick={() => requestSort("zoning")}>
-                                <strong>Zoning</strong>
-                                {sortConfig.key !== "zoning" ? "↑↓" : ""}
-                                {sortConfig.key === "zoning" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Age Restricted") && (
-                              <th onClick={() => requestSort("age")}>
-                                <strong>Age Restricted</strong>
-                                {sortConfig.key !== "age" ? "↑↓" : ""}
-                                {sortConfig.key === "age" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("All Single Story") && (
-                              <th onClick={() => requestSort("stories")}>
-                                <strong>All Single Story</strong>
-                                {sortConfig.key !== "stories" ? "↑↓" : ""}
-                                {sortConfig.key === "stories" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Date Added") && (
-                              <th onClick={() => requestSort("created_at")}>
-                                <strong>Date Added</strong>
-                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                {sortConfig.key === "created_at" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("__pkRecordID") && (
-                              <th>
-                                __pkRecordID{" "}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("_fkSubID") && (
-                              <th
-                                onClick={() => requestSort("subdivisionCode")}
-                              >
-                                _fkSubID
-                                {sortConfig.key !== "created_at" ? "↑↓" : ""}
-                                {sortConfig.key === "created_at" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}{" "} */}
-
-                            {/* {checkFieldExist("Action") && <th>Action</th>} */}
-
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {trafficsaleList !== null && trafficsaleList.length > 0 ? (
                             trafficsaleList.map((element, index) => (
                               <tr
-                              onClick={(e) => {
-                                if(e.target.type !== "checkbox"){
-                                  handleRowClick(element.id);
-                                }
-                              }}
-                              style={{
-                                textAlign: "center",
-                                cursor: "pointer",
-                              }}
+                                onClick={(e) => {
+                                  if (e.target.type !== "checkbox") {
+                                    handleRowClick(element.id);
+                                  }
+                                }}
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "pointer",
+                                }}
                               >
-                                 <td>
+                                <td>
                                   <input
                                     type="checkbox"
                                     checked={selectedLandSales.includes(element.id)}
@@ -1702,111 +1389,113 @@ const parseDate = (dateString) => {
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
-                                  {column.id == "week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.weekending} /></td>
-                                  }
-                                  {column.id == "builder Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.builder?.name}</td>
-                                  }
-                                  {column.id == "subdivision Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
-                                  }
-                                  {column.id == "weekly Traffic" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.weeklytraffic}</td>
-                                  }
-                                  {column.id == "weekly Gross Sales" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.grosssales}</td>
-                                  }
-                                  {column.id == "weekly Cancellations" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.cancelations}</td>
-                                  }
-                                  {column.id == "weekly Net Sales" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.netsales}</td>
-                                  }
-                                  {column.id == "total Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.totallots}</td>
-                                  }
-                                  {column.id == "weekly Lots Release For Sale" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotreleased}</td>
-                                  }
-                                  {column.id == "weekly Unsold Standing Inventory" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.unsoldinventory}</td>
-                                  }
-                                  {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
-                                  }
-                                  {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
-                                  }
-                                  {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
-                                  }
-                                  {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
-                                  }
-                                  {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth}</td>
-                                  }
-                                  {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize}</td>
-                                  }
-                                  {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zoning}</td>
-                                  }
-                                  {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
-                                      element.subdivision.age === 1 &&
-                                      "Yes"}
-                                    {element.subdivision &&
-                                      element.subdivision.age === 0 &&
-                                      "No"}</td>
-                                  }
-                                  {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
-                                      element.subdivision.single === 1 &&
-                                      "Yes"}
-                                    {element.subdivision &&
-                                      element.subdivision.single === 0 &&
-                                      "No"}</td>
-                                  }
-                                  {column.id == "date Added" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
-                                  }
-                                  {column.id == "__pkRecordID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
-                                  }
-                                  {column.id == "_fkSubID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
-                                  }
-                                  {column.id == "action" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      <div className="d-flex justify-content-center">
-                                        <Link
-                                          to={`/trafficsaleupdate/${element.id}`}
-                                          className="btn btn-primary shadow btn-xs sharp me-1"
-                                        >
-                                          <i className="fas fa-pencil-alt"></i>
-                                        </Link>
-                                        <Link
-                                          onClick={() =>
-                                            swal({
-                                              title: "Are you sure?",
-                                              icon: "warning",
-                                              buttons: true,
-                                              dangerMode: true,
-                                            }).then((willDelete) => {
-                                              if (willDelete) {
-                                                handleDelete(element.id);
-                                              }
-                                            })
-                                          }
-                                          className="btn btn-danger shadow btn-xs sharp"
-                                        >
-                                          <i className="fa fa-trash"></i>
-                                        </Link>
-                                      </div>
-                                    </td>
-                                  }
+                                    {column.id == "week Ending" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.weekending} /></td>
+                                    }
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.builder?.name}</td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.name}</td>
+                                    }
+                                    {column.id == "weekly Traffic" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.weeklytraffic}</td>
+                                    }
+                                    {column.id == "weekly Gross Sales" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.grosssales}</td>
+                                    }
+                                    {column.id == "weekly Cancellations" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.cancelations}</td>
+                                    }
+                                    {column.id == "weekly Net Sales" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.netsales}</td>
+                                    }
+                                    {column.id == "total Lots" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.totallots}</td>
+                                    }
+                                    {column.id == "weekly Lots Release For Sale" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotreleased}</td>
+                                    }
+                                    {column.id == "weekly Unsold Standing Inventory" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.unsoldinventory}</td>
+                                    }
+                                    {column.id == "product Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                    }
+                                    {column.id == "master Plan" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                    }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                    }
+                                    {column.id == "lot Width" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth}</td>
+                                    }
+                                    {column.id == "lot Size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize}</td>
+                                    }
+                                    {column.id == "zoning" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zoning}</td>
+                                    }
+                                    {column.id == "age Restricted" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                        element.subdivision.age === 1 &&
+                                        "Yes"}
+                                        {element.subdivision &&
+                                          element.subdivision.age === 0 &&
+                                          "No"}
+                                      </td>
+                                    }
+                                    {column.id == "all Single Story" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision &&
+                                        element.subdivision.single === 1 &&
+                                        "Yes"}
+                                        {element.subdivision &&
+                                          element.subdivision.single === 0 &&
+                                          "No"}
+                                      </td>
+                                    }
+                                    {column.id == "date Added" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                    }
+                                    {column.id == "__pkRecordID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
+                                    }
+                                    {column.id == "_fkSubID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div className="d-flex justify-content-center">
+                                          <Link
+                                            to={`/trafficsaleupdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
+                                        </div>
+                                      </td>
+                                    }
                                   </>
                                 ))}
                               </tr>
@@ -1828,17 +1517,20 @@ const parseDate = (dateString) => {
           </div>
         </div>
       </div>
+
       <TrafficsaleOffcanvas
         ref={trafficsale}
         Title="Add Weekly Traffic & Sale"
         parentCallback={handleCallback}
       />
+
       <BulkTrafficUpdate
         ref={bulkTrafficsale}
         Title="Bulk Edit Weekly Trafic sale"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />
+
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
@@ -1852,7 +1544,7 @@ const parseDate = (dateString) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => {setShowOffcanvas(false);clearTrafficDetails();}}
+            onClick={() => { setShowOffcanvas(false); clearTrafficDetails(); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -1862,88 +1554,89 @@ const parseDate = (dateString) => {
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-xl-4 mt-4">
-                <label className="">Subdivision:</label>
-                <div className="fw-bolder">
-                  {TrafficDetails.subdivision !== null &&
-                  TrafficDetails.subdivision.name !== undefined
-                    ? TrafficDetails.subdivision.name
-                    : "NA"}
+          <div className="offcanvas-body">
+            <div className="container-fluid">
+              <div className="row">
+                <div className="col-xl-4 mt-4">
+                  <label className="">Subdivision:</label>
+                  <div className="fw-bolder">
+                    {TrafficDetails.subdivision !== null &&
+                      TrafficDetails.subdivision.name !== undefined
+                      ? TrafficDetails.subdivision.name
+                      : "NA"}
+                  </div>
                 </div>
-              </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Week Ending:</label>
-                <div>
-                  <span className="fw-bold">
-                    {<DateComponent date={TrafficDetails.weekending} /> || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Weekly Traffic :</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.weeklytraffic || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Gross Sales :</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.grosssales || "NA"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Cancelations :</label>
-                <div>
-                  <span className="fw-bold">
+                <div className="col-xl-4 mt-4">
+                  <label className="">Week Ending:</label>
+                  <div>
                     <span className="fw-bold">
-                      {TrafficDetails.cancelations || "NA"}
+                      {<DateComponent date={TrafficDetails.weekending} /> || "NA"}
                     </span>
-                  </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Net Sales :</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.netsales || "NA"}
-                  </span>
+                <div className="col-xl-4 mt-4">
+                  <label className="">Weekly Traffic :</label>
+                  <div>
+                    <span className="fw-bold">
+                      {TrafficDetails.weeklytraffic || "NA"}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Lot Released :</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.lotreleased || "NA"}
-                  </span>
+                <div className="col-xl-4 mt-4">
+                  <label className="">Gross Sales :</label>
+                  <div>
+                    <span className="fw-bold">
+                      {TrafficDetails.grosssales || "NA"}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Status :</label>
-                <div>
-                  <span className="fw-bold">
-                    {TrafficDetails.status === 1 && "Active"}
-                    {TrafficDetails.status === 0 && "De-acitve"}
-                  </span>
+                <div className="col-xl-4 mt-4">
+                  <label className="">Cancelations :</label>
+                  <div>
+                    <span className="fw-bold">
+                      <span className="fw-bold">
+                        {TrafficDetails.cancelations || "NA"}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-xl-4 mt-4">
+                  <label className="">Net Sales :</label>
+                  <div>
+                    <span className="fw-bold">
+                      {TrafficDetails.netsales || "NA"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-xl-4 mt-4">
+                  <label className="">Lot Released :</label>
+                  <div>
+                    <span className="fw-bold">
+                      {TrafficDetails.lotreleased || "NA"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-xl-4 mt-4">
+                  <label className="">Status :</label>
+                  <div>
+                    <span className="fw-bold">
+                      {TrafficDetails.status === 1 && "Active"}
+                      {TrafficDetails.status === 0 && "De-acitve"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>)}
+          </div>)}
       </Offcanvas>
+
       <Offcanvas
         show={manageAccessOffcanvas}
         onHide={setManageAccessOffcanvas}
@@ -1989,12 +1682,6 @@ const parseDate = (dateString) => {
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            // defaultChecked={(() => {
-                            //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
-                            //   return isChecked;
-                            // })()}
                             checked={checkedItems[element.field_name]}
                             onChange={handleCheckboxChange}
                             name={element.field_name}
@@ -2039,349 +1726,310 @@ const parseDate = (dateString) => {
 
         <div className="offcanvas-body">
           <div className="container-fluid">
-          <div className="">
-                            <form onSubmit={HandleFilterForm}>
-                              <div className="row">
-                              <div className="col-md-3 mt-3">
+            <div className="">
+              <form onSubmit={HandleFilterForm}>
+                <div className="row">
+                  <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}</label>
                     <DatePicker
-        name="from"
-        className="form-control"
-        selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-        onChange={handleFilterDateFrom}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
-
+                      name="from"
+                      className="form-control"
+                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">To:{" "}</label>
                     <DatePicker
-        name="to"
-        className="form-control"
-        selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-        onChange={handleFilterDateTo}
-        dateFormat="MM/dd/yyyy"
-        placeholderText="mm/dd/yyyy"
-      />
+                      name="to"
+                      className="form-control"
+                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
                   </div>
-                              {/* <div className="col-md-3 mt-3">
-                                  <label className="form-label">
-                                  WEEK ENDING:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <input name="weekending" type="date" className="form-control" value={filterQuery.weekending} onChange={HandleFilter}/>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      BUILDER NAME:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown}
+                        value={selectedBuilderName}
+                        onChange={handleSelectBuilderNameChange}
+                        placeholder={"Select Builder Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      SUBDIVISION NAME:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={SubdivisionList}
+                        value={selectedSubdivisionName}
+                        onChange={handleSelectSubdivisionNameChange}
+                        placeholder={"Select Subdivision Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      WEEKLY TRAFFIC :{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.weeklytraffic} name="weeklytraffic" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      WEEKLY CANCELLATIONS:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input name="cancelations" value={filterQuery.cancelations} className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      WEEKLY NET SALES:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input name="netsales" value={filterQuery.netsales} className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      TOTAL LOTS:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      WEEKLY LOTS RELEASE FOR SALE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">
+                      WEEKLY UNSOLD STANDING INVENTORY:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      PRODUCT TYPE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="product_type"
+                      options={productTypeOptions}
+                      value={productTypeStatus}
+                      onChange={handleSelectProductTypeChange}
+                      placeholder="Select Prodcut Type"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      AREA:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="area"
+                      options={areaOption}
+                      value={selectedArea}
+                      onChange={handleSelectAreaChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      MASTERPLAN:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="masterplan_id"
+                      options={masterPlanOption}
+                      value={selectedMasterPlan}
+                      onChange={handleSelectMasterPlanChange}
+                      placeholder="Select Area"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      ZIP CODE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <MultiSelect
+                      name="zipcode"
+                      options={zipCodeOption}
+                      value={seletctedZipcode}
+                      onChange={handleSelectZipcodeChange}
+                      placeholder="Select Zipcode"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      LOT WIDTH:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      LOT SIZE:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label className="form-label">
+                      ZONING:{" "}
+                      <span className="text-danger"></span>
+                    </label>
+                    <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                    <MultiSelect
+                      name="age"
+                      options={ageOptions}
+                      value={selectedAge}
+                      onChange={handleSelectAgeChange}
+                      placeholder={"Select Age"}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3 mb-3">
+                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                    <MultiSelect
+                      name="single"
+                      options={singleOptions}
+                      value={selectedSingle}
+                      onChange={handleSelectSingleChange}
+                      placeholder={"Select Single"}
+                    />
+                  </div>
+                </div>
 
-                              </div> */}
-                              <div className="col-md-3 mt-3">
-                              <label className="form-label">
-                                BUILDER NAME:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <Form.Group controlId="tournamentList">
-                                    <MultiSelect
-                                      name="builder_name"
-                                      options={builderDropDown}
-                                      value={selectedBuilderName}
-                                      onChange={handleSelectBuilderNameChange }
-                                      placeholder={"Select Builder Name"} 
-                                    />
-                                  </Form.Group>
-                                  {/* <Form.Group controlId="tournamentList">
-                          <Select
-                            options={builderDropDown}
-                            onChange={HandleSelectChange}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
-                            value={builderDropDown.name}
-                            name="builder_name"
-                          ></Select>
-                        </Form.Group> */}
-                              </div>
-                              <div className="col-md-3 mt-3">
-                              <label className="form-label">
-                                SUBDIVISION NAME:{" "}
-                                    <span className="text-danger"></span>
-                                  </label>
-                                  <Form.Group controlId="tournamentList">
-                                    <MultiSelect
-                                      name="subdivision_name"
-                                      options={SubdivisionList}
-                                      value={selectedSubdivisionName}
-                                      onChange={handleSelectSubdivisionNameChange }
-                                      placeholder={"Select Subdivision Name"} 
-                                    />
-                                  </Form.Group>
-                                  {/* <Form.Group controlId="tournamentList">
-                          <Select
-                            options={SubdivisionList}
-                            onChange={HandleSubSelectChange}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
-                            value={SubdivisionList.name}
-                            name="subdivision_name"
-                          ></Select>
-                        </Form.Group>                                     */}
-                        </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                WEEKLY TRAFFIC :{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input  value={filterQuery.weeklytraffic} name="weeklytraffic" className="form-control"  onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                WEEKLY CANCELLATIONS:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="cancelations" value={filterQuery.cancelations} className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                WEEKLY NET SALES:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input name="netsales" value={filterQuery.netsales} className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                TOTAL LOTS:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                WEEKLY LOTS RELEASE FOR SALE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3">
-                                <label className="form-label">
-                                WEEKLY UNSOLD STANDING INVENTORY:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                PRODUCT TYPE:{" "}
-                                  <span className="text-danger"></span>
-
-                                </label>
-                                <MultiSelect
-                                name="product_type"
-                                options={productTypeOptions}
-                                value={productTypeStatus}
-                                onChange={handleSelectProductTypeChange }
-                                placeholder="Select Prodcut Type" 
-                              />
-                                {/* <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                AREA:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="area"
-                                options={areaOption}
-                                value={selectedArea}
-                                onChange={handleSelectAreaChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                MASTERPLAN:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="masterplan_id"
-                                options={masterPlanOption}
-                                value={selectedMasterPlan}
-                                onChange={handleSelectMasterPlanChange }
-                                placeholder="Select Area" 
-                              />
-                                {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ZIP CODE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <MultiSelect
-                                name="zipcode"
-                                options={zipCodeOption}
-                                value={seletctedZipcode}
-                                onChange={handleSelectZipcodeChange}
-                                placeholder="Select Zipcode" 
-                              />
-                                {/* <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter}/> */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                LOT WIDTH:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                LOT SIZE:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                                <label className="form-label">
-                                ZONING:{" "}
-                                  <span className="text-danger"></span>
-                                </label>
-                                <input value={filterQuery.zoning} name="zoning" className="form-control" onChange={HandleFilter}/>
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
-                              <MultiSelect
-                                name="age"
-                                options={ageOptions}
-                                value={selectedAge}
-                                onChange={handleSelectAgeChange }
-                                placeholder={"Select Age"} 
-                              />
-                              {/* <select className="default-select form-control" name="age"  onChange={HandleFilter} >
-                                    <option value="">Select age Restricted</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                              </select>                                  */}
-                              </div>
-                              <div className="col-md-3 mt-3 mb-3">
-                              <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
-                              <MultiSelect
-                                name="single"
-                                options={singleOptions}
-                                value={selectedSingle}
-                                onChange={handleSelectSingleChange }
-                                placeholder={"Select Single"} 
-                              />
-                                    {/* <select className="default-select form-control" name="single" onChange={HandleFilter} >
-                                        <option value="">Select Story</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                </select>      */}
-                              </div>
-                             </div>
-                             
-                             </form>
-                            </div>
-                              <div className="d-flex justify-content-between">                 
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>    
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>       
-                            </div>
-                            <br />
-                            {excelLoading ? <div style={{ textAlign: "center"}}><ClipLoader color="#4474fc" /></div> :
-                            <>
-                            <h5 className="">Calculation Filter Options</h5>
-                            <div className="border-top">
-                              <div className="row">
-                                <div className="col-md-3 mt-3 mb-3">
-                                  <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
-                                  <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={handleInputChange} />
-                                </div>
-                              </div>
-                            </div></>}
+              </form>
+            </div>
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                onClick={HandleCancelFilter}
+                variant="secondary"
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                onClick={HandleFilterForm}
+                variant="primary"
+              >
+                Filter
+              </Button>
+            </div>
+            <br />
+            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+              <>
+                <h5 className="">Calculation Filter Options</h5>
+                <div className="border-top">
+                  <div className="row">
+                    <div className="col-md-3 mt-3 mb-3">
+                      <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
+                      <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={handleInputChange} />
+                    </div>
+                  </div>
+                </div>
+              </>
+            }
           </div>
         </div>
       </Offcanvas>
+
       <Modal show={exportmodelshow} onHide={setExportModelShow}>
         <>
           <Modal.Header>
-          <Modal.Title>Export</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => { resetSelection(); setExportModelShow(false); }}
-          ></button>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
+            ></button>
           </Modal.Header>
           <Modal.Body>
-          <Row>
-            <ul className='list-unstyled'>
-              <li>
-                <label className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={selectAll}
-                    onChange={handleSelectAllToggle}
-                  />
+            <Row>
+              <ul className='list-unstyled'>
+                <li>
+                  <label className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectAll}
+                      onChange={handleSelectAllToggle}
+                    />
                     Select All
-                </label>
-              </li>
-            {exportColumns.map((col) => (
-              <li key={col.label}>
-              <label className='form-check'>
-                <input
-                  type="checkbox"
-                  className='form-check-input'
-                  checked={selectedColumns.includes(col.label)}
-                  onChange={() => handleColumnToggle(col.label)}
-                />
-                {col.label}
-              </label>
-              </li>
-            ))}
-            </ul>
-          </Row>
+                  </label>
+                </li>
+                {exportColumns.map((col) => (
+                  <li key={col.label}>
+                    <label className='form-check'>
+                      <input
+                        type="checkbox"
+                        className='form-check-input'
+                        checked={selectedColumns.includes(col.label)}
+                        onChange={() => handleColumnToggle(col.label)}
+                      />
+                      {col.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </Row>
           </Modal.Body>
           <Modal.Footer>
-          <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
           </Modal.Footer>
         </>
       </Modal>
+
       <Modal show={showSort} onHide={HandleSortDetailClick}>
         <Modal.Header handleSortClose>
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                      style={{cursor: "pointer"}}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`} style={{cursor: "pointer"}}>
+                      <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -2391,10 +2039,11 @@ const parseDate = (dateString) => {
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Import Weekly Traffic & Sales CSV Data</Modal.Title>
