@@ -404,11 +404,6 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
-
-  useEffect(() => {
     if (selectedStatusByFilter != undefined && selectedStatusByFilter.length > 0) {
       handleSelectStatusChange(selectedStatusByFilter);
     }
@@ -500,6 +495,11 @@ const ProductList = () => {
       navigate("/");
     }
   }, [currentPage]);
+
+  useEffect(() => {
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
+  }, []);
 
   const GetBuilderDropDownList = async () => {
     try {

@@ -33,7 +33,7 @@ export const MenuList = [
     {
         title: 'Permits',
         iconStyle: SVGICON.Performance,
-        to: '/permitlist',
+        to: '/filterpermits',
     },
 
     {

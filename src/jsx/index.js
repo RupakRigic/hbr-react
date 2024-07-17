@@ -45,6 +45,7 @@ import FilterSubdivision from "./pages/Subdivision/FilterSubdivision";
 import FilterLandSales from "./pages/Landsale/FilterLandSales";
 import FilterBasePrice from "./pages/Price/FilterBasePrice";
 import FilterProducts from "./pages/Product/FilterProducts";
+import FilterPermits from "./pages/Permit/FilterPermits";
 
 const allroutes = [
   // Dashboard
@@ -180,6 +181,11 @@ const allroutes = [
   {
     url: "/filterproducts",
     component: <FilterProducts />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/filterpermits",
+    component: <FilterPermits />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
 ];

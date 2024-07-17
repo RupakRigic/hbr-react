@@ -198,7 +198,7 @@ const FilterLandSales = () => {
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);
-      };
+    };
 
     return (
         <div className="container mt-5">
