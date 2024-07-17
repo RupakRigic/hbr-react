@@ -1,7 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
@@ -9,7 +8,6 @@ import AdminProductService from '../../../API/Services/AdminService/AdminProduct
 
 const BulkPriceUpdate = forwardRef((props, ref) => {
     const { selectedLandSales } = props;
-    // const [selectedLandSales, setSelectedLandSales] = useState(props.selectedLandSales);
     console.log("bulkselectedLandSales",selectedLandSales);
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
@@ -29,24 +27,42 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
     };
     const navigate = useNavigate();
 
-    const getProductList = async () => {
-
+    const GetProductDropDownList = async () => {
         try {
-
-            const response = await AdminProductService.index()
-            const responseData = await response.json()
-            setProductList(responseData.data)
-
+            const response = await AdminProductService.productDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((product) => ({
+                label: product.name,
+                value: product.id,
+            }));
+            setProductList(formattedData);
         } catch (error) {
-            if (error.name === 'HTTPError') {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
+    };
+
+    // const getProductList = async () => {
+
+    //     try {
+
+    //         const response = await AdminProductService.index()
+    //         const responseData = await response.json()
+    //         setProductList(responseData.data)
+
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+
+    //             setError(errorJson.message)
+    //         }
+    //     }
+    // }
     useEffect(() => {
-        getProductList();
+        GetProductDropDownList();
     }, []);
 
     const handleSubmit = async (event) => {
@@ -123,8 +139,8 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                                 <option>Select Product</option>
                                 {Array.isArray(ProductList) && ProductList.length > 0 ? (
         ProductList.map((element) => (
-          <option key={element.id} value={element.id}>
-            {element.name}
+          <option key={element.id} value={element.value}>
+            {element.label}
           </option>
         ))
       ) : (
