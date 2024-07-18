@@ -27,8 +27,7 @@ const PriceList = () => {
 
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
 
   const resetSelection = () => {
     setSelectAll(false);
@@ -337,13 +336,34 @@ const PriceList = () => {
   }, [sortConfig]);
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
+    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
+      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
     }
+    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
+      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    }
+    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
+      handleSelectProductTypeChange(productTypeStatusByFilter);
+    }
+    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
+      handleSelectAreaChange(selectedAreaByFilter);
+    }
+    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
+      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    }
+    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
+      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    }
+    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
+      handleSelectAgeChange(selectedAgeByFilter);
+    }
+    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
+      handleSelectSingleChange(selectedSingleByFilter);
+    }
+  }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+
+  useEffect(() => {
+    setSearchQuery(filterString());
   }, [filterQuery]);
 
   useEffect(() => {
@@ -485,7 +505,7 @@ const PriceList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductListCount(responseData.total);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllBuilderExport(responseData.data);
@@ -502,14 +522,14 @@ const PriceList = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, priceList, productListCount) => {
     setExcelLoading(true);
-    const response = await AdminPriceService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminPriceService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(productListCount / recordsPage);
+    let allData = priceList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminPriceService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
@@ -1412,17 +1432,20 @@ const PriceList = () => {
           </div>
         </div>
       </div>
+
       <PriceOffcanvas
         ref={product}
         Title="Add Base Price"
         parentCallback={handleCallback}
       />
+
       <BulkPriceUpdate
         ref={bulkPrice}
-        Title="Bulk Edit Closing"
+        Title="Bulk Edit Base Price"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />
+
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}

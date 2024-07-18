@@ -58,8 +58,7 @@ const BuilderTable = () => {
 
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
@@ -67,6 +66,8 @@ const BuilderTable = () => {
     is_active: "",
     active_communities: active_communitiesByFilter ? active_communitiesByFilter : "",
     company_type: "",
+  });
+  const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     closing_this_year: "",
     permits_this_year: "",
     net_sales_this_year: "",
@@ -283,8 +284,8 @@ const BuilderTable = () => {
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-
-    const tableData = AllBuilderListExport.map((row) => {
+debugger
+    const tableData = (filter ? BuilderList : AllBuilderListExport).map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -481,6 +482,7 @@ const BuilderTable = () => {
 
   const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
@@ -499,7 +501,7 @@ const BuilderTable = () => {
       setBuilderListCount(responseData.total);
       setIsLoading(false);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllBuilderExport(responseData.data);
@@ -516,13 +518,20 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
+    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
+      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
     }
+    if (selectedStatusByFilter != undefined && selectedStatusByFilter.length > 0) {
+      handleSelectStatusChange(selectedStatusByFilter);
+    }
+    if (selectedCompanyTypeByFilter != undefined && selectedCompanyTypeByFilter.length > 0) {
+      handleSelectCompanyTypeChange(selectedCompanyTypeByFilter);
+    }
+  }, [ selectedBuilderNameByFilter, selectedStatusByFilter, selectedCompanyTypeByFilter]);
+
+  useEffect(() => {
+    debugger
+    setSearchQuery(filterString());
   }, [filterQuery]);
 
   useEffect(() => {
@@ -535,14 +544,15 @@ const BuilderTable = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
+    debugger
     setExcelLoading(true);
-    const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(BuilderListCount / recordsPage);
+    let allData = BuilderList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
@@ -660,10 +670,36 @@ const BuilderTable = () => {
   };
 
   const HandleFilterForm = (e) => {
+    debugger
     e.preventDefault();
-    setFilter(true);
+    setFilter(false);
+    setNormalFilter(false);
     getbuilderlist(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
+    setActiveCommunitiesOption("");
+    setClosingThisYearOption("");
+    setPermitsThisYearOption("");
+    setNetSalesThisYearOption("");
+    setCurrentAvgBasePriceOption("");
+    setMedianClosingPriceThisYearOption("");
+    setMedianClosingPriceLastYearOption("");
+    setAvgNetSalesPerMonthThisYearOption("");
+    setAvgClosingsPerMonthThisYearOption("");
+    setTotalClosingsOption("");
+    setTotalPermitsOption("");
+    setTotalNetSalesOption("");
+    setActiveCommunitiesResult(0);
+    setClosingThisYearResult(0);
+    setPermitsThisYearResult(0);
+    setNetSalesThisYearResult(0);
+    setCurrentAvgBasePriceResult(0);
+    setMedianClosingPriceThisYearResult(0);
+    setMedianClosingPriceLastYearResult(0);
+    setAvgNetSalesPerMonthThisYearResult(0);
+    setAvgClosingsPerMonthThisYearResult(0);
+    setTotalClosingsResult(0);
+    setTotalPermitsResult(0);
+    setTotalNetSalesResult(0);
   };
 
   const HandleFilter = (e) => {
@@ -688,11 +724,14 @@ const BuilderTable = () => {
 
   const HandleCancelFilter = (e) => {
     setFilter(false);
+    setNormalFilter(false);
     setFilterQuery({
       name: "",
       is_active: "",
       active_communities: "",
       company_type: "",
+    });
+    setFilterQueryCalculation({
       closing_this_year: "",
       permits_this_year: "",
       net_sales_this_year: "",
@@ -926,14 +965,15 @@ const BuilderTable = () => {
   }
 
   const applyFilters = () => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    debugger
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(!isAnyFilterApplied) {
-      getbuilderlist(currentPage, sortConfig, searchQueryByFilter);
+    if(AllBuilderListExport.length === 0) {
+      setBuilderList(BuilderList);
       return;
     }
 
-    let filtered = BuilderList;
+    let filtered = AllBuilderListExport;
 
     const applyNumberFilter = (items, query, key) => {
       if (query) {
@@ -958,139 +998,214 @@ const BuilderTable = () => {
       return items;
     };
 
-    filtered = applyNumberFilter(filtered, filterQuery.closing_this_year, 'closing_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.permits_this_year, 'permits_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.net_sales_this_year, 'net_sales_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.current_avg_base_Price, 'current_avg_base_Price');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.total_closings, 'total_closings');
-    filtered = applyNumberFilter(filtered, filterQuery.total_permits, 'total_permits');
-    filtered = applyNumberFilter(filtered, filterQuery.median_closing_price_last_year, 'median_closing_price_last_year');
-    filtered = applyNumberFilter(filtered, filterQuery.median_closing_price_this_year, 'median_closing_price_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.total_net_sales, 'total_net_sales');
-    filtered = applyNumberFilter(filtered, filterQuery.date_of_first_closing, 'date_of_first_closing');
-    filtered = applyNumberFilter(filtered, filterQuery.date_of_latest_closing, 'date_of_latest_closing');    
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.closing_this_year, 'closing_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.permits_this_year, 'permits_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.net_sales_this_year, 'net_sales_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.current_avg_base_Price, 'current_avg_base_Price');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.total_closings, 'total_closings');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.total_permits, 'total_permits');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.median_closing_price_last_year, 'median_closing_price_last_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.median_closing_price_this_year, 'median_closing_price_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.total_net_sales, 'total_net_sales');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_first_closing, 'date_of_first_closing');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_latest_closing, 'date_of_latest_closing');    
 
-    if (isAnyFilterApplied && !normalFilter) {
+    if (isAnyFilterApplied) {
       setBuilderList(filtered.slice(0, 100));
-      setFilter(false);
+      setFilter(true);
       setNormalFilter(false);
     } else {
       setBuilderList(filtered.slice(0, 100));
       setCurrentPage(1);
       setFilter(false);
       setNormalFilter(false);
-      setActiveCommunitiesOption("");
-      setClosingThisYearOption("");
-      setPermitsThisYearOption("");
-      setNetSalesThisYearOption("");
-      setCurrentAvgBasePriceOption("");
-      setMedianClosingPriceThisYearOption("");
-      setMedianClosingPriceLastYearOption("");
-      setAvgNetSalesPerMonthThisYearOption("");
-      setAvgClosingsPerMonthThisYearOption("");
-      setTotalClosingsOption("");
-      setTotalPermitsOption("");
-      setTotalNetSalesOption("");
-      setActiveCommunitiesResult(0);
-      setClosingThisYearResult(0);
-      setPermitsThisYearResult(0);
-      setNetSalesThisYearResult(0);
-      setCurrentAvgBasePriceResult(0);
-      setMedianClosingPriceThisYearResult(0);
-      setMedianClosingPriceLastYearResult(0);
-      setAvgNetSalesPerMonthThisYearResult(0);
-      setAvgClosingsPerMonthThisYearResult(0);
-      setTotalClosingsResult(0);
-      setTotalPermitsResult(0);
-      setTotalNetSalesResult(0);
     }
+    setActiveCommunitiesOption("");
+    setClosingThisYearOption("");
+    setPermitsThisYearOption("");
+    setNetSalesThisYearOption("");
+    setCurrentAvgBasePriceOption("");
+    setMedianClosingPriceThisYearOption("");
+    setMedianClosingPriceLastYearOption("");
+    setAvgNetSalesPerMonthThisYearOption("");
+    setAvgClosingsPerMonthThisYearOption("");
+    setTotalClosingsOption("");
+    setTotalPermitsOption("");
+    setTotalNetSalesOption("");
+    setActiveCommunitiesResult(0);
+    setClosingThisYearResult(0);
+    setPermitsThisYearResult(0);
+    setNetSalesThisYearResult(0);
+    setCurrentAvgBasePriceResult(0);
+    setMedianClosingPriceThisYearResult(0);
+    setMedianClosingPriceLastYearResult(0);
+    setAvgNetSalesPerMonthThisYearResult(0);
+    setAvgClosingsPerMonthThisYearResult(0);
+    setTotalClosingsResult(0);
+    setTotalPermitsResult(0);
+    setTotalNetSalesResult(0);
   };
 
   useEffect(() => {
-    if (filter) {
-      applyFilters();
-    }
-  }, [filterQuery]);
+    applyFilters();
+  }, [filterQueryCalculation]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     console.log(value);
-    setFilterQuery(prevFilterQuery => ({
+    setFilterQueryCalculation(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
     }));
     setFilter(true);
-    setNormalFilter(false);
   };
 
   const totalSumFields = (field) => {
-    if (field == "active_communities") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.active_communities || 0);
-      }, 0);
+    debugger
+    if(field == "active_communities") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.active_communities || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.active_communities || 0);
+        }, 0);
+      }
     }
-    if (field == "closing_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.closing_this_year || 0);
-      }, 0);
+    if(field == "closing_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.closing_this_year || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.closing_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "permits_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.permits_this_year || 0);
-      }, 0);
+    if(field == "permits_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.permits_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.permits_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "net_sales_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.net_sales_this_year || 0);
-      }, 0);
+    if(field == "net_sales_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.net_sales_this_year || 0);
+        }, 0);
+      } else {
+          return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.net_sales_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "current_avg_base_Price") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.current_avg_base_Price || 0);
-      }, 0);
+    if(field == "current_avg_base_Price") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.current_avg_base_Price || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.current_avg_base_Price || 0);
+        }, 0);
+      }
     }
-    if (field == "median_closing_price_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.median_closing_price_this_year || 0);
-      }, 0);
+    if(field == "median_closing_price_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "median_closing_price_last_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.median_closing_price_last_year || 0);
-      }, 0);
+    if(field == "median_closing_price_last_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_last_year || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_last_year || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_net_sales_per_month_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_this_year || 0);
-      }, 0);
+    if(field == "avg_net_sales_per_month_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_closings_per_month_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_closings_per_month_this_year || 0);
-      }, 0);
+    if(field == "avg_closings_per_month_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "total_closings") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_closings || 0);
-      }, 0);
+    if(field == "total_closings") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      }
     }
-    if (field == "total_permits") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_permits || 0);
-      }, 0);
+    if(field == "total_permits") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);
+      }
     }
-    if (field == "total_net_sales") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_net_sales || 0);
-      }, 0);
+    if(field == "total_net_sales") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      }
     }
   };
 
   const averageFields = (field) => {
+    debugger
     const sum = totalSumFields(field);
-    return sum / BuilderList.length;
+    if(filter){
+      return sum / BuilderList.length;
+    } else {
+      return sum / AllBuilderListExport.length;
+    }
   };
 
   const handleSelectChange = (e, field) => {
@@ -1505,6 +1620,7 @@ const BuilderTable = () => {
       ...prevState,
       name: selectedNames
     }));
+    setNormalFilter(true);
   };
 
   const statusOptions = [
@@ -1525,6 +1641,7 @@ const BuilderTable = () => {
       ...prevState,
       is_active: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const handleSelectCompanyTypeChange = (selectedItems) => {
@@ -1536,6 +1653,7 @@ const BuilderTable = () => {
       ...prevState,
       company_type: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   console.log("filter", filter);
@@ -2702,56 +2820,56 @@ const BuilderTable = () => {
                   <div className="row">
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">CLOSINGS THIS YEAR:{" "}</label>
-                      <input value={filterQuery.closing_this_year} name="closing_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.closing_this_year} name="closing_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">PERMITS THIS YEAR:{" "}</label>
-                      <input value={filterQuery.permits_this_year} name="permits_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.permits_this_year} name="permits_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">NET SALES THIS YEAR:{" "}</label>
-                      <input value={filterQuery.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.net_sales_this_year} name="net_sales_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">CURRENT AVG BASE PRICE:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQuery.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.current_avg_base_Price} name="current_avg_base_Price" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
                       <br />
-                      <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
-                      <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">MEDIAN CLOSING PRICE THIS YEAR:{" "}</label>
-                      <input value={filterQuery.median_closing_price_this_year} name="median_closing_price_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.median_closing_price_this_year} name="median_closing_price_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">MEDIAN CLOSING PRICE LAST YEAR:{" "}</label>
-                      <input value={filterQuery.median_closing_price_last_year} name="median_closing_price_last_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.median_closing_price_last_year} name="median_closing_price_last_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">TOTAL CLOSINGS:{" "}</label>
-                      <input value={filterQuery.total_closings} name="total_closings" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.total_closings} name="total_closings" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">TOTAL PERMITS:{" "}</label>
-                      <input value={filterQuery.total_permits} name="total_permits" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.total_permits} name="total_permits" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">TOTAL NET SALES :{" "}</label>
-                      <input value={filterQuery.total_net_sales} name="total_net_sales" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.total_net_sales} name="total_net_sales" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">DATE OF FIRST CLOSING  :{" "}</label>
-                      <input value={filterQuery.date_of_first_closing} name="date_of_first_closing" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.date_of_first_closing} name="date_of_first_closing" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-4 mt-3 mb-3">
                       <label className="form-label">DATE OF LATEST CLOSING  :{" "}</label>
-                      <input value={filterQuery.date_of_latest_closing} name="date_of_latest_closing" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.date_of_latest_closing} name="date_of_latest_closing" className="form-control" onChange={handleInputChange} />
                     </div>
                   </div>
                 </div>

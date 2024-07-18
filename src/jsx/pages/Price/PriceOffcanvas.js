@@ -1,11 +1,11 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
-import AdminSubdivisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
+// import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
+// import AdminSubdivisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const ProductOffcanvas = forwardRef((props, ref) => {
     const navigate = useNavigate();
@@ -13,15 +13,10 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     const [addProduct, setAddProduct] = useState(false);
     const [ProductCode, setProductCode] = useState('');
     const [ProductList, setProductList] = useState([]);
-    const [builderList, setBuilderList] = useState([]);
-    const [BuilderCode, setBuilderCode] = useState('');
-    const [subDivisionList, setSubDivisionList] = useState([]);
-    const [SubDivisionCode, setDivisionCode] = useState('');
-
-    useEffect(() => {
-        GetBuilderDropDownList();
-        GetProductDropDownList();
-    }, []);
+    // const [builderList, setBuilderList] = useState([]);
+    // const [BuilderCode, setBuilderCode] = useState('');
+    // const [subDivisionList, setSubDivisionList] = useState([]);
+    // const [SubDivisionCode, setDivisionCode] = useState('');
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -29,23 +24,23 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         }
     }));
 
-    const GetBuilderDropDownList = async () => {
-        try {
-            const response = await AdminBuilderService.builderDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.map((builder) => ({
-                label: builder.name,
-                value: builder.id,
-            }));
-            setBuilderList(formattedData);
-        } catch (error) {
-            console.log("Error fetching builder list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
+    // const GetBuilderDropDownList = async () => {
+    //     try {
+    //         const response = await AdminBuilderService.builderDropDown();
+    //         const responseData = await response.json();
+    //         const formattedData = responseData.map((builder) => ({
+    //             label: builder.name,
+    //             value: builder.id,
+    //         }));
+    //         setBuilderList(formattedData);
+    //     } catch (error) {
+    //         console.log("Error fetching builder list:", error);
+    //         if (error.name === "HTTPError") {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message);
+    //         }
+    //     }
+    // };
 
     const GetProductDropDownList = async () => {
         try {
@@ -65,37 +60,42 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         }
     };
 
+    useEffect(() => {
+        // GetBuilderDropDownList();
+        GetProductDropDownList();
+    }, []);
+
     const handleProductCode = (code) => {
         setProductCode(code.target.value);
     };
 
-    const handleBuilderCode = async (event) => {
-        setBuilderCode(event.target.value);
-        try {
-            const response = await AdminSubdivisionService.getByBuilderId(event.target.value)
-            const responseData = await response.json();
-            setSubDivisionList(responseData);
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
+    // const handleBuilderCode = async (event) => {
+    //     setBuilderCode(event.target.value);
+    //     try {
+    //         const response = await AdminSubdivisionService.getByBuilderId(event.target.value)
+    //         const responseData = await response.json();
+    //         setSubDivisionList(responseData);
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message);
+    //         }
+    //     }
+    // };
 
-    const handleSubDivisionCode = async (event) => {
-        setDivisionCode(event.target.value);
-        try {
-            const response = await AdminProductService.getBySubDivisionId(event.target.value)
-            const responseData = await response.json();
-            setProductList(responseData.data);
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
+    // const handleSubDivisionCode = async (event) => {
+    //     setDivisionCode(event.target.value);
+    //     try {
+    //         const response = await AdminProductService.getBySubDivisionId(event.target.value)
+    //         const responseData = await response.json();
+    //         setProductList(responseData.data);
+    //     } catch (error) {
+    //         if (error.name === 'HTTPError') {
+    //             const errorJson = await error.response.json();
+    //             setError(errorJson.message);
+    //         }
+    //     }
+    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -140,7 +140,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     <div className="container-fluid">
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                <div className="col-xl-4 mb-3">
+                                {/* <div className="col-xl-4 mb-3">
                                     <label className="form-label">Builder<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
                                         <Form.Select
@@ -169,7 +169,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                             ))}
                                         </Form.Select>
                                     </Form.Group>
-                                </div>
+                                </div> */}
                                 <div className="col-xl-4 mb-3">
                                     <label className="form-label">Product<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
