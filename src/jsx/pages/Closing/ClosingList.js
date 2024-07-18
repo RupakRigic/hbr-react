@@ -57,8 +57,7 @@ const ClosingList = () => {
   const handleClose = () => setShow(false);
   const navigate = useNavigate();
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
     closing_type: "",
@@ -172,13 +171,7 @@ const ClosingList = () => {
   };
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
-    }
+    setSearchQuery(filterString());
   }, [filterQuery]);
 
   const filterString = () => {

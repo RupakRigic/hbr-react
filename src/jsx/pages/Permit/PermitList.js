@@ -68,8 +68,7 @@ const PermitList = () => {
     age: "",
     single: ""
   });
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
@@ -215,13 +214,7 @@ const PermitList = () => {
   }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
       setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
-    }
   }, [filterQuery]);
 
 
@@ -247,7 +240,7 @@ const PermitList = () => {
   const HandleFilterForm = (e) => {
     e.preventDefault();
     getPermitList(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false)
+    setManageFilterOffcanvas(false);
   }; 
 
   const resetSelection = () => {
@@ -707,9 +700,9 @@ const PermitList = () => {
   };
 
   const getPermitList = async (currentPage, sortConfig, searchQuery) => {
+    setIsLoading(true);
+    setSearchQuery(searchQuery);
     try {
-      setIsLoading(true);
-      setSearchQuery(searchQuery);
       let sortConfigString = "";
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);

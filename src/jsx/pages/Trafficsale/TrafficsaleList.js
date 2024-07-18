@@ -49,8 +49,7 @@ const TrafficsaleList = () => {
   const [trafficsaleList, setTrafficsaleList] = useState([]);
   const [trafficListCount, setTrafficListCount] = useState('');
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectAll, setSelectAll] = useState(false);
@@ -191,13 +190,7 @@ const TrafficsaleList = () => {
   }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
-    }
+    setSearchQuery(filterString());
   }, [filterQuery]);
 
   useEffect(() => {
@@ -1807,7 +1800,7 @@ const GetSubdivisionDropDownList = async () => {
                       TOTAL LOTS:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter} />
+                    <input value={filterQuery.totallots} name="totallots" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1821,7 +1814,7 @@ const GetSubdivisionDropDownList = async () => {
                       WEEKLY UNSOLD STANDING INVENTORY:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="avg_net_sales_per_month_this_year" className="form-control" onChange={HandleFilter} />
+                    <input type="unsoldinventory" value={filterQuery.unsoldinventory} name="unsoldinventory" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
