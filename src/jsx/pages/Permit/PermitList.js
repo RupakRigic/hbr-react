@@ -719,7 +719,7 @@ const PermitList = () => {
       console.log(permitList);
       setPermitListCount(responseData.total);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllPermitListExport(responseData.data);
@@ -735,14 +735,14 @@ const PermitList = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, permitList, permitListCount) => {
     setExcelLoading(true);
-    const response = await AdminPermitService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminPermitService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(permitListCount / recordsPage);
+    let allData = permitList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminPermitService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);

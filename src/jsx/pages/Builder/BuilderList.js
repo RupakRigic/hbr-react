@@ -284,7 +284,7 @@ const BuilderTable = () => {
     } else {
       tableHeaders = headers.map((c) => c.label);
     }
-debugger
+
     const tableData = (filter ? BuilderList : AllBuilderListExport).map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
@@ -530,7 +530,6 @@ debugger
   }, [ selectedBuilderNameByFilter, selectedStatusByFilter, selectedCompanyTypeByFilter]);
 
   useEffect(() => {
-    debugger
     setSearchQuery(filterString());
   }, [filterQuery]);
 
@@ -545,7 +544,6 @@ debugger
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
-    debugger
     setExcelLoading(true);
     // const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
     // const responseData = await response.json();
@@ -670,7 +668,6 @@ debugger
   };
 
   const HandleFilterForm = (e) => {
-    debugger
     e.preventDefault();
     setFilter(false);
     setNormalFilter(false);
@@ -965,7 +962,6 @@ debugger
   }
 
   const applyFilters = () => {
-    debugger
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
     if(AllBuilderListExport.length === 0) {
@@ -1063,7 +1059,6 @@ debugger
   };
 
   const totalSumFields = (field) => {
-    debugger
     if(field == "active_communities") {
       if(filter){
         return BuilderList.reduce((sum, builder) => {
@@ -1199,7 +1194,6 @@ debugger
   };
 
   const averageFields = (field) => {
-    debugger
     const sum = totalSumFields(field);
     if(filter){
       return sum / BuilderList.length;
