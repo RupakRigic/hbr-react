@@ -71,8 +71,7 @@ const SubdivisionList = () => {
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
 
@@ -112,6 +111,8 @@ const SubdivisionList = () => {
     gasprovider: "",
     from: frombyfilter ? frombyfilter : "",
     to: tobyfilter ? tobyfilter : "",
+  });
+  const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     months_open: "",
     latest_lots_released: "",
     latest_standing_inventory: "",
@@ -134,11 +135,6 @@ const SubdivisionList = () => {
     avg_net_sales_per_month_last_three_months: "",
     month_net_sold: "",
     year_net_sold: "",
-    zoning: "",
-    hoafee: "",
-    sqft_group: "",
-    price_group: "",
-    opensince: "",
   });
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -390,7 +386,7 @@ const SubdivisionList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = AllBuilderListExport.map((row) => {
+    const tableData = (filter ? BuilderList : AllBuilderListExport).map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -736,6 +732,7 @@ const SubdivisionList = () => {
 
   const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
@@ -754,7 +751,7 @@ const SubdivisionList = () => {
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllBuilderExport(responseData.data);
@@ -771,13 +768,46 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
+    if (selectedStatusByFilter != undefined && selectedStatusByFilter.length > 0) {
+      handleSelectStatusChange(selectedStatusByFilter);
     }
+    if (selectedStatusByFilter != undefined && selectedReportingByFilter.length > 0) {
+      handleSelectReportingChange(selectedReportingByFilter);
+    }
+    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
+      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    }
+    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
+      handleSelectProductTypeChange(productTypeStatusByFilter);
+    }
+    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
+      handleSelectAreaChange(selectedAreaByFilter);
+    }
+    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
+      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    }
+    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
+      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    }
+    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
+      handleSelectAgeChange(selectedAgeByFilter);
+    }
+    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
+      handleSelectSingleChange(selectedSingleByFilter);
+    }
+    if (selectedGatedByFilter != undefined && selectedGatedByFilter.length > 0) {
+      handleSelectGatedChange(selectedGatedByFilter);
+    }
+    if (selectedJurisdicitionByFilter != undefined && selectedJurisdicitionByFilter.length > 0) {
+      handleSelectJurisdictionChange(selectedJurisdicitionByFilter);
+    }
+    if (seletctedGasProviderByFilter != undefined && seletctedGasProviderByFilter.length > 0) {
+      handleGasProviderChange(seletctedGasProviderByFilter);
+    }
+  }, [ selectedStatusByFilter, selectedStatusByFilter, selectedBuilderNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter, selectedGatedByFilter, selectedJurisdicitionByFilter, seletctedGasProviderByFilter]);
+
+  useEffect(() => {
+    setSearchQuery(filterString());    
   }, [filterQuery]);
 
   useEffect(() => {
@@ -790,15 +820,15 @@ const SubdivisionList = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
     setExcelLoading(true);
-    const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(BuilderListCount / recordsPage);
+    let allData = BuilderList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
-      const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+      // await delay(1000);
+      const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
     }
@@ -879,9 +909,58 @@ const SubdivisionList = () => {
 
   const HandleFilterForm = (e) => {
     e.preventDefault();
-    setFilter(true);
+    setFilter(false);
+    setNormalFilter(false);
     getbuilderlist(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
+    setTotalClosingsOption("");
+    setTotalPermitsOption("");
+    setTotalNetSalesOption("");
+    setMonthsOpenOption("");
+    setLatestLotsReleasedOption("");
+    setLatestStandingInventoryOption("");
+    setUnsoldLotsOption("");
+    setAvgSqftAllOption("");
+    setAvgSqftActiveOption("");
+    setAvgBasePriceAllOption("");
+    setAvgBasePriceActiveOption("");
+    setMinSqftAllOption("");
+    setMaxSqftAllOption("");
+    setMinBasePriceAllOption("");
+    setMinSqftActiveOption("");
+    setMaxBasePriceAllOption("");
+    setMaxSqftActiveOption("");
+    setAvgNetTrafficPerMonthThisYearOption("");
+    setAvgNetSalesPerMonthThisYearOption("");
+    setAvgClosingsPerMonthThisYearOption("");
+    setAvgNetSalesPerMonthSinceOpenOption("");
+    setAvgNetSalesPerMonthLastThreeMonthsOption("");
+    setMonthNetSoldOption("");
+    setYearNetSoldOption("");
+    setTotalClosingsResult(0);
+    setTotalPermitsResult(0);
+    setTotalNetSalesResult(0);
+    setMonthsOpenResult(0);
+    setLatestLotsReleasedResult(0);
+    setLatestStandingInventoryResult(0);
+    setUnsoldLotsResult(0);
+    setAvgSqftAllResult(0);
+    setAvgSqftActiveResult(0);
+    setAvgBasePriceAllResult(0);
+    setAvgBasePriceActiveResult(0);
+    setMinSqftAllResult(0);
+    setMaxSqftAllResult(0);
+    setMinBasePriceAllResult(0);
+    setMinSqftActiveResult(0);
+    setMaxBasePriceAllResult(0);
+    setMaxSqftActiveResult(0);
+    setAvgNetTrafficPerMonthThisYearResult(0);
+    setAvgNetSalesPerMonthThisYearResult(0);
+    setAvgClosingsPerMonthThisYearResult(0);
+    setAvgNetSalesPerMonthSinceOpenResult(0);
+    setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+    setMonthNetSoldResult(0);
+    setYearNetSoldResult(0);
   };
 
   const HandleFilter = (e) => {
@@ -908,24 +987,24 @@ const SubdivisionList = () => {
     setFilter(false);
     setFilterQuery({
       status: "",
-      product_type: "",
       reporting: "",
-      builder_name: "",
       name: "",
+      builder_name: "",
       product_type: "",
       area: "",
       masterplan_id: "",
       zipcode: "",
       lotwidth: "",
       lotsize: "",
-      zoning: "",
       age: "",
       single: "",
       gated: "",
       juridiction: "",
       gasprovider: "",
-      hoafee: "",
-      masterplan_id: "",
+      from: "",
+      to: "",
+    });
+    setFilterQueryCalculation({
       months_open: "",
       latest_lots_released: "",
       latest_standing_inventory: "",
@@ -941,18 +1020,13 @@ const SubdivisionList = () => {
       min_sqft_active_current: "",
       max_base_price_all: "",
       max_sqft_active_current: "",
-      avg_traffic_per_month_this_year: "",
+      avg_net_traffic_per_month_this_year: "",
       avg_net_sales_per_month_this_year: "",
       avg_closings_per_month_this_year: "",
       avg_net_sales_per_month_since_open: "",
       avg_net_sales_per_month_last_three_months: "",
-      sqft_group: "",
-      price_group: "",
       month_net_sold: "",
       year_net_sold: "",
-      opensince: "",
-      from: "",
-      to: "",
     });
     setSelectedStatus([]);
     setSelectedReporting([]);
@@ -1200,14 +1274,14 @@ const SubdivisionList = () => {
   }
 
   const applyFilters = () => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(!isAnyFilterApplied) {
-      getbuilderlist(currentPage, sortConfig, searchQueryByFilter);
+    if(AllBuilderListExport.length === 0) {
+      setBuilderList(BuilderList)
       return;
     }
 
-    let filtered = BuilderList;
+    let filtered = AllBuilderListExport;
 
     const applyNumberFilter = (items, query, key) => {
       if (query) {
@@ -1232,28 +1306,28 @@ const SubdivisionList = () => {
       return items;
     };
 
-    filtered = applyNumberFilter(filtered, filterQuery.months_open, 'months_open');
-    filtered = applyNumberFilter(filtered, filterQuery.latest_lots_released, 'latest_lots_released');
-    filtered = applyNumberFilter(filtered, filterQuery.latest_standing_inventory, 'latest_standing_inventory');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_sqft_all, 'avg_sqft_all');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_sqft_active, 'avg_sqft_active');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_base_price_all, 'avg_base_price_all');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_base_price_active, 'avg_base_price_active');
-    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_all, 'min_sqft_all');
-    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_active, 'min_sqft_active');
-    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_all, 'max_sqft_all');
-    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_active, 'max_sqft_active');
-    filtered = applyNumberFilter(filtered, filterQuery.min_base_price_all, 'min_base_price_all');
-    filtered = applyNumberFilter(filtered, filterQuery.min_sqft_active_current, 'min_sqft_active_current');
-    filtered = applyNumberFilter(filtered, filterQuery.max_base_price_all, 'max_base_price_all');
-    filtered = applyNumberFilter(filtered, filterQuery.max_sqft_active_current, 'max_sqft_active_current');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_net_traffic_per_month_this_year, 'avg_net_traffic_per_month_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_since_open, 'avg_net_sales_per_month_since_open');
-    filtered = applyNumberFilter(filtered, filterQuery.avg_net_sales_per_month_last_three_months, 'avg_net_sales_per_month_last_three_months');
-    filtered = applyNumberFilter(filtered, filterQuery.month_net_sold, 'month_net_sold');
-    filtered = applyNumberFilter(filtered, filterQuery.year_net_sold, 'year_net_sold');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.months_open, 'months_open');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.latest_lots_released, 'latest_lots_released');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.latest_standing_inventory, 'latest_standing_inventory');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_sqft_all, 'avg_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_sqft_active, 'avg_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_base_price_all, 'avg_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_base_price_active, 'avg_base_price_active');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.min_sqft_all, 'min_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.min_sqft_active, 'min_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.max_sqft_all, 'max_sqft_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.max_sqft_active, 'max_sqft_active');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.min_base_price_all, 'min_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.min_sqft_active_current, 'min_sqft_active_current');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.max_base_price_all, 'max_base_price_all');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.max_sqft_active_current, 'max_sqft_active_current');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_net_traffic_per_month_this_year, 'avg_net_traffic_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_net_sales_per_month_this_year, 'avg_net_sales_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_closings_per_month_this_year, 'avg_closings_per_month_this_year');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_net_sales_per_month_since_open, 'avg_net_sales_per_month_since_open');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.avg_net_sales_per_month_last_three_months, 'avg_net_sales_per_month_last_three_months');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.month_net_sold, 'month_net_sold');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.year_net_sold, 'year_net_sold');
 
     if (filterQuery.sqft_group) {
       filtered = filtered.filter((item) =>
@@ -1266,228 +1340,401 @@ const SubdivisionList = () => {
       );
     }
 
-    if (isAnyFilterApplied && !normalFilter) {
+    if (isAnyFilterApplied) {
       setBuilderList(filtered.slice(0, 100));
+      setBuilderListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
       setFilter(true);
       setNormalFilter(false);
     } else {
       setBuilderList(filtered.slice(0, 100));
+      setBuilderListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
       setFilter(false);
       setNormalFilter(false);
-      setTotalClosingsOption("");
-      setTotalPermitsOption("");
-      setTotalNetSalesOption("");
-      setMonthsOpenOption("");
-      setLatestLotsReleasedOption("");
-      setLatestStandingInventoryOption("");
-      setUnsoldLotsOption("");
-      setAvgSqftAllOption("");
-      setAvgSqftActiveOption("");
-      setAvgBasePriceAllOption("");
-      setAvgBasePriceActiveOption("");
-      setMinSqftAllOption("");
-      setMaxSqftAllOption("");
-      setMinBasePriceAllOption("");
-      setMinSqftActiveOption("");
-      setMaxBasePriceAllOption("");
-      setMaxSqftActiveOption("");
-      setAvgNetTrafficPerMonthThisYearOption("");
-      setAvgNetSalesPerMonthThisYearOption("");
-      setAvgClosingsPerMonthThisYearOption("");
-      setAvgNetSalesPerMonthSinceOpenOption("");
-      setAvgNetSalesPerMonthLastThreeMonthsOption("");
-      setMonthNetSoldOption("");
-      setYearNetSoldOption("");
-      setTotalClosingsResult(0);
-      setTotalPermitsResult(0);
-      setTotalNetSalesResult(0);
-      setMonthsOpenResult(0);
-      setLatestLotsReleasedResult(0);
-      setLatestStandingInventoryResult(0);
-      setUnsoldLotsResult(0);
-      setAvgSqftAllResult(0);
-      setAvgSqftActiveResult(0);
-      setAvgBasePriceAllResult(0);
-      setAvgBasePriceActiveResult(0);
-      setMinSqftAllResult(0);
-      setMaxSqftAllResult(0);
-      setMinBasePriceAllResult(0);
-      setMinSqftActiveResult(0);
-      setMaxBasePriceAllResult(0);
-      setMaxSqftActiveResult(0);
-      setAvgNetTrafficPerMonthThisYearResult(0);
-      setAvgNetSalesPerMonthThisYearResult(0);
-      setAvgClosingsPerMonthThisYearResult(0);
-      setAvgNetSalesPerMonthSinceOpenResult(0);
-      setAvgNetSalesPerMonthLastThreeMonthsResult(0);
-      setMonthNetSoldResult(0);
-      setYearNetSoldResult(0);
     }
+    setTotalClosingsOption("");
+    setTotalPermitsOption("");
+    setTotalNetSalesOption("");
+    setMonthsOpenOption("");
+    setLatestLotsReleasedOption("");
+    setLatestStandingInventoryOption("");
+    setUnsoldLotsOption("");
+    setAvgSqftAllOption("");
+    setAvgSqftActiveOption("");
+    setAvgBasePriceAllOption("");
+    setAvgBasePriceActiveOption("");
+    setMinSqftAllOption("");
+    setMaxSqftAllOption("");
+    setMinBasePriceAllOption("");
+    setMinSqftActiveOption("");
+    setMaxBasePriceAllOption("");
+    setMaxSqftActiveOption("");
+    setAvgNetTrafficPerMonthThisYearOption("");
+    setAvgNetSalesPerMonthThisYearOption("");
+    setAvgClosingsPerMonthThisYearOption("");
+    setAvgNetSalesPerMonthSinceOpenOption("");
+    setAvgNetSalesPerMonthLastThreeMonthsOption("");
+    setMonthNetSoldOption("");
+    setYearNetSoldOption("");
+    setTotalClosingsResult(0);
+    setTotalPermitsResult(0);
+    setTotalNetSalesResult(0);
+    setMonthsOpenResult(0);
+    setLatestLotsReleasedResult(0);
+    setLatestStandingInventoryResult(0);
+    setUnsoldLotsResult(0);
+    setAvgSqftAllResult(0);
+    setAvgSqftActiveResult(0);
+    setAvgBasePriceAllResult(0);
+    setAvgBasePriceActiveResult(0);
+    setMinSqftAllResult(0);
+    setMaxSqftAllResult(0);
+    setMinBasePriceAllResult(0);
+    setMinSqftActiveResult(0);
+    setMaxBasePriceAllResult(0);
+    setMaxSqftActiveResult(0);
+    setAvgNetTrafficPerMonthThisYearResult(0);
+    setAvgNetSalesPerMonthThisYearResult(0);
+    setAvgClosingsPerMonthThisYearResult(0);
+    setAvgNetSalesPerMonthSinceOpenResult(0);
+    setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+    setMonthNetSoldResult(0);
+    setYearNetSoldResult(0);
   };
 
   useEffect(() => {
-    if(filter) {
-      applyFilters();
-    }
-  }, [filterQuery]);
+    applyFilters();
+  }, [filterQueryCalculation]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFilterQuery(prevFilterQuery => ({
+    setFilterQueryCalculation(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
     }));
     setFilter(true);
-    setNormalFilter(false);
   };
 
   const totalSumFields = (field) => {
-    if (field == "total_closings") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_closings || 0);
-      }, 0);
+    if(field == "total_closings") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_closings || 0);
+        }, 0);
+      }
     }
-    if (field == "total_permits") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_permits || 0);
-      }, 0);
+    if(field == "total_permits") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);  
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_permits || 0);
+        }, 0);
+      }
     }
-    if (field == "total_net_sales") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.total_net_sales || 0);
-      }, 0);
+    if(field == "total_net_sales") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.total_net_sales || 0);
+        }, 0);
+      }
     }
-    if (field == "months_open") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.months_open || 0);
-      }, 0);
+    if(field == "months_open") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.months_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.months_open || 0);
+        }, 0);
+      }
     }
-    if (field == "latest_lots_released") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.latest_lots_released || 0);
-      }, 0);
+    if(field == "latest_lots_released") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.latest_lots_released || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.latest_lots_released || 0);
+        }, 0);
+      }
     }
-    if (field == "latest_standing_inventory") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.latest_standing_inventory || 0);
-      }, 0);
+    if(field == "latest_standing_inventory") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.latest_standing_inventory || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.latest_standing_inventory || 0);
+        }, 0);
+      }
     }
-    if (field == "unsold_lots") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.unsold_lots || 0);
-      }, 0);
+    if(field == "unsold_lots") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.unsold_lots || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.unsold_lots || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_sqft_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_sqft_all || 0);
-      }, 0);
+    if(field == "avg_sqft_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_all || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_sqft_active") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_sqft_active || 0);
-      }, 0);
+    if(field == "avg_sqft_active") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_sqft_active || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_base_price_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_base_price_all || 0);
-      }, 0);
+    if(field == "avg_base_price_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_all || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_base_price_active") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_base_price_active || 0);
-      }, 0);
+    if(field == "avg_base_price_active") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_base_price_active || 0);
+        }, 0);
+      }
     }
-    if (field == "min_sqft_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.min_sqft_all || 0);
-      }, 0);
+    if(field == "min_sqft_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_all || 0);
+        }, 0);
+      }
     }
-    if (field == "max_sqft_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.max_sqft_all || 0);
-      }, 0);
+    if(field == "max_sqft_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_all || 0);
+        }, 0);
+      }
     }
-    if (field == "min_base_price_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.min_base_price_all || 0);
-      }, 0);
+    if(field == "min_base_price_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_base_price_all || 0);
+        }, 0);
+      }
     }
-    if (field == "min_sqft_active") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.min_sqft_active || 0);
-      }, 0);
+    if(field == "min_sqft_active") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.min_sqft_active || 0);
+        }, 0);
+      }
     }
-    if (field == "max_base_price_all") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.max_base_price_all || 0);
-      }, 0);
+    if(field == "max_base_price_all") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_base_price_all || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_base_price_all || 0);
+        }, 0);
+      }
     }
-    if (field == "max_sqft_active") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.max_sqft_active || 0);
-      }, 0);
+    if(field == "max_sqft_active") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_active || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.max_sqft_active || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_net_traffic_per_month_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_net_traffic_per_month_this_year || 0);
-      }, 0);
+    if(field == "avg_net_traffic_per_month_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_traffic_per_month_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_net_sales_per_month_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_this_year || 0);
-      }, 0);
+    if(field == "avg_net_sales_per_month_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_closings_per_month_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_closings_per_month_this_year || 0);
-      }, 0);
+    if(field == "avg_closings_per_month_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_closings_per_month_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_net_sales_per_month_since_open") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_since_open || 0);
-      }, 0);
+    if(field == "avg_net_sales_per_month_since_open") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_since_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_since_open || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_net_sales_per_month_last_three_months") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
-      }, 0);
+    if(field == "avg_net_sales_per_month_last_three_months") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
+        }, 0);
+      }
     }
-    if (field == "month_net_sold") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.month_net_sold || 0);
-      }, 0);
+    if(field == "month_net_sold") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.month_net_sold || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.month_net_sold || 0);
+        }, 0);
+      }
     }
-    if (field == "year_net_sold") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.year_net_sold || 0);
-      }, 0);
+    if(field == "year_net_sold") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.year_net_sold || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.year_net_sold || 0);
+        }, 0);
+      }
     }
-    if (field == "avg_closing_price") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.avg_closing_price || 0);
-      }, 0);
+    if(field == "avg_closing_price") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.avg_closing_price || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.avg_closing_price || 0);
+        }, 0);
+      }
     }
-    if (field == "permit_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.permit_this_year || 0);
-      }, 0);
+    if(field == "permit_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.permit_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.permit_this_year || 0);
+        }, 0);
+      }
     }
-    if (field == "median_closing_price_since_open") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.median_closing_price_since_open || 0);
-      }, 0);
+    if(field == "median_closing_price_since_open") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_since_open || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_since_open || 0);
+        }, 0);
+      }
     }
-    if (field == "median_closing_price_this_year") {
-      return BuilderList.reduce((sum, builder) => {
-        return sum + (builder.median_closing_price_this_year || 0);
-      }, 0);
+    if(field == "median_closing_price_this_year") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      } else{
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.median_closing_price_this_year || 0);
+        }, 0);
+      }
     }
   };
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    return sum / BuilderList.length;
+    if(filter){
+      return sum / BuilderList.length;
+    } else{
+      return sum / AllBuilderListExport.length;
+    }
   };
 
   const handleSelectChange = (e, field) => {
@@ -3367,6 +3614,7 @@ const SubdivisionList = () => {
       ...prevState,
       area: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const masterPlanOption = [
@@ -3422,6 +3670,7 @@ const SubdivisionList = () => {
       ...prevState,
       masterplan_id: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const jurisdictionOption = [
@@ -3458,6 +3707,7 @@ const SubdivisionList = () => {
       ...prevState,
       juridiction: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const zipCodeOption = [
@@ -3496,6 +3746,7 @@ const SubdivisionList = () => {
       ...prevState,
       zipcode: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const gasProviderOption = [
@@ -3511,6 +3762,7 @@ const SubdivisionList = () => {
       ...prevState,
       gasprovider: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
@@ -3523,6 +3775,7 @@ const SubdivisionList = () => {
       ...prevState,
       builder_name: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectStatusChange = (selectedItems) => {
@@ -3534,6 +3787,7 @@ const SubdivisionList = () => {
       ...prevState,
       status: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectReportingChange = (selectedItems) => {
@@ -3546,6 +3800,7 @@ const SubdivisionList = () => {
       ...prevState,
       reporting: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectProductTypeChange = (selectedItems) => {
@@ -3558,6 +3813,7 @@ const SubdivisionList = () => {
       ...prevState,
       product_type: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectAgeChange = (selectedItems) => {
@@ -3570,6 +3826,7 @@ const SubdivisionList = () => {
       ...prevState,
       age: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectSingleChange = (selectedItems) => {
@@ -3583,6 +3840,7 @@ const SubdivisionList = () => {
       ...prevState,
       age: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleSelectGatedChange = (selectedItems) => {
@@ -3596,6 +3854,7 @@ const SubdivisionList = () => {
       ...prevState,
       gated: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const handleFilterDateFrom = (date) => {
@@ -3613,6 +3872,7 @@ const SubdivisionList = () => {
         from: '',
       }));
     }
+    setNormalFilter(true);
   };
 
   const handleFilterDateTo = (date) => {
@@ -3630,6 +3890,7 @@ const SubdivisionList = () => {
         to: '',
       }));
     }
+    setNormalFilter(true);
   };
 
   const parseDate = (dateString) => {
@@ -5565,90 +5826,90 @@ const SubdivisionList = () => {
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MONTHS OPEN:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQuery.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">LATEST LOTS RELEASED:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQuery.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">LATEST STANDING INVENTORY:{" "}</label>
-                      <input value={filterQuery.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG SQFT ALL:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQuery.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG SQFT ACTIVE:{" "}</label>
-                      <input value={filterQuery.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG BASE PRICE ALL:{" "}</label>
-                      <input value={filterQuery.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG BASE PRICE ACTIVE:{" "}</label>
-                      <input value={filterQuery.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MIN SQFT ALL:{" "}</label>
-                      <input value={filterQuery.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
-                      <input value={filterQuery.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MAX SQFT ALL:{" "}</label>
-                      <input value={filterQuery.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MAX SQFT ACTIVE:{" "}</label>
-                      <input value={filterQuery.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MIN BASE PRICE ALL:{" "}</label>
-                      <input value={filterQuery.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MIN BASE PRICE ACTIVE:{" "}</label>
-                      <input value={filterQuery.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MAX BASE PRICE ALL:{" "}</label>
-                      <input value={filterQuery.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MAX BASE PRICE ACTIVE:{" "}</label>
-                      <input value={filterQuery.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:{" "}</label>
-                      <input value={filterQuery.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
-                      <input value={filterQuery.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div><div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
-                      <input value={filterQuery.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:{" "}</label>
-                      <input value={filterQuery.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:{" "}</label>
-                      <input value={filterQuery.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">MONTH NET SOLD:{" "}</label>
-                      <input value={filterQuery.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">YEAR NET SOLD:{" "}</label>
-                      <input value={filterQuery.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
                     </div>
                   </div>
                 </div></>}
