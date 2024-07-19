@@ -480,7 +480,6 @@ const ProductList = () => {
   }
 
   useEffect(() => {
-    debugger
     setSearchQuery(filterString());
   }, [filterQuery]);
 
@@ -722,7 +721,6 @@ const ProductList = () => {
     navigate("/pricelist");
   };
   const requestSort = (key) => {
-    debugger
     let direction = "asc";
 
     const newSortConfig = [...sortConfig];

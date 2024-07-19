@@ -560,7 +560,7 @@ const ClosingList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllClosingListExport(responseData.data);
@@ -578,14 +578,14 @@ const ClosingList = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, ClosingList, closingListCount) => {
     setExcelLoading(true);
-    const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(closingListCount / recordsPage);
+    let allData = ClosingList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminClosingService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
