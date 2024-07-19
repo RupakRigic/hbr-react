@@ -1010,10 +1010,14 @@ const BuilderTable = () => {
 
     if (isAnyFilterApplied) {
       setBuilderList(filtered.slice(0, 100));
+      setBuilderListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
       setFilter(true);
       setNormalFilter(false);
     } else {
       setBuilderList(filtered.slice(0, 100));
+      setBuilderListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
       setFilter(false);
       setNormalFilter(false);
