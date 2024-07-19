@@ -449,7 +449,7 @@ const FilterClosings = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Filter Weekly Traffic & Sales</h2>
+            <h2>Filter Closings</h2>
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">

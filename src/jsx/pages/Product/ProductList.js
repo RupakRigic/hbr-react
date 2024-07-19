@@ -29,8 +29,6 @@ const ProductList = () => {
 
   const { searchQueryByFilter,  selectedStatusByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, nameByFilter, sqftByFilter, storiesByFilter, bedroomByFilter, bathroomByFilter, garageByFilter, current_base_priceByFilter, product_typeByFilter, areaByFilter, masterplan_idByFilter, zipcodeByFilter, lotwidthByFilter, lotsizeByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
 
-  const [isAnyFilterApplied, setIsAnyFilterApplied] = useState(false);
-
   const [excelLoading, setExcelLoading] = useState(true);
 
   const SyestemUserRole = localStorage.getItem("user")
@@ -70,7 +68,7 @@ const ProductList = () => {
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState(!isAnyFilterApplied ? searchQueryByFilter : "");
+  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
   const [productList, setProductList] = useState([]);
   const [productListCount, setProductsListCount] = useState('');
   const [SubdivisionList, SetSubdivisionList] = useState([]);
@@ -172,7 +170,7 @@ const ProductList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = AllProductListExport.map((row) => {
+    const tableData = (filter ? productList : AllProductListExport).map((row) => {
       const mappedRow = {};
       tableHeaders.forEach((header) => {
         switch (header) {
@@ -299,6 +297,8 @@ const ProductList = () => {
     lotsize: lotsizeByFilter ? lotsizeByFilter : "",
     age: "",
     single: "",
+  });
+  const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     current_price_per_sqft: "",
     price_changes_since_open: "",
     price_changes_last_12_Month: "",
@@ -428,6 +428,7 @@ const ProductList = () => {
 
   const getproductList = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
@@ -445,7 +446,7 @@ const ProductList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductsListCount(responseData.total);
       if(responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig);
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
         setAllBuilderExport(responseData.data);
@@ -462,14 +463,14 @@ const ProductList = () => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const FetchAllPages = async (searchQuery, sortConfig) => {
+  const FetchAllPages = async (searchQuery, sortConfig, productList, productListCount) => {
     setExcelLoading(true);
-    const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+    // const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+    // const responseData = await response.json();
+    const totalPages = Math.ceil(productListCount / recordsPage);
+    let allData = productList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminProductService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
@@ -479,14 +480,14 @@ const ProductList = () => {
   }
 
   useEffect(() => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
-    setIsAnyFilterApplied(isAnyFilterApplied);
-    if (isAnyFilterApplied) {
-      setSearchQuery(filterString());
-    } else {
-      setSearchQuery(searchQuery);
-    }
+    debugger
+    setSearchQuery(filterString());
   }, [filterQuery]);
+
+  useEffect(() => {
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -495,11 +496,6 @@ const ProductList = () => {
       navigate("/");
     }
   }, [currentPage]);
-
-  useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
 
   const GetBuilderDropDownList = async () => {
     try {
@@ -538,10 +534,8 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    if (filter) {
-      applyFilters();
-    }
-  }, [filterQuery]);
+    applyFilters();
+  }, [filterQueryCalculation]);
 
   const handleDelete = async (e) => {
     try {
@@ -708,10 +702,12 @@ const ProductList = () => {
       lotwidth:"",
       lotsize: "",
       age: "",
-      single: "",
+      single: ""
+    })
+    setFilterQueryCalculation({
       current_price_per_sqft: "",
       price_changes_since_open: "",
-      price_changes_last_12_Month: "",
+      price_changes_last_12_Month: ""
     });
     setSelectedStatus([]);
     setSelectedBuilderName([]);
@@ -726,6 +722,7 @@ const ProductList = () => {
     navigate("/pricelist");
   };
   const requestSort = (key) => {
+    debugger
     let direction = "asc";
 
     const newSortConfig = [...sortConfig];
@@ -861,14 +858,14 @@ const ProductList = () => {
   }
 
   const applyFilters = () => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(!isAnyFilterApplied) {
-      getproductList(currentPage, sortConfig, searchQueryByFilter);
+    if(AllProductListExport.length === 0) {
+      setProductList(productList);
       return;
     }
 
-    let filtered = productList;
+    let filtered = AllProductListExport;
 
     const applyNumberFilter = (items, query, key) => {
       if (query) {
@@ -893,16 +890,20 @@ const ProductList = () => {
       return items;
     };
 
-    filtered = applyNumberFilter(filtered, filterQuery.current_price_per_sqft, 'current_price_per_sqft');
-    filtered = applyNumberFilter(filtered, filterQuery.price_changes_since_open, 'price_changes_since_open');
-    filtered = applyNumberFilter(filtered, filterQuery.price_changes_last_12_Month, 'price_changes_last_12_Month');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.current_price_per_sqft, 'current_price_per_sqft');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_since_open, 'price_changes_since_open');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_last_12_Month, 'price_changes_last_12_Month');
 
-    if (isAnyFilterApplied && !normalFilter) {
+    if (isAnyFilterApplied) {
       setProductList(filtered.slice(0, 100));
-      setFilter(false);
+      setProductsListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setFilter(true);
       setNormalFilter(false);
     } else {
       setProductList(filtered.slice(0, 100));
+      setProductsListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
       setFilter(false);
       setNormalFilter(false);
@@ -910,21 +911,20 @@ const ProductList = () => {
   };
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
-  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
-  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
-  const [selectedStatus, setSelectedStatus] = useState(selectedStatusByFilter);
+  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter == undefined ? [] : selectedBuilderNameByFilter);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter == undefined ? [] : selectedSubdivisionNameByFilter);
+  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter == undefined ? [] : selectedAgeByFilter);
+  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter == undefined ? [] : selectedSingleByFilter);
+  const [selectedStatus, setSelectedStatus] = useState(selectedStatusByFilter == undefined ? [] : selectedStatusByFilter);
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFilterQuery(prevFilterQuery => ({
+    setFilterQueryCalculation(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
     }));
     setFilter(true);
-    setNormalFilter(false);
   };
 
   const ageOptions = [
@@ -1452,6 +1452,7 @@ const ProductList = () => {
         ref={product}
         Title="Add Product"
         parentCallback={handleCallback}
+        SubdivisionList={SubdivisionList}
       />
 
       <BulkProductUpdate
@@ -1459,6 +1460,7 @@ const ProductList = () => {
         Title="Bulk Edit Product sale"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
+        SubdivisionList={SubdivisionList}
       />
 
       <Modal show={show} onHide={handleClose}>
@@ -1689,15 +1691,15 @@ const ProductList = () => {
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">CURRENT PRICE PER SQFT:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQuery.current_price_per_sqft} name="current_price_per_sqft" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.current_price_per_sqft} name="current_price_per_sqft" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">PRICE CHANGE SINCE OPEN:{" "}</label>
-                      <input value={filterQuery.price_changes_since_open} name="price_changes_since_open" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.price_changes_since_open} name="price_changes_since_open" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">PRICE CHANGE LAST 12 MONTHS:{" "}</label>
-                      <input value={filterQuery.price_changes_last_12_Month} name="price_changes_last_12_Month" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.price_changes_last_12_Month} name="price_changes_last_12_Month" className="form-control" onChange={handleInputChange} />
                     </div>
                   </div>
                 </div></>}

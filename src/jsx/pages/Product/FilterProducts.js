@@ -34,10 +34,7 @@ const FilterProducts = () => {
         lotwidth:"",
         lotsize: "",
         age: "",
-        single: "",
-        current_price_per_sqft: "",
-        price_changes_since_open: "",
-        price_changes_last_12_Month: "",
+        single: ""
     });
 
     useEffect(() => {
@@ -216,10 +213,7 @@ const FilterProducts = () => {
             lotwidth:"",
             lotsize: "",
             age: "",
-            single: "",
-            current_price_per_sqft: "",
-            price_changes_since_open: "",
-            price_changes_last_12_Month: "",
+            single: ""
         });
         setSelectedStatusByFilter([]);
         setSelectedBuilderNameByFilter([]);
@@ -230,7 +224,7 @@ const FilterProducts = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Filter Base Price</h2>
+            <h2>Filter Products</h2>
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">

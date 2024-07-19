@@ -65,7 +65,7 @@ const BuilderTable = () => {
     name: "",
     is_active: "",
     active_communities: active_communitiesByFilter ? active_communitiesByFilter : "",
-    company_type: "",
+    company_type: ""
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     closing_this_year: "",
@@ -80,7 +80,7 @@ const BuilderTable = () => {
     total_permits: "",
     total_net_sales: "",
     date_of_first_closing: "",
-    date_of_latest_closing: "",
+    date_of_latest_closing: ""
   });
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
@@ -726,7 +726,7 @@ const BuilderTable = () => {
       name: "",
       is_active: "",
       active_communities: "",
-      company_type: "",
+      company_type: ""
     });
     setFilterQueryCalculation({
       closing_this_year: "",
@@ -741,7 +741,7 @@ const BuilderTable = () => {
       total_permits: "",
       total_net_sales: "",
       date_of_first_closing: "",
-      date_of_latest_closing: "",
+      date_of_latest_closing: ""
     });
     setSelectedBuilderName([]);
     setSelectedStatus([]);

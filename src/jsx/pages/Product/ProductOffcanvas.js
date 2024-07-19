@@ -2,20 +2,19 @@ import React, {
   useState,
   forwardRef,
   useImperativeHandle,
-  useEffect,
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Offcanvas, Form } from "react-bootstrap";
-import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import swal from "sweetalert";
+import Select from "react-select";
 
 const ProductOffcanvas = forwardRef((props, ref) => {
+  const { SubdivisionList } = props;
   const navigate = useNavigate();
   const [Error, setError] = useState("");
   const [addProduct, setAddProduct] = useState(false);
   const [SubdivisionCode, setSubdivisionCode] = useState("");
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
 
   useImperativeHandle(ref, () => ({
     showEmployeModal() {
@@ -23,30 +22,8 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     },
   }));
 
-  const GetSubdivisionDropDownList = async () => {
-    try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
-      const responseData = await response.json();
-      const formattedData = responseData.data.map((subdivision) => ({
-        label: subdivision.name,
-        value: subdivision.id,
-      }));
-      SetSubdivisionList(formattedData);
-    } catch (error) {
-      console.log("Error fetching subdivision list:", error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        console.log(errorJson);
-      }
-    }
-  };
-
-  useEffect(() => {
-    GetSubdivisionDropDownList();
-  }, []);
-
   const handleSubdivisionCode = (code) => {
-    setSubdivisionCode(code.target.value);
+    setSubdivisionCode(code);
   };
 
   const handleSubmit = async (event) => {
@@ -79,7 +56,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(
           errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
         );
@@ -112,20 +88,15 @@ const ProductOffcanvas = forwardRef((props, ref) => {
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-xl-6 mb-3">
-                  <label className="form-label">
-                    Subdivision<span className="text-danger">*</span>
-                  </label>
+                  <label className="form-label">Subdivision</label>
                   <Form.Group controlId="tournamentList">
-                    <Form.Select
+                    <Select
+                      options={SubdivisionList}
                       onChange={handleSubdivisionCode}
+                      getOptionValue={(option) => option.name}
+                      getOptionLabel={(option) => option.label}
                       value={SubdivisionCode}
-                      className="default-select form-control"
-                    >
-                      <option value="">Select Subdivision</option>
-                      {SubdivisionList.map((element) => (
-                        <option value={element.value}>{element.label}</option>
-                      ))}
-                    </Form.Select>
+                    ></Select>
                   </Form.Group>
                 </div>
                 <div className="col-xl-6 mb-3">
