@@ -19,6 +19,8 @@ const FilterBasePrice = () => {
     const [seletctedZipcodeByFilter, setSelectedZipcodeByFilter] = useState([]);
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
     const [selectedSingleByFilter, setSelectedSingleByFilter] = useState([]);
+    const [selectedSubdivisionStatusByFilter, setSelectedSubdivisionStatusByFilter] = useState([]);
+    const [selectedProductStatusByFilter, setSelectedProductStatusByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterQuery, setFilterQuery] = useState({
         from: "",
@@ -40,7 +42,9 @@ const FilterBasePrice = () => {
         lotwidth: "",
         lotsize: "",
         age: "",
-        single: ""
+        single: "",
+        product_status:"",
+        subdivision_status:""
     });
 
     useEffect(() => {
@@ -250,6 +254,24 @@ const FilterBasePrice = () => {
         }));
     };
 
+    const handleSelectProductStatusChange = (selectedItems) => {
+        const selectedNames = selectedItems.map(item => item.value).join(', ');
+        setSelectedProductStatusByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            product_status: selectedNames
+        }));
+    }
+
+    const handleSelectSubdivisionStatusChange = (selectedItems) => {
+        const selectedNames = selectedItems.map(item => item.value).join(', ');
+        setSelectedSubdivisionStatusByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            subdivision_status: selectedNames
+        }));
+    };
+
     const productTypeOptions = [
         { value: "DET", label: "DET" },
         { value: "ATT", label: "ATT" },
@@ -353,6 +375,18 @@ const FilterBasePrice = () => {
         { value: "0", label: "No" }
     ];
 
+    const productStatusOptions = [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Sold Out" },
+        { value: "2", label: "Future" }
+    ];
+
+    const subdivisionStatusOptions = [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Sold Out" },
+        { value: "2", label: "Future" }
+    ];
+
     const HandleCancelFilter = (e) => {
         setFilterQuery({
             from: "",
@@ -374,7 +408,9 @@ const FilterBasePrice = () => {
             lotwidth: "",
             lotsize: "",
             age: "",
-            single: ""
+            single: "",
+            product_status:"",
+            subdivision_status:""
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);
@@ -384,6 +420,8 @@ const FilterBasePrice = () => {
         setSelectedZipcodeByFilter([]);
         setSelectedAgeByFilter([]);
         setSelectedSingleByFilter([]);
+        setSelectedProductStatusByFilter([]);
+        setSelectedSubdivisionStatusByFilter([]);
     };
 
     return (
@@ -401,7 +439,6 @@ const FilterBasePrice = () => {
                             dateFormat="MM/dd/yyyy"
                             placeholderText="mm/dd/yyyy"
                         />
-
                     </div>
                     <div className="col-md-3 mt-3">
                         <label className="form-label">To:{" "}</label>
@@ -536,6 +573,26 @@ const FilterBasePrice = () => {
                             value={selectedSingleByFilter}
                             onChange={handleSelectSingleChange}
                             placeholder={"Select Single"}
+                        />
+                    </div>
+                    <div className="col-md-3 mt-3">
+                        <label className="form-label">PRODUCT STATUS:{" "}</label>
+                        <MultiSelect
+                            name="status"
+                            options={productStatusOptions}
+                            value={selectedProductStatusByFilter}
+                            onChange={handleSelectProductStatusChange}
+                            placeholder={"Select Product Status"}
+                        />
+                    </div>
+                    <div className="col-md-3 mt-3">
+                        <label className="form-label">SUBDIVISION STATUS:{" "}</label>
+                        <MultiSelect
+                            name="status"
+                            options={subdivisionStatusOptions}
+                            value={selectedSubdivisionStatusByFilter}
+                            onChange={handleSelectSubdivisionStatusChange}
+                            placeholder={"Select Subdivision Status"}
                         />
                     </div>
                 </div>
