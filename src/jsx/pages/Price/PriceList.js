@@ -19,6 +19,7 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
+import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 
 const PriceList = () => {
   const location = useLocation();
@@ -292,6 +293,7 @@ const PriceList = () => {
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(true);
+  const [ProductList, setProductList] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -841,6 +843,28 @@ const PriceList = () => {
       setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
     }
   };
+
+  const GetProductDropDownList = async () => {
+    try {
+        const response = await AdminProductService.productDropDown();
+        const responseData = await response.json();
+        const formattedData = responseData.map((product) => ({
+            label: product.name,
+            value: product.id,
+        }));
+        setProductList(formattedData);
+    } catch (error) {
+        console.log("Error fetching builder list:", error);
+        if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+        }
+    }
+};
+
+useEffect(() => {
+    GetProductDropDownList();
+}, []);
 
   useEffect(() => {
     const mappedColumns = fieldList.map((data) => ({
@@ -1437,6 +1461,7 @@ const PriceList = () => {
         ref={product}
         Title="Add Base Price"
         parentCallback={handleCallback}
+        productList={ProductList}
       />
 
       <BulkPriceUpdate
@@ -1444,6 +1469,7 @@ const PriceList = () => {
         Title="Bulk Edit Base Price"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
+        productList={ProductList}
       />
 
       <Offcanvas

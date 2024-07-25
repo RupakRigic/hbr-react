@@ -1,11 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
-// import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
-// import AdminSubdivisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
+import Select from "react-select";
 
 const ProductOffcanvas = forwardRef((props, ref) => {
     const navigate = useNavigate();
@@ -13,10 +11,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     const [addProduct, setAddProduct] = useState(false);
     const [ProductCode, setProductCode] = useState('');
     const [ProductList, setProductList] = useState([]);
-    // const [builderList, setBuilderList] = useState([]);
-    // const [BuilderCode, setBuilderCode] = useState('');
-    // const [subDivisionList, setSubDivisionList] = useState([]);
-    // const [SubDivisionCode, setDivisionCode] = useState('');
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -24,78 +18,13 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         }
     }));
 
-    // const GetBuilderDropDownList = async () => {
-    //     try {
-    //         const response = await AdminBuilderService.builderDropDown();
-    //         const responseData = await response.json();
-    //         const formattedData = responseData.map((builder) => ({
-    //             label: builder.name,
-    //             value: builder.id,
-    //         }));
-    //         setBuilderList(formattedData);
-    //     } catch (error) {
-    //         console.log("Error fetching builder list:", error);
-    //         if (error.name === "HTTPError") {
-    //             const errorJson = await error.response.json();
-    //             setError(errorJson.message);
-    //         }
-    //     }
-    // };
-
-    const GetProductDropDownList = async () => {
-        try {
-            const response = await AdminProductService.productDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.map((product) => ({
-                label: product.name,
-                value: product.id,
-            }));
-            setProductList(formattedData);
-        } catch (error) {
-            console.log("Error fetching builder list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
     useEffect(() => {
-        // GetBuilderDropDownList();
-        GetProductDropDownList();
-    }, []);
+        setProductList(props.productList);
+    }, [props.productList]);
 
     const handleProductCode = (code) => {
         setProductCode(code.target.value);
     };
-
-    // const handleBuilderCode = async (event) => {
-    //     setBuilderCode(event.target.value);
-    //     try {
-    //         const response = await AdminSubdivisionService.getByBuilderId(event.target.value)
-    //         const responseData = await response.json();
-    //         setSubDivisionList(responseData);
-    //     } catch (error) {
-    //         if (error.name === 'HTTPError') {
-    //             const errorJson = await error.response.json();
-    //             setError(errorJson.message);
-    //         }
-    //     }
-    // };
-
-    // const handleSubDivisionCode = async (event) => {
-    //     setDivisionCode(event.target.value);
-    //     try {
-    //         const response = await AdminProductService.getBySubDivisionId(event.target.value)
-    //         const responseData = await response.json();
-    //         setProductList(responseData.data);
-    //     } catch (error) {
-    //         if (error.name === 'HTTPError') {
-    //             const errorJson = await error.response.json();
-    //             setError(errorJson.message);
-    //         }
-    //     }
-    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -110,7 +39,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 swal("Product Price Create Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddProduct(false);
-                        props.parentCallback();
                         navigate('/priceList');
                     }
                 })
@@ -140,36 +68,6 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     <div className="container-fluid">
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                {/* <div className="col-xl-4 mb-3">
-                                    <label className="form-label">Builder<span className="text-danger">*</span></label>
-                                    <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={handleBuilderCode}
-                                            value={BuilderCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Builder</option>
-                                            {builderList.map((element) => (
-                                                <option value={element.value}>{element.label}</option>
-                                            ))}
-                                        </Form.Select>
-                                    </Form.Group>
-                                </div>
-                                <div className="col-xl-4 mb-3">
-                                    <label className="form-label">Sub Division<span className="text-danger">*</span></label>
-                                    <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={handleSubDivisionCode}
-                                            value={SubDivisionCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Sub Division</option>
-                                            {subDivisionList.map((element) => (
-                                                <option value={element.id}>{element.name}</option>
-                                            ))}
-                                        </Form.Select>
-                                    </Form.Group>
-                                </div> */}
                                 <div className="col-xl-4 mb-3">
                                     <label className="form-label">Product<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">

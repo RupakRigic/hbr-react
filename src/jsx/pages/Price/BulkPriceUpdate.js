@@ -1,9 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
-import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
+import Select from "react-select";
 
 
 const BulkPriceUpdate = forwardRef((props, ref) => {
@@ -14,8 +14,6 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
     const [ProductList, setProductList] = useState([]);
     const [ProductCode, setProductCode] = useState("");
     const [PriceList, setPriceList] = useState("");
-
-    const params = useParams();
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -29,27 +27,9 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
 
     const navigate = useNavigate();
 
-    const GetProductDropDownList = async () => {
-        try {
-            const response = await AdminProductService.productDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.map((product) => ({
-                label: product.name,
-                value: product.id,
-            }));
-            setProductList(formattedData);
-        } catch (error) {
-            console.log("Error fetching builder list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
     useEffect(() => {
-        GetProductDropDownList();
-    }, []);
+        setProductList(props.productList);
+    }, [props.productList]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -116,16 +96,10 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                                             value={ProductCode}
                                             className="default-select form-control"
                                         >
-                                            <option>Select Product</option>
-                                            {Array.isArray(ProductList) && ProductList.length > 0 ? (
-                                                ProductList.map((element) => (
-                                                    <option key={element.id} value={element.value}>
-                                                        {element.label}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value="">No products available</option>
-                                            )}
+                                            <option value=''>Select Product</option>
+                                            {ProductList.map((element) => (
+                                                <option value={element.value}>{element.label}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </div>
