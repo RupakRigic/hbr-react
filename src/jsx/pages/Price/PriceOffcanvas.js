@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
-import Select from "react-select";
 
 const ProductOffcanvas = forwardRef((props, ref) => {
     const navigate = useNavigate();

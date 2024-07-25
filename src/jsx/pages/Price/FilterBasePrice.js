@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { MultiSelect } from 'react-multi-select-component';
 import DatePicker from "react-datepicker";
@@ -6,6 +6,8 @@ import { Form } from "react-bootstrap";
 import { Button } from 'react-bootstrap';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
+import moment from 'moment';
+import Modal from "react-bootstrap/Modal";
 
 const FilterBasePrice = () => {
     const navigate = useNavigate();
@@ -22,6 +24,9 @@ const FilterBasePrice = () => {
     const [selectedSubdivisionStatusByFilter, setSelectedSubdivisionStatusByFilter] = useState([]);
     const [selectedProductStatusByFilter, setSelectedProductStatusByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState(false);
+    const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
         from: "",
         to: "",
@@ -43,8 +48,8 @@ const FilterBasePrice = () => {
         lotsize: "",
         age: "",
         single: "",
-        product_status:"",
-        subdivision_status:""
+        product_status: "",
+        subdivision_status: ""
     });
 
     useEffect(() => {
@@ -107,33 +112,53 @@ const FilterBasePrice = () => {
         }
     };
 
+    const HandlePopupDetailClick = (e) => {
+        setShowPopup(true);
+    };
+
     const HandleFilterForm = (e) => {
-        e.preventDefault();
-        navigate("/priceList", {
-            state: {
-                searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
-                fromByFilter: filterQuery.from,
-                toByFilter: filterQuery.to,
-                selectedBuilderNameByFilter,
-                selectedSubdivisionNameByFilter,
-                nameByFilter: filterQuery.name,
-                sqftByFilter: filterQuery.sqft,
-                storiesByFilter: filterQuery.stories,
-                bedroomByFilter: filterQuery.bedroom,
-                bathroomByFilter: filterQuery.bathroom,
-                garageByFilter: filterQuery.garage,
-                basepriceByFilter: filterQuery.baseprice,
-                price_per_sqftByFilter: filterQuery.price_per_sqft,
-                productTypeStatusByFilter,
-                selectedAreaByFilter,
-                selectedMasterPlanByFilter,
-                seletctedZipcodeByFilter,
-                lotwidthByFilter: filterQuery.lotwidth,
-                lotsizeByFilter: filterQuery.lotsize,
-                selectedAgeByFilter,
-                selectedSingleByFilter
+        if (filterQuery.from == "" || filterQuery.to == "") {
+            setShowPopup(true);
+            setMessage("Please select date.");
+            return;
+        } else {
+            let startDate = moment(filterQuery.from);
+            let endDate = moment(filterQuery.to);
+            let days = endDate.diff(startDate, 'days', true);
+            let totaldays = Math.ceil(days);
+            if (totaldays < 367) {
+                e.preventDefault();
+                navigate("/priceList", {
+                    state: {
+                        searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
+                        fromByFilter: filterQuery.from,
+                        toByFilter: filterQuery.to,
+                        selectedBuilderNameByFilter,
+                        selectedSubdivisionNameByFilter,
+                        nameByFilter: filterQuery.name,
+                        sqftByFilter: filterQuery.sqft,
+                        storiesByFilter: filterQuery.stories,
+                        bedroomByFilter: filterQuery.bedroom,
+                        bathroomByFilter: filterQuery.bathroom,
+                        garageByFilter: filterQuery.garage,
+                        basepriceByFilter: filterQuery.baseprice,
+                        price_per_sqftByFilter: filterQuery.price_per_sqft,
+                        productTypeStatusByFilter,
+                        selectedAreaByFilter,
+                        selectedMasterPlanByFilter,
+                        seletctedZipcodeByFilter,
+                        lotwidthByFilter: filterQuery.lotwidth,
+                        lotsizeByFilter: filterQuery.lotsize,
+                        selectedAgeByFilter,
+                        selectedSingleByFilter
+                    }
+                });
+            } else {
+                setShowPopup(true);
+                setMessage("Please select date between 365 days.");
+                return;
             }
-        });
+        }
     };
 
     const handleFilterDateFrom = (date) => {
@@ -409,8 +434,8 @@ const FilterBasePrice = () => {
             lotsize: "",
             age: "",
             single: "",
-            product_status:"",
-            subdivision_status:""
+            product_status: "",
+            subdivision_status: ""
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);
@@ -425,196 +450,217 @@ const FilterBasePrice = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <h2>Filter Base Price</h2>
-            <form onSubmit={HandleFilterForm}>
-                <div className="row">
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">From:{" "}</label>
-                        <DatePicker
-                            name="from"
-                            className="form-control"
-                            selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                            onChange={handleFilterDateFrom}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">To:{" "}</label>
-                        <DatePicker
-                            name="to"
-                            className="form-control"
-                            selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                            onChange={handleFilterDateTo}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BUILDER NAME:{" "}</label>
-                        <Form.Group controlId="tournamentList">
-                            <MultiSelect
-                                name="builder_name"
-                                options={builderListDropDown}
-                                value={selectedBuilderNameByFilter}
-                                onChange={handleSelectBuilderNameChange}
-                                placeholder={"Select Builder Name"}
+        <Fragment>
+            <div className="container mt-5">
+                <h2>Filter Base Price</h2>
+                <form onSubmit={HandleFilterForm}>
+                    <div className="row">
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">From:{" "}
+                                <span className="text-danger">*</span>
+                            </label>
+                            <DatePicker
+                                name="from"
+                                className="form-control"
+                                selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                                onChange={handleFilterDateFrom}
+                                dateFormat="MM/dd/yyyy"
+                                placeholderText="mm/dd/yyyy"
                             />
-                        </Form.Group>
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">SUBDIVISION NAME:{" "}</label>
-                        <Form.Group controlId="tournamentList">
-                            <MultiSelect
-                                name="subdivision_name"
-                                options={subdivisionListDropDown}
-                                value={selectedSubdivisionNameByFilter}
-                                onChange={handleSelectSubdivisionNameChange}
-                                placeholder={"Select Subdivision Name"}
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">To:{" "}
+                                <span className="text-danger">*</span>
+                            </label>
+                            <DatePicker
+                                name="to"
+                                className="form-control"
+                                selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                                onChange={handleFilterDateTo}
+                                dateFormat="MM/dd/yyyy"
+                                placeholderText="mm/dd/yyyy"
                             />
-                        </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BUILDER NAME:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="builder_name"
+                                    options={builderListDropDown}
+                                    value={selectedBuilderNameByFilter}
+                                    onChange={handleSelectBuilderNameChange}
+                                    placeholder={"Select Builder Name"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">SUBDIVISION NAME:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="subdivision_name"
+                                    options={subdivisionListDropDown}
+                                    value={selectedSubdivisionNameByFilter}
+                                    onChange={handleSelectSubdivisionNameChange}
+                                    placeholder={"Select Subdivision Name"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">PRODUCT NAME :{" "}</label>
+                            <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">SQUARE FOOTAGE:{" "}</label>
+                            <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">STORIES:{" "}</label>
+                            <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BEDROOMS:{" "}</label>
+                            <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BATH ROOMS:{" "}</label>
+                            <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">GARAGE:{" "}</label>
+                            <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BASE PRICE:{" "}</label>
+                            <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">PRICE PER SQFT:{" "}</label>
+                            <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">PRODUCT TYPE:{" "}</label>
+                            <MultiSelect
+                                name="product_type"
+                                options={productTypeOptions}
+                                value={productTypeStatusByFilter}
+                                onChange={handleSelectProductTypeChange}
+                                placeholder="Select Prodcut Type"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">AREA:{" "}</label>
+                            <MultiSelect
+                                name="area"
+                                options={areaOption}
+                                value={selectedAreaByFilter}
+                                onChange={handleSelectAreaChange}
+                                placeholder="Select Area"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">MASTERPLAN:{" "}</label>
+                            <MultiSelect
+                                name="masterplan_id"
+                                options={masterPlanOption}
+                                value={selectedMasterPlanByFilter}
+                                onChange={handleSelectMasterPlanChange}
+                                placeholder="Select Area"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">ZIP CODE:{" "}</label>
+                            <MultiSelect
+                                name="zipcode"
+                                options={zipCodeOption}
+                                value={seletctedZipcodeByFilter}
+                                onChange={handleSelectZipcodeChange}
+                                placeholder="Select Zipcode"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">LOT WIDTH:{" "}</label>
+                            <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">LOT SIZE:{" "}</label>
+                            <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                            <MultiSelect
+                                name="age"
+                                options={ageOptions}
+                                value={selectedAgeByFilter}
+                                onChange={handleSelectAgeChange}
+                                placeholder={"Select Age"}
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                            <MultiSelect
+                                name="single"
+                                options={singleOptions}
+                                value={selectedSingleByFilter}
+                                onChange={handleSelectSingleChange}
+                                placeholder={"Select Single"}
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">PRODUCT STATUS:{" "}</label>
+                            <MultiSelect
+                                name="status"
+                                options={productStatusOptions}
+                                value={selectedProductStatusByFilter}
+                                onChange={handleSelectProductStatusChange}
+                                placeholder={"Select Product Status"}
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">SUBDIVISION STATUS:{" "}</label>
+                            <MultiSelect
+                                name="status"
+                                options={subdivisionStatusOptions}
+                                value={selectedSubdivisionStatusByFilter}
+                                onChange={handleSelectSubdivisionStatusChange}
+                                placeholder={"Select Subdivision Status"}
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">PRODUCT NAME :{" "}</label>
-                        <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
+                    <br />
+                    <div className="d-flex justify-content-between">
+                        <Button
+                            className="btn-sm"
+                            onClick={HandleCancelFilter}
+                            variant="secondary"
+                        >
+                            Reset
+                        </Button>
+                        <Button
+                            className="btn-sm"
+                            onClick={HandleFilterForm}
+                            variant="primary"
+                        >
+                            Filter
+                        </Button>
                     </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">SQUARE FOOTAGE:{" "}</label>
-                        <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">STORIES:{" "}</label>
-                        <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BEDROOMS:{" "}</label>
-                        <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BATH ROOMS:{" "}</label>
-                        <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">GARAGE:{" "}</label>
-                        <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BASE PRICE:{" "}</label>
-                        <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">PRICE PER SQFT:{" "}</label>
-                        <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">PRODUCT TYPE:{" "}</label>
-                        <MultiSelect
-                            name="product_type"
-                            options={productTypeOptions}
-                            value={productTypeStatusByFilter}
-                            onChange={handleSelectProductTypeChange}
-                            placeholder="Select Prodcut Type"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">AREA:{" "}</label>
-                        <MultiSelect
-                            name="area"
-                            options={areaOption}
-                            value={selectedAreaByFilter}
-                            onChange={handleSelectAreaChange}
-                            placeholder="Select Area"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">MASTERPLAN:{" "}</label>
-                        <MultiSelect
-                            name="masterplan_id"
-                            options={masterPlanOption}
-                            value={selectedMasterPlanByFilter}
-                            onChange={handleSelectMasterPlanChange}
-                            placeholder="Select Area"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">ZIP CODE:{" "}</label>
-                        <MultiSelect
-                            name="zipcode"
-                            options={zipCodeOption}
-                            value={seletctedZipcodeByFilter}
-                            onChange={handleSelectZipcodeChange}
-                            placeholder="Select Zipcode"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">LOT WIDTH:{" "}</label>
-                        <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">LOT SIZE:{" "}</label>
-                        <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
-                        <MultiSelect
-                            name="age"
-                            options={ageOptions}
-                            value={selectedAgeByFilter}
-                            onChange={handleSelectAgeChange}
-                            placeholder={"Select Age"}
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
-                        <MultiSelect
-                            name="single"
-                            options={singleOptions}
-                            value={selectedSingleByFilter}
-                            onChange={handleSelectSingleChange}
-                            placeholder={"Select Single"}
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">PRODUCT STATUS:{" "}</label>
-                        <MultiSelect
-                            name="status"
-                            options={productStatusOptions}
-                            value={selectedProductStatusByFilter}
-                            onChange={handleSelectProductStatusChange}
-                            placeholder={"Select Product Status"}
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">SUBDIVISION STATUS:{" "}</label>
-                        <MultiSelect
-                            name="status"
-                            options={subdivisionStatusOptions}
-                            value={selectedSubdivisionStatusByFilter}
-                            onChange={handleSelectSubdivisionStatusChange}
-                            placeholder={"Select Subdivision Status"}
-                        />
-                    </div>
-                </div>
-                <br />
-                <div className="d-flex justify-content-between">
-                    <Button
-                        className="btn-sm"
-                        onClick={HandleCancelFilter}
-                        variant="secondary"
-                    >
-                        Reset
+                </form>
+            </div>
+
+            {/* Popup */}
+            <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+                <Modal.Header handlePopupClose>
+                    <Modal.Title>Alert</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {message}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handlePopupClose}>
+                        Close
                     </Button>
-                    <Button
-                        className="btn-sm"
-                        onClick={HandleFilterForm}
-                        variant="primary"
-                    >
-                        Filter
-                    </Button>
-                </div>
-            </form>
-        </div>
+                </Modal.Footer>
+            </Modal>
+        </Fragment>
     )
 }
 

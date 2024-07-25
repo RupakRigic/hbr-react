@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
-import Select from "react-select";
 
 
 const BulkPriceUpdate = forwardRef((props, ref) => {

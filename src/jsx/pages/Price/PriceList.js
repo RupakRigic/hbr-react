@@ -531,7 +531,7 @@ const PriceList = () => {
     const totalPages = Math.ceil(productListCount / recordsPage);
     let allData = priceList;
     for (let page = 2; page <= totalPages; page++) {
-      // await delay(1000);
+      await delay(1000);
       const pageResponse = await AdminPriceService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
