@@ -39,7 +39,6 @@ const FilterBasePrice = () => {
         bathroom: "",
         garage: "",
         baseprice: "",
-        price_per_sqft: "",
         product_type: "",
         area: "",
         masterplan_id: "",
@@ -142,7 +141,6 @@ const FilterBasePrice = () => {
                         bathroomByFilter: filterQuery.bathroom,
                         garageByFilter: filterQuery.garage,
                         basepriceByFilter: filterQuery.baseprice,
-                        price_per_sqftByFilter: filterQuery.price_per_sqft,
                         productTypeStatusByFilter,
                         selectedAreaByFilter,
                         selectedMasterPlanByFilter,
@@ -425,7 +423,6 @@ const FilterBasePrice = () => {
             bathroom: "",
             garage: "",
             baseprice: "",
-            price_per_sqft: "",
             product_type: "",
             area: "",
             masterplan_id: "",
@@ -532,10 +529,6 @@ const FilterBasePrice = () => {
                         <div className="col-md-3 mt-3">
                             <label className="form-label">BASE PRICE:{" "}</label>
                             <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
-                        </div>
-                        <div className="col-md-3 mt-3">
-                            <label className="form-label">PRICE PER SQFT:{" "}</label>
-                            <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
                         </div>
                         <div className="col-md-3 mt-3 mb-3">
                             <label className="form-label">PRODUCT TYPE:{" "}</label>
@@ -650,6 +643,11 @@ const FilterBasePrice = () => {
             <Modal show={showPopup} onHide={HandlePopupDetailClick}>
                 <Modal.Header handlePopupClose>
                     <Modal.Title>Alert</Modal.Title>
+                    <button
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => handlePopupClose()}
+                    ></button>
                 </Modal.Header>
                 <Modal.Body>
                     {message}

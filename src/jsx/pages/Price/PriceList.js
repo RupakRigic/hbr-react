@@ -156,7 +156,7 @@ const PriceList = () => {
       tableHeaders = headers.map((c) => c.label);
     }
 
-    const tableData = AllProductListExport.map((row) => {
+    const tableData = (filter ? priceList : AllProductListExport).map((row) => {
       return tableHeaders.map((header) => {
         switch (header) {
           case "Date":
@@ -243,7 +243,6 @@ const PriceList = () => {
     bathroom: bathroomByFilter ? bathroomByFilter : "",
     garage: garageByFilter ? garageByFilter : "",
     baseprice: basepriceByFilter ? basepriceByFilter : "",
-    price_per_sqft: price_per_sqftByFilter ? price_per_sqftByFilter : "",
     product_type: "",
     area: "",
     masterplan_id: "",
@@ -254,6 +253,11 @@ const PriceList = () => {
     age: "",
     single: ""
   });
+  const [filterQueryCalculation, setFilterQueryCalculation] = useState({
+    price_per_sqft: ""
+  });
+  const [filter, setFilter] = useState(false);
+  const [normalFilter, setNormalFilter] = useState(false);
 
   const [Error, setError] = useState("");
   const navigate = useNavigate();
@@ -416,6 +420,62 @@ const PriceList = () => {
     GetBuilderDropDownList();
     GetSubdivisionDropDownList();
   }, []);
+
+  const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+
+    if(AllProductListExport.length === 0) {
+      setPriceList(priceList);
+      return;
+    }
+
+    let filtered = AllProductListExport;
+
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
+
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+          operator = query[0];
+          value = query.slice(1);
+        }
+
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
+          return items.filter(item => {
+            const itemValue = parseFloat(item[key]);
+            if (operator === '>') return itemValue > numberValue;
+            if (operator === '<') return itemValue < numberValue;
+            return itemValue === numberValue;
+          });
+        }
+      }
+      return items;
+    };
+
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
+    
+
+    if (isAnyFilterApplied) {
+      setPriceList(filtered.slice(0, 100));
+      setProductListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setFilter(true);
+      setNormalFilter(false);
+    } else {
+      setPriceList(filtered.slice(0, 100));
+      setProductListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setCurrentPage(1);
+      setFilter(false);
+      setNormalFilter(false);
+    }
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [filterQueryCalculation]);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -604,6 +664,16 @@ const PriceList = () => {
       ...prevFilterQuery,
       [name]: value,
     }));
+    setNormalFilter(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQueryCalculation(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+    setFilter(true);
   };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
@@ -616,6 +686,7 @@ const PriceList = () => {
       ...prevState,
       builder_name: selectedNames
     }));
+    setNormalFilter(true);
   };
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
@@ -627,6 +698,7 @@ const PriceList = () => {
       ...prevState,
       subdivision_name: selectedNames
     }));
+    setNormalFilter(true);
   };
 
   const filterString = () => {
@@ -653,7 +725,6 @@ const PriceList = () => {
       bathroom: "",
       garage: "",
       baseprice: "",
-      price_per_sqft: "",
       product_type: "",
       area: "",
       masterplan_id: "",
@@ -664,6 +735,9 @@ const PriceList = () => {
       age: "",
       single: ""
     });
+    setFilterQueryCalculation({
+      price_per_sqft: ""
+    })
     setSelectedBuilderName([]);
     setSelectedSubdivisionName([]);
     setProductTypeStatus([]);
@@ -691,6 +765,7 @@ const PriceList = () => {
         from: '',
       }));
     }
+    setNormalFilter(true);
   };
 
   const handleFilterDateTo = (date) => {
@@ -708,6 +783,7 @@ const PriceList = () => {
         to: '',
       }));
     }
+    setNormalFilter(true);
   };
 
   const parseDate = (dateString) => {
@@ -905,6 +981,7 @@ useEffect(() => {
       ...prevState,
       age: selectedNames
     }));
+    setNormalFilter(true);
   };
 
   const handleSelectSingleChange = (selectedItems) => {
@@ -916,6 +993,7 @@ useEffect(() => {
       ...prevState,
       single: selectedNames
     }));
+    setNormalFilter(true);
   };
 
   const areaOption = [
@@ -942,6 +1020,7 @@ useEffect(() => {
       ...prevState,
       area: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const productTypeOptions = [
@@ -959,6 +1038,7 @@ useEffect(() => {
       ...prevState,
       product_type: selectedNames
     }));
+    setNormalFilter(true);
   }
 
   const zipCodeOption = [
@@ -997,6 +1077,7 @@ useEffect(() => {
       ...prevState,
       zipcode: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   const masterPlanOption = [
@@ -1052,6 +1133,7 @@ useEffect(() => {
       ...prevState,
       masterplan_id: selectedValues
     }));
+    setNormalFilter(true);
   };
 
   return (
@@ -1678,13 +1760,6 @@ useEffect(() => {
                     </label>
                     <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      PRICE PER SQFT:{" "}
-                      <span className="text-danger"></span>
-                    </label>
-                    <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
-                  </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       PRODUCT TYPE:{" "}
@@ -1792,6 +1867,22 @@ useEffect(() => {
                 Filter
               </Button>
             </div>
+            <br />
+            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+              <>
+                <h5 className="">Calculation Filter Options</h5>
+                <div className="border-top">
+                  <div className="row">
+                    <div className="col-md-3 mt-3">
+                      <label className="form-label">
+                        PRICE PER SQFT:{" "}
+                      </label>
+                      <input name="price_per_sqft" value={filterQueryCalculation.price_per_sqft} className="form-control" onChange={handleInputChange} />
+                    </div>
+                  </div>
+                </div>
+              </>
+            }
           </div>
         </div>
       </Offcanvas>
