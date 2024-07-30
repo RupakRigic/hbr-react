@@ -1030,6 +1030,7 @@ const GetSubdivisionDropDownList = async () => {
             swal(message).then((willDelete) => {
               if (willDelete) {
                 navigate("/trafficsalelist");
+                setShow(false);
               }
             });
           } else {
