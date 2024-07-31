@@ -202,13 +202,13 @@ const ProductList = () => {
             mappedRow[header] = row.garage;
             break;
           case "Current Base Price":
-            mappedRow[header] = row.recentprice;
+            mappedRow[header] = row.latest_base_price;
             break;
           case "Current Price Per SQFT":
-            mappedRow[header] = row.recentpricesqft;
+            mappedRow[header] = row.current_price_per_sqft;
             break;
           case "Product Website":
-            mappedRow[header] = row.Website;
+            mappedRow[header] = row.subdivision.builder.website;
             break;
           case "Product Type":
             mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
@@ -1216,22 +1216,25 @@ const ProductList = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id != "action" && column.id != "price Change Since Open" && column.id != "price Change Last 12 Months") ? requestSort(
                                 column.id == "plan Status" ? "status" :
                                 column.id == "product Name" ? "name" :
                                 column.id == "square Footage" ? "sqft" :
                                 column.id == "bed Rooms" ? "bedroom" :
                                 column.id == "bath Rooms" ? "bathroom" :
-                                column.id == "current Base Price" ? "latestBasePrice" :
+                                column.id == "current Base Price" ? "recentprice" :
                                 column.id == "current Price Per SQFT" ? "curren_price_per_sqft" :
+                                column.id == "product Website" ? "website" :
                                 column.id == "product Type" ? "product_type" :
+                                column.id == "master Plan" ? "masterplan_id" :
+                                column.id == "zip Code" ? "zipcode" :
+                                column.id == "lot Width" ? "lotwidth" :
+                                column.id == "lot Size" ? "lotsize" :
                                 column.id == "age Restricted" ? "age" :
-                                column.id == "all Single Story" ? "stories" :
+                                column.id == "all Single Story" ? "single" :
                                 column.id == "date Added" ? "created_at" :
                                 column.id == "__pkProductID" ? "product_code" :
-                                column.id == "_fkSubID" ? "subdivsion_code" :
-                                column.id == "price Change Since Open" ? "price_change_since_open" :
-                                column.id == "price Change Last 12 Months" ? "subdivisionCode" : toCamelCase(column.id)) : ""}>
+                                column.id == "_fkSubID" ? "subdivision_id" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.id == "bath Rooms" ? "Bathrooms" : column.label}
                                   {column.id != "action" && sortConfig.some(
@@ -1241,16 +1244,19 @@ const ProductList = () => {
                                       column.id == "square Footage" ? "sqft" :
                                       column.id == "bed Rooms" ? "bedroom" :
                                       column.id == "bath Rooms" ? "bathroom" :
-                                      column.id == "current Base Price" ? "latestBasePrice" :
+                                      column.id == "current Base Price" ? "recentprice" :
                                       column.id == "current Price Per SQFT" ? "curren_price_per_sqft" :
+                                      column.id == "product Website" ? "website" :
                                       column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "stories" :
+                                      column.id == "all Single Story" ? "single" :
                                       column.id == "date Added" ? "created_at" :
                                       column.id == "__pkProductID" ? "product_code" :
-                                      column.id == "_fkSubID" ? "subdivsion_code" :
-                                      column.id == "price Change Since Open" ? "price_change_since_open" :
-                                      column.id == "price Change Last 12 Months" ? "subdivisionCode" : toCamelCase(column.id))
+                                      column.id == "_fkSubID" ? "subdivision_id" : toCamelCase(column.id))
                                   ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
@@ -1260,20 +1266,23 @@ const ProductList = () => {
                                           column.id == "square Footage" ? "sqft" :
                                           column.id == "bed Rooms" ? "bedroom" :
                                           column.id == "bath Rooms" ? "bathroom" :
-                                          column.id == "current Base Price" ? "latestBasePrice" :
+                                          column.id == "current Base Price" ? "recentprice" :
                                           column.id == "current Price Per SQFT" ? "curren_price_per_sqft" :
+                                          column.id == "product Website" ? "website" :
                                           column.id == "product Type" ? "product_type" :
+                                          column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
+                                          column.id == "lot Width" ? "lotwidth" :
+                                          column.id == "lot Size" ? "lotsize" :
                                           column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "stories" :
+                                          column.id == "all Single Story" ? "single" :
                                           column.id == "date Added" ? "created_at" :
                                           column.id == "__pkProductID" ? "product_code" :
-                                          column.id == "_fkSubID" ? "subdivsion_code" :
-                                          column.id == "price Change Since Open" ? "price_change_since_open" :
-                                          column.id == "price Change Last 12 Months" ? "subdivisionCode" : toCamelCase(column.id))
+                                          column.id == "_fkSubID" ? "subdivision_id" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   ) : (
-                                    column.id != "action" && <span>↑↓</span>
+                                    (column.id != "action" && column.id != "price Change Since Open" && column.id != "price Change Last 12 Months") && <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>
