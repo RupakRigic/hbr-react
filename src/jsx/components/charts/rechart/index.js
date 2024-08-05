@@ -488,7 +488,7 @@ const RechartJs = () => {
       );
 
       const cancelationMaxValue = Math.max(...cancelationValue);
-      const cancelationMinValue = Math.max(...cancelationValue);
+      const cancelationMinValue = Math.min(...cancelationValue);
 
       setCanclelationData({
         defaultFontFamily: "Poppins",
@@ -672,7 +672,7 @@ const RechartJs = () => {
         scales: {
           y: {
             min: ActiveSubMin,
-            max: ActiveSubMin,
+            max: ActiveSubMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
