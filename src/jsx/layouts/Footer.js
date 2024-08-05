@@ -3,7 +3,7 @@ import React from "react";
 const Footer = () => {
 	var d = new Date();
 	return (
-		<div className="footer out-footer" style={{marginTop: "34%"}}>
+		<div className="footer out-footer" style={{marginTop: "40%"}}>
 			<div className="copyright">
 				<p> © {d.getFullYear()} {" "} Website Developed by{" "}
 					<a href="https://www.rigicglobalsolutions.com/" target="_blank"  rel="noreferrer">
