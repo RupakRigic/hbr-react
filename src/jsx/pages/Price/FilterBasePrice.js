@@ -124,8 +124,8 @@ const FilterBasePrice = () => {
             let startDate = moment(filterQuery.from);
             let endDate = moment(filterQuery.to);
             let days = endDate.diff(startDate, 'days', true);
-            let totaldays = Math.ceil(days);
-            if (totaldays < 367) {
+            let totaldays = Math.ceil(days) + 1;
+            if (totaldays < 184) {
                 e.preventDefault();
                 navigate("/priceList", {
                     state: {
@@ -153,7 +153,7 @@ const FilterBasePrice = () => {
                 });
             } else {
                 setShowPopup(true);
-                setMessage("Please select date between 365 days.");
+                setMessage("Please select date between 183 days.");
                 return;
             }
         }
@@ -659,7 +659,7 @@ const FilterBasePrice = () => {
                 </Modal.Footer>
             </Modal>
         </Fragment>
-    )
-}
+    );
+};
 
-export default FilterBasePrice
+export default FilterBasePrice;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import DatePicker from "react-datepicker";
 import { Form } from "react-bootstrap";
 import { Button } from 'react-bootstrap';
 import AdminClosingService from '../../../API/Services/AdminService/AdminClosingService';
+import moment from 'moment';
+import Modal from "react-bootstrap/Modal";
 
 const FilterClosings = () => {
     const navigate = useNavigate();
@@ -24,31 +26,34 @@ const FilterClosings = () => {
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
     const [selectedSingleByFilter, setSelectedSingleByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState(false);
+    const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
-        closing_type:"",
-        from:"",
-        to:"",
-        document:"",
-        builder_name:"",
-        subdivision_name:"",
-        closingprice:"",
-        address:"",
-        parcel:"",
-        sellerleagal:"",
-        buyer:"",
-        lender_name:"",
-        loanamount:"",
-        product_type:"",
-        area:"",
-        masterplan_id:"",
-        zipcode:"",
-        lotwidth:"",
-        lotsize:"",
-        age:"",
-        single:""
-      });
+        closing_type: "",
+        from: "",
+        to: "",
+        document: "",
+        builder_name: "",
+        subdivision_name: "",
+        closingprice: "",
+        address: "",
+        parcel: "",
+        sellerleagal: "",
+        buyer: "",
+        lender_name: "",
+        loanamount: "",
+        product_type: "",
+        area: "",
+        masterplan_id: "",
+        zipcode: "",
+        lotwidth: "",
+        lotsize: "",
+        age: "",
+        single: ""
+    });
 
-      useEffect(() => {
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
             GetSubdivisionDropDownList();
@@ -78,10 +83,10 @@ const FilterClosings = () => {
             let response = await AdminClosingService.lender()
             let responseData = await response.json()
             const formattedData = responseData.map((lender) => ({
-              label: lender.lender,
-              value: lender.lender,
-            }));  
-           setLenderList(formattedData)
+                label: lender.lender,
+                value: lender.lender,
+            }));
+            setLenderList(formattedData)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
@@ -126,34 +131,54 @@ const FilterClosings = () => {
         }
     };
 
-    const HandleFilterForm = (e) =>{
-        e.preventDefault();
-        navigate("/closingsalelist", {
-            state: {
-                searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
-                seletctedClosingTypeByFilter,
-                fromByFilter: filterQuery.from,
-                toByFilter: filterQuery.to,
-                documentByFilter: filterQuery.document,
-                selectedBuilderNameByFilter,
-                selectedSubdivisionNameByFilter,
-                closingpriceByFilter: filterQuery.closingprice,
-                addressByFilter: filterQuery.address,
-                parcelByFilter: filterQuery.parcel,
-                sellerleagalByFilter: filterQuery.sellerleagal,
-                buyerByFilter: filterQuery.buyer,
-                seletctedLenderByFilter,
-                loanamountByFilter: filterQuery.loanamount,
-                productTypeStatusByFilter,
-                selectedAreaByFilter,
-                selectedMasterPlanByFilter,
-                seletctedZipcodeByFilter,
-                lotwidthByFilter: filterQuery.lotwidth,
-                lotsizeByFilter: filterQuery.lotsize,
-                selectedAgeByFilter,
-                selectedSingleByFilter
+    const HandlePopupDetailClick = (e) => {
+        setShowPopup(true);
+    };
+
+    const HandleFilterForm = (e) => {
+        if (filterQuery.from == "" || filterQuery.to == "") {
+            setShowPopup(true);
+            setMessage("Please select date.");
+            return;
+        } else {
+            let startDate = moment(filterQuery.from);
+            let endDate = moment(filterQuery.to);
+            let days = endDate.diff(startDate, 'days', true);
+            let totaldays = Math.ceil(days) + 1;
+            if (totaldays < 367) {
+                e.preventDefault();
+                navigate("/closingsalelist", {
+                    state: {
+                        searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
+                        seletctedClosingTypeByFilter,
+                        fromByFilter: filterQuery.from,
+                        toByFilter: filterQuery.to,
+                        documentByFilter: filterQuery.document,
+                        selectedBuilderNameByFilter,
+                        selectedSubdivisionNameByFilter,
+                        closingpriceByFilter: filterQuery.closingprice,
+                        addressByFilter: filterQuery.address,
+                        parcelByFilter: filterQuery.parcel,
+                        sellerleagalByFilter: filterQuery.sellerleagal,
+                        buyerByFilter: filterQuery.buyer,
+                        seletctedLenderByFilter,
+                        loanamountByFilter: filterQuery.loanamount,
+                        productTypeStatusByFilter,
+                        selectedAreaByFilter,
+                        selectedMasterPlanByFilter,
+                        seletctedZipcodeByFilter,
+                        lotwidthByFilter: filterQuery.lotwidth,
+                        lotsizeByFilter: filterQuery.lotsize,
+                        selectedAgeByFilter,
+                        selectedSingleByFilter
+                    }
+                });
+            } else {
+                setShowPopup(true);
+                setMessage("Please select date between 366 days.");
+                return;
             }
-        });
+        }
     };
 
     const handleSelectClosingTypeChange = (selectedItems) => {
@@ -161,42 +186,42 @@ const FilterClosings = () => {
 
         setSelectedClosingTypeByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          closing_type: selectedNames
+            ...prevState,
+            closing_type: selectedNames
         }));
     };
 
     const handleFilterDateFrom = (date) => {
         if (date) {
-          const formattedDate = date.toLocaleDateString('en-US');
-          console.log(formattedDate)
-    
-          setFilterQuery((prevFilterQuery) => ({
-            ...prevFilterQuery,
-            from: formattedDate,
-          }));
+            const formattedDate = date.toLocaleDateString('en-US');
+            console.log(formattedDate)
+
+            setFilterQuery((prevFilterQuery) => ({
+                ...prevFilterQuery,
+                from: formattedDate,
+            }));
         } else {
-          setFilterQuery((prevFilterQuery) => ({
-            ...prevFilterQuery,
-            from: '',
-          }));
+            setFilterQuery((prevFilterQuery) => ({
+                ...prevFilterQuery,
+                from: '',
+            }));
         }
     };
-    
+
     const handleFilterDateTo = (date) => {
         if (date) {
-          const formattedDate = date.toLocaleDateString('en-US');
-          console.log(formattedDate)
-    
-          setFilterQuery((prevFilterQuery) => ({
-            ...prevFilterQuery,
-            to: formattedDate,
-          }));
+            const formattedDate = date.toLocaleDateString('en-US');
+            console.log(formattedDate)
+
+            setFilterQuery((prevFilterQuery) => ({
+                ...prevFilterQuery,
+                to: formattedDate,
+            }));
         } else {
-          setFilterQuery((prevFilterQuery) => ({
-            ...prevFilterQuery,
-            to: '',
-          }));
+            setFilterQuery((prevFilterQuery) => ({
+                ...prevFilterQuery,
+                to: '',
+            }));
         }
     };
 
@@ -208,8 +233,8 @@ const FilterClosings = () => {
     const HandleFilter = (e) => {
         const { name, value } = e.target;
         setFilterQuery((prevFilterQuery) => ({
-          ...prevFilterQuery,
-          [name]: value,
+            ...prevFilterQuery,
+            [name]: value,
         }));
     };
 
@@ -238,18 +263,18 @@ const FilterClosings = () => {
 
         setSelectedLenderByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          lender: selectedValues
+            ...prevState,
+            lender: selectedValues
         }));
     };
 
-    const handleSelectProductTypeChange  = (selectedItems) => {  
+    const handleSelectProductTypeChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.value).join(', ');
-      
+
         setProductTypeStatusByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          product_type: selectedNames
+            ...prevState,
+            product_type: selectedNames
         }));
     };
 
@@ -258,8 +283,8 @@ const FilterClosings = () => {
 
         setSelectedAreaByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          area: selectedValues
+            ...prevState,
+            area: selectedValues
         }));
     };
 
@@ -268,8 +293,8 @@ const FilterClosings = () => {
 
         setSelectedMasterPlanByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          masterplan_id: selectedValues
+            ...prevState,
+            masterplan_id: selectedValues
         }));
     };
 
@@ -278,29 +303,29 @@ const FilterClosings = () => {
 
         setSelectedZipcodeByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          zipcode: selectedValues
+            ...prevState,
+            zipcode: selectedValues
         }));
     };
 
-    const handleSelectAgeChange  = (selectedItems) => {  
+    const handleSelectAgeChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.value).join(', ');
 
         setSelectedAgeByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          age: selectedNames
-      }));
+            ...prevState,
+            age: selectedNames
+        }));
     };
-      
-    const handleSelectSingleChange  = (selectedItems) => {  
+
+    const handleSelectSingleChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.value).join(', ');
 
         setSelectedSingleByFilter(selectedItems);
         setFilterQuery(prevState => ({
-          ...prevState,
-          single: selectedNames
-      }));
+            ...prevState,
+            single: selectedNames
+        }));
     };
 
     const closingType = [
@@ -357,7 +382,7 @@ const FilterClosings = () => {
         { value: "RED ROCK CC", label: "RED ROCK CC" },
         { value: "RHODES RANCH", label: "RHODES RANCH" },
         { value: "SEDONA RANCH", label: "SEDONA RANCH" },
-        { value: "SEVEN HILLS", label: "SEVEN HILLS"},
+        { value: "SEVEN HILLS", label: "SEVEN HILLS" },
         { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
         { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
         { value: "SKYE CANYON", label: "SKYE CANYON" },
@@ -405,7 +430,7 @@ const FilterClosings = () => {
         { value: "1", label: "Yes" },
         { value: "0", label: "No" }
     ];
-      
+
     const singleOptions = [
         { value: "1", label: "Yes" },
         { value: "0", label: "No" }
@@ -413,27 +438,27 @@ const FilterClosings = () => {
 
     const HandleCancelFilter = () => {
         setFilterQuery({
-            closing_type:"",
-            from:"",
-            to:"",
-            document:"",
-            builder_name:"",
-            subdivision_name:"",
-            closingprice:"",
-            address:"",
-            parcel:"",
-            sellerleagal:"",
-            buyer:"",
-            lender_name:"",
-            loanamount:"",
-            product_type:"",
-            area:"",
-            masterplan_id:"",
-            zipcode:"",
-            lotwidth:"",
-            lotsize:"",
-            age:"",
-            single:""
+            closing_type: "",
+            from: "",
+            to: "",
+            document: "",
+            builder_name: "",
+            subdivision_name: "",
+            closingprice: "",
+            address: "",
+            parcel: "",
+            sellerleagal: "",
+            buyer: "",
+            lender_name: "",
+            loanamount: "",
+            product_type: "",
+            area: "",
+            masterplan_id: "",
+            zipcode: "",
+            lotwidth: "",
+            lotsize: "",
+            age: "",
+            single: ""
         });
         setSelectedClosingTypeByFilter([]);
         setSelectedBuilderNameByFilter([]);
@@ -448,197 +473,223 @@ const FilterClosings = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <h2>Filter Closings</h2>
-            <form onSubmit={HandleFilterForm}>
-                <div className="row">
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">CLOSING TYPE:{" "}</label>
-                        <Form.Group controlId="tournamentList">
-                            <MultiSelect
-                                name="closing_type"
-                                options={closingType}
-                                value={seletctedClosingTypeByFilter}
-                                onChange={handleSelectClosingTypeChange}
-                                placeholder={"Select Closing Type"}
+        <Fragment>
+            <div className="container mt-5">
+                <h2>Filter Closings</h2>
+                <form onSubmit={HandleFilterForm}>
+                    <div className="row">
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">From:{" "}
+                                <span className="text-danger">*</span>
+                            </label>
+                            <DatePicker
+                                name="from"
+                                className="form-control"
+                                selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                                onChange={handleFilterDateFrom}
+                                dateFormat="MM/dd/yyyy"
+                                placeholderText="mm/dd/yyyy"
                             />
-                        </Form.Group>
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">From:{" "}</label>
-                        <DatePicker
-                            name="from"
-                            className="form-control"
-                            selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                            onChange={handleFilterDateFrom}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">To:{" "}</label>
-                        <DatePicker
-                            name="to"
-                            className="form-control"
-                            selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                            onChange={handleFilterDateTo}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">DOC:{" "}</label>
-                        <input name="document" value={filterQuery.document} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BUILDER NAME:{" "}</label>
-                        <Form.Group controlId="tournamentList">
-                            <MultiSelect
-                                name="builder_name"
-                                options={builderListDropDown}
-                                value={selectedBuilderNameByFilter}
-                                onChange={handleSelectBuilderNameChange}
-                                placeholder={"Select Builder Name"}
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">To:{" "}
+                                <span className="text-danger">*</span>
+                            </label>
+                            <DatePicker
+                                name="to"
+                                className="form-control"
+                                selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                                onChange={handleFilterDateTo}
+                                dateFormat="MM/dd/yyyy"
+                                placeholderText="mm/dd/yyyy"
                             />
-                        </Form.Group>
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">SUBDIVISION NAME:{" "}</label>
-                        <Form.Group controlId="tournamentList">
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">CLOSING TYPE:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="closing_type"
+                                    options={closingType}
+                                    value={seletctedClosingTypeByFilter}
+                                    onChange={handleSelectClosingTypeChange}
+                                    placeholder={"Select Closing Type"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">DOC:{" "}</label>
+                            <input name="document" value={filterQuery.document} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BUILDER NAME:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="builder_name"
+                                    options={builderListDropDown}
+                                    value={selectedBuilderNameByFilter}
+                                    onChange={handleSelectBuilderNameChange}
+                                    placeholder={"Select Builder Name"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">SUBDIVISION NAME:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="subdivision_name"
+                                    options={subdivisionListDropDown}
+                                    value={selectedSubdivisionNameByFilter}
+                                    onChange={handleSelectSubdivisionNameChange}
+                                    placeholder={"Select Subdivision Name"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">CLOSING PRICE:{" "}</label>
+                            <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">ADDRESS:{" "}</label>
+                            <input name="address" value={filterQuery.address} className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">PARCEL NUMBER:{" "}</label>
+                            <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">SELLER LEGAL NAME:{" "}</label>
+                            <input value={filterQuery.sellerleagal} name="sellerleagal" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">BUYER NAME:{" "}</label>
+                            <input value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">LENDER:{" "}</label>
+                            <Form.Group controlId="tournamentList">
+                                <MultiSelect
+                                    name="lender_name"
+                                    options={lenderList}
+                                    value={seletctedLenderByFilter}
+                                    onChange={handleSelectLenderChange}
+                                    placeholder={"Select Lender"}
+                                />
+                            </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">LOAN AMOUNT:{" "}</label>
+                            <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">PRODUCT TYPE:{" "}</label>
                             <MultiSelect
-                                name="subdivision_name"
-                                options={subdivisionListDropDown}
-                                value={selectedSubdivisionNameByFilter}
-                                onChange={handleSelectSubdivisionNameChange}
-                                placeholder={"Select Subdivision Name"}
+                                name="product_type"
+                                options={productTypeOptions}
+                                value={productTypeStatusByFilter}
+                                onChange={handleSelectProductTypeChange}
+                                placeholder="Select Prodcut Type"
                             />
-                        </Form.Group>
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">CLOSING PRICE:{" "}</label>
-                        <input name="closingprice" value={filterQuery.closingprice} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">ADDRESS:{" "}</label>
-                        <input name="address" value={filterQuery.address} className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">PARCEL NUMBER:{" "}</label>
-                        <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">SELLER LEGAL NAME:{" "}</label>
-                        <input value={filterQuery.sellerleagal} name="sellerleagal" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">BUYER NAME:{" "}</label>
-                        <input value={filterQuery.buyer} name="buyer" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">LENDER:{" "}</label>
-                        <Form.Group controlId="tournamentList">
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">AREA:{" "}</label>
                             <MultiSelect
-                                name="lender_name"
-                                options={lenderList}
-                                value={seletctedLenderByFilter}
-                                onChange={handleSelectLenderChange}
-                                placeholder={"Select Lender"}
+                                name="area"
+                                options={areaOption}
+                                value={selectedAreaByFilter}
+                                onChange={handleSelectAreaChange}
+                                placeholder="Select Area"
                             />
-                        </Form.Group>
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">MASTERPLAN:{" "}</label>
+                            <MultiSelect
+                                name="masterplan_id"
+                                options={masterPlanOption}
+                                value={selectedMasterPlanByFilter}
+                                onChange={handleSelectMasterPlanChange}
+                                placeholder="Select Area"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">ZIP CODE:{" "}</label>
+                            <MultiSelect
+                                name="zipcode"
+                                options={zipCodeOption}
+                                value={seletctedZipcodeByFilter}
+                                onChange={handleSelectZipcodeChange}
+                                placeholder="Select Zipcode"
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">LOT WIDTH:{" "}</label>
+                            <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">LOT SIZE:{" "}</label>
+                            <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">AGE RESTRICTED:{" "}</label>
+                            <MultiSelect
+                                name="age"
+                                options={ageOptions}
+                                value={selectedAgeByFilter}
+                                onChange={handleSelectAgeChange}
+                                placeholder={"Select Age"}
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3">
+                            <label className="form-label">ALL SINGLE STORY:{" "}</label>
+                            <MultiSelect
+                                name="single"
+                                options={singleOptions}
+                                value={selectedSingleByFilter}
+                                onChange={handleSelectSingleChange}
+                                placeholder={"Select Single"}
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">LOAN AMOUNT:{" "}</label>
-                        <input value={filterQuery.loanamount} name="loanamount" className="form-control" onChange={HandleFilter} />
+                    <br />
+                    <div className="d-flex justify-content-between">
+                        <Button
+                            className="btn-sm"
+                            onClick={HandleCancelFilter}
+                            variant="secondary"
+                        >
+                            Reset
+                        </Button>
+                        <Button
+                            className="btn-sm"
+                            onClick={HandleFilterForm}
+                            variant="primary"
+                        >
+                            Filter
+                        </Button>
                     </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">PRODUCT TYPE:{" "}</label>
-                        <MultiSelect
-                            name="product_type"
-                            options={productTypeOptions}
-                            value={productTypeStatusByFilter}
-                            onChange={handleSelectProductTypeChange}
-                            placeholder="Select Prodcut Type"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">AREA:{" "}</label>
-                        <MultiSelect
-                            name="area"
-                            options={areaOption}
-                            value={selectedAreaByFilter}
-                            onChange={handleSelectAreaChange}
-                            placeholder="Select Area"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">MASTERPLAN:{" "}</label>
-                        <MultiSelect
-                            name="masterplan_id"
-                            options={masterPlanOption}
-                            value={selectedMasterPlanByFilter}
-                            onChange={handleSelectMasterPlanChange}
-                            placeholder="Select Area"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">ZIP CODE:{" "}</label>
-                        <MultiSelect
-                            name="zipcode"
-                            options={zipCodeOption}
-                            value={seletctedZipcodeByFilter}
-                            onChange={handleSelectZipcodeChange}
-                            placeholder="Select Zipcode"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">LOT WIDTH:{" "}</label>
-                        <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">LOT SIZE:{" "}</label>
-                        <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">AGE RESTRICTED:{" "}</label>
-                        <MultiSelect
-                            name="age"
-                            options={ageOptions}
-                            value={selectedAgeByFilter}
-                            onChange={handleSelectAgeChange}
-                            placeholder={"Select Age"}
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">ALL SINGLE STORY:{" "}</label>
-                        <MultiSelect
-                            name="single"
-                            options={singleOptions}
-                            value={selectedSingleByFilter}
-                            onChange={handleSelectSingleChange}
-                            placeholder={"Select Single"}
-                        />
-                    </div>
-                </div>
-                <br />
-                <div className="d-flex justify-content-between">
-                    <Button
-                        className="btn-sm"
-                        onClick={HandleCancelFilter}
-                        variant="secondary"
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        className="btn-sm"
-                        onClick={HandleFilterForm}
-                        variant="primary"
-                    >
-                        Filter
-                    </Button>
-                </div>
-            </form>
-        </div>
-    )
-}
+                </form>
+            </div>
 
-export default FilterClosings
+            {/* Popup */}
+            <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+                <Modal.Header handlePopupClose>
+                    <Modal.Title>Alert</Modal.Title>
+                    <button
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => handlePopupClose()}
+                    ></button>
+                </Modal.Header>
+                <Modal.Body>
+                    {message}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handlePopupClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </Fragment>
+    );
+};
+
+export default FilterClosings;
