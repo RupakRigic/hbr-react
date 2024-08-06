@@ -115,7 +115,13 @@ const FilterWeeklyTrafficAndSales = () => {
     const HandleFilterForm = (e) => {
         if (filterQuery.from == "" || filterQuery.to == "") {
             setShowPopup(true);
-            setMessage("Please select date.");
+            if(filterQuery.from == "" && filterQuery.to == "") {
+                setMessage("Please select from and to date.");
+            } else if (filterQuery.from == "") {
+                setMessage("Please select from date.");
+            } else if (filterQuery.to == "") {
+                setMessage("Please select to date.");
+            }
             return;
         } else {
             let startDate = moment(filterQuery.from);
