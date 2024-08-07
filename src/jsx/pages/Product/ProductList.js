@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import ProductOffcanvas from "./ProductOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -25,10 +25,6 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import { MultiSelect } from "react-multi-select-component";
 
 const ProductList = () => {
-  const location = useLocation();
-
-  const { searchQueryByFilter,  selectedStatusByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, nameByFilter, sqftByFilter, storiesByFilter, bedroomByFilter, bathroomByFilter, garageByFilter, current_base_priceByFilter, product_typeByFilter, areaByFilter, masterplan_idByFilter, zipcodeByFilter, lotwidthByFilter, lotsizeByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
-
   const [excelLoading, setExcelLoading] = useState(true);
 
   const SyestemUserRole = localStorage.getItem("user")
@@ -68,7 +64,7 @@ const ProductList = () => {
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByProductFilter") ? JSON.parse(localStorage.getItem("searchQueryByProductFilter")) : "");
   const [productList, setProductList] = useState([]);
   const [productListCount, setProductsListCount] = useState('');
   const [SubdivisionList, SetSubdivisionList] = useState([]);
@@ -279,24 +275,24 @@ const ProductList = () => {
 
 
   const [filterQuery, setFilterQuery] = useState({
-    status: "",
-    builder_name: "",
-    subdivision_name: "",
-    name: nameByFilter ? nameByFilter : "",
-    sqft: sqftByFilter ? sqftByFilter : "",
-    stories: storiesByFilter ? storiesByFilter : "",
-    bedroom: bedroomByFilter ? bedroomByFilter : "",
-    bathroom: bathroomByFilter ? bathroomByFilter : "",
-    garage: garageByFilter ? garageByFilter : "",
-    current_base_price: current_base_priceByFilter ? current_base_priceByFilter : "",
-    product_type: product_typeByFilter ? product_typeByFilter : "",
-    area: areaByFilter ? areaByFilter : "",
-    masterplan_id: masterplan_idByFilter ? masterplan_idByFilter : "",
-    zipcode: zipcodeByFilter ? zipcodeByFilter : "",
-    lotwidth: lotwidthByFilter ? lotwidthByFilter : "",
-    lotsize: lotsizeByFilter ? lotsizeByFilter : "",
-    age: "",
-    single: "",
+    status: localStorage.getItem("product_status") ? JSON.parse(localStorage.getItem("product_status")) : "",
+    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
+    name: localStorage.getItem("product_name") ? JSON.parse(localStorage.getItem("product_name")) : "",
+    sqft: localStorage.getItem("sqft") ? JSON.parse(localStorage.getItem("sqft")) : "",
+    stories: localStorage.getItem("stories") ? JSON.parse(localStorage.getItem("stories")) : "",
+    bedroom: localStorage.getItem("bedroom") ? JSON.parse(localStorage.getItem("bedroom")) : "",
+    bathroom: localStorage.getItem("bathroom") ? JSON.parse(localStorage.getItem("bathroom")) : "",
+    garage: localStorage.getItem("garage") ? JSON.parse(localStorage.getItem("garage")) : "",
+    current_base_price: localStorage.getItem("current_base_price") ? JSON.parse(localStorage.getItem("current_base_price")) : "",
+    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
+    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
+    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
+    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
+    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
+    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
+    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     current_price_per_sqft: "",
@@ -404,23 +400,27 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    if (selectedStatusByFilter != undefined && selectedStatusByFilter.length > 0) {
-      handleSelectStatusChange(selectedStatusByFilter);
+    if(localStorage.getItem("selectedStatusByProductFilter")) {
+      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByProductFilter"));
+      handleSelectStatusChange(selectedStatus);
     }
-    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
-      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
-      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+      handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
-      handleSelectAgeChange(selectedAgeByFilter);
+    if(localStorage.getItem("selectedAgeByFilter")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+      handleSelectAgeChange(selectedAge);
     }
-    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
-      handleSelectSingleChange(selectedSingleByFilter);
+    if(localStorage.getItem("selectedSingleByFilter")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+      handleSelectSingleChange(selectedSingle);
     }
-    
-  }, [selectedStatusByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+}, []);
 
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
@@ -806,7 +806,31 @@ const ProductList = () => {
   const HandleFilterForm = (e) => {
     e.preventDefault();
     getproductList(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false)
+    setManageFilterOffcanvas(false);
+    localStorage.setItem("selectedStatusByProductFilter", JSON.stringify(selectedStatus));
+    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
+    localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
+    localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
+    localStorage.setItem("product_status", JSON.stringify(filterQuery.status));
+    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+    localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
+    localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+    localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
+    localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
+    localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
+    localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
+    localStorage.setItem("current_base_price", JSON.stringify(filterQuery.current_base_price));
+    localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+    localStorage.setItem("area", JSON.stringify(filterQuery.area));
+    localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+    localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+    localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+    localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+    localStorage.setItem("age", JSON.stringify(filterQuery.age));
+    localStorage.setItem("single", JSON.stringify(filterQuery.single));
+    localStorage.setItem("searchQueryByProductFilter", JSON.stringify(searchQuery));
   };
 
   const handleOpenDialog = () => {
@@ -909,11 +933,11 @@ const ProductList = () => {
   };
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter == undefined ? [] : selectedBuilderNameByFilter);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter == undefined ? [] : selectedSubdivisionNameByFilter);
-  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter == undefined ? [] : selectedAgeByFilter);
-  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter == undefined ? [] : selectedSingleByFilter);
-  const [selectedStatus, setSelectedStatus] = useState(selectedStatusByFilter == undefined ? [] : selectedStatusByFilter);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleInputChange = (e) => {
@@ -944,7 +968,7 @@ const ProductList = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-
+    localStorage.setItem("builder_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
@@ -957,7 +981,7 @@ const ProductList = () => {
   const handleSelectSubdivisionNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-
+    localStorage.setItem("subdivision_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
@@ -970,10 +994,9 @@ const ProductList = () => {
   const handleSelectAgeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
+    localStorage.setItem("age", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
@@ -984,10 +1007,9 @@ const ProductList = () => {
   const handleSelectSingleChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
+    localStorage.setItem("single", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -998,20 +1020,20 @@ const ProductList = () => {
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
+    localStorage.setItem("product_status", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       status: selectedNames
     }));
     setNormalFilter(true);
   };
+
   function camelCaseToReadable(str) {
     const result = str.replace(/([A-Z])/g, ' $1');
     return result.charAt(0).toUpperCase() + result.slice(1);
-}
+  }
 
   return (
     <>

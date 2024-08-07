@@ -79,6 +79,17 @@ function Login(props) {
             localStorage.removeItem("from");
             localStorage.removeItem("to");
             localStorage.removeItem("searchQueryBySubdivisionFilter");
+            localStorage.removeItem("selectedStatusByProductFilter");
+            localStorage.removeItem("selectedSubdivisionNameByFilter");
+            localStorage.removeItem("product_status");
+            localStorage.removeItem("product_name");
+            localStorage.removeItem("sqft");
+            localStorage.removeItem("stories");
+            localStorage.removeItem("bedroom");
+            localStorage.removeItem("bathroom");
+            localStorage.removeItem("garage");
+            localStorage.removeItem("current_base_price");
+            localStorage.removeItem("searchQueryByProductFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
