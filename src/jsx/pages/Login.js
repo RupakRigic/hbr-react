@@ -90,6 +90,13 @@ function Login(props) {
             localStorage.removeItem("garage");
             localStorage.removeItem("current_base_price");
             localStorage.removeItem("searchQueryByProductFilter");
+            localStorage.removeItem("address2");
+            localStorage.removeItem("address1");
+            localStorage.removeItem("parcel");
+            localStorage.removeItem("lotnumber");
+            localStorage.removeItem("permitnumber");
+            localStorage.removeItem("plan");
+            localStorage.removeItem("searchQueryByPermitsFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminPermitService from "../../../API/Services/AdminService/AdminPermitService";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import PermitOffcanvas from "./PermitOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -21,22 +21,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 
 const PermitList = () => {
-  const location = useLocation();
-
-  const { searchQueryByFilter, fromByFilter, toByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, address2ByFilter, address1ByFilter, parcelByFilter, sqftByFilter, lotnumberByFilter, permitnumberByFilter, planByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthByFilter, lotsizeByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
-
   const [excelLoading, setExcelLoading] = useState(true);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
   const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
-  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
-  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
-  const [selectedArea, setSelectedArea] = useState(selectedAreaByFilter);
-  const [selectedMasterPlan, setSelectedMasterPlan] = useState(selectedMasterPlanByFilter);
-  const [productTypeStatus, setProductTypeStatus] = useState(productTypeStatusByFilter);
-  const [seletctedZipcode, setSelectedZipcode] = useState(seletctedZipcodeByFilter);
+  const [selectedArea, setSelectedArea] = useState([]);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
+  const [productTypeStatus, setProductTypeStatus] = useState([]);
+  const [seletctedZipcode, setSelectedZipcode] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [AllPermitListExport, setAllPermitListExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
@@ -48,27 +44,27 @@ const PermitList = () => {
   const [permitListCount, setPermitListCount] = useState("");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    from: fromByFilter ? fromByFilter : "",
-    to: toByFilter ? toByFilter : "",
-    builder_name: "",
-    subdivision_name: "",
-    address2: address2ByFilter ? address2ByFilter : "",
-    address1: address1ByFilter ? address1ByFilter : "",
-    parcel: parcelByFilter ? parcelByFilter : "",
-    sqft: sqftByFilter ? sqftByFilter : "",
-    lotnumber: lotnumberByFilter ? lotnumberByFilter : "",
-    permitnumber: permitnumberByFilter ? permitnumberByFilter : "",
-    plan: planByFilter ? planByFilter : "",
-    product_type: "",
-    area: "",
-    masterplan_id: "",
-    zipcode: "",
-    lotwidth: lotwidthByFilter ? lotwidthByFilter : "",
-    lotsize: lotsizeByFilter ? lotsizeByFilter : "",
-    age: "",
-    single: ""
+    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
+    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
+    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
+    address2: localStorage.getItem("address2") ? JSON.parse(localStorage.getItem("address2")) : "",
+    address1: localStorage.getItem("address1") ? JSON.parse(localStorage.getItem("address1")) : "",
+    parcel: localStorage.getItem("parcel") ? JSON.parse(localStorage.getItem("parcel")) : "",
+    sqft: localStorage.getItem("sqft") ? JSON.parse(localStorage.getItem("sqft")) : "",
+    lotnumber: localStorage.getItem("lotnumber") ? JSON.parse(localStorage.getItem("lotnumber")) : "",
+    permitnumber: localStorage.getItem("permitnumber") ? JSON.parse(localStorage.getItem("permitnumber")) : "",
+    plan: localStorage.getItem("plan") ? JSON.parse(localStorage.getItem("plan")) : "",
+    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
+    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
+    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
+    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
+    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
+    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
+    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
   });
-  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByPermitsFilter") ? JSON.parse(localStorage.getItem("searchQueryByPermitsFilter")) : "");
   const [isLoading, setIsLoading] = useState(true);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
@@ -187,31 +183,39 @@ const PermitList = () => {
   };
 
   useEffect(() => {
-    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
-      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
-      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+      handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
-      handleSelectProductTypeChange(productTypeStatusByFilter);
+    if(localStorage.getItem("productTypeStatusByFilter")) {
+      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+      handleSelectProductTypeChange(productTypeStatus);
     }
-    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
-      handleSelectAreaChange(selectedAreaByFilter);
+    if(localStorage.getItem("selectedAreaByFilter")) {
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+      handleSelectAreaChange(selectedArea);
     }
-    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
-      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    if(localStorage.getItem("selectedMasterPlanByFilter")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+      handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
-      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    if(localStorage.getItem("seletctedZipcodeByFilter")) {
+      const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
+      handleSelectZipcodeChange(seletctedZipcode);
     }
-    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
-      handleSelectAgeChange(selectedAgeByFilter);
+    if(localStorage.getItem("selectedAgeByFilter")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+      handleSelectAgeChange(selectedAge);
     }
-    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
-      handleSelectSingleChange(selectedSingleByFilter);
+    if(localStorage.getItem("selectedSingleByFilter")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+      handleSelectSingleChange(selectedSingle);
     }
-  }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+}, []);
 
   useEffect(() => {
       setSearchQuery(filterString());
@@ -241,6 +245,34 @@ const PermitList = () => {
     e.preventDefault();
     getPermitList(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
+    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
+    localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
+    localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
+    localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
+    localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
+    localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
+    localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
+    localStorage.setItem("from", JSON.stringify(filterQuery.from));
+    localStorage.setItem("to", JSON.stringify(filterQuery.to));
+    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+    localStorage.setItem("address2", JSON.stringify(filterQuery.address2));
+    localStorage.setItem("address1", JSON.stringify(filterQuery.address1));
+    localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
+    localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+    localStorage.setItem("lotnumber", JSON.stringify(filterQuery.lotnumber));
+    localStorage.setItem("permitnumber", JSON.stringify(filterQuery.permitnumber));
+    localStorage.setItem("plan", JSON.stringify(filterQuery.plan));
+    localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+    localStorage.setItem("area", JSON.stringify(filterQuery.area));
+    localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+    localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+    localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+    localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+    localStorage.setItem("age", JSON.stringify(filterQuery.age));
+    localStorage.setItem("single", JSON.stringify(filterQuery.single));
+    localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery));
   }; 
 
   const resetSelection = () => {
