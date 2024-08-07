@@ -12,7 +12,7 @@ const FilterBuilder = () => {
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterQuery, setFilterQuery] = useState({
-        name: localStorage.getItem("name") ? JSON.parse(localStorage.getItem("name")) : "",
+        name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
         is_active: localStorage.getItem("is_active") ? JSON.parse(localStorage.getItem("is_active")) : "",
         active_communities: localStorage.getItem("active_communities") ? JSON.parse(localStorage.getItem("active_communities")) : "",
         company_type: localStorage.getItem("company_type") ? JSON.parse(localStorage.getItem("company_type")) : "",
@@ -63,8 +63,8 @@ const FilterBuilder = () => {
             const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedStatusByFilter")) {
-          const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByFilter"));
+        if(localStorage.getItem("selectedStatusByBuilderFilter")) {
+          const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilter"));
           handleSelectStatusChange(selectedStatus);
         }
         if(localStorage.getItem("selectedCompanyTypeByFilter")) {
@@ -77,13 +77,13 @@ const FilterBuilder = () => {
         e.preventDefault();
         navigate("/builderList");
         localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-        localStorage.setItem("selectedStatusByFilter", JSON.stringify(selectedStatusByFilter));
+        localStorage.setItem("selectedStatusByBuilderFilter", JSON.stringify(selectedStatusByFilter));
         localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyTypeByFilter));
-        localStorage.setItem("name", JSON.stringify(filterQuery.name));
+        localStorage.setItem("builder_name", JSON.stringify(filterQuery.name));
         localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
         localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
         localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
-        localStorage.setItem("searchQueryByFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+        localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
     };
 
     const handleSelectBuilderNameChange = (selectedItems) => {

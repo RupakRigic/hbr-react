@@ -54,11 +54,11 @@ const BuilderTable = () => {
 
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
-  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByFilter") ? JSON.parse(localStorage.getItem("searchQueryByFilter")) : "");
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBuilderFilter") ? JSON.parse(localStorage.getItem("searchQueryByBuilderFilter")) : "");
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    name: localStorage.getItem("name") ? JSON.parse(localStorage.getItem("name")) : "",
+    name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
     is_active: localStorage.getItem("is_active") ? JSON.parse(localStorage.getItem("is_active")) : "",
     active_communities: localStorage.getItem("active_communities") ? JSON.parse(localStorage.getItem("active_communities")) : "",
     company_type: localStorage.getItem("company_type") ? JSON.parse(localStorage.getItem("company_type")) : ""
@@ -522,8 +522,8 @@ const BuilderTable = () => {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedStatusByFilter")) {
-      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByFilter"));
+    if(localStorage.getItem("selectedStatusByBuilderFilter")) {
+      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilter"));
       handleSelectStatusChange(selectedStatus);
     }
     if(localStorage.getItem("selectedCompanyTypeByFilter")) {
@@ -703,13 +703,13 @@ const BuilderTable = () => {
     setTotalPermitsResult(0);
     setTotalNetSalesResult(0);
     localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-    localStorage.setItem("selectedStatusByFilter", JSON.stringify(selectedStatus));
+    localStorage.setItem("selectedStatusByBuilderFilter", JSON.stringify(selectedStatus));
     localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyType));
-    localStorage.setItem("name", JSON.stringify(filterQuery.name));
+    localStorage.setItem("builder_name", JSON.stringify(filterQuery.name));
     localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
     localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
     localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
-    localStorage.setItem("searchQueryByFilter", JSON.stringify(searchQuery));
+    localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery));
   };
 
   const HandleFilter = (e) => {
@@ -1622,7 +1622,7 @@ const BuilderTable = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    localStorage.setItem("name", JSON.stringify(selectedNames));
+    localStorage.setItem("builder_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
