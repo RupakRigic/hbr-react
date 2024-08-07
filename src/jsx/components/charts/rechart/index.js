@@ -330,9 +330,9 @@ const RechartJs = () => {
       setgraph1Title("Buyer Traffic");
       setgraph2Title("Net sales");
       setgraph3Title("Cancellation %");
-      setgraph4Title("Standing Inventory");
-      setgraph5Title("Net sale Per Sub");
-      setgraph6Title("Active Subdivision");
+      setgraph4Title("Standing Unsold Inventory");
+      setgraph5Title("Net Sales Per Subdivision");
+      setgraph6Title("Active Subdivisions");
     } else if (event.target.value == "New-Home-Prices") {
       setgraph1Title("Median Closing Price");
       setgraph2Title("Median Closing Price SFR");
@@ -517,6 +517,10 @@ const RechartJs = () => {
             ticks: {
               beginAtZero: true,
               padding: 0,
+              // Format the y-axis labels to append the "%" sign
+              callback: function(value) {
+                return graph3Title === "Cancellation %" ? value + '%' : value;
+              },
             },
             grid: {
               color: "#e5e5e5",
@@ -532,7 +536,7 @@ const RechartJs = () => {
           },
         },
       });
-
+      
       const filteredStandingData = Object.entries(
         responseData["standing_inventory"]
       ).filter(([key, value]) => key !== "status");
@@ -729,7 +733,7 @@ const RechartJs = () => {
                   <option value="New-Home-Prices">New Home Prices</option>
                   <option value="New-Home-Closings">New Home Closings</option>
                   <option value="New-Home-Permits">New Home Permits</option>
-                  <option value="Resales">Resales</option>
+                  {/* <option value="Resales">Resales</option> */}
                 </select>
               </div>
               <div className="col-md-3 mt-4">
@@ -816,7 +820,11 @@ const RechartJs = () => {
                   <h4 className="card-title">{graph4Title}</h4>
                 </Card.Header>
                 <Card.Body>
-                  <LineChart1 data={StandingData} options={StandingOption} />
+                  {graph4Title === 'Median Closing Price By Area'||graph4Title === 'New Home Closings By Area' || graph4Title === 'New Home Permits By Area'? (
+                  <BarChart1 data={StandingData} options={StandingOption} />
+) : (
+  <LineChart1 data={StandingData} options={StandingOption} />
+)}
                 </Card.Body>
               </Card>
             </Col>
@@ -843,10 +851,14 @@ const RechartJs = () => {
                   <h4 className="card-title">{graph6Title}</h4>
                 </Card.Header>
                 <Card.Body>
-                  <LineChart1
-                    data={ActiveSubData}
-                    options={ActiveSubOption}
-                  />
+                                    {graph6Title === 'Average Base Asking Price By Area' ? (
+                  <BarChart1 data={ActiveSubData} options={ActiveSubOption} />
+) : (
+  <LineChart1
+  data={ActiveSubData}
+  options={ActiveSubOption}
+/>
+)}
                 </Card.Body>
               </Card>
             </Col>

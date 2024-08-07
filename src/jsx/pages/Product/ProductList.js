@@ -1008,6 +1008,10 @@ const ProductList = () => {
     }));
     setNormalFilter(true);
   };
+  function camelCaseToReadable(str) {
+    const result = str.replace(/([A-Z])/g, ' $1');
+    return result.charAt(0).toUpperCase() + result.slice(1);
+}
 
   return (
     <>
@@ -2017,7 +2021,7 @@ const ProductList = () => {
                       onChange={(e) => handleSortCheckboxChange(e, col.key)}
                     />
                     <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                      <span>{columns.find(column => column.key === col.key)?.label || col.key}</span>:<span>{col.direction}</span>
+                      <span>{columns.find(column => column.key === col.key)?.label || camelCaseToReadable(col.key)}</span>:<span>{col.direction}</span>
 
                     </label>
                   </div>
