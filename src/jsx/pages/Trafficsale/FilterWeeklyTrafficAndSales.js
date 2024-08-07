@@ -26,26 +26,25 @@ const FilterWeeklyTrafficAndSales = () => {
     const [message, setMessage] = useState(false);
     const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
-        from: "",
-        to: "",
-        builder_name: "",
-        subdivision_name: "",
-        weeklytraffic: "",
-        cancelations: "",
-        netsales: "",
-        totallots: "",
-        lotreleased: "",
-        unsoldinventory: "",
-        product_type: "",
-        area: "",
-        masterplan_id: "",
-        zipcode: "",
-        lotwidth: "",
-        lotsize: "",
-        zoning: "",
-        age: "",
-        single: "",
-        grosssales: "",
+        from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
+        to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
+        builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
+        subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
+        weeklytraffic: localStorage.getItem("weeklytraffic") ? JSON.parse(localStorage.getItem("weeklytraffic")) : "",
+        cancelations: localStorage.getItem("cancelations") ? JSON.parse(localStorage.getItem("cancelations")) : "",
+        netsales: localStorage.getItem("netsales") ? JSON.parse(localStorage.getItem("netsales")) : "",
+        totallots: localStorage.getItem("totallots") ? JSON.parse(localStorage.getItem("totallots")) : "",
+        lotreleased: localStorage.getItem("lotreleased") ? JSON.parse(localStorage.getItem("lotreleased")) : "",
+        unsoldinventory: localStorage.getItem("unsoldinventory") ? JSON.parse(localStorage.getItem("unsoldinventory")) : "",
+        product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
+        area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
+        masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
+        zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
+        lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
+        lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
+        zoning: localStorage.getItem("zoning") ? JSON.parse(localStorage.getItem("zoning")) : "",
+        age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
+        single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
     });
 
     useEffect(() => {
@@ -112,6 +111,41 @@ const FilterWeeklyTrafficAndSales = () => {
         setShowPopup(true);
     };
 
+    useEffect(() => {
+        if(localStorage.getItem("selectedBuilderNameByFilter")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+            handleSelectBuilderNameChange(selectedBuilderName);
+        }
+        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+          handleSelectSubdivisionNameChange(selectedSubdivisionName);
+        }
+        if(localStorage.getItem("productTypeStatusByFilter")) {
+          const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+          handleSelectProductTypeChange(productTypeStatus);
+        }
+        if(localStorage.getItem("selectedAreaByFilter")) {
+            const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+            handleSelectAreaChange(selectedArea);
+        }
+        if(localStorage.getItem("selectedMasterPlanByFilter")) {
+          const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+          handleSelectMasterPlanChange(selectedMasterPlan);
+        }
+        if(localStorage.getItem("seletctedZipcodeByFilter")) {
+          const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
+          handleSelectZipcodeChange(seletctedZipcode);
+        }
+        if(localStorage.getItem("selectedAgeByFilter")) {
+            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+            handleSelectAgeChange(selectedAge);
+        }
+        if(localStorage.getItem("selectedSingleByFilter")) {
+          const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+          handleSelectSingleChange(selectedSingle);
+        }
+    }, []);
+
     const HandleFilterForm = (e) => {
         if (filterQuery.from == "" || filterQuery.to == "") {
             setShowPopup(true);
@@ -130,30 +164,35 @@ const FilterWeeklyTrafficAndSales = () => {
             let totaldays = Math.ceil(days) + 1;
             if (totaldays < 367) {
                 e.preventDefault();
-                navigate("/trafficsalelist", {
-                    state: {
-                        searchQueryByFilter: searchQuery.replace(/^"",|,""$/g, ''),
-                        fromByFilter: filterQuery.from,
-                        toByFilter: filterQuery.to,
-                        selectedBuilderNameByFilter,
-                        selectedSubdivisionNameByFilter,
-                        weeklytrafficByFilter: filterQuery.weeklytraffic,
-                        cancelationsByFilter: filterQuery.cancelations,
-                        netsalesByFilter: filterQuery.netsales,
-                        totallotsByFilter: filterQuery.totallots,
-                        lotreleasedByFilter: filterQuery.lotreleased,
-                        unsoldinventoryByFilter: filterQuery.unsoldinventory,
-                        productTypeStatusByFilter,
-                        selectedAreaByFilter,
-                        selectedMasterPlanByFilter,
-                        seletctedZipcodeByFilter,
-                        lotwidthByFilter: filterQuery.lotwidth,
-                        lotsizeByFilter: filterQuery.lotsize,
-                        zoningByFilter: filterQuery.zoning,
-                        selectedAgeByFilter,
-                        selectedSingleByFilter
-                    }
-                });
+                navigate("/trafficsalelist");
+                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
+                localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
+                localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
+                localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcodeByFilter));
+                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
+                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("from", JSON.stringify(filterQuery.from));
+                localStorage.setItem("to", JSON.stringify(filterQuery.to));
+                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+                localStorage.setItem("weeklytraffic", JSON.stringify(filterQuery.weeklytraffic));
+                localStorage.setItem("cancelations", JSON.stringify(filterQuery.cancelations));
+                localStorage.setItem("netsales", JSON.stringify(filterQuery.netsales));
+                localStorage.setItem("totallots", JSON.stringify(filterQuery.totallots));
+                localStorage.setItem("lotreleased", JSON.stringify(filterQuery.lotreleased));
+                localStorage.setItem("unsoldinventory", JSON.stringify(filterQuery.unsoldinventory));
+                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+                localStorage.setItem("area", JSON.stringify(filterQuery.area));
+                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+                localStorage.setItem("zoning", JSON.stringify(filterQuery.zoning));
+                localStorage.setItem("age", JSON.stringify(filterQuery.age));
+                localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");
@@ -413,7 +452,6 @@ const FilterWeeklyTrafficAndSales = () => {
             zoning: "",
             age: "",
             single: "",
-            grosssales: "",
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);

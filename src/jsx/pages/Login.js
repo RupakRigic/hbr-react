@@ -97,6 +97,14 @@ function Login(props) {
             localStorage.removeItem("permitnumber");
             localStorage.removeItem("plan");
             localStorage.removeItem("searchQueryByPermitsFilter");
+            localStorage.removeItem("weeklytraffic");
+            localStorage.removeItem("cancelations");
+            localStorage.removeItem("netsales");
+            localStorage.removeItem("totallots");
+            localStorage.removeItem("lotreleased");
+            localStorage.removeItem("unsoldinventory");
+            localStorage.removeItem("zoning");
+            localStorage.removeItem("searchQueryByWeeklyTrafficFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
