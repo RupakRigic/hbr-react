@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import BuilderOffcanvas from "./BuilderOffcanvas";
@@ -22,10 +22,6 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { MultiSelect } from "react-multi-select-component";
 
 const BuilderTable = () => {
-  const location = useLocation();
-
-  const { searchQueryByFilter, selectedBuilderNameByFilter, selectedStatusByFilter, active_communitiesByFilter, selectedCompanyTypeByFilter } = location.state || {};
-
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
   const [excelLoading, setExcelLoading] = useState(true);
@@ -58,14 +54,14 @@ const BuilderTable = () => {
 
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
-  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByFilter") ? JSON.parse(localStorage.getItem("searchQueryByFilter")) : "");
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    name: "",
-    is_active: "",
-    active_communities: active_communitiesByFilter ? active_communitiesByFilter : "",
-    company_type: ""
+    name: localStorage.getItem("name") ? JSON.parse(localStorage.getItem("name")) : "",
+    is_active: localStorage.getItem("is_active") ? JSON.parse(localStorage.getItem("is_active")) : "",
+    active_communities: localStorage.getItem("active_communities") ? JSON.parse(localStorage.getItem("active_communities")) : "",
+    company_type: localStorage.getItem("company_type") ? JSON.parse(localStorage.getItem("company_type")) : ""
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     closing_this_year: "",
@@ -152,9 +148,9 @@ const BuilderTable = () => {
   const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
 
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
-  const [selectedStatus, setSelectedStatus] = useState(selectedStatusByFilter);
-  const [selectedCompanyType, setSelectedCompanyType] = useState(selectedCompanyTypeByFilter);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedCompanyType, setSelectedCompanyType] = useState([]);
 
   const [selectedValues, setSelectedValues] = useState([]);
 
@@ -207,6 +203,7 @@ const BuilderTable = () => {
     { label: "Date Of First Closing", key: "date_of_first_closing" },
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
   ];
+
   const exportColumns = [
     { label: "Builder_code", key: "builder_code" },
     { label: "Logo", key: "Logo" },
@@ -437,6 +434,7 @@ const BuilderTable = () => {
     coporate_officeaddress_lng: "",
     logo: "",
   });
+
   const clearBuilderDetails = () => {
     SetBuilderDetails({
       code: "",
@@ -463,9 +461,11 @@ const BuilderTable = () => {
       logo: "",
     });
   };
+
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
   }, [sortConfig]);
@@ -518,16 +518,19 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
-      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if (selectedStatusByFilter != undefined && selectedStatusByFilter.length > 0) {
-      handleSelectStatusChange(selectedStatusByFilter);
+    if(localStorage.getItem("selectedStatusByFilter")) {
+      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByFilter"));
+      handleSelectStatusChange(selectedStatus);
     }
-    if (selectedCompanyTypeByFilter != undefined && selectedCompanyTypeByFilter.length > 0) {
-      handleSelectCompanyTypeChange(selectedCompanyTypeByFilter);
+    if(localStorage.getItem("selectedCompanyTypeByFilter")) {
+      const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilter"));
+      handleSelectCompanyTypeChange(selectedCompanyType);
     }
-  }, [ selectedBuilderNameByFilter, selectedStatusByFilter, selectedCompanyTypeByFilter]);
+  }, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -564,10 +567,12 @@ const BuilderTable = () => {
       setCurrentPage(currentPage - 1);
     }
   }
+
   function changeCPage(id) {
     setCurrentPage(id);
     console.log(id);
   }
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
@@ -697,6 +702,14 @@ const BuilderTable = () => {
     setTotalClosingsResult(0);
     setTotalPermitsResult(0);
     setTotalNetSalesResult(0);
+    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("selectedStatusByFilter", JSON.stringify(selectedStatus));
+    localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyType));
+    localStorage.setItem("name", JSON.stringify(filterQuery.name));
+    localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
+    localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
+    localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
+    localStorage.setItem("searchQueryByFilter", JSON.stringify(searchQuery));
   };
 
   const HandleFilter = (e) => {
@@ -1607,11 +1620,9 @@ const BuilderTable = () => {
   console.log(filterQuery);
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    console.log(selectedItems);
-
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-
+    localStorage.setItem("name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
@@ -1633,6 +1644,7 @@ const BuilderTable = () => {
 
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
+    localStorage.setItem("is_active", JSON.stringify(selectedValues));
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({
@@ -1643,8 +1655,8 @@ const BuilderTable = () => {
   };
 
   const handleSelectCompanyTypeChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
+    localStorage.setItem("company_type", JSON.stringify(selectedValues));
     console.log(selectedValues);
     setSelectedCompanyType(selectedItems);
     setFilterQuery(prevState => ({

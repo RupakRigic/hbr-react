@@ -43,6 +43,14 @@ function Login(props) {
           console.log(userRole);
           if (userRole == "Admin") {
             navigate("/dashboard");
+            localStorage.removeItem("selectedBuilderNameByFilter");
+            localStorage.removeItem("selectedStatusByFilter");
+            localStorage.removeItem("selectedCompanyTypeByFilter");
+            localStorage.removeItem("name");
+            localStorage.removeItem("is_active");
+            localStorage.removeItem("active_communities");
+            localStorage.removeItem("company_type");
+            localStorage.removeItem("searchQueryByFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {

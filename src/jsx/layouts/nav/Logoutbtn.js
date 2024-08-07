@@ -1,58 +1,38 @@
-import React from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-
-import { Logout } from '../../../store/actions/AuthActions';
-import { isAuthenticated } from '../../../store/selectors/AuthSelectors';
-import { SVGICON } from '../../constant/theme';
-
+import React, { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminUserService from '../../../API/Services/AdminService/AdminUserService';
-// function withRouter(Component) {
 
-//   function ComponentWithRouterProp(props) {
-//     let location = useLocation();
-//     let navigate = useNavigate();
-//     let params = useParams();
-//     return (
-//       <Component
-//         {...props}
-//         router={{ location, navigate, params }}
-//       />
-//     );
-//   }
-
-//   return ComponentWithRouterProp;
-// }
-
-function LogoutPage() {
+const LogoutPage = () => {
   const navigate = useNavigate();
-  const onLogout = async () => {
 
+  const onLogout = async () => {
     try {
       const data = await AdminUserService.logout().json();
-
-      localStorage.removeItem("usertoken");
-      localStorage.removeItem("user");
-
-      navigate('/')
-
+      if (data.status == true) {
+        localStorage.removeItem("usertoken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("selectedBuilderNameByFilter");
+        localStorage.removeItem("selectedStatusByFilter");
+        localStorage.removeItem("selectedCompanyTypeByFilter");
+        localStorage.removeItem("name");
+        localStorage.removeItem("is_active");
+        localStorage.removeItem("active_communities");
+        localStorage.removeItem("company_type");
+        localStorage.removeItem("searchQueryByFilter");
+        navigate('/');
+      } else {
+        console.log(data.message);
+      }
     } catch (error) {
 
     }
-
-  }
-  // 
+  };
+  
   return (
-    <>
+    <Fragment>
       <button className="btn btn-primary btn-sm" onClick={onLogout}>Logout</button>
-    </>
+    </Fragment>
   )
-}
-// const mapStateToProps = (state) => {
-//   return {
-//     isAuthenticated: isAuthenticated(state),
-//   };
-// };
+};
 
-// export default withRouter(connect(mapStateToProps)(LogoutPage));
 export default LogoutPage;
