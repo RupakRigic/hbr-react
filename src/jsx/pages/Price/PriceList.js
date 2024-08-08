@@ -20,12 +20,15 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
+import moment from 'moment';
 
 const PriceList = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBasePricesFilter") ? JSON.parse(localStorage.getItem("searchQueryByBasePricesFilter")) : "");
-
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const handlePopupClose = () => setShowPopup(false);
   const resetSelection = () => {
     setSelectAll(false);
     setSelectedColumns([]);
@@ -884,38 +887,64 @@ const PriceList = () => {
     setShow(true);
   };
 
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
+
   const HandleFilterForm = (e) => {
-    e.preventDefault();
-    getpriceList(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false);
-    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-    localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
-    localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
-    localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
-    localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-    localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
-    localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
-    localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
-    localStorage.setItem("from", JSON.stringify(filterQuery.from));
-    localStorage.setItem("to", JSON.stringify(filterQuery.to));
-    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-    localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
-    localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
-    localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
-    localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
-    localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
-    localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
-    localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
-    localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-    localStorage.setItem("area", JSON.stringify(filterQuery.area));
-    localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-    localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-    localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-    localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-    localStorage.setItem("age", JSON.stringify(filterQuery.age));
-    localStorage.setItem("single", JSON.stringify(filterQuery.single));
-    localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery));
+    if (filterQuery.from == "" || filterQuery.to == "") {
+      setShowPopup(true);
+      if(filterQuery.from == "" && filterQuery.to == "") {
+          setMessage("Please select from and to date.");
+      } else if (filterQuery.from == "") {
+          setMessage("Please select from date.");
+      } else if (filterQuery.to == "") {
+          setMessage("Please select to date.");
+      }
+      return;
+    } else {
+      let startDate = moment(filterQuery.from);
+      let endDate = moment(filterQuery.to);
+      let days = endDate.diff(startDate, 'days', true);
+      let totaldays = Math.ceil(days) + 1;
+      if (totaldays < 184) {
+        e.preventDefault();
+        getpriceList(currentPage, sortConfig, searchQuery);
+        setManageFilterOffcanvas(false);
+        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
+        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
+        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
+        localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
+        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
+        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
+        localStorage.setItem("from", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
+        localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+        localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
+        localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
+        localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
+        localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
+        localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
+        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+        localStorage.setItem("area", JSON.stringify(filterQuery.area));
+        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+        localStorage.setItem("age", JSON.stringify(filterQuery.age));
+        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+        localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery));
+      } else {
+        setShowPopup(true);
+        setMessage("Please select date between 183 days.");
+        return;
+      }
+    }
   };
 
   const handleOpenDialog = () => {
@@ -1692,7 +1721,9 @@ useEffect(() => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">From:{" "}</label>
+                    <label className="form-label">From:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
                     <DatePicker
                       name="from"
                       className="form-control"
@@ -1701,10 +1732,11 @@ useEffect(() => {
                       dateFormat="MM/dd/yyyy"
                       placeholderText="mm/dd/yyyy"
                     />
-
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">To:{" "}</label>
+                    <label className="form-label">To:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
                     <DatePicker
                       name="to"
                       className="form-control"
@@ -2097,6 +2129,22 @@ useEffect(() => {
           </div>
         </div>
       </Offcanvas>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Alert</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+           ></button>
+        </Modal.Header>
+        <Modal.Body>{message}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

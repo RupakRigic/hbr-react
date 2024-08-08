@@ -20,7 +20,7 @@ import { saveAs } from 'file-saver';
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import moment from 'moment';
 
 const LandsaleList = () => {
   const HandleSortDetailClick = (e) => {
@@ -72,6 +72,9 @@ const LandsaleList = () => {
   const [selectedFileError, setSelectedFileError] = useState("");
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByLandSalesFilter") ? JSON.parse(localStorage.getItem("searchQueryByLandSalesFilter")) : "");
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const handlePopupClose = () => setShowPopup(false);
   const [filterQuery, setFilterQuery] = useState({
     from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
     to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
@@ -134,28 +137,54 @@ const LandsaleList = () => {
     return queryString ? `&${queryString}` : "";
   };
 
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
+
   const HandleFilterForm = (e) => {
-    e.preventDefault();
-    console.log(555);
-    getLandsaleList(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false);
-    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-    localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
-    localStorage.setItem("from", JSON.stringify(filterQuery.from));
-    localStorage.setItem("to", JSON.stringify(filterQuery.to));
-    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-    localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
-    localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-    localStorage.setItem("location", JSON.stringify(filterQuery.location));
-    localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
-    localStorage.setItem("price", JSON.stringify(filterQuery.price));
-    localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
-    localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-    localStorage.setItem("document", JSON.stringify(filterQuery.doc));
-    localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
-    localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
-    localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
+    if (filterQuery.from == "" || filterQuery.to == "") {
+      setShowPopup(true);
+      if(filterQuery.from == "" && filterQuery.to == "") {
+          setMessage("Please select from and to date.");
+      } else if (filterQuery.from == "") {
+          setMessage("Please select from date.");
+      } else if (filterQuery.to == "") {
+          setMessage("Please select to date.");
+      }
+      return;
+    } else {
+      let startDate = moment(filterQuery.from);
+      let endDate = moment(filterQuery.to);
+      let days = endDate.diff(startDate, 'days', true);
+      let totaldays = Math.ceil(days) + 1;
+      if (totaldays < 367) {
+        e.preventDefault();
+        console.log(555);
+        getLandsaleList(currentPage, sortConfig, searchQuery);
+        setManageFilterOffcanvas(false);
+        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("from", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
+        localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
+        localStorage.setItem("location", JSON.stringify(filterQuery.location));
+        localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
+        localStorage.setItem("price", JSON.stringify(filterQuery.price));
+        localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
+        localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
+        localStorage.setItem("document", JSON.stringify(filterQuery.doc));
+        localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
+        localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
+        localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
+      } else {
+        setShowPopup(true);
+        setMessage("Please select date between 366 days.");
+        return;
+      }
+    }
   };
   const handleFilterDateFrom = (date) => {
     if (date) {
@@ -1336,6 +1365,32 @@ const LandsaleList = () => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
+                    <label className="form-label">From:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
+                    <DatePicker
+                      name="from"
+                      className="form-control"
+                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">To:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
+                    <DatePicker
+                      name="to"
+                      className="form-control"
+                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                  </div>
+                  <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BUILDER NAME:{" "}
                     </label>
@@ -1392,29 +1447,6 @@ const LandsaleList = () => {
                       PRICE:{" "}
                     </label>
                     <input name="price" value={filterQuery.price} className="form-control" onChange={HandleFilter} />
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">From:{" "}</label>
-                    <DatePicker
-                      name="from"
-                      className="form-control"
-                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                      onChange={handleFilterDateFrom}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">To:{" "}</label>
-                    <DatePicker
-                      name="to"
-                      className="form-control"
-                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                      onChange={handleFilterDateTo}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -1561,6 +1593,22 @@ const LandsaleList = () => {
           >
             Clear Sort
           </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Alert</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body>{message}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
     </>
