@@ -13,9 +13,8 @@ import "react-datepicker/dist/react-datepicker.css";
 const RechartJs = () => {
   const [currentDisplay, setCurrentDisplay] = useState(1);
   const [value, setValue] = React.useState("1");
-
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [type, setType] = useState("");
 
   const [graph1Title, setgraph1Title] = useState("");
@@ -37,30 +36,29 @@ const RechartJs = () => {
     setEndDate(formatDate(currentDate));
   }, []);
 
-  const handleFilterDateFrom = (date) => {
-    if (date) {
-      const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
-      setStartDate(formattedDate)
-    } else {
-      setStartDate('')
-    }
-  };
+  const isValidDate = (date) => {
+    return date instanceof Date && !isNaN(date);
+};
 
-  const handleFilterDateTo = (date) => {
-    if (date) {
-      const formattedDate = date.toLocaleDateString('en-US');
-      console.log(formattedDate)
-      setEndDate(formattedDate)
+const handleFilterDateFrom = (date) => {
+    if (isValidDate(date)) {
+        setStartDate(date);
     } else {
-      setEndDate('')
+        setStartDate(null);
     }
-  };
+};
 
-  const parseDate = (dateString) => {
-    const [month, day, year] = dateString.split('/');
-    return new Date(year, month - 1, day);
-  };
+const handleFilterDateTo = (date) => {
+  if (isValidDate(date)) {
+      setEndDate(date);
+  } else {
+      setEndDate(null);
+  }
+};
+
+const parseDate = (date) => {
+  return date ? new Date(date) : null;
+};
 
   const [BuyerTrafficData, setBuyerTrafficdata] = useState({
     defaultFontFamily: "Poppins",
@@ -736,7 +734,7 @@ const RechartJs = () => {
                   {/* <option value="Resales">Resales</option> */}
                 </select>
               </div>
-              <div className="col-md-3 mt-4">
+              {/* <div className="col-md-3 mt-4">
                 <Dropdown>
                   <Dropdown.Toggle
                     variant="success"
@@ -766,7 +764,29 @@ const RechartJs = () => {
                     />
                   </Dropdown.Menu>
                 </Dropdown>
-              </div>
+              </div> */}
+              <div className="col-md-3">
+                  <label htmlFor="start_date">From:</label>
+                    <DatePicker
+                      name="from"
+                      className="form-control"
+                      selected={parseDate(startDate)}
+                      onChange={handleFilterDateFrom}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                </div>
+              <div className="col-md-3">
+                <label htmlFor="end_date">To:</label>
+                    <DatePicker
+                      name="to"
+                      className="form-control"
+                      selected={parseDate(endDate)}
+                      onChange={handleFilterDateTo}
+                      dateFormat="MM/dd/yyyy"
+                      placeholderText="mm/dd/yyyy"
+                    />
+                </div>
             </div>
           </Box>
           <Row>
