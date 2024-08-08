@@ -119,6 +119,14 @@ function Login(props) {
             localStorage.removeItem("lender_name");
             localStorage.removeItem("loanamount");
             localStorage.removeItem("searchQueryByClosingsFilter");
+            localStorage.removeItem("seller");
+            localStorage.removeItem("location");
+            localStorage.removeItem("notes");
+            localStorage.removeItem("price");
+            localStorage.removeItem("priceperunit");
+            localStorage.removeItem("noofunit");
+            localStorage.removeItem("typeofunit");
+            localStorage.removeItem("searchQueryByLandSalesFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
