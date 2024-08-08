@@ -1622,7 +1622,6 @@ const BuilderTable = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    localStorage.setItem("builder_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
@@ -1644,7 +1643,6 @@ const BuilderTable = () => {
 
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("is_active", JSON.stringify(selectedValues));
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({
@@ -1656,7 +1654,6 @@ const BuilderTable = () => {
 
   const handleSelectCompanyTypeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("company_type", JSON.stringify(selectedValues));
     console.log(selectedValues);
     setSelectedCompanyType(selectedItems);
     setFilterQuery(prevState => ({

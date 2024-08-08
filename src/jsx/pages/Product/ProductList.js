@@ -968,7 +968,6 @@ const ProductList = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    localStorage.setItem("builder_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
@@ -981,7 +980,6 @@ const ProductList = () => {
   const handleSelectSubdivisionNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    localStorage.setItem("subdivision_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
@@ -994,7 +992,6 @@ const ProductList = () => {
   const handleSelectAgeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("age", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
@@ -1007,7 +1004,6 @@ const ProductList = () => {
   const handleSelectSingleChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("single", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
@@ -1020,7 +1016,6 @@ const ProductList = () => {
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("product_status", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({

@@ -338,8 +338,8 @@ const PriceList = () => {
 
   useEffect(() => {
     if(localStorage.getItem("selectedBuilderNameByFilter")) {
-        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
-        handleSelectBuilderNameChange(selectedBuilderName);
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
     if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
@@ -350,24 +350,24 @@ const PriceList = () => {
       handleSelectProductTypeChange(productTypeStatus);
     }
     if(localStorage.getItem("selectedAreaByFilter")) {
-        const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
-        handleSelectAreaChange(selectedArea);
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+      handleSelectAreaChange(selectedArea);
     }
     if(localStorage.getItem("selectedMasterPlanByFilter")) {
-        const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
-        handleSelectMasterPlanChange(selectedMasterPlan);
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+      handleSelectMasterPlanChange(selectedMasterPlan);
     }
     if(localStorage.getItem("seletctedZipcodeByFilter")) {
-        const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
-        handleSelectZipcodeChange(seletctedZipcode);
+      const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
+      handleSelectZipcodeChange(seletctedZipcode);
     }
     if(localStorage.getItem("selectedAgeByFilter")) {
-        const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
-        handleSelectAgeChange(selectedAge);
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+      handleSelectAgeChange(selectedAge);
     }
     if(localStorage.getItem("selectedSingleByFilter")) {
-        const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
-        handleSelectSingleChange(selectedSingle);
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+      handleSelectSingleChange(selectedSingle);
     }
 }, []);
 

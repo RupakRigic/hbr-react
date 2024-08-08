@@ -3645,7 +3645,6 @@ const SubdivisionList = () => {
 
   const handleSelectAreaChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("area", JSON.stringify(selectedValues));
     setSelectedArea(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -3700,7 +3699,6 @@ const SubdivisionList = () => {
 
   const handleSelectMasterPlanChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("masterplan_id", JSON.stringify(selectedValues));
     setSelectedMasterPlan(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -3736,7 +3734,6 @@ const SubdivisionList = () => {
 
   const handleSelectJurisdictionChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("juridiction", JSON.stringify(selectedValues));
     setSelectedJurisdiction(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -3774,7 +3771,6 @@ const SubdivisionList = () => {
 
   const handleSelectZipcodeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("zipcode", JSON.stringify(selectedValues));
     setSelectedZipcode(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -3789,7 +3785,6 @@ const SubdivisionList = () => {
 
   const handleGasProviderChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("gasprovider", JSON.stringify(selectedValues));
     setSelectedGasProvider(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -3814,7 +3809,6 @@ const SubdivisionList = () => {
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("subdivision_status", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({
@@ -3827,7 +3821,6 @@ const SubdivisionList = () => {
   const handleSelectReportingChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("reporting", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedReporting(selectedItems);
     setFilterQuery(prevState => ({
@@ -3840,7 +3833,6 @@ const SubdivisionList = () => {
   const handleSelectProductTypeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("product_type", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
@@ -3853,7 +3845,6 @@ const SubdivisionList = () => {
   const handleSelectAgeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("age", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
@@ -3866,7 +3857,6 @@ const SubdivisionList = () => {
   const handleSelectSingleChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("single", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
 
@@ -3880,7 +3870,6 @@ const SubdivisionList = () => {
   const handleSelectGatedChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    localStorage.setItem("gated", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedGated(selectedItems);
 

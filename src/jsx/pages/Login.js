@@ -108,6 +108,17 @@ function Login(props) {
             localStorage.removeItem("selectedStatusByProductFilter");
             localStorage.removeItem("baseprice");
             localStorage.removeItem("searchQueryByBasePricesFilter");
+            localStorage.removeItem("seletctedClosingTypeByFilter");
+            localStorage.removeItem("seletctedLenderByFilter");
+            localStorage.removeItem("closing_type");
+            localStorage.removeItem("document");
+            localStorage.removeItem("closingprice");
+            localStorage.removeItem("address");
+            localStorage.removeItem("sellerleagal");
+            localStorage.removeItem("buyer");
+            localStorage.removeItem("lender_name");
+            localStorage.removeItem("loanamount");
+            localStorage.removeItem("searchQueryByClosingsFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
