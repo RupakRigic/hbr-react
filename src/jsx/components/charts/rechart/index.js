@@ -366,9 +366,17 @@ const parseDate = (date) => {
     setCurrentDisplay(e.target.value);
   };
 
+  const formatDate = (date) => {
+    const parsedDate = date instanceof Date ? date : new Date(date);
+    return !isNaN(parsedDate) ? parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : null;
+  };
+
   const getchartList = async (type, startDate, endDate) => {
+
+  const formattedStartDate = formatDate(startDate);
+  const formattedEndDate = formatDate(endDate);
     try {
-      let responseData = await AdminWeeklyDataService.getstatistics(type, startDate, endDate).json();
+      let responseData = await AdminWeeklyDataService.getstatistics(type, formattedStartDate, formattedEndDate).json();
       console.log(responseData);
       const filteredBuyerData = Object.entries(
         responseData["buyer_traffic"]
