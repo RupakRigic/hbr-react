@@ -503,7 +503,7 @@ const FilterSubdivision = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Filter Subdivision</h2>
+            <h2>Filter Subdivisions</h2>
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">

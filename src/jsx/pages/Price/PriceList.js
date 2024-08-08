@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminPriceService from "../../../API/Services/AdminService/AdminPriceService";
 import PriceComponent from "../../components/Price/PriceComponent";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import PriceOffcanvas from "./PriceOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -20,16 +20,15 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
+import moment from 'moment';
 
 const PriceList = () => {
-  const location = useLocation();
-
-  const { searchQueryByFilter, fromByFilter, toByFilter, selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, nameByFilter, sqftByFilter, storiesByFilter, bedroomByFilter, bathroomByFilter, garageByFilter, basepriceByFilter, price_per_sqftByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, lotwidthByFilter, lotsizeByFilter, selectedAgeByFilter, selectedSingleByFilter } = location.state || {};
-
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(searchQueryByFilter);
-
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBasePricesFilter") ? JSON.parse(localStorage.getItem("searchQueryByBasePricesFilter")) : "");
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const handlePopupClose = () => setShowPopup(false);
   const resetSelection = () => {
     setSelectAll(false);
     setSelectedColumns([]);
@@ -78,10 +77,10 @@ const PriceList = () => {
   const [showSort, setShowSort] = useState(false);
   const handleSortClose = () => setShowSort(false);
   const [exportmodelshow, setExportModelShow] = useState(false)
-  const [selectedArea, setSelectedArea] = useState(selectedAreaByFilter);
-  const [selectedMasterPlan, setSelectedMasterPlan] = useState(selectedMasterPlanByFilter);
-  const [productTypeStatus, setProductTypeStatus] = useState(productTypeStatusByFilter);
-  const [seletctedZipcode, setSelectedZipcode] = useState(seletctedZipcodeByFilter);
+  const [selectedArea, setSelectedArea] = useState([]);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
+  const [productTypeStatus, setProductTypeStatus] = useState([]);
+  const [seletctedZipcode, setSelectedZipcode] = useState([]);
 
   const handleColumnToggle = (column) => {
     const updatedColumns = selectedColumns.includes(column)
@@ -232,26 +231,25 @@ const PriceList = () => {
   };
 
   const [filterQuery, setFilterQuery] = useState({
-    from: fromByFilter ? fromByFilter : "",
-    to: toByFilter ? toByFilter : "",
-    builder_name: "",
-    name: nameByFilter ? nameByFilter : "",
-    subdivision_name: "",
-    sqft: sqftByFilter ? sqftByFilter : "",
-    stories: storiesByFilter ? storiesByFilter : "",
-    bedroom: bedroomByFilter ? bedroomByFilter : "",
-    bathroom: bathroomByFilter ? bathroomByFilter : "",
-    garage: garageByFilter ? garageByFilter : "",
-    baseprice: basepriceByFilter ? basepriceByFilter : "",
-    product_type: "",
-    area: "",
-    masterplan_id: "",
-    zipcode: "",
-    lotwidth: lotwidthByFilter ? lotwidthByFilter : "",
-    lotsize: lotsizeByFilter ? lotsizeByFilter : "",
-    zoning: "",
-    age: "",
-    single: ""
+    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
+    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
+    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
+    name: localStorage.getItem("product_name") ? JSON.parse(localStorage.getItem("product_name")) : "",
+    sqft: localStorage.getItem("sqft") ? JSON.parse(localStorage.getItem("sqft")) : "",
+    stories: localStorage.getItem("stories") ? JSON.parse(localStorage.getItem("stories")) : "",
+    bedroom: localStorage.getItem("bedroom") ? JSON.parse(localStorage.getItem("bedroom")) : "",
+    bathroom: localStorage.getItem("bathroom") ? JSON.parse(localStorage.getItem("bathroom")) : "",
+    garage: localStorage.getItem("garage") ? JSON.parse(localStorage.getItem("garage")) : "",
+    baseprice: localStorage.getItem("baseprice") ? JSON.parse(localStorage.getItem("baseprice")) : "",
+    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
+    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
+    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
+    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
+    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
+    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
+    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     price_per_sqft: ""
@@ -342,31 +340,39 @@ const PriceList = () => {
   }, [sortConfig]);
 
   useEffect(() => {
-    if (selectedBuilderNameByFilter != undefined && selectedBuilderNameByFilter.length > 0) {
-      handleSelectBuilderNameChange(selectedBuilderNameByFilter);
+    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if (selectedSubdivisionNameByFilter != undefined && selectedSubdivisionNameByFilter.length > 0) {
-      handleSelectSubdivisionNameChange(selectedSubdivisionNameByFilter);
+    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+      handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if (productTypeStatusByFilter != undefined && productTypeStatusByFilter.length > 0) {
-      handleSelectProductTypeChange(productTypeStatusByFilter);
+    if(localStorage.getItem("productTypeStatusByFilter")) {
+      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+      handleSelectProductTypeChange(productTypeStatus);
     }
-    if (selectedAreaByFilter != undefined && selectedAreaByFilter.length > 0) {
-      handleSelectAreaChange(selectedAreaByFilter);
+    if(localStorage.getItem("selectedAreaByFilter")) {
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+      handleSelectAreaChange(selectedArea);
     }
-    if (selectedMasterPlanByFilter != undefined && selectedMasterPlanByFilter.length > 0) {
-      handleSelectMasterPlanChange(selectedMasterPlanByFilter);
+    if(localStorage.getItem("selectedMasterPlanByFilter")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+      handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if (seletctedZipcodeByFilter != undefined && seletctedZipcodeByFilter.length > 0) {
-      handleSelectZipcodeChange(seletctedZipcodeByFilter);
+    if(localStorage.getItem("seletctedZipcodeByFilter")) {
+      const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
+      handleSelectZipcodeChange(seletctedZipcode);
     }
-    if (selectedAgeByFilter != undefined && selectedAgeByFilter.length > 0) {
-      handleSelectAgeChange(selectedAgeByFilter);
+    if(localStorage.getItem("selectedAgeByFilter")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+      handleSelectAgeChange(selectedAge);
     }
-    if (selectedSingleByFilter != undefined && selectedSingleByFilter.length > 0) {
-      handleSelectSingleChange(selectedSingleByFilter);
+    if(localStorage.getItem("selectedSingleByFilter")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+      handleSelectSingleChange(selectedSingle);
     }
-  }, [ selectedBuilderNameByFilter, selectedSubdivisionNameByFilter, productTypeStatusByFilter, selectedAreaByFilter, selectedMasterPlanByFilter, seletctedZipcodeByFilter, selectedAgeByFilter, selectedSingleByFilter]);
+}, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -652,10 +658,10 @@ const PriceList = () => {
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState(selectedBuilderNameByFilter);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState(selectedSubdivisionNameByFilter);
-  const [selectedAge, setSelectedAge] = useState(selectedAgeByFilter);
-  const [selectedSingle, setSelectedSingle] = useState(selectedSingleByFilter);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   
   const HandleFilter = (e) => {
@@ -881,10 +887,64 @@ const PriceList = () => {
     setShow(true);
   };
 
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
+
   const HandleFilterForm = (e) => {
-    e.preventDefault();
-    getpriceList(currentPage, sortConfig, searchQuery);
-    setManageFilterOffcanvas(false);
+    if (filterQuery.from == "" || filterQuery.to == "") {
+      setShowPopup(true);
+      if(filterQuery.from == "" && filterQuery.to == "") {
+          setMessage("Please select from and to date.");
+      } else if (filterQuery.from == "") {
+          setMessage("Please select from date.");
+      } else if (filterQuery.to == "") {
+          setMessage("Please select to date.");
+      }
+      return;
+    } else {
+      let startDate = moment(filterQuery.from);
+      let endDate = moment(filterQuery.to);
+      let days = endDate.diff(startDate, 'days', true);
+      let totaldays = Math.ceil(days) + 1;
+      if (totaldays < 184) {
+        e.preventDefault();
+        getpriceList(currentPage, sortConfig, searchQuery);
+        setManageFilterOffcanvas(false);
+        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
+        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
+        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
+        localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
+        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
+        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
+        localStorage.setItem("from", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
+        localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+        localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
+        localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
+        localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
+        localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
+        localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
+        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+        localStorage.setItem("area", JSON.stringify(filterQuery.area));
+        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+        localStorage.setItem("age", JSON.stringify(filterQuery.age));
+        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+        localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery));
+      } else {
+        setShowPopup(true);
+        setMessage("Please select date between 183 days.");
+        return;
+      }
+    }
   };
 
   const handleOpenDialog = () => {
@@ -1661,7 +1721,9 @@ useEffect(() => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">From:{" "}</label>
+                    <label className="form-label">From:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
                     <DatePicker
                       name="from"
                       className="form-control"
@@ -1670,10 +1732,11 @@ useEffect(() => {
                       dateFormat="MM/dd/yyyy"
                       placeholderText="mm/dd/yyyy"
                     />
-
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">To:{" "}</label>
+                    <label className="form-label">To:{" "}
+                      <span className="text-danger">*</span>
+                    </label>
                     <DatePicker
                       name="to"
                       className="form-control"
@@ -2066,6 +2129,22 @@ useEffect(() => {
           </div>
         </div>
       </Offcanvas>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Alert</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+           ></button>
+        </Modal.Header>
+        <Modal.Body>{message}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

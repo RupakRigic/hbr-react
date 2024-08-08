@@ -148,7 +148,7 @@ const FilterBuilder = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Filter Builder</h2>
+            <h2>Filter Builders</h2>
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-6 mt-3">
