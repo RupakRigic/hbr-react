@@ -148,7 +148,7 @@ const TrafficsaleList = () => {
     const selectedNames = selectedItems.map(item => item.label).join(', ');
     setFilterQuery(prevState => ({
       ...prevState,
-      builder_name: selectedNames
+      subdivision_name: selectedNames
     }));
     setNormalFilter(true);
   }

@@ -105,6 +105,9 @@ function Login(props) {
             localStorage.removeItem("unsoldinventory");
             localStorage.removeItem("zoning");
             localStorage.removeItem("searchQueryByWeeklyTrafficFilter");
+            localStorage.removeItem("selectedStatusByProductFilter");
+            localStorage.removeItem("baseprice");
+            localStorage.removeItem("searchQueryByBasePricesFilter");
           } else if (userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
