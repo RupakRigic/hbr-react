@@ -38,6 +38,29 @@ const FilterProducts = () => {
     });
 
     useEffect(() => {
+        if(localStorage.getItem("selectedStatusByProductFilter")) {
+            const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByProductFilter"));
+            handleSelectStatusChange(selectedStatus);
+        }
+        if(localStorage.getItem("selectedBuilderNameByFilter")) {
+          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+          handleSelectBuilderNameChange(selectedBuilderName);
+        }
+        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+          handleSelectSubdivisionNameChange(selectedSubdivisionName);
+        }
+        if(localStorage.getItem("selectedAgeByFilter")) {
+            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+            handleSelectAgeChange(selectedAge);
+        }
+        if(localStorage.getItem("selectedSingleByFilter")) {
+            const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+            handleSelectSingleChange(selectedSingle);
+        }
+    }, []);
+
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
             GetSubdivisionDropDownList();
@@ -98,27 +121,39 @@ const FilterProducts = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("selectedStatusByProductFilter")) {
-            const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByProductFilter"));
-            handleSelectStatusChange(selectedStatus);
+        if(localStorage.getItem("firstTime") == "false") {
+            if((searchQuery == "") || (searchQuery == "&status=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&current_base_price=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
+                return;
+            } else {
+                navigate("/productlist");
+                localStorage.setItem("selectedStatusByProductFilter", JSON.stringify(selectedStatusByFilter));
+                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
+                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("product_status", JSON.stringify(filterQuery.status));
+                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+                localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
+                localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+                localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
+                localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
+                localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
+                localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
+                localStorage.setItem("current_base_price", JSON.stringify(filterQuery.current_base_price));
+                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+                localStorage.setItem("area", JSON.stringify(filterQuery.area));
+                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+                localStorage.setItem("age", JSON.stringify(filterQuery.age));
+                localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                localStorage.setItem("searchQueryByProductFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+            }
         }
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
-          handleSelectBuilderNameChange(selectedBuilderName);
-        }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
-          handleSelectSubdivisionNameChange(selectedSubdivisionName);
-        }
-        if(localStorage.getItem("selectedAgeByFilter")) {
-            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
-            handleSelectAgeChange(selectedAge);
-        }
-        if(localStorage.getItem("selectedSingleByFilter")) {
-            const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
-            handleSelectSingleChange(selectedSingle);
-        }
-    }, []);
+        
+    }, [searchQuery]);
 
     const HandleFilterForm = (e) => {
         e.preventDefault();
@@ -147,6 +182,7 @@ const FilterProducts = () => {
         localStorage.setItem("age", JSON.stringify(filterQuery.age));
         localStorage.setItem("single", JSON.stringify(filterQuery.single));
         localStorage.setItem("searchQueryByProductFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+        localStorage.setItem("firstTime", false);
     };
 
 

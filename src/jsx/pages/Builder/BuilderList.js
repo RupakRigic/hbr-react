@@ -484,6 +484,7 @@ const BuilderTable = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -761,6 +762,14 @@ const BuilderTable = () => {
     setSelectedCompanyType([]);
     getbuilderlist(1, sortConfig, "");
     setManageFilterOffcanvas(false);
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedStatusByBuilderFilter");
+    localStorage.removeItem("selectedCompanyTypeByFilter");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("is_active");
+    localStorage.removeItem("active_communities");
+    localStorage.removeItem("company_type");
+    localStorage.setItem("firstTime", false);
   };
 
   const handleDetailRedirectClick = () => {

@@ -184,6 +184,34 @@ const PermitList = () => {
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
     getPermitList(1, sortConfig, "");
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedSubdivisionNameByFilter");
+    localStorage.removeItem("productTypeStatusByFilter");
+    localStorage.removeItem("selectedAreaByFilter");
+    localStorage.removeItem("selectedMasterPlanByFilter");
+    localStorage.removeItem("seletctedZipcodeByFilter");
+    localStorage.removeItem("selectedAgeByFilter");
+    localStorage.removeItem("selectedSingleByFilter");
+    localStorage.removeItem("from");
+    localStorage.removeItem("to");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("address2");
+    localStorage.removeItem("address1");
+    localStorage.removeItem("parcel");
+    localStorage.removeItem("sqft");
+    localStorage.removeItem("lotnumber");
+    localStorage.removeItem("permitnumber");
+    localStorage.removeItem("plan");
+    localStorage.removeItem("product_type");
+    localStorage.removeItem("area");
+    localStorage.removeItem("masterplan_id");
+    localStorage.removeItem("zipcode");
+    localStorage.removeItem("lotwidth");
+    localStorage.removeItem("lotsize");
+    localStorage.removeItem("age");
+    localStorage.removeItem("single");
+    localStorage.setItem("firstTime", false);
   };
 
   useEffect(() => {
@@ -764,6 +792,7 @@ const PermitList = () => {
   const getPermitList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {

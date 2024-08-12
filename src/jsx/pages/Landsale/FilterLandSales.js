@@ -37,6 +37,17 @@ const FilterLandSales = () => {
     });
 
     useEffect(() => {
+        if(localStorage.getItem("selectedBuilderNameByFilter")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+            handleSelectBuilderNameChange(selectedBuilderName);
+        }
+        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+          handleSelectSubdivisionNameChange(selectedSubdivisionName);
+        }
+    }, []);
+
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
             GetSubdivisionDropDownList();
@@ -99,15 +110,35 @@ const FilterLandSales = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
-            handleSelectBuilderNameChange(selectedBuilderName);
+        if (filterQuery.from == "" || filterQuery.to == "") {
+            return;
+        } else {
+            if(localStorage.getItem("firstTime") == "false") {
+                if((searchQuery == "") || (searchQuery == "&builder_name=&subdivision_name=&seller=&buyer=&location=&notes=&price=&from=&to=&priceperunit=&parcel=&doc=&noofunit=&typeofunit=")){
+                    return;
+                } else {
+                    navigate("/landsalelist");
+                    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
+                    localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
+                    localStorage.setItem("from", JSON.stringify(filterQuery.from));
+                    localStorage.setItem("to", JSON.stringify(filterQuery.to));
+                    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+                    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+                    localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
+                    localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
+                    localStorage.setItem("location", JSON.stringify(filterQuery.location));
+                    localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
+                    localStorage.setItem("price", JSON.stringify(filterQuery.price));
+                    localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
+                    localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
+                    localStorage.setItem("document", JSON.stringify(filterQuery.doc));
+                    localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
+                    localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
+                    localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                }
+            }
         }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
-          handleSelectSubdivisionNameChange(selectedSubdivisionName);
-        }
-    }, []);
+    }, [searchQuery]);
 
     const HandleFilterForm = (e) => {
         if (filterQuery.from == "" || filterQuery.to == "") {

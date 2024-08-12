@@ -43,46 +43,6 @@ const FilterSubdivision = () => {
     });
 
     useEffect(() => {
-        if (localStorage.getItem("usertoken")) {
-            GetBuilderDropDownList();
-        } else {
-            navigate("/");
-        }
-    }, []);
-
-    useEffect(() => {
-        setSearchQuery(filterString());
-    }, [filterQuery]);
-
-    const filterString = () => {
-        const queryString = Object.keys(filterQuery)
-            .map(
-                (key) =>
-                    `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
-            )
-            .join("&");
-
-        return queryString ? `&${queryString}` : "";
-    };
-
-    const GetBuilderDropDownList = async () => {
-        try {
-            const response = await AdminBuilderService.builderDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.map((builder) => ({
-                label: builder.name,
-                value: builder.id,
-            }));
-            setBuilderListDropDown(formattedData);
-        } catch (error) {
-            console.log(error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-            }
-        }
-    };
-
-    useEffect(() => {
         if(localStorage.getItem("selectedStatusBySubdivisionFilter")) {
             const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusBySubdivisionFilter"));
             handleSelectStatusChange(selectedStatus);
@@ -133,6 +93,87 @@ const FilterSubdivision = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (localStorage.getItem("usertoken")) {
+            GetBuilderDropDownList();
+        } else {
+            navigate("/");
+        }
+    }, []);
+
+    useEffect(() => {
+        setSearchQuery(filterString());
+    }, [filterQuery]);
+
+    const filterString = () => {
+        const queryString = Object.keys(filterQuery)
+            .map(
+                (key) =>
+                    `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
+            )
+            .join("&");
+
+        return queryString ? `&${queryString}` : "";
+    };
+
+    const GetBuilderDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.builderDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
+            }));
+            setBuilderListDropDown(formattedData);
+        } catch (error) {
+            console.log(error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+            }
+        }
+    };
+
+    useEffect(() => {
+        if(localStorage.getItem("firstTime") == "false") {
+            if((searchQuery == "") || (searchQuery == "&status=&reporting=&name=&builder_name=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&gated=&juridiction=&gasprovider=&from=&to=")){
+                return;
+            } else {
+                navigate("/subdivisionlist");
+                localStorage.setItem("selectedStatusBySubdivisionFilter", JSON.stringify(selectedStatusByFilter));
+                localStorage.setItem("selectedReportingByFilter", JSON.stringify(selectedReportingByFilter));
+                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
+                localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
+                localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
+                localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcodeByFilter));
+                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
+                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("selectedGatedByFilter", JSON.stringify(selectedGatedByFilter));
+                localStorage.setItem("selectedJurisdicitionByFilter", JSON.stringify(selectedJurisdicitionByFilter));
+                localStorage.setItem("seletctedGasProviderByFilter", JSON.stringify(seletctedGasProviderByFilter));
+                localStorage.setItem("subdivision_status", JSON.stringify(filterQuery.status));
+                localStorage.setItem("reporting", JSON.stringify(filterQuery.reporting));
+                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.name));
+                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+                localStorage.setItem("area", JSON.stringify(filterQuery.area));
+                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+                localStorage.setItem("age", JSON.stringify(filterQuery.age));
+                localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                localStorage.setItem("gated", JSON.stringify(filterQuery.gated));
+                localStorage.setItem("juridiction", JSON.stringify(filterQuery.juridiction));
+                localStorage.setItem("gasprovider", JSON.stringify(filterQuery.gasprovider));
+                localStorage.setItem("from", JSON.stringify(filterQuery.from));
+                localStorage.setItem("to", JSON.stringify(filterQuery.to));
+                localStorage.setItem("searchQueryBySubdivisionFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+            }
+        }
+        
+    }, [searchQuery]);
+
     const HandleFilterForm = (e) => {
         e.preventDefault();
         navigate("/subdivisionlist");
@@ -166,6 +207,7 @@ const FilterSubdivision = () => {
         localStorage.setItem("from", JSON.stringify(filterQuery.from));
         localStorage.setItem("to", JSON.stringify(filterQuery.to));
         localStorage.setItem("searchQueryBySubdivisionFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+        localStorage.setItem("firstTime", false);
     };
 
     const handleSelectStatusChange = (selectedItems) => {

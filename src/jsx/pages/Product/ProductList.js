@@ -430,6 +430,7 @@ const ProductList = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByProductFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -715,6 +716,30 @@ const ProductList = () => {
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
     getproductList(1, sortConfig, "");
+    localStorage.removeItem("selectedStatusByProductFilter");
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedSubdivisionNameByFilter");
+    localStorage.removeItem("selectedAgeByFilter");
+    localStorage.removeItem("selectedSingleByFilter");
+    localStorage.removeItem("product_status");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("product_name");
+    localStorage.removeItem("sqft");
+    localStorage.removeItem("stories");
+    localStorage.removeItem("bedroom");
+    localStorage.removeItem("bathroom");
+    localStorage.removeItem("garage");
+    localStorage.removeItem("current_base_price");
+    localStorage.removeItem("product_type");
+    localStorage.removeItem("area");
+    localStorage.removeItem("masterplan_id");
+    localStorage.removeItem("zipcode");
+    localStorage.removeItem("lotwidth");
+    localStorage.removeItem("lotsize");
+    localStorage.removeItem("age");
+    localStorage.removeItem("single");
+    localStorage.setItem("firstTime", false);
   };
 
   const handlePriceClick = () => {

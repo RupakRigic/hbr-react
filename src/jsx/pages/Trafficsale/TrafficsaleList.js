@@ -697,6 +697,7 @@ const TrafficsaleList = () => {
   const gettrafficsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -848,6 +849,34 @@ const TrafficsaleList = () => {
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
     gettrafficsaleList(1, sortConfig, "");
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedSubdivisionNameByFilter");
+    localStorage.removeItem("productTypeStatusByFilter");
+    localStorage.removeItem("selectedAreaByFilter");
+    localStorage.removeItem("selectedMasterPlanByFilter");
+    localStorage.removeItem("seletctedZipcodeByFilter");
+    localStorage.removeItem("selectedAgeByFilter");
+    localStorage.removeItem("selectedSingleByFilter");
+    localStorage.removeItem("from");
+    localStorage.removeItem("to");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("weeklytraffic");
+    localStorage.removeItem("cancelations");
+    localStorage.removeItem("netsales");
+    localStorage.removeItem("totallots");
+    localStorage.removeItem("lotreleased");
+    localStorage.removeItem("unsoldinventory");
+    localStorage.removeItem("product_type");
+    localStorage.removeItem("area");
+    localStorage.removeItem("masterplan_id");
+    localStorage.removeItem("zipcode");
+    localStorage.removeItem("lotwidth");
+    localStorage.removeItem("lotsize");
+    localStorage.removeItem("zoning");
+    localStorage.removeItem("age");
+    localStorage.removeItem("single");
+    localStorage.setItem("firstTime", false);
   };
 
   const requestSort = (key) => {

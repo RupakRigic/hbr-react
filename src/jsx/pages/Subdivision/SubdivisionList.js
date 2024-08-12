@@ -730,6 +730,7 @@ const SubdivisionList = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryBySubdivisionFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -1080,6 +1081,36 @@ const SubdivisionList = () => {
     setSelectedGasProvider([]);
     getbuilderlist(1, sortConfig, "");
     setManageFilterOffcanvas(false);
+    localStorage.removeItem("selectedStatusBySubdivisionFilter");
+    localStorage.removeItem("selectedReportingByFilter");
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("productTypeStatusByFilter");
+    localStorage.removeItem("selectedAreaByFilter");
+    localStorage.removeItem("selectedMasterPlanByFilter");
+    localStorage.removeItem("seletctedZipcodeByFilter");
+    localStorage.removeItem("selectedAgeByFilter");
+    localStorage.removeItem("selectedSingleByFilter");
+    localStorage.removeItem("selectedGatedByFilter");
+    localStorage.removeItem("selectedJurisdicitionByFilter");
+    localStorage.removeItem("seletctedGasProviderByFilter");
+    localStorage.removeItem("subdivision_status");
+    localStorage.removeItem("reporting");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("product_type");
+    localStorage.removeItem("area");
+    localStorage.removeItem("masterplan_id");
+    localStorage.removeItem("zipcode");
+    localStorage.removeItem("lotwidth");
+    localStorage.removeItem("lotsize");
+    localStorage.removeItem("age");
+    localStorage.removeItem("single");
+    localStorage.removeItem("gated");
+    localStorage.removeItem("juridiction");
+    localStorage.removeItem("gasprovider");
+    localStorage.removeItem("from");
+    localStorage.removeItem("to");
+    localStorage.setItem("firstTime", false);
   };
 
   const [value, setValue] = React.useState("1");

@@ -304,6 +304,38 @@ const ClosingList = () => {
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
     getClosingList(1, sortConfig, "");
+    localStorage.removeItem("seletctedClosingTypeByFilter");
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedSubdivisionNameByFilter");
+    localStorage.removeItem("seletctedLenderByFilter");
+    localStorage.removeItem("productTypeStatusByFilter");
+    localStorage.removeItem("selectedAreaByFilter");
+    localStorage.removeItem("selectedMasterPlanByFilter");
+    localStorage.removeItem("seletctedZipcodeByFilter");
+    localStorage.removeItem("selectedAgeByFilter");
+    localStorage.removeItem("selectedSingleByFilter");
+    localStorage.removeItem("from");
+    localStorage.removeItem("to");
+    localStorage.removeItem("closing_type");
+    localStorage.removeItem("document");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("closingprice");
+    localStorage.removeItem("address");
+    localStorage.removeItem("parcel");
+    localStorage.removeItem("sellerleagal");
+    localStorage.removeItem("buyer");
+    localStorage.removeItem("lender_name");
+    localStorage.removeItem("loanamount");
+    localStorage.removeItem("product_type");
+    localStorage.removeItem("area");
+    localStorage.removeItem("masterplan_id");
+    localStorage.removeItem("zipcode");
+    localStorage.removeItem("lotwidth");
+    localStorage.removeItem("lotsize");
+    localStorage.removeItem("age");
+    localStorage.removeItem("single");
+    localStorage.setItem("firstTime", false);
   };
 
   const clearClosingDetails = () => {
@@ -612,6 +644,7 @@ const ClosingList = () => {
   const getClosingList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByClosingsFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {

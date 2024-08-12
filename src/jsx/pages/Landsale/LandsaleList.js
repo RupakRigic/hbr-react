@@ -246,6 +246,23 @@ const LandsaleList = () => {
     setSelectedSubdivisionName([]);
     getLandsaleList(1, sortConfig, "");
     setManageFilterOffcanvas(false);
+    localStorage.removeItem("selectedBuilderNameByFilter");
+    localStorage.removeItem("selectedSubdivisionNameByFilter");
+    localStorage.removeItem("from");
+    localStorage.removeItem("to");
+    localStorage.removeItem("builder_name");
+    localStorage.removeItem("subdivision_name");
+    localStorage.removeItem("seller");
+    localStorage.removeItem("buyer");
+    localStorage.removeItem("location");
+    localStorage.removeItem("notes");
+    localStorage.removeItem("price");
+    localStorage.removeItem("priceperunit");
+    localStorage.removeItem("parcel");
+    localStorage.removeItem("document");
+    localStorage.removeItem("noofunit");
+    localStorage.removeItem("typeofunit");
+    localStorage.setItem("firstTime", false);
   };
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
@@ -551,6 +568,7 @@ const LandsaleList = () => {
   const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
+    localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
