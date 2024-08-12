@@ -148,6 +148,8 @@ const FilterPermits = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
+            setShowPopup(true);
+            setMessage("Please select date.");
             return;
         } else {
             if(localStorage.getItem("firstTime") == "false") {
