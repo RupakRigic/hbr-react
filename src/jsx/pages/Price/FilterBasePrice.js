@@ -209,7 +209,6 @@ const FilterBasePrice = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 183 days.");
-                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }

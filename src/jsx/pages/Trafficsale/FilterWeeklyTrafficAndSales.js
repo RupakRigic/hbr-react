@@ -193,7 +193,6 @@ const FilterWeeklyTrafficAndSales = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
-                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }
