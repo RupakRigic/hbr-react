@@ -143,6 +143,7 @@ const FilterLandSales = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
+                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }
@@ -186,6 +187,7 @@ const FilterLandSales = () => {
                 localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
                 localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
                 localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                localStorage.setItem("firstTime", false);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");

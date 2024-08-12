@@ -207,6 +207,7 @@ const FilterBasePrice = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 183 days.");
+                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }
@@ -265,6 +266,7 @@ const FilterBasePrice = () => {
                 localStorage.setItem("product_status", JSON.stringify(filterQuery.product_status));
                 localStorage.setItem("subdivision_status", JSON.stringify(filterQuery.subdivision_status));
                 localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                localStorage.setItem("firstTime", false);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 183 days.");

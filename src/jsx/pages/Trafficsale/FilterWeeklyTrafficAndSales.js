@@ -191,6 +191,7 @@ const FilterWeeklyTrafficAndSales = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
+                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }
@@ -245,6 +246,7 @@ const FilterWeeklyTrafficAndSales = () => {
                 localStorage.setItem("age", JSON.stringify(filterQuery.age));
                 localStorage.setItem("single", JSON.stringify(filterQuery.single));
                 localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                localStorage.setItem("firstTime", false);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");
