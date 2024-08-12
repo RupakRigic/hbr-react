@@ -159,46 +159,59 @@ const FilterBasePrice = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("firstTime") == "false") {
-            if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&baseprice=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&product_status=&subdivision_status=")){
-                return;
-            } else {
-                navigate("/priceList");
-                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
-                localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
-                localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
-                localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcodeByFilter));
-                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
-                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
-                localStorage.setItem("selectedStatusBySubdivisionFilter", JSON.stringify(selectedSubdivisionStatusByFilter));
-                localStorage.setItem("selectedStatusByProductFilter", JSON.stringify(selectedProductStatusByFilter));
-                localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
-                localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
-                localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
-                localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
-                localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
-                localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
-                localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
-                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-                localStorage.setItem("area", JSON.stringify(filterQuery.area));
-                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-                localStorage.setItem("age", JSON.stringify(filterQuery.age));
-                localStorage.setItem("single", JSON.stringify(filterQuery.single));
-                localStorage.setItem("product_status", JSON.stringify(filterQuery.product_status));
-                localStorage.setItem("subdivision_status", JSON.stringify(filterQuery.subdivision_status));
-                localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+        if (filterQuery.from == "" || filterQuery.to == "") {
+            return;
+        } else {
+            if(localStorage.getItem("firstTime") == "false") {
+                if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&baseprice=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&product_status=&subdivision_status=")){
+                    return;
+                } else {
+                    let startDate = moment(filterQuery.from);
+                    let endDate = moment(filterQuery.to);
+                    let days = endDate.diff(startDate, 'days', true);
+                    let totaldays = Math.ceil(days) + 1;
+                    if (totaldays < 184) {
+                        navigate("/priceList");
+                        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
+                        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
+                        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
+                        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
+                        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
+                        localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcodeByFilter));
+                        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
+                        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
+                        localStorage.setItem("selectedStatusBySubdivisionFilter", JSON.stringify(selectedSubdivisionStatusByFilter));
+                        localStorage.setItem("selectedStatusByProductFilter", JSON.stringify(selectedProductStatusByFilter));
+                        localStorage.setItem("from", JSON.stringify(filterQuery.from));
+                        localStorage.setItem("to", JSON.stringify(filterQuery.to));
+                        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
+                        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
+                        localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
+                        localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
+                        localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
+                        localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
+                        localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
+                        localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
+                        localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
+                        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
+                        localStorage.setItem("area", JSON.stringify(filterQuery.area));
+                        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
+                        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
+                        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
+                        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
+                        localStorage.setItem("age", JSON.stringify(filterQuery.age));
+                        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                        localStorage.setItem("product_status", JSON.stringify(filterQuery.product_status));
+                        localStorage.setItem("subdivision_status", JSON.stringify(filterQuery.subdivision_status));
+                        localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                    } else {
+                        setShowPopup(true);
+                        setMessage("Please select date between 183 days.");
+                        return;
+                    }
+                }
             }
         }
-        
     }, [searchQuery]);
 
     const HandleFilterForm = (e) => {
