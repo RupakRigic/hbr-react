@@ -409,7 +409,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minBuyerValue,
+            min: minBuyerValue-(minBuyerValue*50/100),
             max: maxBuyerValue,
             ticks: {
               beginAtZero: true,
@@ -463,7 +463,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minNetSaleValue,
+            min: minNetSaleValue-(minNetSaleValue*50/100),
             max: maxNetSaleValue,
             ticks: {
               beginAtZero: true,
@@ -518,7 +518,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: cancelationMinValue,
+            min: cancelationMinValue - (cancelationMinValue*50/100),
             max: cancelationMaxValue,
             ticks: {
               beginAtZero: true,
@@ -574,7 +574,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: StandingValueMinValue,
+            min: StandingValueMinValue - (StandingValueMinValue*50/100),
             max: StandingValueMaxValue,
             ticks: {
               beginAtZero: true,
@@ -628,7 +628,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: NetSaleSubWiseMinValue,
+            min: NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100),
             max: NetSaleSubWiseMaxValue,
             ticks: {
               beginAtZero: true,
@@ -681,7 +681,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: ActiveSubMin,
+            min: ActiveSubMin-(ActiveSubMin*50/100),
             max: ActiveSubMax,
             ticks: {
               beginAtZero: true,
