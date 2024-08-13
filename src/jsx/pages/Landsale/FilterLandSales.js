@@ -111,9 +111,11 @@ const FilterLandSales = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
-            setShowPopup(true);
-            setMessage("Please select date.");
-            return;
+            if(localStorage.getItem("firstTime") == "false") {
+                setShowPopup(true);
+                setMessage("Please select date.");
+                return;
+            }
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&builder_name=&subdivision_name=&seller=&buyer=&location=&notes=&price=&from=&to=&priceperunit=&parcel=&doc=&noofunit=&typeofunit=")){

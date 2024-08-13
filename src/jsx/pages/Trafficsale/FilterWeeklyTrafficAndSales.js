@@ -148,9 +148,11 @@ const FilterWeeklyTrafficAndSales = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
-            setShowPopup(true);
-            setMessage("Please select date.");
-            return;
+            if(localStorage.getItem("firstTime") == "false") {
+                setShowPopup(true);
+                setMessage("Please select date.");
+                return;
+            }
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&weeklytraffic=&cancelations=&netsales=&totallots=&lotreleased=&unsoldinventory=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&zoning=&age=&single=")){
