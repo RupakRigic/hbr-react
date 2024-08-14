@@ -520,8 +520,16 @@ const BuilderTable = () => {
 
   useEffect(() => {
     if(localStorage.getItem("selectedBuilderNameByFilter")) {
-      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
-      handleSelectBuilderNameChange(selectedBuilderName);
+      if (localStorage.getItem("UpdateBuilderName") && localStorage.getItem("UpdateID")) {
+        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        const id = JSON.parse(localStorage.getItem("UpdateID"));
+        const UpdateID = Array.isArray(id) ? id : [id];
+        const UpdateBuilderName = JSON.parse(localStorage.getItem("UpdateBuilderName"));
+        handleSelectBuilderNameChange(selectedBuilderName,"", UpdateID, UpdateBuilderName);
+      } else {
+        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        handleSelectBuilderNameChange(selectedBuilderName);
+      }
     }
     if(localStorage.getItem("selectedStatusByBuilderFilter")) {
       const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilter"));
@@ -539,11 +547,13 @@ const BuilderTable = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist(currentPage, sortConfig, searchQuery);
+      if(!manageFilterOffcanvas) {
+        getbuilderlist(currentPage, sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
-  }, [currentPage]);
+  }, [currentPage,searchQuery]);
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -630,9 +640,13 @@ const BuilderTable = () => {
       if (responseData.status === true) {
         if(id) {
           const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
-          handleSelectBuilderNameChange(selectedBuilderName, id);
+          const ID = Array.isArray(id) ? id : [id];
+          console.log(ID);
+          
+          handleSelectBuilderNameChange(selectedBuilderName, ID);
         }
-        window.location.reload();
+        getbuilderlist(currentPage, sortConfig, searchQuery);
+        GetBuilderDropDownList();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -650,7 +664,8 @@ const BuilderTable = () => {
           const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
           handleSelectBuilderNameChange(selectedBuilderName, id);
         }
-        window.location.reload();
+        getbuilderlist(currentPage, sortConfig, searchQuery);
+        GetBuilderDropDownList();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -661,7 +676,8 @@ const BuilderTable = () => {
   };
 
   const handleCallback = () => {
-    window.location.reload();
+    getbuilderlist(currentPage, sortConfig, searchQuery);
+    GetBuilderDropDownList();
   };
 
   const handleRowClick = async (id) => {
@@ -1636,9 +1652,9 @@ const BuilderTable = () => {
 
   console.log(filterQuery);
 
-  const handleSelectBuilderNameChange = (selectedItems, ID) => {
-    if(ID){
-      const newValues = selectedItems.filter(item => item.value != ID);
+  const handleSelectBuilderNameChange = (selectedItems, ID, UpdateID, UpdateBuilderName) => {
+    if(ID && Array.isArray(ID)){
+      const newValues = selectedItems.filter(item => !ID.includes(item.value));
       localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(newValues));
       const selectedValues = newValues.map(item => item.value);
       const selectedNames = newValues.map(item => item.label).join(', ');
@@ -1649,6 +1665,37 @@ const BuilderTable = () => {
         ...prevState,
         name: selectedNames
       }));
+    } else if (UpdateID && Array.isArray(UpdateID) && UpdateBuilderName) {
+      const labelMap = UpdateID.reduce((map, id) => {
+        map[id] = UpdateBuilderName;
+        return map;
+      }, {});
+
+      const updatedItems = selectedItems.map(item => {
+        if (labelMap[item.value]) {
+          return {
+            ...item,
+            label: labelMap[item.value]
+          };
+        }
+        return item;
+      });
+
+      console.log("updatedItems", updatedItems);
+      localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(updatedItems));
+
+      const selectedValues = updatedItems.map(item => item.value);
+      const selectedNames = updatedItems.map(item => item.label).join(', ');
+
+      localStorage.setItem("builder_name", JSON.stringify(selectedNames));
+      setSelectedValues(selectedValues);
+      setSelectedBuilderName(updatedItems);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        name: selectedNames
+      }));
+      localStorage.removeItem("UpdateBuilderName");
+      localStorage.removeItem("UpdateID")
     } else {
       const selectedValues = selectedItems.map(item => item.value);
       const selectedNames = selectedItems.map(item => item.label).join(', ');
@@ -2284,7 +2331,7 @@ const BuilderTable = () => {
                                               <i className="fas fa-pencil-alt"></i>
                                             </Link>
                                             <Link
-                                              onClick={() =>
+                                              onClick={() => 
                                                 swal({
                                                   title: "Are you sure?",
                                                   icon: "warning",

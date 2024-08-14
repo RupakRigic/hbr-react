@@ -159,10 +159,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                             swal("Builder Update Succesfully").then((willDelete) => {
                                 if (willDelete) {
                                     setAddProduct(false);
-                                    navigate('/builderList');
+                                    localStorage.setItem("UpdateBuilderName",JSON.stringify(event.target.name.value));
+                                    localStorage.setItem("UpdateID",JSON.stringify(selectedLandSales));
+                                    window.location.reload();
                                 }
                             })
-                         props.parentCallback();
             
                         }
                     }

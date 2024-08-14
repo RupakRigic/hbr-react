@@ -116,7 +116,9 @@ const BuilderUpdate = () => {
 
                 swal("Builder Update Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/builderList')
+                        localStorage.setItem("UpdateBuilderName",JSON.stringify(event.target.name.value));
+                        localStorage.setItem("UpdateID", params.id);
+                        navigate('/builderList');
                     }
                 })
 
