@@ -1,41 +1,39 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
 const BuilderOffcanvas = forwardRef((props, ref) => {
+    const nav = useNavigate();
     const [file, setFile] = useState('');
     const [isActive, setIsActive] = useState('0');
     const [company_type, setCompany_type] = useState('');
     const [Error, setError] = useState('');
     const [addBuilder, setAddBuilder] = useState(false);
+
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddBuilder(true)
         }
     }));
-    const nav = useNavigate();
-    const handleActive = e => {
 
+    const handleActive = (e) => {
         setIsActive(e.target.value);
+    };
 
-    }
-    const handleCompanyType = e => {
-
+    const handleCompanyType = (e) => {
         setCompany_type(e.target.value);
+    };
 
-    }
     function handleChangeImage(e) {
-        const fileReader = new FileReader()
-        fileReader.readAsDataURL(e.target.files[0])
-
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(e.target.files[0]);
         fileReader.onload = () => {
-            var image = fileReader.result
-            setFile(image)
-
+            var image = fileReader.result;
+            setFile(image);
         }
+    };
 
-    }
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -67,25 +65,19 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
             if (data.status === true) {
                 setAddBuilder(false)
                 props.parentCallback();
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
-
-
-
-
         }
-
         nav("#");
-    }
+    };
+
     return (
-        <>
+        <Fragment>
             <Offcanvas show={addBuilder} onHide={setAddBuilder} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
@@ -139,10 +131,8 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Is Active <span className="text-danger"></span></label>
                                     <select className="default-select form-control" onChange={handleActive} >
-                                        {/* <option data-display="Select">Please select</option> */}
                                         <option value="1">true</option>
                                         <option value="0">False</option>
-
                                     </select>
                                 </div>
 
@@ -170,7 +160,6 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                                         <option value="">Please Select Company Type</option>
                                         <option value="public">Public</option>
                                         <option value="private">Private</option>
-
                                     </select>
                                 </div>
 
@@ -227,7 +216,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                     </div>
                 </div>
             </Offcanvas>
-        </>
+        </Fragment>
     );
 });
 

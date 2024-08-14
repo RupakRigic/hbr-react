@@ -624,11 +624,15 @@ const BuilderTable = () => {
     }
   }, []);
 
-  const handleDelete = async (e) => {
+  const handleDelete = async (id) => {
     try {
-      let responseData = await AdminBuilderService.destroy(e).json();
+      let responseData = await AdminBuilderService.destroy(id).json();
       if (responseData.status === true) {
-        getbuilderlist();
+        if(id) {
+          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+          handleSelectBuilderNameChange(selectedBuilderName, id);
+        }
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -642,7 +646,11 @@ const BuilderTable = () => {
     try {
       let responseData = await AdminBuilderService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getbuilderlist();
+        if(id) {
+          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+          handleSelectBuilderNameChange(selectedBuilderName, id);
+        }
+        window.location.reload();
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -653,7 +661,7 @@ const BuilderTable = () => {
   };
 
   const handleCallback = () => {
-    getbuilderlist();
+    window.location.reload();
   };
 
   const handleRowClick = async (id) => {
@@ -1628,16 +1636,30 @@ const BuilderTable = () => {
 
   console.log(filterQuery);
 
-  const handleSelectBuilderNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
-    setFilterQuery(prevState => ({
-      ...prevState,
-      name: selectedNames
-    }));
-    setNormalFilter(true);
+  const handleSelectBuilderNameChange = (selectedItems, ID) => {
+    if(ID){
+      const newValues = selectedItems.filter(item => item.value != ID);
+      localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(newValues));
+      const selectedValues = newValues.map(item => item.value);
+      const selectedNames = newValues.map(item => item.label).join(', ');
+      localStorage.setItem("builder_name", JSON.stringify(selectedNames));
+      setSelectedValues(selectedValues);
+      setSelectedBuilderName(newValues);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        name: selectedNames
+      }));
+    } else {
+      const selectedValues = selectedItems.map(item => item.value);
+      const selectedNames = selectedItems.map(item => item.label).join(', ');
+      setSelectedValues(selectedValues);
+      setSelectedBuilderName(selectedItems);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        name: selectedNames
+      }));
+      setNormalFilter(true);
+    }
   };
 
   const statusOptions = [
