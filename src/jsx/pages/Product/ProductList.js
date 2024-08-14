@@ -739,7 +739,7 @@ const ProductList = () => {
     localStorage.removeItem("lotsize");
     localStorage.removeItem("age");
     localStorage.removeItem("single");
-    localStorage.setItem("firstTime", false);
+    localStorage.removeItem("firstTime");
   };
 
   const handlePriceClick = () => {

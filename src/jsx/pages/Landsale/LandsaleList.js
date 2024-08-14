@@ -262,7 +262,7 @@ const LandsaleList = () => {
     localStorage.removeItem("document");
     localStorage.removeItem("noofunit");
     localStorage.removeItem("typeofunit");
-    localStorage.setItem("firstTime", false);
+    localStorage.removeItem("firstTime");
   };
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));

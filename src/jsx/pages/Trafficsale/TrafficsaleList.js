@@ -876,7 +876,7 @@ const TrafficsaleList = () => {
     localStorage.removeItem("zoning");
     localStorage.removeItem("age");
     localStorage.removeItem("single");
-    localStorage.setItem("firstTime", false);
+    localStorage.removeItem("firstTime");
   };
 
   const requestSort = (key) => {

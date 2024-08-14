@@ -793,7 +793,7 @@ const BuilderTable = () => {
     localStorage.removeItem("is_active");
     localStorage.removeItem("active_communities");
     localStorage.removeItem("company_type");
-    localStorage.setItem("firstTime", false);
+    localStorage.removeItem("firstTime");
   };
 
   const handleDetailRedirectClick = () => {

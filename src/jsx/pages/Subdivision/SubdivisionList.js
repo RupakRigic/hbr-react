@@ -1110,7 +1110,7 @@ const SubdivisionList = () => {
     localStorage.removeItem("gasprovider");
     localStorage.removeItem("from");
     localStorage.removeItem("to");
-    localStorage.setItem("firstTime", false);
+    localStorage.removeItem("firstTime");
   };
 
   const [value, setValue] = React.useState("1");
