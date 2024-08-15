@@ -114,6 +114,7 @@ const FilterLandSales = () => {
             if(localStorage.getItem("firstTime") == "false") {
                 setShowPopup(true);
                 setMessage("Please select date.");
+                localStorage.removeItem("firstTime");
                 return;
             }
         } else {
@@ -147,6 +148,7 @@ const FilterLandSales = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
+                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }

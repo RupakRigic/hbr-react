@@ -163,6 +163,7 @@ const FilterBasePrice = () => {
             if(localStorage.getItem("firstTime") == "false") {
                 setShowPopup(true);
                 setMessage("Please select date.");
+                localStorage.removeItem("firstTime");
                 return;
             }
         } else {
@@ -211,6 +212,7 @@ const FilterBasePrice = () => {
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 183 days.");
+                        localStorage.removeItem("firstTime");
                         return;
                     }
                 }

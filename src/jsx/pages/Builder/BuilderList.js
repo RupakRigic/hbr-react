@@ -490,7 +490,6 @@ const BuilderTable = () => {
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      console.log(searchQuery);
       const response = await AdminBuilderService.index(
         pageNumber,
         searchQuery,
@@ -698,6 +697,10 @@ const BuilderTable = () => {
   };
 
   const HandleFilterForm = (e) => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    if (!isAnyFilterApplied) {
+      localStorage.removeItem("firstTime");
+    }
     e.preventDefault();
     setFilter(false);
     setNormalFilter(false);
@@ -1650,8 +1653,6 @@ const BuilderTable = () => {
     }
   };
 
-  console.log(filterQuery);
-
   const handleSelectBuilderNameChange = (selectedItems, ID, UpdateID, UpdateBuilderName) => {
     if(ID && Array.isArray(ID)){
       const newValues = selectedItems.filter(item => !ID.includes(item.value));
@@ -1740,8 +1741,6 @@ const BuilderTable = () => {
     }));
     setNormalFilter(true);
   };
-
-  console.log("filter", filter);
 
   return (
     <>

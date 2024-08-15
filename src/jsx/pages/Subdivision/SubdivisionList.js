@@ -917,6 +917,10 @@ const SubdivisionList = () => {
   }, []);
 
   const HandleFilterForm = (e) => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    if (!isAnyFilterApplied) {
+      localStorage.removeItem("firstTime");
+    }
     e.preventDefault();
     setFilter(false);
     setNormalFilter(false);

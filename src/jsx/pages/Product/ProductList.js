@@ -829,6 +829,10 @@ const ProductList = () => {
   };
 
   const HandleFilterForm = (e) => {
+    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+    if (!isAnyFilterApplied) {
+      localStorage.removeItem("firstTime");
+    }
     e.preventDefault();
     getproductList(currentPage, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
