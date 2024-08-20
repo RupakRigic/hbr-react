@@ -1079,7 +1079,11 @@ const LandsaleList = () => {
                             LandsaleList.map((element, index) => (
                               <tr
                                 onClick={(e) => {
-                                  if (e.target.type !== "checkbox") {
+                                  if (e.target.type == "checkbox") {
+                                    return;
+                                  } else if (e.target.className == "btn btn-danger shadow btn-xs sharp" || e.target.className == "fa fa-trash") {
+                                    return;
+                                  } else {
                                     handleRowClick(element.id);
                                   }
                                 }}
