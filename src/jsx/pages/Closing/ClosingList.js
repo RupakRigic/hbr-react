@@ -747,25 +747,37 @@ const ClosingList = () => {
           document.getElementById("fileInput").value = null;
           console.log(responseData);
           setLoading(false);
-          if (responseData.data) {
-            let message = responseData.data.message;
-            if (responseData.data.failed_records > 0) {
-              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows + '.';
-            }
-            message += '. Record Imported: ' + responseData.data.successful_records;
-            message += '. Failed Record Count: ' + responseData.data.failed_records;
-            message += '. Last Row: ' + responseData.data.last_processed_row;
-
-            swal(message).then((willDelete) => {
-              if (willDelete) {
-                navigate("/closingsalelist");
+          if (responseData) {
+            if (responseData.message) {
+              let message = responseData.message;
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  navigate("/closingsalelist");
+                  setShow(false);
+                }
+              });
+            } else {
+              let message = responseData.message;
+              if (responseData.failed_records > 0) {
+                const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+                message += ' Problematic Record Rows: ' + problematicRows + '.';
               }
-            });
+              message += '. Record Imported: ' + responseData.successful_records;
+              message += '. Failed Record Count: ' + responseData.failed_records;
+              message += '. Last Row: ' + responseData.last_processed_row;
+
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  navigate("/closingsalelist");
+                  setShow(false);
+                }
+              });
+            }
           } else {
             swal('Error: ' + responseData.error);
+            setShow(false);
           }
-          getClosingList();
+          getClosingList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
@@ -1416,10 +1428,21 @@ const GetLenderList = async () => {
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
                                 column.id == "closing Type" ? "closing_type" :
                                 column.id == "closing Price" ? "closingprice" :
-                                column.id == "Parcel Number" ? "parcel" :
-                                column.id == "sub Legal Name" ? "subdivisionName" :
+                                column.id == "parcel Number" ? "parcel" :
+                                column.id == "sub Legal Name" ? "sublegal_name" :
                                 column.id == "seller Legal Name" ? "sellerleagal" :
                                 column.id == "buyer Name" ? "buyer" :
+                                column.id == "doc" ? "document" :
+                                column.id == "product Type" ? "product_type" :
+                                column.id == "master Plan" ? "masterplan_id" :
+                                column.id == "zip Code" ? "zipcode" :
+                                column.id == "lot Width" ? "lotwidth" :
+                                column.id == "lot Size" ? "lotsize" :
+                                column.id == "age Restricted" ? "age" :
+                                column.id == "all Single Story" ? "single" :
+                                column.id == "date Added" ? "dateadded" :
+                                column.id == "__pkRecordID" ? "id" :
+                                column.id == "_fkSubID" ? "subdivision_code" :
                                 column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id)) : ""}>
                                 <strong>
                                   {column.label}
@@ -1427,9 +1450,21 @@ const GetLenderList = async () => {
                                     (item) => item.key === (
                                       column.id == "closing Type" ? "closing_type" :
                                       column.id == "closing Price" ? "closingprice" :
-                                      column.id == "sub Legal Name" ? "subdivisionName" :
+                                      column.id == "parcel Number" ? "parcel" :
+                                      column.id == "sub Legal Name" ? "sublegal_name" :
                                       column.id == "seller Legal Name" ? "sellerleagal" :
                                       column.id == "buyer Name" ? "buyer" :
+                                      column.id == "doc" ? "document" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "dateadded" :
+                                      column.id == "__pkRecordID" ? "id" :
+                                      column.id == "_fkSubID" ? "subdivision_code" :
                                       column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                   ) ? (
                                     <span>
@@ -1437,9 +1472,21 @@ const GetLenderList = async () => {
                                         (item) => item.key === (
                                           column.id == "closing Type" ? "closing_type" :
                                           column.id == "closing Price" ? "closingprice" :
-                                          column.id == "sub Legal Name" ? "subdivisionName" :
+                                          column.id == "parcel Number" ? "parcel" :
+                                          column.id == "sub Legal Name" ? "sublegal_name" :
                                           column.id == "seller Legal Name" ? "sellerleagal" :
                                           column.id == "buyer Name" ? "buyer" :
+                                          column.id == "doc" ? "document" :
+                                          column.id == "product Type" ? "product_type" :
+                                          column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
+                                          column.id == "lot Width" ? "lotwidth" :
+                                          column.id == "lot Size" ? "lotsize" :
+                                          column.id == "age Restricted" ? "age" :
+                                          column.id == "all Single Story" ? "single" :
+                                          column.id == "date Added" ? "dateadded" :
+                                          column.id == "__pkRecordID" ? "id" :
+                                          column.id == "_fkSubID" ? "subdivision_code" :
                                           column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
@@ -1554,7 +1601,7 @@ const GetLenderList = async () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.single == "1" ? "Yes" : "No"}</td>
                                     }
                                     {column.id == "date Added" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
+                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.subdivision && element.subdivision.dateadded} /></td>
                                     }
                                     {column.id == "__pkRecordID" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
