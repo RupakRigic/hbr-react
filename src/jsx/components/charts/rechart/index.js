@@ -728,7 +728,7 @@ const parseDate = (date) => {
     }
   } else {
     setShowPopup(true);
-    setMessage("Please select date between 366 days.");
+    setMessage("Please select date between 12 months.");
     return;
   }
   };
