@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Row, Col, Card } from "react-bootstrap";
+import { Row, Col, Card, Button } from "react-bootstrap";
 import LineChart1 from "../Chartjs/line1";
 import BarChart1 from "../Chartjs/bar1";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import TabContext from "@mui/lab/TabContext";
 import Dropdown from "react-bootstrap/Dropdown";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Modal from "react-bootstrap/Modal";
+import moment from 'moment';
 
 const RechartJs = () => {
   const [currentDisplay, setCurrentDisplay] = useState(1);
@@ -23,6 +25,14 @@ const RechartJs = () => {
   const [graph4Title, setgraph4Title] = useState("");
   const [graph5Title, setgraph5Title] = useState("");
   const [graph6Title, setgraph6Title] = useState("");
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const handlePopupClose = () => setShowPopup(false);
+
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
 
   useEffect(() => {
     const currentDate = new Date(); // Today's date
@@ -372,9 +382,16 @@ const parseDate = (date) => {
   };
 
   const getchartList = async (type, startDate, endDate) => {
-
+    if(type == "" || startDate == null || endDate == null){
+      return;
+    }
   const formattedStartDate = formatDate(startDate);
   const formattedEndDate = formatDate(endDate);
+  let start_Date = moment(startDate);
+  let end_Date = moment(endDate);
+  let days = end_Date.diff(start_Date, 'days', true);
+  let totaldays = Math.ceil(days) + 1;
+  if (totaldays < 367) {
     try {
       let responseData = await AdminWeeklyDataService.getstatistics(type, formattedStartDate, formattedEndDate).json();
       console.log(responseData);
@@ -385,6 +402,8 @@ const parseDate = (date) => {
       const buyerValue = filteredBuyerData.map(([, value]) => value);
       const maxBuyerValue = Math.max(...buyerValue);
       const minBuyerValue = Math.min(...buyerValue);
+
+      const adjustedMinBuyerValue = minBuyerValue === 0 ? Math.min(...buyerValue.filter(value => value > 0)) : minBuyerValue;
 
       console.log(buyerValue);
       setBuyerTrafficdata({
@@ -409,7 +428,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minBuyerValue-(minBuyerValue*50/100),
+            min: minBuyerValue != 0 ? minBuyerValue-(minBuyerValue*50/100) : adjustedMinBuyerValue,
             max: maxBuyerValue,
             ticks: {
               beginAtZero: true,
@@ -437,7 +456,7 @@ const parseDate = (date) => {
       const netSaleValue = filteredNetSaleData.map(([, value]) => value);
       const maxNetSaleValue = Math.max(...netSaleValue);
       const minNetSaleValue = Math.min(...netSaleValue);
-
+      const adjustedMinNetSaleValue = minNetSaleValue === 0 ? Math.min(...netSaleValue.filter(value => value > 0)) : minNetSaleValue;
       console.log(netSaleWeekDate);
       console.log(netSaleWeekDate);
 
@@ -463,7 +482,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minNetSaleValue-(minNetSaleValue*50/100),
+            min: minNetSaleValue != 0 ? minNetSaleValue-(minNetSaleValue*50/100) : adjustedMinNetSaleValue,
             max: maxNetSaleValue,
             ticks: {
               beginAtZero: true,
@@ -495,7 +514,7 @@ const parseDate = (date) => {
 
       const cancelationMaxValue = Math.max(...cancelationValue);
       const cancelationMinValue = Math.min(...cancelationValue);
-
+      const adjustedCancelationMinValue = cancelationMinValue === 0 ? Math.min(...cancelationValue.filter(value => value > 0)) : cancelationMinValue;
       setCanclelationData({
         defaultFontFamily: "Poppins",
         labels: cancelationWeekDate,
@@ -518,7 +537,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: cancelationMinValue - (cancelationMinValue*50/100),
+            min: cancelationMinValue != 0 ? cancelationMinValue - (cancelationMinValue*50/100) : adjustedCancelationMinValue,
             max: cancelationMaxValue,
             ticks: {
               beginAtZero: true,
@@ -551,7 +570,7 @@ const parseDate = (date) => {
 
       const StandingValueMaxValue = Math.max(...StandingValue);
       const StandingValueMinValue = Math.min(...StandingValue);
-
+      const adjustedStandingValueMinValue = StandingValueMinValue === 0 ? Math.min(...StandingValue.filter(value => value > 0)) : StandingValueMinValue;
       setStandingData({
         defaultFontFamily: "Poppins",
         labels: StandingWeekDate,
@@ -574,7 +593,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: StandingValueMinValue - (StandingValueMinValue*50/100),
+            min: StandingValueMinValue != 0 ? StandingValueMinValue - (StandingValueMinValue*50/100) : adjustedStandingValueMinValue,
             max: StandingValueMaxValue,
             ticks: {
               beginAtZero: true,
@@ -605,7 +624,7 @@ const parseDate = (date) => {
 
       const NetSaleSubWiseMaxValue = Math.max(...NetSaleValue);
       const NetSaleSubWiseMinValue = Math.min(...NetSaleValue);
-
+      const adjustedNetSaleSubWiseMinValue = NetSaleSubWiseMinValue === 0 ? Math.min(...NetSaleValue.filter(value => value > 0)) : NetSaleSubWiseMinValue;
       setNetSaleSubWisData({
         defaultFontFamily: "Poppins",
         labels: SubdivisionName,
@@ -628,7 +647,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100),
+            min: NetSaleSubWiseMinValue != 0 ? NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100) : adjustedNetSaleSubWiseMinValue,
             max: NetSaleSubWiseMaxValue,
             ticks: {
               beginAtZero: true,
@@ -658,7 +677,7 @@ const parseDate = (date) => {
 
       const ActiveSubMax = Math.max(...ActiveSubValue);
       const ActiveSubMin = Math.min(...ActiveSubValue);
-
+      const adjustedActiveSubMin = ActiveSubMin === 0 ? Math.min(...ActiveSubValue.filter(value => value > 0)) : ActiveSubMin;
       setActiveSubData({
         defaultFontFamily: "Poppins",
         labels: activeSubLevels,
@@ -681,7 +700,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: ActiveSubMin-(ActiveSubMin*50/100),
+            min: ActiveSubMin != 0 ? ActiveSubMin-(ActiveSubMin*50/100) : adjustedActiveSubMin,
             max: ActiveSubMax,
             ticks: {
               beginAtZero: true,
@@ -707,15 +726,20 @@ const parseDate = (date) => {
         setError(errorJson.message);
       }
     }
+  } else {
+    setShowPopup(true);
+    setMessage("Please select date between 366 days.");
+    return;
+  }
   };
 
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getchartList();
-    } else {
-      navigate("/");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem("usertoken")) {
+  //     getchartList();
+  //   } else {
+  //     navigate("/");
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -893,6 +917,26 @@ const parseDate = (date) => {
           </Row>
         </TabContext>
       </Box>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Alert</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body>
+          {message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handlePopupClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 }

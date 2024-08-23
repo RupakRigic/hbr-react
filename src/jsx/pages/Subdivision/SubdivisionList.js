@@ -25,7 +25,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { Link } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
-
+import axios from "axios";
 
 const SubdivisionList = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
@@ -220,6 +220,13 @@ const SubdivisionList = () => {
   const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
   const [seletctedZipcode, setSelectedZipcode] = useState([]);
   const [seletctedGasProvider, setSelectedGasProvider] = useState([]);
+
+  // Generate Report
+  const today = new Date();
+  const formattedToday = today.toISOString().split('T')[0];
+  const startDate = formattedToday;
+  const endDate = formattedToday;
+  const [loadingReportId, setLoadingReportId] = useState(null);
 
   const headers = [
     { label: 'Status', key: 'firstname' },
@@ -3965,6 +3972,46 @@ const SubdivisionList = () => {
     return new Date(year, month - 1, day);
   };
 
+  const handleDownloadReport = async (e, id) => {
+    e.preventDefault();
+    setLoadingReportId(id);
+  
+    const reportdata = {
+      type: "Subdivision Analysis Report",
+      start_date: "2024-03-19",
+      end_date: "2024-03-19",
+      id: id
+    };
+
+    const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+        reportdata,
+        {
+          responseType: "arraybuffer",
+          headers: {
+            Accept: "application/pdf",
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
+      setLoadingReportId(null);
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `report-${startDate}-${endDate}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      setLoadingReportId(null);
+      if (error.response && error.response.data) {
+        setError("Something went wrong");
+      }
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -4610,6 +4657,8 @@ const SubdivisionList = () => {
                                     return;
                                   } else if (e.target.className == "btn btn-danger shadow btn-xs sharp" || e.target.className == "fa fa-trash") {
                                     return;
+                                  } else if (e.target.className == "btn btn-primary shadow btn-xs sharp" || e.target.className == "fa fa-file-text") {
+                                    return;
                                   } else {
                                     handleRowClick(element.id);
                                   }
@@ -4861,6 +4910,19 @@ const SubdivisionList = () => {
                                           >
                                             <i className="fa fa-trash"></i>
                                           </Link>
+                                          
+                                            <Link 
+                                              className="btn btn-primary shadow btn-xs sharp" 
+                                              style={{marginLeft: "4px"}}
+                                              onClick={(e) => handleDownloadReport(e, element.id)}
+                                              key={element.id}
+                                            >
+                                              {loadingReportId === element.id ? (
+                                                <div class="spinner-border spinner-border-sm" role="status" style={{marginTop: "1px"}} />
+                                                ) : (
+                                                <i class="fa fa-file-text" aria-hidden="true"></i>
+                                              )}
+                                            </Link>
                                         </div>
                                       </td>
                                     }
