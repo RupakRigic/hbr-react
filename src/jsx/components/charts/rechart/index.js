@@ -1,16 +1,13 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Row, Col, Card, Button } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 import LineChart1 from "../Chartjs/line1";
 import BarChart1 from "../Chartjs/bar1";
 import { useNavigate } from "react-router-dom";
 import AdminWeeklyDataService from "../../../../API/Services/AdminService/AdminWeeklyDataService";
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
-import Dropdown from "react-bootstrap/Dropdown";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Modal from "react-bootstrap/Modal";
-import moment from 'moment';
 
 const RechartJs = () => {
   const [currentDisplay, setCurrentDisplay] = useState(1);
@@ -25,14 +22,6 @@ const RechartJs = () => {
   const [graph4Title, setgraph4Title] = useState("");
   const [graph5Title, setgraph5Title] = useState("");
   const [graph6Title, setgraph6Title] = useState("");
-
-  const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState(false);
-  const handlePopupClose = () => setShowPopup(false);
-
-  const HandlePopupDetailClick = (e) => {
-    setShowPopup(true);
-  };
 
   useEffect(() => {
     const currentDate = new Date(); // Today's date
@@ -79,6 +68,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -122,6 +112,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -165,6 +156,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -208,6 +200,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -251,6 +244,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -294,6 +288,7 @@ const parseDate = (date) => {
         data: [0, 2000, 4500, 500],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgb(73, 116, 185)",
         tension: 0.4,
       },
     ],
@@ -387,11 +382,6 @@ const parseDate = (date) => {
     }
   const formattedStartDate = formatDate(startDate);
   const formattedEndDate = formatDate(endDate);
-  let start_Date = moment(startDate);
-  let end_Date = moment(endDate);
-  let days = end_Date.diff(start_Date, 'days', true);
-  let totaldays = Math.ceil(days) + 1;
-  if (totaldays < 367) {
     try {
       let responseData = await AdminWeeklyDataService.getstatistics(type, formattedStartDate, formattedEndDate).json();
       console.log(responseData);
@@ -415,6 +405,7 @@ const parseDate = (date) => {
             data: buyerValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -429,7 +420,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: minBuyerValue != 0 ? minBuyerValue-(minBuyerValue*50/100) : adjustedMinBuyerValue,
-            max: maxBuyerValue,
+            // max: maxBuyerValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -469,6 +460,7 @@ const parseDate = (date) => {
             data: netSaleValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -483,7 +475,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: minNetSaleValue != 0 ? minNetSaleValue-(minNetSaleValue*50/100) : adjustedMinNetSaleValue,
-            max: maxNetSaleValue,
+            // max: maxNetSaleValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -524,6 +516,7 @@ const parseDate = (date) => {
             data: cancelationValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -538,7 +531,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: cancelationMinValue != 0 ? cancelationMinValue - (cancelationMinValue*50/100) : adjustedCancelationMinValue,
-            max: cancelationMaxValue,
+            // max: cancelationMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -580,6 +573,7 @@ const parseDate = (date) => {
             data: StandingValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -594,7 +588,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: StandingValueMinValue != 0 ? StandingValueMinValue - (StandingValueMinValue*50/100) : adjustedStandingValueMinValue,
-            max: StandingValueMaxValue,
+            // max: StandingValueMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -634,6 +628,7 @@ const parseDate = (date) => {
             data: NetSaleValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -648,7 +643,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: NetSaleSubWiseMinValue != 0 ? NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100) : adjustedNetSaleSubWiseMinValue,
-            max: NetSaleSubWiseMaxValue,
+            // max: NetSaleSubWiseMaxValue,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -687,6 +682,7 @@ const parseDate = (date) => {
             data: ActiveSubValue,
             fill: false,
             borderColor: "rgb(75, 192, 192)",
+            backgroundColor: "rgb(73, 116, 185)",
             tension: 0.4,
           },
         ],
@@ -701,7 +697,7 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: ActiveSubMin != 0 ? ActiveSubMin-(ActiveSubMin*50/100) : adjustedActiveSubMin,
-            max: ActiveSubMax,
+            // max: ActiveSubMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
@@ -726,11 +722,6 @@ const parseDate = (date) => {
         setError(errorJson.message);
       }
     }
-  } else {
-    setShowPopup(true);
-    setMessage("Please select date between 12 months.");
-    return;
-  }
   };
 
   // useEffect(() => {
@@ -917,26 +908,6 @@ const parseDate = (date) => {
           </Row>
         </TabContext>
       </Box>
-
-      {/* Popup */}
-      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
-        <Modal.Header handlePopupClose>
-          <Modal.Title>Alert</Modal.Title>
-          <button
-            className="btn-close"
-            aria-label="Close"
-            onClick={() => handlePopupClose()}
-          ></button>
-        </Modal.Header>
-        <Modal.Body>
-          {message}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handlePopupClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </Fragment>
   );
 }
