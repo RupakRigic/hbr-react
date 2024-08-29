@@ -157,6 +157,7 @@ const FilterPermits = () => {
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&address2=&address1=&parcel=&sqft=&lotnumber=&permitnumber=&plan=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
+                    localStorage.removeItem("firstTime");
                     return;
                 } else {
                     let startDate = moment(filterQuery.from);

@@ -189,6 +189,7 @@ const FilterClosings = () => {
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&closing_type=&from=&to=&document=&builder_name=&subdivision_name=&closingprice=&address=&parcel=&sellerleagal=&buyer=&lender_name=&loanamount=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
+                    localStorage.removeItem("firstTime");
                     return;
                 } else {
                     let startDate = moment(filterQuery.from);

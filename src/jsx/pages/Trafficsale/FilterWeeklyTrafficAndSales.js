@@ -157,6 +157,7 @@ const FilterWeeklyTrafficAndSales = () => {
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&weeklytraffic=&cancelations=&netsales=&totallots=&lotreleased=&unsoldinventory=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&zoning=&age=&single=")){
+                    localStorage.removeItem("firstTime");
                     return;
                 } else {
                     let startDate = moment(filterQuery.from);

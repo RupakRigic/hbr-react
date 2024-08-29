@@ -3978,8 +3978,8 @@ const SubdivisionList = () => {
   
     const reportdata = {
       type: "Subdivision Analysis Report",
-      start_date: "2024-03-19",
-      end_date: "2024-03-19",
+      start_date: startDate,
+      end_date: endDate,
       id: id
     };
 

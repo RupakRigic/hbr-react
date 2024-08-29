@@ -123,6 +123,7 @@ const FilterProducts = () => {
     useEffect(() => {
         if(localStorage.getItem("firstTime") == "false") {
             if((searchQuery == "") || (searchQuery == "&status=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&current_base_price=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
+                localStorage.removeItem("firstTime");
                 return;
             } else {
                 navigate("/productlist");

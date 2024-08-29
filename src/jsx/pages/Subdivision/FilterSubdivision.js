@@ -136,6 +136,7 @@ const FilterSubdivision = () => {
     useEffect(() => {
         if(localStorage.getItem("firstTime") == "false") {
             if((searchQuery == "") || (searchQuery == "&status=&reporting=&name=&builder_name=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&gated=&juridiction=&gasprovider=&from=&to=")){
+                localStorage.removeItem("firstTime");
                 return;
             } else {
                 navigate("/subdivisionlist");
