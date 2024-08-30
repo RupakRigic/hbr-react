@@ -57,11 +57,18 @@ const BuilderTable = () => {
     const [BuilderList, setBuilderList] = useState([]);
     const [BuilderCode, setBuilderCode] = useState('');
     
+    const stringifySortConfig = (sortConfig) => {
+        return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+      };
+
     const getbuilderlist = async () => {
       setIsLoading(true);
       try {
-    
-          const response = await AdminBuilderService.index();
+       
+        let sortConfig = [{key: "name", direction:"asc"}];
+        let sortConfigString = "";
+          sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+          const response = await AdminBuilderService.index('', '', sortConfigString);
           const responseData = await response.json();
           setIsLoading(false);
           setBuilderList(responseData.data);

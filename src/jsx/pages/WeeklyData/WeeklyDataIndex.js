@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import swal from "sweetalert";
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
-import WeeklyDataOffcanvas from "./WeeklyDataOffcanvas";
 import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import FutureSubdivisionPopup from "./FutureSubdivisionPopup";
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
 
 const WeeklyDataIndex = () => {
   const [showModal, setShowModal] = useState(false);
@@ -26,24 +24,31 @@ const WeeklyDataIndex = () => {
   const subdivision = useRef();
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [netSale, setNetSale] = useState(false);
+  const [reset, setReset] = useState(false);
 
   const handleCallback = () => {
     getWeeklyList();
   };
+
   const navigate = useNavigate();
+
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
   }
+
   function changeCPage(id) {
     setCurrentPage(id);
   }
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
   }
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getWeeklyList();
@@ -51,7 +56,9 @@ const WeeklyDataIndex = () => {
       navigate("/");
     }
   }, []);
+
   const getWeeklyList = async () => {
+
     setIsLoading(true);
     try {
       const response = await AdminWeeklyDataService.index(
@@ -80,109 +87,81 @@ const WeeklyDataIndex = () => {
     }
     setIsLoading(false);
   };
-  
-  useEffect(() => {
-    getWeeklyList();
-  }, []);
-  const handleDelete = async (e) => {
+
+  const handleChange = (event, id) => {
+    setNetSale(true);
+    setReset(false);
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [id]: {
+        ...prevState[id],
+        [name]: value,
+      },
+    }));
+  };
+
+  const calculateNetSales = (id, data) => {
+    const grossSales = formData[id]?.gross_sales || data.gross_sales;
+    const cancelations = formData[id]?.cancelations || data.cancelations;
+    return grossSales - cancelations;
+  };
+
+  const handleStatusChange = async (event) => {
+    setIsLoading(true);
+    const trElement = event.target.closest("tr");
+    const inputElements = trElement.querySelectorAll("input");
+    const createFormData = {};
+    inputElements.forEach((input) => {
+      createFormData[input.name] = input.value;
+    });
+    createFormData.week_ending_date = localStorage.getItem("enddate");
+    createFormData.status = true;
     try {
-      let responseData = await AdminWeeklyDataService.destroy(e).json();
-      if (responseData.status === true) {
+      const data = await AdminWeeklyDataService.store(createFormData).json();
+      if (data.status === true) {
         getWeeklyList();
+        setShowPopup(false);
+        setIsLoading(false);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
       }
     }
   };
 
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-
-  const handleStatusChange = async (event,id) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    if (id == undefined) {
-      const trElement = event.target.closest("tr");
-      const inputElements = trElement.querySelectorAll("input");
-      const createFormData = {};
-      inputElements.forEach((input) => {
-        createFormData[input.name] = input.value;
-      });
-      createFormData.week_ending_date = localStorage.getItem("enddate");
-      createFormData.status = true;
-      try {
-        const data = await AdminWeeklyDataService.store(createFormData).json();
-        if (data.status === true) {
-          console.log("created sucessfully");
-          getWeeklyList();
-        }
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-
-          setError(
-            errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-          );
-        }
-      }
-    } else {
-      if(formData.status =='on')
-      {
-        formData.status = false;
-      }else{
-        formData.status = true;
-      }
-      try {
-        const data = await AdminWeeklyDataService.put(id, formData).json();
-        if (data.status === true) {
-          getWeeklyList();
-          setFormData({});
-        }
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-
-          setError(
-            errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-          );
-        }
-      }
-    }
-
-  };
   useEffect(() => {
     console.log(formData);
   }, [formData]);
 
+  const handleReset = () => {
+    setReset(true);
+    getWeeklyList();
+  }
+
   const handleSubmit = async (event, id) => {
     event.preventDefault();
-    
+
     if (id == undefined) {
       const trElement = event.target.closest("tr");
       const inputElements = trElement.querySelectorAll("input");
       const createFormData = {};
+
       inputElements.forEach((input) => {
-        createFormData[input.name] = input.value;
+        if (input.name) {
+          createFormData[input.name] = input.value;
+        }
       });
+
       createFormData.week_ending_date = localStorage.getItem("enddate");
       createFormData.status = true;
       try {
         const data = await AdminWeeklyDataService.store(createFormData).json();
         if (data.status === true) {
-
           getWeeklyList();
         }
       } catch (error) {
@@ -196,9 +175,18 @@ const WeeklyDataIndex = () => {
       }
     } else {
       try {
-        const data = await AdminWeeklyDataService.put(id, formData).json();
+        const trElement = event.target.closest("tr");
+        const inputElements = trElement.querySelectorAll("input");
+        const createFormData = {};
+
+        inputElements.forEach((input) => {
+          if (input.name) {
+            createFormData[input.name] = input.value;
+          }
+        });
+        const data = await AdminWeeklyDataService.put(id, createFormData).json();
         if (data.status === true) {
-            getWeeklyList();
+          getWeeklyList();
           setFormData({});
         }
       } catch (error) {
@@ -217,6 +205,25 @@ const WeeklyDataIndex = () => {
     setShowModal(true);
   };
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [event, setEvent] = useState([]);
+  console.log(event);
+
+  const handlePopupClose = () => setShowPopup(false);
+
+  const handlePopupOpen = (event) => {
+    setShowPopup(true);
+    setStatus(true);
+    setEvent(event);
+    setMessage("Are you sure want to change the status of the record?");
+  }
+
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
+
   return (
     <>
       <MainPagetitle
@@ -233,12 +240,17 @@ const WeeklyDataIndex = () => {
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <h4 className="heading mb-0">Data Reporting List</h4>
                     <div className="d-flex">
-                    <button className="btn btn-primary btn-sm me-1" 
-                      onClick={() => handleOpenDialog()}
-                    >
-                      Add Future Subdivision
-                     </button>
-                    <Link
+                      <button className="btn btn-primary btn-sm me-1"
+                      // onClick={() => handleOpenDialog()}
+                      >
+                        Generate PDF
+                      </button>
+                      <button className="btn btn-primary btn-sm me-1"
+                        onClick={() => handleOpenDialog()}
+                      >
+                        Add Future Subdivision
+                      </button>
+                      <Link
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
                         data-bs-toggle="offcanvas"
@@ -246,251 +258,205 @@ const WeeklyDataIndex = () => {
                       >
                         + Add Subdivision
                       </Link>
-                      </div>
+                    </div>
                   </div>
                   {isLoading ? (
-                      <div className="d-flex justify-content-center align-items-center mb-5">
-                        <ClipLoader color="#4474fc" />
-                      </div>
-                    ) : (
-                  <div
-                    id="employee-tbl_wrapper"
-                    className="dataTables_wrapper no-footer"
-                  >
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                    <div className="d-flex justify-content-center align-items-center mb-5">
+                      <ClipLoader color="#4474fc" />
+                    </div>
+                  ) : (
+                    <div
+                      id="employee-tbl_wrapper"
+                      className="dataTables_wrapper no-footer"
                     >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <strong> Week Ending &nbsp;</strong>
-                          </th>
-                          <th>
-                            <strong> Status</strong>
-                          </th>
-                          <th>
-                            <strong> Subdivision</strong>
-                          </th>
-                          <th>
-                            <strong> Weekly Traffic </strong>
-                          </th>
-                          <th>
-                            <strong> Gross Sales </strong>
-                          </th>
-                          <th>
-                            <strong> - </strong>
-                          </th>
-                          <th>
-                            <strong> cancelations </strong>
-                          </th>
-                          <th>
-                            <strong> = </strong>
-                          </th>
-                          <th>
-                            <strong> Net Sales</strong>
-                          </th>
-                          <th>
-                            <strong> Current Lots Released </strong>
-                          </th>
-                          <th>
-                            <strong>Current Unsold Standing Inventory</strong>
-                          </th>
-                          <th>
-                            {" "}
-                            {/* <strong> Action </strong> */}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ textAlign: "center" }}>
-                        {records.map((element, index) => {
-                          return (
-                            
-                            <tr style={{ textAlign: "center" }}>
-                              <td>{element.weekly_data[0].week_ending_date}</td>
-                              <td>
-                                <div class="form-check form-switch">
-                                  <input
-                                    name="status"
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    role="switch"
-                                    id="flexSwitchCheckDefault"
-                                    //defaultChecked={element.weekly_data[0].status}
-                                    onChange={(event) =>
-                                      {
-                                        handleStatusChange(
-                                          event,
-                                          element.weekly_data[0].id,
-                                        )
-                                      } 
-                                    }
-                                    />
-                                </div>
-                              </td>
-                              <td>{element.name}</td>
-                              <td>
-                                <input
-                                  type="number"
-                                  defaultValue={
-                                    element.weekly_data[0].weekly_traffic
-                                  }
-                                  className="form-control"
-                                  name="weekly_traffic"
-                                  onKeyDown={(event) => {
-                                    if (event.key == "Enter") {
-                                      handleSubmit(
-                                        event,
-                                        element.weekly_data[0].id,
-                                        element
-                                      );
-                                    }
-                                  }}
-                                  onChange={handleChange}
-                                />{" "}
-                              </td>
-                              <td>
-                                <input
-                                  type="number"
-                                  defaultValue={
-                                    element.weekly_data[0].gross_sales
-                                  }
-                                  className="form-control"
-                                  name="gross_sales"
-                                  onKeyDown={(event) => {
-                                    if (event.key == "Enter") {
-                                      handleSubmit(
-                                        event,
-                                        element.weekly_data[0].id,
-                                        element
-                                      );
-                                    }
-                                  }}
-                                  onChange={handleChange}
-                                />{" "}
-                              </td>
-                              <td></td>
-                              <td>
-                                <input
-                                  type="number"
-                                  defaultValue={
-                                    element.weekly_data[0].cancelations
-                                  }
-                                  className="form-control"
-                                  name="cancelations"
-                                  onKeyDown={(event) => {
-                                    if (event.key == "Enter") {
-                                      handleSubmit(
-                                        event,
-                                        element.weekly_data[0].id,
-                                        element
-                                      );
-                                    }
-                                  }}
-                                  onChange={handleChange}
-                                />{" "}
-                              </td>
-                              <td></td>
-                              <td>{element.net_sales}</td>
-                              <td>
-                                <input
-                                  type="number"
-                                  defaultValue={
-                                    element.weekly_data[0].current_lots_released
-                                  }
-                                  className="form-control"
-                                  name="current_lots_released"
-                                  onKeyDown={(event) => {
-                                    if (event.key == "Enter") {
-                                      handleSubmit(
-                                        event,
-                                        element.weekly_data[0].id,
-                                        element
-                                      );
-                                    }
-                                  }}
-                                  onChange={handleChange}
-                                />{" "}
-                              </td>
-                              <td>
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <strong> Week Ending &nbsp;</strong>
+                            </th>
+                            <th>
+                              <strong> Status</strong>
+                            </th>
+                            <th>
+                              <strong> Subdivision</strong>
+                            </th>
+                            <th>
+                              <strong> Weekly Traffic </strong>
+                            </th>
+                            <th>
+                              <strong> Gross Sales </strong>
+                            </th>
+                            <th>
+                              <strong> - </strong>
+                            </th>
+                            <th>
+                              <strong> cancelations </strong>
+                            </th>
+                            <th>
+                              <strong> = </strong>
+                            </th>
+                            <th>
+                              <strong> Net Sales</strong>
+                            </th>
+                            <th>
+                              <strong> Current Lots Released </strong>
+                            </th>
+                            <th>
+                              <strong>Current Unsold Standing Inventory</strong>
+                            </th>
+                            <th>
+                              <strong> Action </strong>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody style={{ textAlign: "center" }}>
+                          {records.map((element) => {
+                            const currentId = element.weekly_data[0].subdivision_id;
+                            return (
+                              <tr key={currentId} style={{ textAlign: "center" }}>
+                                <td>{element.weekly_data[0].week_ending_date}</td>
                                 <td>
-                                  <input
-                                    type="hidden"
-                                    name="subdivision_id"
-                                    value={
-                                      element.weekly_data[0].subdivision_id
-                                    }
-                                  />
+                                  <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
+                                    Sold Out
+                                  </Button>
+                                </td>
+                                <td>{element.name}</td>
+                                <td>
                                   <input
                                     type="number"
                                     defaultValue={
-                                      element.weekly_data[0]
-                                        .current_un_sold_standing_inventory
+                                      element.weekly_data[0].weekly_traffic
                                     }
                                     className="form-control"
-                                    name="current_un_sold_standing_inventory"
-                                    onKeyDown={(event) => {
-                                      if (event.key == "Enter") {
-                                        handleSubmit(
-                                          event,
-                                          element.weekly_data[0].id,
-                                          element
-                                        );
-                                      }
-                                    }}
-                                    onChange={handleChange}
+                                    name="weekly_traffic"
+                                    onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
-                                      
-                              </td>
-                              </td>
-                            </tr>
-                           
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                    <div className="d-sm-flex text-center justify-content-between align-items-center">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to{" "}
-                        {BuilderList.length < lastIndex
-                          ? BuilderList.length
-                          : lastIndex}{" "}
-                        of {BuilderList.length} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
+                                </td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    defaultValue={
+                                      element.weekly_data[0].gross_sales
+                                    }
+                                    className="form-control"
+                                    name="gross_sales"
+                                    onChange={(event) => handleChange(event, currentId)}
+                                  />{" "}
+                                </td>
+                                <td></td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    defaultValue={
+                                      element.weekly_data[0].cancelations
+                                    }
+                                    className="form-control"
+                                    name="cancelations"
+                                    onChange={(event) => handleChange(event, currentId)}
+                                  />{" "}
+                                </td>
+                                <td></td>
+                                <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.weekly_data[0]) : element.net_sales)}</td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    defaultValue={
+                                      element.weekly_data[0].current_lots_released
+                                    }
+                                    className="form-control"
+                                    name="current_lots_released"
+                                    onChange={(event) => handleChange(event, currentId)}
+                                  />{" "}
+                                </td>
+                                <td>
+                                  <td>
+                                    <input
+                                      type="hidden"
+                                      name="subdivision_id"
+                                      value={
+                                        element.weekly_data[0].subdivision_id
+                                      }
+                                    />
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.weekly_data[0]
+                                          .current_un_sold_standing_inventory
+                                      }
+                                      className="form-control"
+                                      name="current_un_sold_standing_inventory"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  <div>
+                                    <Button
+                                      className="btn-sm me-1"
+                                      variant="primary"
+                                      onClick={(event) => handleSubmit(event, element.weekly_data[0].id)}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      className="btn-sm me-1"
+                                      variant="primary"
+                                      onClick={() => handleReset()}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      <div className="d-sm-flex text-center justify-content-between align-items-center">
+                        <div className="dataTables_info">
+                          Showing {lastIndex - recordsPage + 1} to{" "}
+                          {BuilderList.length < lastIndex
+                            ? BuilderList.length
+                            : lastIndex}{" "}
+                          of {BuilderList.length} entries
+                        </div>
+                        <div
+                          className="dataTables_paginate paging_simple_numbers justify-content-center"
+                          id="example2_paginate"
                         >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => (
-                            <Link
-                              className={`paginate_button ${
-                                currentPage === n ? "current" : ""
-                              } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          ))}
-                        </span>
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
+                          <Link
+                            className="paginate_button previous disabled"
+                            to="#"
+                            onClick={prePage}
+                          >
+                            <i className="fa-solid fa-angle-left" />
+                          </Link>
+                          <span>
+                            {number.map((n, i) => (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            ))}
+                          </span>
+                          <Link
+                            className="paginate_button next"
+                            to="#"
+                            onClick={nextPage}
+                          >
+                            <i className="fa-solid fa-angle-right" />
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  </div>)}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -507,13 +473,31 @@ const WeeklyDataIndex = () => {
         BuilderList={BuilderList}
         setBuilderId={setBuilderId}
         handleClose={() => setShowModal(false)}
-        handleSave={() => { setShowModal(false);}}
+        handleSave={() => { setShowModal(false); }}
       />
-      {/* <WeeklyDataOffcanvas
-        ref={subdivision}
-        Title="Add Subdivision"
-        parentCallback={handleCallback}
-      /> */}
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Status change confirmation</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ fontSize: "14px", color: "black" }}>
+          {message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => handlePopupClose()}>
+            NO
+          </Button>
+          <Button variant="primary" onClick={() => status ? handleStatusChange(event) : ''}>
+            YES
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
