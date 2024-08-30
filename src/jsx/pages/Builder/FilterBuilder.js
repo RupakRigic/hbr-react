@@ -77,7 +77,6 @@ const FilterBuilder = () => {
     useEffect(() => {
         if(localStorage.getItem("firstTime") == "false") {
             if((searchQuery == "") || (searchQuery == "&name=&is_active=&active_communities=&company_type=")){
-                localStorage.removeItem("firstTime");
                 return;
             } else {
                 navigate("/builderList");

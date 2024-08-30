@@ -651,6 +651,7 @@ const BuilderTable = () => {
                                 {/* <option>Subdivision Analysis Report</option> */}
                                 <option>The Las vegas land Report</option>
                                 <option>Weekly Traffic and Sales Watch(PDF)</option>
+                                <option>Weekly Traffic and Sales Watch(XLS)</option>
                               </select>
                             </div>
                           </div>

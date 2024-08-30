@@ -169,7 +169,6 @@ const FilterBasePrice = () => {
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&baseprice=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&product_status=&subdivision_status=")){
-                    localStorage.removeItem("firstTime");
                     return;
                 } else {
                     let startDate = moment(filterQuery.from);

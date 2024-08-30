@@ -120,7 +120,6 @@ const FilterLandSales = () => {
         } else {
             if(localStorage.getItem("firstTime") == "false") {
                 if((searchQuery == "") || (searchQuery == "&builder_name=&subdivision_name=&seller=&buyer=&location=&notes=&price=&from=&to=&priceperunit=&parcel=&doc=&noofunit=&typeofunit=")){
-                    localStorage.removeItem("firstTime");
                     return;
                 } else {
                     let startDate = moment(filterQuery.from);
