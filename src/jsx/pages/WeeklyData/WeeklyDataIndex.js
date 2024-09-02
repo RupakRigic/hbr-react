@@ -8,6 +8,7 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import FutureSubdivisionPopup from "./FutureSubdivisionPopup";
 import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
+import axios from "axios";
 
 const WeeklyDataIndex = () => {
   const [showModal, setShowModal] = useState(false);
@@ -224,6 +225,42 @@ const WeeklyDataIndex = () => {
     setShowPopup(true);
   };
 
+  const GeneratePDF = async (e) => {
+    e.preventDefault();
+
+  const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/weekly/download_pdf`,
+          {
+            responseType: "arraybuffer",
+            headers: {
+              Accept: "application/pdf",
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+        
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `Weekly Data Reporting.pdf`;
+        
+      document.body.appendChild(link);
+        
+      link.click();
+        
+      document.body.removeChild(link);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.error("Error downloading PDF:", error.response.data);
+        setError("Something went wrong");
+      }
+    }
+  };
+
+
   return (
     <>
       <MainPagetitle
@@ -241,7 +278,7 @@ const WeeklyDataIndex = () => {
                     <h4 className="heading mb-0">Data Reporting List</h4>
                     <div className="d-flex">
                       <button className="btn btn-primary btn-sm me-1"
-                      // onClick={() => handleOpenDialog()}
+                      onClick={(e) => GeneratePDF(e)}
                       >
                         Generate PDF
                       </button>
