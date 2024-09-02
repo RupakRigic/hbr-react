@@ -1138,6 +1138,17 @@ const GetSubdivisionDropDownList = async () => {
     GetSubdivisionDropDownList();
   }, []);
 
+  const addToBuilderList = () => {
+    let subdivisionList = permitList.map((data) => data.subdivision)
+
+    navigate('/google-map-locator', {
+      state: { 
+        subdivisionList: subdivisionList ,
+        permits: true
+      },
+    });
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -1188,7 +1199,12 @@ const GetSubdivisionDropDownList = async () => {
                             <i class="fas fa-file-excel" />
                           }
                         </button>
-
+                        <Button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={addToBuilderList}
+                        >
+                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                        </Button>
                         <button
                           className="btn btn-primary btn-sm me-1"
                           onClick={() => setManageAccessOffcanvas(true)}

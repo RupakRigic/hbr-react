@@ -33,7 +33,11 @@ const GoogleMapLocator = () => {
 
   const [builderList, setBuilderList] = useState([]);
   const subdivisionList = state.subdivisionList;
-console.log("subdivisionList",subdivisionList);
+  const subdivision = state.subdivision;
+  const product = state.product;
+  const closings = state.closings;
+  const permits = state.permits;
+  const landsales = state.landsales;
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   // const [builderId, setBuilderId] = useState('');
@@ -170,7 +174,19 @@ console.log("subdivisionList",subdivisionList);
             <Button
                className="btn btn-primary btn-sm me-1"
                style={{marginTop: "5px", marginLeft: "5px"}}
-               onClick={() => navigate('/subdivisionlist')}
+               onClick={() => {
+                  if (subdivision) {
+                     navigate('/subdivisionlist');
+                  } else if (product) {
+                     navigate('/productlist');
+                  } else if (closings) {
+                     navigate('/closingsalelist');
+                  } else if (permits) {
+                     navigate('/permitlist');
+                  } else if (landsales) {
+                     navigate('/landsalelist');
+                  }
+               }}
             >
             <i className="fa fa-arrow-left" aria-hidden="true" style={{marginRight: "10px"}}></i>
             Go Back
@@ -197,53 +213,53 @@ console.log("subdivisionList",subdivisionList);
               onCloseClick={() => setSelectedMarker(null)}
             >
               <div>
-                <h4>{selectedMarker.builder.name}<br/>{selectedMarker.name}</h4>
+                <h4>{selectedMarker.builder.name || 'NA'}<br/>{selectedMarker.name || 'NA'}</h4>
                 <hr style={{ borderWidth: "2px", borderStyle: "solid", borderColor: "black", marginTop: "0px" }} />
 
                 <div>
-                Status : <span>
-                {selectedMarker.status === 1 && "Yes"}
-                {selectedMarker.status === 0 && "No"}
+                  Status : <span>
+                     {selectedMarker.status === 1 && "Yes"}
+                     {selectedMarker.status === 0 && "No"}
                 </span>
                 </div>
 
                 <div>
-                Product Type : <span>
-                     {selectedMarker.product_type}
+                  Product Type : <span>
+                     {selectedMarker.product_type || 'NA'}
                 </span>
                 </div>
 
                 <div>
-                Area : <span>
-                     {selectedMarker.area}
+                  Area : <span>
+                     {selectedMarker.area || 'NA'}
                 </span>
                 </div>
 
                <div>
-                Masterplan : <span>
-                     {selectedMarker.masterplan_id == ''? 'NA' :selectedMarker.masterplan_id}
+                  Masterplan : <span>
+                     {selectedMarker.masterplan_id || 'NA'}
                 </span>
                </div>
 
                <div>
-                Open Since : <span>
-                     {selectedMarker.opensince == ''? 'NA' :selectedMarker.opensince}
+                  Open Since : <span>
+                     {selectedMarker.opensince || 'NA'}
                 </span>
                </div>
 
                <div>
-                Total lots : <span>
-                     {selectedMarker.zipcode == ''? 'NA' :selectedMarker.totallots}
+                  Total lots : <span>
+                     {selectedMarker.totallots || 'NA'}
                 </span>
                </div>
 
                <div>
-                  Unsold Lots : <span>{selectedMarker.unsold_lots} </span>
+                  Unsold Lots : <span>{selectedMarker.unsold_lots || 'NA'} </span>
                </div>
 
                <div>
                   Total Net Sales : <span>
-                     {selectedMarker.total_net_sales  == ''? 'NA' :selectedMarker.total_net_sales}
+                     {selectedMarker.total_net_sales || 'NA'}
                   </span>
                </div>
 
@@ -281,53 +297,53 @@ console.log("subdivisionList",subdivisionList);
                </div>
 
                <div>
-                Juridiction : <span>
+                  Juridiction : <span>
                      {selectedMarker.juridiction == ''? 'NA' :selectedMarker.juridiction}
                 </span>
              </div>
 
              <div>
-                Zoning : <span>
+               Zoning : <span>
                      {selectedMarker.zoning == ''? 'NA' :selectedMarker.zoning}
                 </span>
              </div>
 
              <div>
-                Gas Provider : <span>
+               Gas Provider : <span>
                      {selectedMarker.gasprovider == ''? 'NA' :selectedMarker.gasprovider}
                 </span>
              </div>
 
              <div style={{marginTop: "20px"}}>
-             Total Permits : <span>
-                     {selectedMarker.total_permits  == ''? 'NA' :selectedMarker.total_permits}
+               Total Permits : <span>
+                     {selectedMarker.total_permits  || 'NA'}
                 </span>
              </div>
 
              <div>
-             Total Closing : <span>
-                     {selectedMarker.total_closings  == ''? 'NA' :selectedMarker.total_closings}
+               Total Closing : <span>
+                     {selectedMarker.total_closings  || 'NA'}
                 </span>
              </div>
 
              <div>
-             Latest Lots Released : <span>{selectedMarker.latest_lots_released} </span>
+               Latest Lots Released : <span>{selectedMarker.latest_lots_released || 'NA'} </span>
              </div>
 
              <div>
-             Latest Standing Inventory : <span>{selectedMarker.latest_standing_inventory} </span>
+               Latest Standing Inventory : <span>{selectedMarker.latest_standing_inventory || 'NA'} </span>
              </div>
 
              <div>
-             Avg Sqft All : <span>{selectedMarker.avg_sqft_all} </span>
+               Avg Sqft All : <span>{selectedMarker.avg_sqft_all || 'NA'} </span>
              </div>
 
              <div>
-                Avg Base Price All : <span>{<PriceComponent price={selectedMarker.avg_base_price_all} /> || "NA"} </span>
+               Avg Base Price All : <span>{<PriceComponent price={selectedMarker.avg_base_price_all} /> || "NA"} </span>
             </div>
 
             <div>
-                Avg Closing Price : <span>{<PriceComponent price={selectedMarker.avg_closing_price} /> || "NA"} </span>
+               Avg Closing Price : <span>{<PriceComponent price={selectedMarker.avg_closing_price} /> || "NA"} </span>
             </div>
             </div>
             </InfoWindow>

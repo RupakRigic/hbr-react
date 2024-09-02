@@ -42,7 +42,10 @@ const SubdivisionList = () => {
 
   const addToBuilderList = () => {
     navigate('/google-map-locator', {
-      state: { subdivisionList: BuilderList },
+      state: { 
+        subdivisionList: BuilderList,
+        subdivision: true
+      },
     });
   };
 

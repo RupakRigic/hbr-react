@@ -1059,6 +1059,17 @@ const ProductList = () => {
     return result.charAt(0).toUpperCase() + result.slice(1);
   }
 
+  const addToBuilderList = () => {
+    let subdivisionList = productList.map((data) => data.subdivision)
+
+    navigate('/google-map-locator', {
+      state: { 
+        subdivisionList: subdivisionList ,
+        product: true
+      },
+    });
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1112,7 +1123,12 @@ const ProductList = () => {
                             <i class="fas fa-file-excel" />
                           }
                         </button>
-
+                        <Button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={addToBuilderList}
+                        >
+                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                        </Button>
                         <button
                           className="btn btn-primary btn-sm me-1"
                           onClick={() => setManageAccessOffcanvas(true)}

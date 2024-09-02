@@ -837,6 +837,24 @@ const LandsaleList = () => {
       .join('');
   }
 
+  const addToBuilderList = () => {
+    let subdivisionID = LandsaleList.filter((data) => data.subdivision_id != null);
+    if(subdivisionID.length === 0) {
+      setShowPopup(true);
+      setMessage("Subdivion is not there in land.");
+      return;
+    } else {
+      let subdivisionList = LandsaleList.map((data) => data.subdivision);
+  
+      navigate('/google-map-locator', {
+        state: { 
+          subdivisionList: subdivisionList ,
+          landsales: true
+        },
+      });
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -891,7 +909,12 @@ const LandsaleList = () => {
                             <i class="fas fa-file-excel" />
                           }
                         </button>
-
+                        <Button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={addToBuilderList}
+                        >
+                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                        </Button>
                         <button
                           className="btn btn-primary btn-sm me-1"
                           onClick={() => setManageAccessOffcanvas(true)}

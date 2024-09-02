@@ -1217,6 +1217,17 @@ const GetLenderList = async () => {
     }));
   };
 
+  const addToBuilderList = () => {
+    let subdivisionList = ClosingList.map((data) => data.subdivision)
+
+    navigate('/google-map-locator', {
+      state: { 
+        subdivisionList: subdivisionList ,
+        closings: true
+      },
+    });
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1274,7 +1285,12 @@ const GetLenderList = async () => {
                             <i class="fas fa-file-excel" />
                           }
                         </button>
-
+                        <Button
+                          className="btn btn-primary btn-sm me-1"
+                          onClick={addToBuilderList}
+                        >
+                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                        </Button>
 
                         <button
                           className="btn btn-primary btn-sm me-1"
