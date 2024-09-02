@@ -392,7 +392,7 @@ const parseDate = (date) => {
       const buyerValue = filteredBuyerData.map(([, value]) => value);
       const maxBuyerValue = Math.max(...buyerValue);
       const minBuyerValue = Math.min(...buyerValue);
-
+      const suggestedBuyerMax = maxBuyerValue * 1.2;
       const adjustedMinBuyerValue = minBuyerValue === 0 ? Math.min(...buyerValue.filter(value => value > 0)) : minBuyerValue;
 
       console.log(buyerValue);
@@ -420,10 +420,11 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: minBuyerValue != 0 ? minBuyerValue-(minBuyerValue*50/100) : adjustedMinBuyerValue,
-            // max: maxBuyerValue,
+            suggestedMax: suggestedBuyerMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false
             },
             grid: {
               color: "#e5e5e5",
@@ -446,6 +447,7 @@ const parseDate = (date) => {
       const netSaleWeekDate = filteredNetSaleData.map(([key]) => key);
       const netSaleValue = filteredNetSaleData.map(([, value]) => value);
       const maxNetSaleValue = Math.max(...netSaleValue);
+      const suggestedNetSaleMax = maxNetSaleValue * 1.2;
       const minNetSaleValue = Math.min(...netSaleValue);
       const adjustedMinNetSaleValue = minNetSaleValue === 0 ? Math.min(...netSaleValue.filter(value => value > 0)) : minNetSaleValue;
       console.log(netSaleWeekDate);
@@ -475,10 +477,11 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: minNetSaleValue != 0 ? minNetSaleValue-(minNetSaleValue*50/100) : adjustedMinNetSaleValue,
-            // max: maxNetSaleValue,
+            suggestedMax: suggestedNetSaleMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false
             },
             grid: {
               color: "#e5e5e5",
@@ -505,6 +508,7 @@ const parseDate = (date) => {
       );
 
       const cancelationMaxValue = Math.max(...cancelationValue);
+      const suggestedcancelationMax = cancelationMaxValue * 1.2;
       const cancelationMinValue = Math.min(...cancelationValue);
       const adjustedCancelationMinValue = cancelationMinValue === 0 ? Math.min(...cancelationValue.filter(value => value > 0)) : cancelationMinValue;
       setCanclelationData({
@@ -530,11 +534,12 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: cancelationMinValue != 0 ? cancelationMinValue - (cancelationMinValue*50/100) : adjustedCancelationMinValue,
-            // max: cancelationMaxValue,
+            min: cancelationMinValue != 0 ? cancelationMinValue.toFixed(0) - (cancelationMinValue*50/100).toFixed(0) : adjustedCancelationMinValue,
+            suggestedMax: suggestedcancelationMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false,
               // Format the y-axis labels to append the "%" sign
               callback: function(value) {
                 return graph3Title === "Cancellation %" ? value + '%' : value;
@@ -562,6 +567,7 @@ const parseDate = (date) => {
       const StandingValue = filteredStandingData.map(([, value]) => value);
 
       const StandingValueMaxValue = Math.max(...StandingValue);
+      const suggestedStandingValueMax = StandingValueMaxValue * 1.2;
       const StandingValueMinValue = Math.min(...StandingValue);
       const adjustedStandingValueMinValue = StandingValueMinValue === 0 ? Math.min(...StandingValue.filter(value => value > 0)) : StandingValueMinValue;
       setStandingData({
@@ -588,10 +594,11 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: StandingValueMinValue != 0 ? StandingValueMinValue - (StandingValueMinValue*50/100) : adjustedStandingValueMinValue,
-            // max: StandingValueMaxValue,
+            suggestedMax: suggestedStandingValueMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false
             },
             grid: {
               color: "#e5e5e5",
@@ -617,6 +624,7 @@ const parseDate = (date) => {
       const NetSaleValue = filteredNetSaleSubWiseData.map(([, value]) => value);
 
       const NetSaleSubWiseMaxValue = Math.max(...NetSaleValue);
+      const suggestedNetSaleSubWiseMax = NetSaleSubWiseMaxValue * 1.2;
       const NetSaleSubWiseMinValue = Math.min(...NetSaleValue);
       const adjustedNetSaleSubWiseMinValue = NetSaleSubWiseMinValue === 0 ? Math.min(...NetSaleValue.filter(value => value > 0)) : NetSaleSubWiseMinValue;
       setNetSaleSubWisData({
@@ -643,10 +651,11 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: NetSaleSubWiseMinValue != 0 ? NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100) : adjustedNetSaleSubWiseMinValue,
-            // max: NetSaleSubWiseMaxValue,
+            suggestedMax: suggestedNetSaleSubWiseMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false
             },
             grid: {
               color: "#e5e5e5",
@@ -671,6 +680,7 @@ const parseDate = (date) => {
       const ActiveSubValue = filteredActiveSub.map(([, value]) => value);
 
       const ActiveSubMax = Math.max(...ActiveSubValue);
+      const suggestedActiveSubMax = ActiveSubMax * 1.2;
       const ActiveSubMin = Math.min(...ActiveSubValue);
       const adjustedActiveSubMin = ActiveSubMin === 0 ? Math.min(...ActiveSubValue.filter(value => value > 0)) : ActiveSubMin;
       setActiveSubData({
@@ -697,10 +707,11 @@ const parseDate = (date) => {
         scales: {
           y: {
             min: ActiveSubMin != 0 ? ActiveSubMin-(ActiveSubMin*50/100) : adjustedActiveSubMin,
-            // max: ActiveSubMax,
+            suggestedMax: suggestedActiveSubMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
+              autoSkip: false
             },
             grid: {
               color: "#e5e5e5",
