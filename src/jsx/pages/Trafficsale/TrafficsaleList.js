@@ -1224,27 +1224,45 @@ const GetSubdivisionDropDownList = async () => {
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
                       SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                      ""
-                    ) : (
-                      <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                          Set Columns Order
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                          {/* Set Columns Order */}
+                          <i className="fa-solid fa-list"></i>
                         </button>
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={handlBuilderClick}
+                          onClick={HandleSortDetailClick}
+                          title="Sorted Fields"
                         >
-                          Import
+                          <i class="fa-solid fa-sort"></i>
                         </Button>
+                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
+                            :
+                            <i class="fas fa-file-excel" />
+                          }
+                        </button>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                          <i className="fa fa-filter" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                          {/* Set Columns Order */}
+                          <i className="fa-solid fa-list"></i>
+                        </button>
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
                           onClick={HandleSortDetailClick}
+                          title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
                         </Button>
-                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1">
+                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                           {excelLoading ?
                             <div class="spinner-border spinner-border-sm" role="status" />
                             :
@@ -1259,9 +1277,16 @@ const GetSubdivisionDropDownList = async () => {
                           {" "}
                           Field Access
                         </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)}>
+                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                           <i className="fa fa-filter" />
                         </button>
+                        <Button
+                          className="btn-sm me-1"
+                          variant="secondary"
+                          onClick={handlBuilderClick}
+                        >
+                          Import
+                        </Button>
                         <Link
                           to={"#"}
                           className="btn btn-primary btn-sm ms-1"

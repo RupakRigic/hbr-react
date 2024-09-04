@@ -437,16 +437,81 @@ const UserList = () => {
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
                       SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
+                        <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            {/* Set Columns Order */}
+                            <i className="fa-solid fa-list"></i>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
+                          <Dropdown>
+                          <Dropdown.Toggle
+                            variant="success"
+                            className="btn-sm"
+                            id="dropdown-basic"
+                            title="Filter"
+                          >
+                            <i className="fa fa-filter"></i>
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <h5 className="">Filter Options</h5>
+                            <div className="border-top">
+                              <div className="mt-3 mb-3">
+                                <label className="form-label">
+                                  Role: <span className="text-danger"></span>
+                                </label>
+                                <MultiSelect
+                                  name="role"
+                                  options={roleOptions}
+                                  value={selectedRole}
+                                  onChange={handleSelectRoleChange }
+                                  placeholder={"Select Role"} 
+                                />
+                                {/* <select
+                                  className="default-select form-control"
+                                  value={filterQuery.role}
+                                  name="role"
+                                  onChange={HandleFilter}
+                                >
+                                  <option data-display="Select">Please select</option>
+                                  <option value="">All</option>
+                                  <option value="User">User</option>
+                                  <option value="Data Uploader">
+                                    Data Uploader
+                                  </option>
+                                </select> */}
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-end">
+                              <Button
+                                className="btn-sm"
+                                onClick={HandleCancelFilter}
+                                variant="secondary"
+                              >
+                                Reset
+                              </Button>
+                            </div>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                        </div>
                       ) : (
                     <div className="d-flex">
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                        Set Columns Order
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                        {/* Set Columns Order */}
+                        <i className="fa-solid fa-list"></i>
                       </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
+                            title="Sorted Fields"
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
@@ -462,6 +527,7 @@ const UserList = () => {
                           variant="success"
                           className="btn-sm"
                           id="dropdown-basic"
+                          title="Filter"
                         >
                           <i className="fa fa-filter"></i>
                         </Dropdown.Toggle>

@@ -353,16 +353,31 @@ const File = () => {
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
                       SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
-                        ""
+                        <div>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            {/* Set Columns Order */}
+                            <i className="fa-solid fa-list"></i>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <i class="fa-solid fa-sort"></i>
+                          </Button>
+                        </div>
                       ) : (
                     <div>
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
-                        Set Columns Order
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                        {/* Set Columns Order */}
+                        <i className="fa-solid fa-list"></i>
                       </button>
                     <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
+                            title="Sorted Fields"
                           >
                             <i class="fa-solid fa-sort"></i>
                      </Button>
