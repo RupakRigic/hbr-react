@@ -316,7 +316,7 @@ const WeeklyDataIndex = () => {
                               <strong> Week Ending &nbsp;</strong>
                             </th>
                             <th>
-                              <strong> Status</strong>
+                              <strong> Sold Out?</strong>
                             </th>
                             <th>
                               <strong> Subdivision</strong>

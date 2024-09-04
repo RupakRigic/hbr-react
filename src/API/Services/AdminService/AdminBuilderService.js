@@ -3,6 +3,7 @@ import clientAuth from "../../clientAuth"
 
 export default {
     index: (page=1,searchQuery = '',sortConfig ='') => clientAuth.get(`admin/builder/index?page=${page}${searchQuery}${sortConfig}`),
+    all_builder_list: () => clientAuth.get(`admin/builder/all-builder-list`),
     update: (id, userData) => clientAuth.post(`admin/builder/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/builder/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/builder/store`, { json: userData }),

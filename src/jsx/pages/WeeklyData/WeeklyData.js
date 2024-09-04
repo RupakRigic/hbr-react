@@ -8,6 +8,7 @@ import './WeeklyData.css'
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Form } from "react-bootstrap";
+import Select from 'react-select';
 
 const BuilderTable = () => {
     const [Error, setError] = useState('');
@@ -47,31 +48,24 @@ const BuilderTable = () => {
             }
         }
     }
-    const handleBuilderCode = code => {
-        
-        setBuilderCode(code.target.value);
-        console.log(code.target.value);
-        localStorage.setItem('builderId',code.target.value);
+    const handleBuilderCode = (code) => {
+
+        setBuilderCode(code.value);
+        console.log(code.value);
+        localStorage.setItem('builderId',code.value);
 
     }
     const [BuilderList, setBuilderList] = useState([]);
     const [BuilderCode, setBuilderCode] = useState('');
     
-    const stringifySortConfig = (sortConfig) => {
-        return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
-      };
 
-    const getbuilderlist = async () => {
+    const GetBuilderlist = async () => {
       setIsLoading(true);
       try {
-       
-        let sortConfig = [{key: "name", direction:"asc"}];
-        let sortConfigString = "";
-          sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-          const response = await AdminBuilderService.index('', '', sortConfigString);
+          const response = await AdminBuilderService.all_builder_list();
           const responseData = await response.json();
           setIsLoading(false);
-          setBuilderList(responseData.data);
+          setBuilderList(responseData);
     
       } catch (error) {
           console.log(error);
@@ -85,8 +79,16 @@ const BuilderTable = () => {
       setIsLoading(false);
     }
     useEffect(() => {
-      getbuilderlist();
+      GetBuilderlist();
     }, [])
+
+    const options = BuilderList
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(element => ({
+        value: element.id,
+        label: element.name
+    }));
+
     return (
         <>
             <MainPagetitle mainTitle="Data Reporting" pageTitle="Data Reporting" parentTitle="Home" />
@@ -116,12 +118,21 @@ const BuilderTable = () => {
                                     </div>
 
                                     <div className="d-flex justify-content-center">
-                                    <select onChange={handleBuilderCode}>
-                                    { BuilderList && BuilderList.map((element) =>
-                                       
-                                       <option value={element.id}>{element.name}</option>
-                                    )}
-                                    </select>
+                                        <Select
+                                          options={options}
+                                          onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                          placeholder="Search and select a builder..."
+                                          styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '50%',
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                            }),
+                                        }}
+                                        />
                                     </div>
                                     <Link className='mt-4' to={"/weekly-data-index"}>Continue</Link>
                                    </div>)}
