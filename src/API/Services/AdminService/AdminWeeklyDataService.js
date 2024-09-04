@@ -8,5 +8,5 @@ export default {
     getdate:()=> clientAuth.get(`admin/weekly/getdate`),
     put: (id, userData) => clientAuth.put(`admin/weekly/update-column/${id}`, { json: userData }),
     getstatistics: (type,startDate ,endDate) => clientAuth.get(`admin/weekly/getstatistics?type=${type}&from=${startDate}&to=${endDate}`),
-
+    update_all_data: (date, userData) => clientAuth.post(`admin/weekly/update-all-data/${date}`, { json: userData }),
 };

@@ -144,64 +144,6 @@ const WeeklyDataIndex = () => {
     getWeeklyList();
   }
 
-  const handleSubmit = async (event, id) => {
-    event.preventDefault();
-
-    if (id == undefined) {
-      const trElement = event.target.closest("tr");
-      const inputElements = trElement.querySelectorAll("input");
-      const createFormData = {};
-
-      inputElements.forEach((input) => {
-        if (input.name) {
-          createFormData[input.name] = input.value;
-        }
-      });
-
-      createFormData.week_ending_date = localStorage.getItem("enddate");
-      createFormData.status = true;
-      try {
-        const data = await AdminWeeklyDataService.store(createFormData).json();
-        if (data.status === true) {
-          getWeeklyList();
-        }
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-
-          setError(
-            errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-          );
-        }
-      }
-    } else {
-      try {
-        const trElement = event.target.closest("tr");
-        const inputElements = trElement.querySelectorAll("input");
-        const createFormData = {};
-
-        inputElements.forEach((input) => {
-          if (input.name) {
-            createFormData[input.name] = input.value;
-          }
-        });
-        const data = await AdminWeeklyDataService.put(id, createFormData).json();
-        if (data.status === true) {
-          getWeeklyList();
-          setFormData({});
-        }
-      } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-
-          setError(
-            errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-          );
-        }
-      }
-    }
-  };
-
   const handleOpenDialog = () => {
     setShowModal(true);
   };
@@ -260,6 +202,25 @@ const WeeklyDataIndex = () => {
     }
   };
 
+  const SaveAll = async(e) => {
+    e.preventDefault();
+    console.log('Saving all changes:', formData);
+    try {
+      const data = await AdminWeeklyDataService.update_all_data(localStorage.getItem("enddate"), formData).json();
+      if (data.status === true) {
+        getWeeklyList();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(
+          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
+        );
+      }
+    }
+  };
+  
+
 
   return (
     <>
@@ -278,7 +239,7 @@ const WeeklyDataIndex = () => {
                     <h4 className="heading mb-0">Data Reporting List</h4>
                     <div className="d-flex">
                       <button className="btn btn-primary btn-sm me-1"
-                      onClick={(e) => GeneratePDF(e)}
+                        onClick={(e) => GeneratePDF(e)}
                       >
                         Generate PDF
                       </button>
@@ -295,6 +256,17 @@ const WeeklyDataIndex = () => {
                       >
                         + Add Subdivision
                       </Link>
+                      <button className="btn btn-primary btn-sm me-1"
+                        style={{marginLeft: "5px"}}
+                        onClick={(e) => SaveAll(e)}
+                      >
+                        Save All
+                      </button>
+                      <button className="btn btn-primary btn-sm me-1"
+                        onClick={() => handleReset()}
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
                   {isLoading ? (
@@ -344,9 +316,6 @@ const WeeklyDataIndex = () => {
                             </th>
                             <th>
                               <strong>Current Unsold Standing Inventory</strong>
-                            </th>
-                            <th>
-                              <strong> Action </strong>
                             </th>
                           </tr>
                         </thead>
@@ -429,24 +398,6 @@ const WeeklyDataIndex = () => {
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  <div>
-                                    <Button
-                                      className="btn-sm me-1"
-                                      variant="primary"
-                                      onClick={(event) => handleSubmit(event, element.weekly_data[0].id)}
-                                    >
-                                      Save
-                                    </Button>
-                                    <Button
-                                      className="btn-sm me-1"
-                                      variant="primary"
-                                      onClick={() => handleReset()}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
                                 </td>
                               </tr>
                             );
