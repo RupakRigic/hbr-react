@@ -218,8 +218,9 @@ const GoogleMapLocator = () => {
 
                 <div>
                   Status : <span>
-                     {selectedMarker.status === 1 && "Yes"}
-                     {selectedMarker.status === 0 && "No"}
+                     {selectedMarker.status === 1 && "Active"}
+                     {selectedMarker.status === 0 && "Sold Out"}
+                     {selectedMarker.status === 2 && "Future"}
                 </span>
                 </div>
 
