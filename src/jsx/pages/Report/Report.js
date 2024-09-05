@@ -812,7 +812,7 @@ const BuilderTable = () => {
                               <div className="col-md-5">
                                 <div className="ms-4 sm-m-0">Select Period</div>
                               </div>
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="me-2 mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="me-2 mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -831,7 +831,7 @@ const BuilderTable = () => {
 
                               </div>}
 
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -848,7 +848,7 @@ const BuilderTable = () => {
                             />
                               </div>}
                               
-                              {reportType == "Weekly Traffic and Sales Watch(PDF)" && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+                              {(reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                                 <Select
                                   options={options}
                                   onChange={(selectedOption) => handleWeekEndingDate(selectedOption)}
