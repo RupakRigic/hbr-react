@@ -54,6 +54,7 @@ const BuilderTable = () => {
   
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [weekEndingDate, setWeekEndingDate] = useState("");
   const [reportType, setReportType] = useState("List of Active New Home Builders");
 
   useEffect(() => {
@@ -233,7 +234,16 @@ const BuilderTable = () => {
               },
             }
           );
-          let responseData = AdminReportService.pdfSave(reportdata).json();
+
+          let responseData = await AdminReportService.pdfSave(reportdata).json();
+          if (responseData.status) {
+            swal("Report Saved Succesfully").then((willDelete) => {
+              if (willDelete) {
+                getreportlist();
+                navigate("/report");
+              }
+            });
+          }
           setIsLoading(false);
           handlePdfResponse(response);
         } catch (error) {
@@ -250,6 +260,12 @@ const BuilderTable = () => {
         return;
       }
     } else if (reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") {
+      if (weekEndingDate == "") {
+        setAlert(true);
+        setAlertMessage("Please select Week ending date");
+        return;
+      }
+      setAlert(false);
       setIsLoading(true);
       localStorage.setItem("start_date", startDate);
       localStorage.setItem("end_date", endDate);
@@ -258,7 +274,7 @@ const BuilderTable = () => {
 
       const reportdata = {
         type: reportType,
-        end_date: endDate,
+        end_date: weekEndingDate,
       };
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
       try {
@@ -275,6 +291,15 @@ const BuilderTable = () => {
             },
           }
         );
+        let responseData = await AdminReportService.pdfSave(reportdata).json();
+        if (responseData.status) {
+          swal("Report Saved Succesfully").then((willDelete) => {
+            if (willDelete) {
+              getreportlist();
+              navigate("/report");
+            }
+          });
+        }
         setIsLoading(false);
         handlePdfResponse(response);
       } catch (error) {
@@ -317,7 +342,15 @@ const BuilderTable = () => {
             },
           }
         );
-        let responseData = AdminReportService.pdfSave(reportdata).json();
+        let responseData = await AdminReportService.pdfSave(reportdata).json();
+        if (responseData.status) {
+          swal("Report Saved Succesfully").then((willDelete) => {
+            if (willDelete) {
+              getreportlist();
+              navigate("/report");
+            }
+          });
+        }
         setIsLoading(false);
         handlePdfResponse(response);
       } catch (error) {
@@ -494,7 +527,7 @@ const BuilderTable = () => {
   }));
 
   const handleWeekEndingDate = (date) => {
-    setEndDate(date.value);
+    setWeekEndingDate(date.value);
   };
 
   return (
@@ -861,7 +894,7 @@ const BuilderTable = () => {
                               )}
 
                             </div>
-                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary") && <div className="col-md-12" style={{marginTop: "0px", color: "red"}}>
+                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") && <div className="col-md-12" style={{marginTop: "0px", color: "red"}}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
                                   {alertMessage}
