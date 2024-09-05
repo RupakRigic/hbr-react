@@ -6,19 +6,19 @@ import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilder
 
 const SubdivisionOffcanvas = forwardRef((props, ref) => {
 
-    const [BuilderCode, setBuilderCode] = useState('');
+    const [BuilderCode, setBuilderCode] = useState(localStorage.getItem('builderId'));
     const [Error, setError] = useState('');
     const [addSubdivision, setAddSubdivision] = useState(false);
     const [BuilderList, setBuilderList] = useState([]);
     const [status, setStatus] = useState('1');
-    const [productType, setProductType] = useState('DET');
-    const [reporting, setReporting] = useState('');
-    const [single, setSingle] = useState('');
-    const [age, setAge] = useState('');
+    const [productType, setProductType] = useState('');
+    const [reporting, setReporting] = useState('1');
+    const [single, setSingle] = useState('0');
+    const [age, setAge] = useState('0');
     const [area, setArea] = useState('');
     const [juridiction, setJuridiction] = useState('');
     const [masterplan, setMasterPlan] = useState('');
-    const [gate, setGate] = useState('');
+    const [gate, setGate] = useState('0');
 
     const handleStatus = e => {
         setStatus(e.target.value);
@@ -87,7 +87,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
         try {
             var userData = {
                 "builder_id": BuilderCode,
-                "subdivision_code": event.target.subdivision_code.value,
+                // "subdivision_code": event.target.subdivision_code.value,
                 "name": event.target.name.value,
                 "status": status,
                 "reporting": reporting,
@@ -105,20 +105,20 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "zipcode": event.target.zipcode.value ? event.target.zipcode.value : '',
                 "parcel": event.target.parcel.value ? event.target.parcel.value : '',
                 "crossstreet": event.target.crossstreet.value ? event.target.crossstreet.value : '',
-                "totallots": event.target.totallots.value,
-                "unsoldlots": event.target.unsoldlots.value,
-                "lotreleased": event.target.lotreleased.value,
-                "lotwidth": event.target.lotwidth.value,
-                "stadinginventory": event.target.stadinginventory.value,
+                "totallots": event.target.totallots.value ? event.target.totallots.value : 0,
+                "unsoldlots": event.target.unsoldlots.value ? event.target.unsoldlots.value : 0,
+                "lotreleased": event.target.lotreleased.value ? event.target.lotreleased.value : 0,
+                "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : 0,
+                "stadinginventory": event.target.stadinginventory.value ? event.target.stadinginventory.value : 0,
                 "lotsize": event.target.lotsize.value,
-                "permits": event.target.permits.value,
-                "netsales": event.target.netsales.value,
-                "closing": event.target.closing.value,
-                "monthsopen": event.target.monthsopen.value,
+                "permits": event.target.permits.value ? event.target.permits.value : 0,
+                "netsales": event.target.netsales.value ? event.target.netsales.value : 0,
+                "closing": event.target.closing.value ? event.target.closing.value : 0,
+                "monthsopen": event.target.monthsopen.value ? event.target.monthsopen.value : 0,
                 "gated": gate,
                 "sqftgroup": event.target.sqftgroup.value ? event.target.sqftgroup.value : '',
                 "dollargroup": event.target.dollargroup.value ? event.target.dollargroup.value : '',
-                "masterplanfee": event.target.masterplanfee.value,
+                "masterplanfee": event.target.masterplanfee.value ? event.target.masterplanfee.value : '',
                 "lastweeklydata": event.target.lastweeklydata.value ? event.target.lastweeklydata.value : '',
 
                 "dateadded": event.target.dateadded.value ? event.target.dateadded.value : '',
@@ -195,10 +195,10 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </Form.Group>
 
                                 </div>
-                                <div className="col-xl-6 mb-3">
+                                {/* <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Subdivision Code <span className="text-danger">*</span></label>
                                     <input type="text" name='subdivision_code' className="form-control" id="exampleFormControlInput2" placeholder="" />
-                                </div>
+                                </div> */}
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput3" className="form-label"> Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
@@ -206,6 +206,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Status <span className="text-danger">*</span></label>
                                     <select className="default-select form-control" onChange={handleStatus} >
+                                        <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Sold Out</option>
                                         <option value="2">Future</option>
@@ -372,7 +373,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput16" className="form-label">Parcel <span className="text-danger"></span></label>
-                                    <input type='number' name='parcel' className="form-control" id="exampleFormControlInput16" />
+                                    <input type='text' name='parcel' className="form-control" id="exampleFormControlInput16" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput17" className="form-label">Cross Street <span className="text-danger"></span></label>

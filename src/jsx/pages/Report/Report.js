@@ -20,6 +20,7 @@ import { Hidden } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Select from 'react-select';
 
 const BuilderTable = () => {
   
@@ -28,6 +29,7 @@ const BuilderTable = () => {
   const [weekEndDates, setWeekEndDates] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [reportList, setReportList] = useState([]);
+  const [weekEndingDateList, setWeekEndingDateList] = useState([]);
   const recordsPage = 10;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
@@ -52,6 +54,7 @@ const BuilderTable = () => {
   
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [reportType, setReportType] = useState("List of Active New Home Builders");
 
   useEffect(() => {
     const currentDate = new Date(); // Today's date
@@ -65,7 +68,7 @@ const BuilderTable = () => {
 
     setStartDate(formatDate(firstDayOfYear));
     setEndDate(formatDate(currentDate)); // Set endDate to current date
-  }, []);
+  }, [reportType]);
 
   console.log(startDate);
   console.log(endDate);
@@ -108,7 +111,12 @@ const BuilderTable = () => {
 
     return parsedDate;
   };
-  const [reportType, setReportType] = useState("List of Active New Home Builders");
+  
+  const [message, setMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState(false);
+  const [selectYear, setSelectYear] = useState("");
+  const [selectQuarter, setSelectQuarter] = useState("");
   const [uploadReportType, setUploadReportType] = useState("List of Active New Home Builders");
   console.log(uploadReportType);
   const [pdfData, setPdfData] = useState();
@@ -166,48 +174,205 @@ const BuilderTable = () => {
       }
     }
   };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getreportlist();
-    } else {
-      navigate("/");
-    }
-  }, []);
-  const handlePreview = async (e) => {
-    setIsLoading(true);
-    localStorage.setItem("start_date", startDate);
-    localStorage.setItem("end_date", endDate);
-    localStorage.setItem("report_type", reportType);
 
-    const reportdata = {
-      type: reportType,
-      start_date: startDate,
-      end_date: endDate,
-    };
-    const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+  const GetWeekEndingDateList = async () => {
     try {
-      const response = await axios.post(
-        // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
-
-        reportdata,
-        {
-          responseType: "arraybuffer",
-          headers: {
-            Accept: "application/pdf", // Set Accept header to indicate that we expect a PDF response
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
-      setIsLoading(false);
-      handlePdfResponse(response);
+      const response = await AdminReportService.weekending_date_list();
+      const responseData = await response.json();
+      setWeekEndingDateList(responseData);
+      console.log(responseData);
     } catch (error) {
-      setIsLoading(false);
+      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
-      setError("Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getreportlist();
+      GetWeekEndingDateList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  const handlePreview = async (e) => {
+    if(reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") {
+      let start_Date = moment(startDate);
+      let end_Date = moment(endDate);
+      let days = end_Date.diff(start_Date, 'days', true);
+      let totaldays = Math.ceil(days) + 1;
+      if (totaldays < 367) {
+        setAlert(false);
+        setIsLoading(true);
+        localStorage.setItem("start_date", startDate);
+        localStorage.setItem("end_date", endDate);
+        localStorage.setItem("report_type", reportType);
+  
+  
+        const reportdata = {
+          type: reportType,
+          start_date: startDate,
+          end_date: endDate,
+        };
+        const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+        try {
+        const response = await axios.post(
+          // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+  
+            reportdata,
+            {
+              responseType: "arraybuffer",
+              headers: {
+                Accept: "application/pdf", // Set Accept header to indicate that we expect a PDF response
+                Authorization: `Bearer ${bearerToken}`,
+              },
+            }
+          );
+          let responseData = AdminReportService.pdfSave(reportdata).json();
+          setIsLoading(false);
+          handlePdfResponse(response);
+        } catch (error) {
+          setIsLoading(false);
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+          }
+          setError("Something went wrong");
+        }
+      } else {
+        setAlert(true);
+        setAlertMessage("Please select 12 month Period for your report.");
+        return;
+      }
+    } else if (reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") {
+      setIsLoading(true);
+      localStorage.setItem("start_date", startDate);
+      localStorage.setItem("end_date", endDate);
+      localStorage.setItem("report_type", reportType);
+
+
+      const reportdata = {
+        type: reportType,
+        end_date: endDate,
+      };
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+      try {
+      const response = await axios.post(
+        // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+
+          reportdata,
+          {
+            responseType: "arraybuffer",
+            headers: {
+              Accept: "application/pdf", // Set Accept header to indicate that we expect a PDF response
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+        setIsLoading(false);
+        handlePdfResponse(response);
+      } catch (error) {
+        setIsLoading(false);
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          setError(errorJson.message);
+        }
+        setError("Something went wrong");
+      }
+    } else if (reportType == "LV Quartley Traffic and Sales Summary") {
+      if (selectYear == "" || selectQuarter == "") {
+        setAlert(true);
+        setAlertMessage("Please select year and quarter");
+        return;
+      }
+      setAlert(false);
+      setIsLoading(true);
+      localStorage.setItem("start_date", startDate);
+      localStorage.setItem("end_date", endDate);
+      localStorage.setItem("report_type", reportType);
+
+      const reportdata = {
+        type: reportType,
+        year: selectYear,
+        quarter: selectQuarter,
+      };
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+      try {
+      const response = await axios.post(
+        // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+
+          reportdata,
+          {
+            responseType: "arraybuffer",
+            headers: {
+              Accept: "application/pdf", // Set Accept header to indicate that we expect a PDF response
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+        let responseData = AdminReportService.pdfSave(reportdata).json();
+        setIsLoading(false);
+        handlePdfResponse(response);
+      } catch (error) {
+        setIsLoading(false);
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          setError(errorJson.message);
+        }
+        setError("Something went wrong");
+      }
+    } else {
+      setIsLoading(true);
+      localStorage.setItem("start_date", startDate);
+      localStorage.setItem("end_date", endDate);
+      localStorage.setItem("report_type", reportType);
+
+        const reportdata = {
+        type: reportType,
+        start_date: startDate,
+        end_date: endDate,
+      };
+
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+
+      try {
+        const response = await axios.post(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+          reportdata,
+          {
+            responseType: "arraybuffer",
+            headers: {
+              Accept: "application/pdf",
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+        let responseData = await AdminReportService.pdfSave(reportdata).json();
+        if (responseData.status) {
+          swal("Report Saved Succesfully").then((willDelete) => {
+            if (willDelete) {
+              getreportlist();
+              navigate("/report");
+            }
+          });
+        }
+        setIsLoading(false);
+        handlePdfResponse(response);
+      } catch (error) {
+        setIsLoading(false);
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          setError(errorJson.message);
+        }
+        setError("Something went wrong");
+      }
     }
   };
 
@@ -223,28 +388,6 @@ const BuilderTable = () => {
     return formattedDate;
   };
 
-  const handleSaverRport = () => {
-    const reportdata = {
-      type: reportType,
-      start_date: startDate,
-      end_date: endDate,
-    };
-    try {
-      let responseData = AdminReportService.pdfSave(reportdata).json();
-      swal("Report Saved Succesfully").then((willDelete) => {
-        if (willDelete) {
-          navigate("/report");
-        }
-      });
-      getreportlist();
-    } catch (error) {
-      console.log(error);
-      if (error.name === "HTTPError") {
-        const errorJson = error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminReportService.destroyReport(e).json();
@@ -336,6 +479,24 @@ const BuilderTable = () => {
       }
 
   }
+
+  const handleReportType = (e) => {
+    setReportType(e.target.value);
+    setAlert(false);
+    if(e.target.value == "Closing Report(PDF)" || e.target.value == "Market Share Analysis Report") {
+      setMessage("Choose a 12 month Period for your report.");
+    }
+  }
+
+  const options = weekEndingDateList.map((date) => ({
+    label: date,
+    value: date
+  }));
+
+  const handleWeekEndingDate = (date) => {
+    setEndDate(date.value);
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="Report" pageTitle="Report" parentTitle="Home" />
@@ -519,9 +680,8 @@ const BuilderTable = () => {
                                   <option>Permits Rankings Report</option>
                                   <option>Subdivision Analysis Report</option>
                                   <option>The Las vegas land Report</option>
-                                  <option>
-                                    Weekly Traffic and Sales Watch
-                                  </option>
+                                  <option>Weekly Traffic and Sales Watch(PDF)</option>
+                                  <option>Weekly Traffic and Sales Watch(XLS)</option>
                                 </select>
                               </div>
                               <div className="col-md-3 ms-4 sm-m-0">
@@ -577,63 +737,13 @@ const BuilderTable = () => {
                         </div>
                         <div className="dataTables_wrapper no-footer">
                           <div className="row">
-                            <div className="col-md-12">
-                              <div className="d-flex">
-                                <p className="text-center ms-4">
-                                  Select Week ending date and click continue
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="row">
-                            <div className="col-md-7 d-flex align-items-center flex-column-mobile">
-                              <div className="col-md-5">
-                                <div className="ms-4 sm-m-0">Select Period</div>
-                              </div>
-                              <div className="me-2 mb-2">
-                                {/* <input
-                                  type="date"
-                                  className="form-control"
-                                  onChange={(e) => setStartDate(e.target.value)}
-                                  value={startDate}
-                                /> */}
-
-                          <DatePicker
-                            name="from"
-                            className="form-control"
-                            selected={ parseDate(startDate)}
-                            onChange={handleFilterDateFrom}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                          />
-
-                              </div>
-                              <div className="mb-2">
-                                {/* <input
-                                  type="date"
-                                  className="form-control"
-                                  value={endDate}
-                                  onChange={(e) => setEndDate(e.target.value)}
-                                /> */}
-                              <DatePicker
-                              name="to"
-                              className="form-control"
-                              selected={parseDate(endDate)}
-                              onChange={handleFilterDateTo}
-                              dateFormat="MM/dd/yyyy"
-                              placeholderText="mm/dd/yyyy"
-                            />
-                              </div>
-                            </div>
-
-                            <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+                          <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                               <span className="col-md-6">
                                 <div className="ms-4">Select Report</div>
                               </span>
 
                               <select
-                                onChange={(e) => setReportType(e.target.value)}
+                                onChange={(e) => handleReportType(e)}
                                 value={reportType}
                                 className="form-control-select"
                               >
@@ -654,20 +764,119 @@ const BuilderTable = () => {
                                 <option>Weekly Traffic and Sales Watch(XLS)</option>
                               </select>
                             </div>
+
+                            <div className="col-md-12" style={{marginTop: "10px"}}>
+                              <div className="d-flex">
+                                <p className="text-center ms-4">
+                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ?  message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : "Select Week ending date and click continue"}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-md-7 d-flex justify-content-center">
+
+                          <div className="row">
+                            <div className="col-md-7 d-flex align-items-center flex-column-mobile">
+                              <div className="col-md-5">
+                                <div className="ms-4 sm-m-0">Select Period</div>
+                              </div>
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="me-2 mb-2">
+                                {/* <input
+                                  type="date"
+                                  className="form-control"
+                                  onChange={(e) => setStartDate(e.target.value)}
+                                  value={startDate}
+                                /> */}
+
+                          <DatePicker
+                            name="from"
+                            className="form-control"
+                            selected={ parseDate(startDate)}
+                            onChange={handleFilterDateFrom}
+                            dateFormat="MM/dd/yyyy"
+                            placeholderText="mm/dd/yyyy"
+                          />
+
+                              </div>}
+
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "LV Quartley Traffic and Sales Summary") && <div className="mb-2">
+                                {/* <input
+                                  type="date"
+                                  className="form-control"
+                                  value={endDate}
+                                  onChange={(e) => setEndDate(e.target.value)}
+                                /> */}
+                              <DatePicker
+                              name="to"
+                              className="form-control"
+                              selected={parseDate(endDate)}
+                              onChange={handleFilterDateTo}
+                              dateFormat="MM/dd/yyyy"
+                              placeholderText="mm/dd/yyyy"
+                            />
+                              </div>}
+                              
+                              {reportType == "Weekly Traffic and Sales Watch(PDF)" && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+                                <Select
+                                  options={options}
+                                  onChange={(selectedOption) => handleWeekEndingDate(selectedOption)}
+                                  placeholder="Select Date"
+                                  styles={{
+                                    container: (provided) => ({
+                                        ...provided,
+                                        width: '100%',
+                                    }),
+                                    menu: (provided) => ({
+                                        ...provided,
+                                        width: '180px',
+                                    }),
+                                }}
+                                />
+                              </div>}
+
+                              {reportType === "LV Quartley Traffic and Sales Summary" && (
+                                <div className="d-flex align-items-center">
+                                  <div className="me-2 mb-2" style={{width: "100px"}}>
+                                    <select id="yearSelect" className="form-select" style={{backgroundColor: "white", height: "35px"}} onChange={(e) => setSelectYear(e.target.value)}>
+                                      <option value="">Select Year</option>
+                                      {Array.from({ length: 15 }, (_, i) => {
+                                        const year = new Date().getFullYear() - i;
+                                        return (
+                                          <option key={year} value={year} style={{width: "0px"}}>
+                                            {year}
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                  </div>
+                                  <div className="mb-2" style={{width: "150px", marginLeft: "10px"}}>
+                                    <select id="quarterSelect" className="form-select" style={{backgroundColor: "white", height: "35px"}} onChange={(e) => setSelectQuarter(e.target.value)}>
+                                      <option value="">Select Quarter</option>
+                                      <option value="Q1">Q1 - Jan to Mar</option>
+                                      <option value="Q2">Q2 - Apr to Jun</option>
+                                      <option value="Q3">Q3 - Jul to Sep</option>
+                                      <option value="Q4">Q4 - Oct to Dec</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              )}
+
+                            </div>
+                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary") && <div className="col-md-12" style={{marginTop: "0px", color: "red"}}>
+                              <div className="d-flex">
+                                <p className="text-center ms-4">
+                                  {alertMessage}
+                                </p>
+                              </div>
+                            </div>}
+                            
+                          </div>
+                          <div className="col-md-7 d-flex justify-content-center" style={{marginLeft: "310px"}}>
                             <div className="ms-4 mb-4">
-                              <a
-                                className="btn btn-primary me-2"
-                                onClick={handleSaverRport}
-                              >
-                                Save
-                              </a>
                               <a
                                 onClick={handlePreview}
                                 className="btn btn-primary"
                               >
-                                Preview
+                                Save
                               </a>
                             </div>
                           </div>

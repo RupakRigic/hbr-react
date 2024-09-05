@@ -11,4 +11,5 @@ export default {
     pdfSave:(userData)=>clientAuth.post(`admin/report/save-reports`,{ json: userData }),
     destroyReport:(id)=>clientAuth.delete(`admin/report/destroy-report/${id}`),
     uploadReport:(userData)=>clientAuth.post(`admin/report/upload-report`,{json:userData}),
+    weekending_date_list:()=>clientAuth.get(`admin/report/weekending-date-list`)
 };
