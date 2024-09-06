@@ -262,7 +262,7 @@ const BuilderTable = () => {
     } else if (reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") {
       if (weekEndingDate == "") {
         setAlert(true);
-        setAlertMessage("Please select Week ending date");
+        setAlertMessage("Please select week ending date");
         return;
       }
       setAlert(false);
