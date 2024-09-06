@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
-import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
-import AdminGoogleMapService from "../../../API/Services/AdminService/AdminGoogleMapService";
-import DateComponent from "../../components/date/DateFormat";
+import React, { Fragment, useRef, useState } from "react";
+import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager  } from "@react-google-maps/api";
 import PriceComponent from "../../components/Price/PriceComponent";
-import { Form,Offcanvas } from "react-bootstrap";
-import Select from "react-select";
-import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -24,12 +18,7 @@ const defaultCenter = {
 const GoogleMapLocator = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state || {}; // Safely access state with fallback
-  
-  // React.useEffect(() => {
-  //   console.log('Received state:', state); // This should log the state passed from Link
-  // }, [state]);
-  // const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const state = location.state || {};
 
   const [builderList, setBuilderList] = useState([]);
   const subdivisionList = state.subdivisionList;
@@ -40,136 +29,50 @@ const GoogleMapLocator = () => {
   const landsales = state.landsales;
 
   const [selectedMarker, setSelectedMarker] = useState(null);
-  // const [builderId, setBuilderId] = useState('');
-  // const [searchQuery, setSearchQuery] = useState("");
-  // const [filterQuery, setFilterQuery] = useState({
-  //   status: "",
-  //   product_type: "",
-  //   reporting: "",
-  //   builder_name:"",
-  //   name:"",
-  //   product_type:"",
-  //   area:"",
-  //   masterplan_id:"",
-  //   zipcode:"",
-  //   lotwidth:"",
-  //   lotsize:"",
-  //   zoning:"",
-  //   age:"",
-  //   single:"",
-  //   gated:"",
-  //   juridiction:"",
-  //   gasprovider:"",
-  //   hoafee:"",
-  //   masterplan_id:""
-  // });
-  // console.log(filterQuery)
+  const [drawing, setDrawing] = useState(false);
+  const [shapes, setShapes] = useState([]);
+  console.log(shapes);
+  const [redoStack, setRedoStack] = useState([]);
+  console.log(redoStack);
+  const mapRef = useRef(null);
 
-  // const filterString = () => {
-  //   const queryString = Object.keys(filterQuery)
-  //     .map(
-  //       (key) =>
-  //         `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
-  //     )
-  //     .join("&");
+  const onLoad = (map) => {
+   mapRef.current = map;
+ };
 
-  //   return queryString ? `?${queryString}` : "";
-  // };
+  const handleShapeComplete = (shape) => {
+   setDrawing(true);
+   setShapes((prevShapes) => [...prevShapes, shape]);
+   setRedoStack([]);
+ };
 
-  // useEffect(() => {
-  //   setSearchQuery(filterString());
-  // }, [filterQuery]);
+ const handleUndo = () => {
+   setShapes((prevShapes) => {
+     const newShapes = [...prevShapes];
+     const shapeToRemove = newShapes.pop();
+     if (shapeToRemove) {
+       shapeToRemove.setMap(null);
+       setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+     }
+     return newShapes;
+   });
+ };
 
-  
-  // const HandleFilterForm = (e) =>
-  //   {
-  //     e.preventDefault();
-  //     console.log(filterQuery);
-  //     fetchSubdivisionList(filterQuery);
-  //   };
-
-  //   const HandleFilter = (e) => {
-  //     const { name, value } = e.target;
-  //     setFilterQuery((prevFilterQuery) => ({
-  //       ...prevFilterQuery,
-  //       [name]: value,
-  //     }));
-  //   };
-  
-  //   const HandleSelectChange = (selectedOption) => {
-  //     setFilterQuery((prevFilterQuery) => ({
-  //       ...prevFilterQuery,
-  //       builder_name: selectedOption.name,
-  //     }));
-  //   };
-
-  //   const HandleCancelFilter = (e) => {
-  //     setFilterQuery(
-  //       {
-  //         status: "",
-  //         product_type: "",
-  //         reporting: "",
-  //         builder_name:"",
-  //         name:"",
-  //         product_type:"",
-  //         area:"",
-  //         masterplan_id:"",
-  //         zipcode:"",
-  //         lotwidth:"",
-  //         lotsize:"",
-  //         zoning:"",
-  //         age:"",
-  //         single:"",
-  //         gated:"",
-  //         juridiction:"",
-  //         gasprovider:"",
-  //         hoafee:"",
-  //         masterplan_id:""
-  //       });
-  //       fetchSubdivisionList(searchQuery);
-  //   };
-
-  // useEffect(() => {
-  //   const fetchBuilderList = async () => {
-  //     try {
-  //       const response = await AdminBuilderService.builderDropDown();
-  //       const data = await response.json();
-  //       console.log(data)
-  //       setBuilderList(data);
-  //     } catch (error) {
-  //       console.log("Error fetching builder list:", error);
-  //     }
-  //   };
-
-  //   fetchBuilderList();
-  // }, []);
-
-  // const fetchSubdivisionList = async () => {
-
-  //   try {
-  //     const response = await AdminSubdevisionService.getByBuilderId(searchQuery);
-  //     const data = await response.json();
-  //     setSubdivisionList(data);
-  //   } catch (error) {
-  //     console.log("Error fetching subdivision list:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchSubdivisionList();
-  // }, [builderId]);
-
-  // const handleBuilderChange = (selectedOption) => {
-  //   if (selectedOption) {
-  //     setBuilderId(selectedOption.id);
-  //     console.log(selectedOption.id);
-  //   } else {
-  //     setBuilderId("");
-  //   }
-  // };
+ const handleRedo = () => {
+   setRedoStack((prevRedoStack) => {
+     const newRedoStack = [...prevRedoStack];
+     const shapeToRedo = newRedoStack.shift();
+     if (shapeToRedo && mapRef.current) {
+       shapeToRedo.setMap(mapRef.current);
+       setShapes((prevShapes) => [...prevShapes, shapeToRedo]);
+     }
+     return newRedoStack;
+   });
+ };
 
   return ( 
-      <LoadScript googleMapsApiKey="AIzaSyDY5Dsqd_6ZlAWwdohre3Fiz3K8hbRqcAE">
+   <Fragment>
+      <LoadScript googleMapsApiKey="AIzaSyDY5Dsqd_6ZlAWwdohre3Fiz3K8hbRqcAE" libraries={['drawing']}>
          <div style={{height: "40px"}}>
             <Button
                className="btn btn-primary btn-sm me-1"
@@ -189,25 +92,26 @@ const GoogleMapLocator = () => {
                }}
             >
             <i className="fa fa-arrow-left" aria-hidden="true" style={{marginRight: "10px"}}></i>
-            Go Back
+               Go Back
             </Button>
+            {drawing && <Button className="btn btn-primary btn-sm me-1" title="Undo" style={{marginTop: "5px", marginLeft: "5px"}} onClick={handleUndo}><i class="fa fa-undo" aria-hidden="true"></i></Button>}
+            {drawing && <Button className="btn btn-primary btn-sm me-1" title="Redo" style={{marginTop: "5px", marginLeft: "5px"}} onClick={handleRedo}><i class="fa fa-redo" aria-hidden="true"></i></Button>}
          </div>
-        <GoogleMap mapContainerStyle={containerStyle} zoom={8} center={defaultCenter}
-         options={{
-            mapTypeId: "satellite",
-          }}
-        >
-        {subdivisionList !== null && subdivisionList.length > 0 && (
-            subdivisionList.map((record, index) => (
-        <Marker
-          key={index}
-          position={{ lat: parseFloat(record.lat), lng: parseFloat(record.lng) }}
-          onClick={() => setSelectedMarker(record)}
-        />
-     ))
-    )}
+         <GoogleMap mapContainerStyle={containerStyle} zoom={8} onLoad={onLoad} center={defaultCenter}
+            options={{
+               mapTypeId: "satellite",
+            }}
+         >
+         
+         {subdivisionList !== null && subdivisionList.length > 0 && ( subdivisionList.map((record, index) => (
+            <Marker
+               key={index}
+               position={{ lat: parseFloat(record.lat), lng: parseFloat(record.lng) }}
+               onClick={() => setSelectedMarker(record)}
+            />
+         )))}
 
-          {selectedMarker && (
+         {selectedMarker && (
             <InfoWindow
               position={{ lat: parseFloat(selectedMarker.lat), lng: parseFloat(selectedMarker.lng) }}
               onCloseClick={() => setSelectedMarker(null)}
@@ -348,9 +252,32 @@ const GoogleMapLocator = () => {
             </div>
             </div>
             </InfoWindow>
-          )}
+         )}
+
+         <DrawingManager
+            onCircleComplete={handleShapeComplete}
+            onPolygonComplete={handleShapeComplete}
+            onPolylineComplete={handleShapeComplete}
+            onRectangleComplete={handleShapeComplete}
+            options={{
+               drawingControl: true,
+               drawingControlOptions: {
+                  position: 2,
+                  drawingModes: ['circle', 'polygon', 'polyline', 'rectangle'],
+               },
+               circleOptions: {
+                  fillColor: '#000000',
+                  fillOpacity: 0.2,
+                  strokeWeight: 4,
+                  clickable: false,
+                  editable: true,
+                  zIndex: 1,
+               },
+            }}
+         />
         </GoogleMap>
       </LoadScript>
+   </Fragment>
   );
 };
 
