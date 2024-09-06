@@ -43,7 +43,7 @@ const SubdivisionList = () => {
   const addToBuilderList = () => {
     navigate('/google-map-locator', {
       state: { 
-        subdivisionList: BuilderList,
+        subdivisionList: AllBuilderListExport,
         subdivision: true
       },
     });
@@ -4096,9 +4096,13 @@ const SubdivisionList = () => {
 
                         <Button
                           className="btn btn-primary btn-sm me-1"
-                          onClick={addToBuilderList}
+                          onClick={() => !excelLoading ? addToBuilderList() : ""}
                         >
-                          <i className="fa fa-map-marker" aria-hidden="true"></i>
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
+                            :
+                            <i className="fa fa-map-marker" aria-hidden="true"></i>
+                          }
                         </Button>
 
                         <button
