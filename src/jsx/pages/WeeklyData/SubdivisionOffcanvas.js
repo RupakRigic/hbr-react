@@ -204,7 +204,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput4" className="form-label">Status <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput4" className="form-label">Status</label>
                                     <select className="default-select form-control" onChange={handleStatus} >
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
@@ -213,7 +213,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Reporting <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Reporting</label>
                                     <select className="default-select form-control" onChange={handleReporting} >
                                         <option value="">Select Reporting</option>
                                         <option value="1">Yes</option>
@@ -222,7 +222,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                  </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">Product Type</label>
                                     <select className="default-select form-control" onChange={handleProductType} >
                                         <option value="">Select Product Type</option>
                                          <option value="DET">DET</option>
@@ -232,15 +232,15 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                                
                                     </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Phone <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label">Phone</label>
                                     <input type="number" name='phone' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Open Since<span className="text-danger"></span></label>
+                                    <label className="form-label">Open Since</label>
                                     <input type="date" name='opensince' className="form-control" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Age Restricted<span className="text-danger">*</span></label>
+                                    <label className="form-label">Age Restricted</label>
                                     <select className="default-select form-control" name="" onChange={handleAge} >
                                     <option value="">Select age Restricted</option>
                                         <option value="1">Yes</option>
@@ -248,7 +248,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                               
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story</label>
                                     <select className="default-select form-control" name="" onChange={handleSingle} >
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
@@ -256,13 +256,13 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>         
                                  </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput9" className="form-label"> First Permit Date <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                                     <input type="date" name='firstpermitdate' className="form-control" id="exampleFormControlInput9" placeholder="" />
                                 </div>
 
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
                                     <select className="default-select form-control" name="" onChange={handleMasterPlan} >
                                         <option value="">Select Masterplan</option>
                                         <option value=""></option>
@@ -312,15 +312,15 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput11" className="form-label">Latitude <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput11" className="form-label">Latitude</label>
                                     <input type="text" name='lat' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput12" className="form-label">Longitude<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput12" className="form-label">Longitude</label>
                                     <input type="text" name='lng' className="form-control" id="exampleFormControlInput12" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput13" className="form-label">Area<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput13" className="form-label">Area</label>
                                     <select className="default-select form-control" name="" onChange={handleArea} >
                                         <option value="">Select Area</option>
                                         <option value="BC">BC</option>
@@ -338,7 +338,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                              
                                  </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
                                     <select className="default-select form-control" name="" onChange={handleJurisdiction} >
                                         <option value="">Select Juridiction</option>
                                         <option value="Boulder City">Boulder City</option>
@@ -367,62 +367,62 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                            
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
                                     <input type="number" name='zipcode' className="form-control" id="exampleFormControlInput15" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput16" className="form-label">Parcel <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                                     <input type='text' name='parcel' className="form-control" id="exampleFormControlInput16" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Cross Street <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Cross Street</label>
                                     <input type='text' name='crossstreet' className="form-control" id="exampleFormControlInput17" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput18" className="form-label">Total Lots <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput18" className="form-label">Total Lots</label>
                                     <input type='number' name='totallots' className="form-control" id="exampleFormControlInput18" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput19" className="form-label">Unsold Lots<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput19" className="form-label">Unsold Lots</label>
                                     <input type='number' name='unsoldlots' className="form-control" id="exampleFormControlInput19" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput20" className="form-label">Lots Released<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput20" className="form-label">Lots Released</label>
                                     <input type='number' name='lotreleased' className="form-control" id="exampleFormControlInput20" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput21" className="form-label">Lot width<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput21" className="form-label">Lot width</label>
                                     <input type='number' name='lotwidth' className="form-control" id="exampleFormControlInput21" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput22" className="form-label">Stading Inventory<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput22" className="form-label">Stading Inventory</label>
                                     <input type='number' name='stadinginventory' className="form-control" id="exampleFormControlInput22" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput23" className="form-label">Lot Size<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput23" className="form-label">Lot Size</label>
                                     <input type='number' name='lotsize' className="form-control" id="exampleFormControlInput23" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput24" className="form-label">Permits<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput24" className="form-label">Permits</label>
                                     <input type='number' name='permits' className="form-control" id="exampleFormControlInput24" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput25" className="form-label">Net Sales<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput25" className="form-label">Net Sales</label>
                                     <input type='number' name='netsales' className="form-control" id="exampleFormControlInput25" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput26" className="form-label">Closing<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput26" className="form-label">Closing</label>
                                     <input type='number' name='closing' className="form-control" id="exampleFormControlInput26" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput27" className="form-label">Months Open<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput27" className="form-label">Months Open</label>
                                     <input type='number' name='monthsopen' className="form-control" id="exampleFormControlInput27" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput28" className="form-label">Gated<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
                                     <select className="default-select form-control" 
                                     onChange={handleGate} 
                                     value={gate}
@@ -433,31 +433,31 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                               
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput29" className="form-label">Sqft Group<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput29" className="form-label">Sqft Group</label>
                                     <input type='text' name='sqftgroup' className="form-control" id="exampleFormControlInput29" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput30" className="form-label">Dollar Group<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput30" className="form-label">Dollar Group</label>
                                     <input type='text' name='dollargroup' className="form-control" id="exampleFormControlInput30" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee<span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee</label>
                                     <input type='number' name='masterplanfee' className="form-control" id="exampleFormControlInput31" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput32" className="form-label">Last weekly Data<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput32" className="form-label">Last weekly Data</label>
                                     <input type='date' name='lastweeklydata' className="form-control" id="exampleFormControlInput32" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput33" className="form-label">Date Added<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput33" className="form-label">Date Added</label>
                                     <input type='date' name='dateadded' className="form-control" id="exampleFormControlInput33" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput34" className="form-label">Zoning<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput34" className="form-label">Zoning</label>
                                     <input type='text' name='zoning' className="form-control" id="exampleFormControlInput34" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider</label>
                                     <input type='text' name='gasprovider' className="form-control" id="exampleFormControlInput35" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>
