@@ -632,7 +632,6 @@ const BuilderTable = () => {
   };
 
   const handleSubdivisionCode = (code) => {
-    debugger
     setSubdivisionCode(code.value);
   };
 
