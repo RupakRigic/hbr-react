@@ -75,9 +75,9 @@ console.log(searchQuery);
   const getbuilderlist = async (builderId) => {
     console.log(builderId);
     try {
-      const response = await AdminSubdevisionService.getByBuilderId(builderId);
+      const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
       const responseData = await response.json();
-      const formattedData = responseData.map((subdivision) => ({
+      const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
@@ -94,7 +94,7 @@ console.log(searchQuery);
     }
   };
   const handleSelectSubdivisionNameChange = (e) => {
-    setSelectedSubdivisionName(e);
+    setSelectedSubdivisionName(e.value);
   };
 
   const handleRowEdit = async (id) => {
@@ -373,7 +373,7 @@ console.log(searchQuery);
       if (willDelete) {
         try {
           var userData = {
-            subdivision_id: selectedSubdivisionName.value,
+            subdivision_id: selectedSubdivisionName,
           };
           console.log(userData);
           console.log(selectedLandSales);
@@ -419,9 +419,9 @@ console.log(searchQuery);
                           <Select
                             name="builder_name"
                             options={builderListDropDown}
-                            value={selectedBuilderName}
-                            onChange={handleSelectBuilderNameChange}
-                            placeholder={"Select Builder Name"}
+                            // value={selectedBuilderName}
+                            onChange={(e) => handleSelectBuilderNameChange(e)}
+                            placeholder="Select Builder Name"
                           />
                         </Form.Group>
                       </div>
@@ -430,8 +430,8 @@ console.log(searchQuery);
                           <Select
                             name="subdivision_name"
                             options={BuilderList}
-                            value={selectedSubdivisionName}
-                            onChange={handleSelectSubdivisionNameChange}
+                            // value={selectedSubdivisionName}
+                            onChange={(e) => handleSelectSubdivisionNameChange(e)}
                             placeholder={"Select Subdivision Name"}
                           />
                         </Form.Group>
