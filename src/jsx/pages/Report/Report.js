@@ -263,7 +263,7 @@ const BuilderTable = () => {
         setAlertMessage("Please select 12 month Period for your report.");
         return;
       }
-    } else if (reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") {
+    } else if (reportType == "Weekly Traffic and Sales Watch(PDF)") {
       if (weekEndingDate == "") {
         setAlert(true);
         setAlertMessage("Please select week ending date");
@@ -306,6 +306,66 @@ const BuilderTable = () => {
         }
         setIsLoading(false);
         handlePdfResponse(response);
+      } catch (error) {
+        setIsLoading(false);
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          setError(errorJson.message);
+        }
+        setError("Something went wrong");
+      }
+    } else if (reportType == "Weekly Traffic and Sales Watch(XLS)") {
+      if (weekEndingDate == "") {
+        setAlert(true);
+        setAlertMessage("Please select week ending date");
+        return;
+      }
+      setAlert(false);
+      setIsLoading(true);
+      localStorage.setItem("start_date", startDate);
+      localStorage.setItem("end_date", endDate);
+      localStorage.setItem("report_type", reportType);
+
+
+      const reportdata = {
+        type: reportType,
+        end_date: weekEndingDate,
+      };
+      const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+      try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+          reportdata,
+          {
+            responseType: "arraybuffer",
+            headers: {
+              Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+
+        // let responseData = await AdminReportService.pdfSave(reportdata).json();
+        // if (responseData.status) {
+        //   swal("Report Saved Succesfully").then((willDelete) => {
+        //     if (willDelete) {
+        //       getreportlist();
+        //       navigate("/report");
+        //     }
+        //   });
+        // }
+        setIsLoading(false);
+        // Create a new Blob for XLS file
+        const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        
+        // Create a link to download the file
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        // link.download = `report-${startDate}-${endDate}.xlsx`; // Save the file with .xlsx extension
+        link.download = `Weekly Traffic and Sales Watch-${weekEndingDate}.xlsx`; // Save the file with .xlsx extension
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } catch (error) {
         setIsLoading(false);
         if (error.name === "HTTPError") {
@@ -366,6 +426,11 @@ const BuilderTable = () => {
         setError("Something went wrong");
       }
     } else if (reportType == "Subdivision Analysis Report") {
+      if (BuilderCode == "" || SubdivisionCode == "") {
+        setAlert(true);
+        setAlertMessage("Please select builder and subdivision both.");
+        return;
+      }
       setIsLoading(true);
       const today = new Date();
       const formattedToday = today.toISOString().split('T')[0];
@@ -1047,7 +1112,7 @@ const BuilderTable = () => {
                               )}
 
                             </div>
-                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") && <div className="col-md-12" style={{marginTop: "0px", color: "red"}}>
+                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)" || reportType == "Subdivision Analysis Report") && <div className="col-md-12" style={{marginTop: "10px", color: "red"}}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
                                   {alertMessage}
