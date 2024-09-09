@@ -96,7 +96,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "opensince": event.target.opensince.value ? event.target.opensince.value : '',
                 "age":age,
                 "single": single,
-                "firstpermitdate": event.target.firstpermitdate.value ? event.target.firstpermitdate.value : '',
+                "firstpermitdate": '',
                 "masterplan_id": masterplan,
                 "lat": event.target.lat.value ? event.target.lat.value : '',
                 "lng": event.target.lng.value ? event.target.lng.value : '',
@@ -106,22 +106,22 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "parcel": event.target.parcel.value ? event.target.parcel.value : '',
                 "crossstreet": event.target.crossstreet.value ? event.target.crossstreet.value : '',
                 "totallots": event.target.totallots.value ? event.target.totallots.value : 0,
-                "unsoldlots": event.target.unsoldlots.value ? event.target.unsoldlots.value : 0,
-                "lotreleased": event.target.lotreleased.value ? event.target.lotreleased.value : 0,
+                "unsoldlots": 0,
+                "lotreleased": 0,
                 "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : 0,
-                "stadinginventory": event.target.stadinginventory.value ? event.target.stadinginventory.value : 0,
+                "stadinginventory": 0,
                 "lotsize": event.target.lotsize.value,
-                "permits": event.target.permits.value ? event.target.permits.value : 0,
-                "netsales": event.target.netsales.value ? event.target.netsales.value : 0,
-                "closing": event.target.closing.value ? event.target.closing.value : 0,
-                "monthsopen": event.target.monthsopen.value ? event.target.monthsopen.value : 0,
+                "permits": 0,
+                "netsales": 0,
+                "closing": 0,
+                "monthsopen": 0,
                 "gated": gate,
-                "sqftgroup": event.target.sqftgroup.value ? event.target.sqftgroup.value : '',
-                "dollargroup": event.target.dollargroup.value ? event.target.dollargroup.value : '',
+                "sqftgroup": '',
+                "dollargroup": '',
                 "masterplanfee": event.target.masterplanfee.value ? event.target.masterplanfee.value : '',
-                "lastweeklydata": event.target.lastweeklydata.value ? event.target.lastweeklydata.value : '',
+                "lastweeklydata": '',
 
-                "dateadded": event.target.dateadded.value ? event.target.dateadded.value : '',
+                "dateadded": '',
 
                 "zoning": event.target.zoning.value ? event.target.zoning.value : '',
                 "gasprovider": event.target.gasprovider.value ? event.target.gasprovider.value : '',
@@ -172,14 +172,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="offcanvas-body">
                     <div className="container-fluid">
-
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Builder Code <span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-
                                         <Form.Select
                                             onChange={handleBuilderCode}
                                             value={BuilderCode}
@@ -193,12 +190,8 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                             }
                                         </Form.Select>
                                     </Form.Group>
-
                                 </div>
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Subdivision Code <span className="text-danger">*</span></label>
-                                    <input type="text" name='subdivision_code' className="form-control" id="exampleFormControlInput2" placeholder="" />
-                                </div> */}
+                                
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput3" className="form-label"> Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
@@ -220,7 +213,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="0">No</option>
                                     </select>             
                                  </div>
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label">Product Type</label>
                                     <select className="default-select form-control" onChange={handleProductType} >
@@ -255,12 +247,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="0">No</option>
                                     </select>         
                                  </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
-                                    <input type="date" name='firstpermitdate' className="form-control" id="exampleFormControlInput9" placeholder="" />
-                                </div>
-
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
                                     <select className="default-select form-control" name="" onChange={handleMasterPlan} >
@@ -310,7 +296,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="WESTON HILLS">WESTON HILLS</option>
                                     </select>  
                                 </div>
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput11" className="form-label">Latitude</label>
                                     <input type="text" name='lat' className="form-control" id="exampleFormControlInput11" placeholder="" />
@@ -363,14 +348,12 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="Mesquite">Mesquite</option>
                                         <option value="NLV">NLV</option>
                                         <option value="NYE">NYE</option>
-
                                     </select>                            
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
                                     <input type="number" name='zipcode' className="form-control" id="exampleFormControlInput15" placeholder="" />
                                 </div>
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                                     <input type='text' name='parcel' className="form-control" id="exampleFormControlInput16" />
@@ -384,42 +367,12 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     <input type='number' name='totallots' className="form-control" id="exampleFormControlInput18" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput19" className="form-label">Unsold Lots</label>
-                                    <input type='number' name='unsoldlots' className="form-control" id="exampleFormControlInput19" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput20" className="form-label">Lots Released</label>
-                                    <input type='number' name='lotreleased' className="form-control" id="exampleFormControlInput20" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput21" className="form-label">Lot width</label>
                                     <input type='number' name='lotwidth' className="form-control" id="exampleFormControlInput21" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput22" className="form-label">Stading Inventory</label>
-                                    <input type='number' name='stadinginventory' className="form-control" id="exampleFormControlInput22" />
-                                </div>
-
-                                <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput23" className="form-label">Lot Size</label>
                                     <input type='number' name='lotsize' className="form-control" id="exampleFormControlInput23" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput24" className="form-label">Permits</label>
-                                    <input type='number' name='permits' className="form-control" id="exampleFormControlInput24" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput25" className="form-label">Net Sales</label>
-                                    <input type='number' name='netsales' className="form-control" id="exampleFormControlInput25" />
-                                </div>
-
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput26" className="form-label">Closing</label>
-                                    <input type='number' name='closing' className="form-control" id="exampleFormControlInput26" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput27" className="form-label">Months Open</label>
-                                    <input type='number' name='monthsopen' className="form-control" id="exampleFormControlInput27" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
@@ -433,24 +386,8 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     </select>                               
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput29" className="form-label">Sqft Group</label>
-                                    <input type='text' name='sqftgroup' className="form-control" id="exampleFormControlInput29" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput30" className="form-label">Dollar Group</label>
-                                    <input type='text' name='dollargroup' className="form-control" id="exampleFormControlInput30" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee</label>
                                     <input type='number' name='masterplanfee' className="form-control" id="exampleFormControlInput31" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput32" className="form-label">Last weekly Data</label>
-                                    <input type='date' name='lastweeklydata' className="form-control" id="exampleFormControlInput32" />
-                                </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput33" className="form-label">Date Added</label>
-                                    <input type='date' name='dateadded' className="form-control" id="exampleFormControlInput33" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput34" className="form-label">Zoning</label>
@@ -460,6 +397,59 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider</label>
                                     <input type='text' name='gasprovider' className="form-control" id="exampleFormControlInput35" />
                                 </div>
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Subdivision Code <span className="text-danger">*</span></label>
+                                    <input type="text" name='subdivision_code' className="form-control" id="exampleFormControlInput2" placeholder="" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
+                                    <input type="date" name='firstpermitdate' className="form-control" id="exampleFormControlInput9" placeholder="" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput19" className="form-label">Unsold Lots</label>
+                                    <input type='number' name='unsoldlots' className="form-control" id="exampleFormControlInput19" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput20" className="form-label">Lots Released</label>
+                                    <input type='number' name='lotreleased' className="form-control" id="exampleFormControlInput20" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput22" className="form-label">Stading Inventory</label>
+                                    <input type='number' name='stadinginventory' className="form-control" id="exampleFormControlInput22" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput24" className="form-label">Permits</label>
+                                    <input type='number' name='permits' className="form-control" id="exampleFormControlInput24" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput25" className="form-label">Net Sales</label>
+                                    <input type='number' name='netsales' className="form-control" id="exampleFormControlInput25" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput26" className="form-label">Closing</label>
+                                    <input type='number' name='closing' className="form-control" id="exampleFormControlInput26" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput27" className="form-label">Months Open</label>
+                                    <input type='number' name='monthsopen' className="form-control" id="exampleFormControlInput27" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput29" className="form-label">Sqft Group</label>
+                                    <input type='text' name='sqftgroup' className="form-control" id="exampleFormControlInput29" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput30" className="form-label">Dollar Group</label>
+                                    <input type='text' name='dollargroup' className="form-control" id="exampleFormControlInput30" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput32" className="form-label">Last weekly Data</label>
+                                    <input type='date' name='lastweeklydata' className="form-control" id="exampleFormControlInput32" />
+                                </div> */}
+                                {/* <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput33" className="form-label">Date Added</label>
+                                    <input type='date' name='dateadded' className="form-control" id="exampleFormControlInput33" />
+                                </div> */}
+                                
                                 <p className='text-danger fs-12'>{Error}</p>
 
                             </div>
