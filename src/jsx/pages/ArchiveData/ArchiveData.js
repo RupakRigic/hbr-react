@@ -231,7 +231,7 @@ const ArchiveData = () => {
                                                         variant="primary"
                                                         onClick={() => setShowPopup(true)}
                                                     >
-                                                        + Add
+                                                        <i class="bi bi-plus"></i> Add Download Request
                                                     </Button>
                                                 </div>
                                             </div>
@@ -405,7 +405,7 @@ const ArchiveData = () => {
             {/* Popup */}
             <Modal show={showPopup} onHide={HandlePopupDetailClick}>
                 <Modal.Header HandlePopupClose>
-                    <Modal.Title>Alert</Modal.Title>
+                    <Modal.Title>Download Request</Modal.Title>
                     <button
                         className="btn-close"
                         aria-label="Close"
@@ -415,11 +415,11 @@ const ArchiveData = () => {
                 <Modal.Body>
                     <div className="row">
                         <div className="col-md-3 mt-3" style={{ width: "200px" }}>
-                            <label className="form-label">Select Type:{" "}<span className="text-danger">*</span></label>
+                            <label className="form-label">Data Type:{" "}<span className="text-danger">*</span></label>
                             <Select
                                 options={typeOptions}
                                 onChange={(selectedOption) => HandleTable(selectedOption)}
-                                placeholder="Select a type..."
+                                placeholder="Select a Data Type..."
                             />
                         </div>
 
@@ -449,7 +449,7 @@ const ArchiveData = () => {
 
                         <div className="col-md-3 mt-3">
                             <div style={{ width: "180px" }}>
-                                <label className="form-label">Select Fields:{" "}<span className="text-danger">*</span></label>
+                                <label className="form-label">Fields:{" "}<span className="text-danger">*</span></label>
                                 <Form.Group controlId="tournamentList">
                                     <MultiSelect
                                         options={fieldsOptions}
@@ -467,7 +467,7 @@ const ArchiveData = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={() => HandlePopupSave()}>
-                        Save
+                        Apply
                     </Button>
                     <Button variant="primary" onClick={HandlePopupClose}>
                         Close
