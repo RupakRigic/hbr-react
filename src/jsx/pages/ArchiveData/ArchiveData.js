@@ -355,6 +355,7 @@ const ArchiveData = () => {
                                                                                 }}
                                                                             }
                                                                             className={"btn btn-primary shadow btn-xs sharp"}
+                                                                            style={element.download_status == 1 ? {cursor: "Pointer"} : {cursor: "not-allowed"}}
                                                                         >
                                                                             {element.download_status == 1 ? <i className="fa fa-download"></i>
                                                                              :

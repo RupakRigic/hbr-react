@@ -71,8 +71,8 @@ const WeeklyDataIndex = () => {
       const updatedData = responseData.map((element) => ({
         ...element,
         net_sales:
-          element.weekly_data[0].gross_sales -
-          element.weekly_data[0].cancelations,
+          element.trafic_sales[0].grosssales -
+          element.trafic_sales[0].cancelations,
       }));
       setIsLoading(false);
       setBuilderList(updatedData);
@@ -103,7 +103,7 @@ const WeeklyDataIndex = () => {
   };
 
   const calculateNetSales = (id, data) => {
-    const grossSales = formData[id]?.gross_sales || data.gross_sales;
+    const grossSales = formData[id]?.grosssales || data.grosssales;
     const cancelations = formData[id]?.cancelations || data.cancelations;
     return grossSales - cancelations;
   };
@@ -321,10 +321,10 @@ const WeeklyDataIndex = () => {
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {records.map((element) => {
-                            const currentId = element.weekly_data[0].subdivision_id;
+                            const currentId = element.trafic_sales[0].subdivision_id;
                             return (
                               <tr key={currentId} style={{ textAlign: "center" }}>
-                                <td>{element.weekly_data[0].week_ending_date}</td>
+                                <td>{element.trafic_sales[0].weekending}</td>
                                 <td>
                                   <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
                                     Sold Out
@@ -335,10 +335,10 @@ const WeeklyDataIndex = () => {
                                   <input
                                     type="number"
                                     defaultValue={
-                                      element.weekly_data[0].weekly_traffic
+                                      element.trafic_sales[0].weeklytraffic
                                     }
                                     className="form-control"
-                                    name="weekly_traffic"
+                                    name="weeklytraffic"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -346,10 +346,10 @@ const WeeklyDataIndex = () => {
                                   <input
                                     type="number"
                                     defaultValue={
-                                      element.weekly_data[0].gross_sales
+                                      element.trafic_sales[0].grosssales
                                     }
                                     className="form-control"
-                                    name="gross_sales"
+                                    name="grosssales"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -358,7 +358,7 @@ const WeeklyDataIndex = () => {
                                   <input
                                     type="number"
                                     defaultValue={
-                                      element.weekly_data[0].cancelations
+                                      element.trafic_sales[0].cancelations
                                     }
                                     className="form-control"
                                     name="cancelations"
@@ -366,15 +366,15 @@ const WeeklyDataIndex = () => {
                                   />{" "}
                                 </td>
                                 <td></td>
-                                <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.weekly_data[0]) : element.net_sales)}</td>
+                                <td>{reset ? element.net_sales: (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
                                 <td>
                                   <input
                                     type="number"
                                     defaultValue={
-                                      element.weekly_data[0].current_lots_released
+                                      element.trafic_sales[0].lotreleased
                                     }
                                     className="form-control"
-                                    name="current_lots_released"
+                                    name="lotreleased"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -384,17 +384,17 @@ const WeeklyDataIndex = () => {
                                       type="hidden"
                                       name="subdivision_id"
                                       value={
-                                        element.weekly_data[0].subdivision_id
+                                        element.trafic_sales[0].subdivision_id
                                       }
                                     />
                                     <input
                                       type="number"
                                       defaultValue={
-                                        element.weekly_data[0]
-                                          .current_un_sold_standing_inventory
+                                        element.trafic_sales[0]
+                                          .unsoldinventory
                                       }
                                       className="form-control"
-                                      name="current_un_sold_standing_inventory"
+                                      name="unsoldinventory"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
