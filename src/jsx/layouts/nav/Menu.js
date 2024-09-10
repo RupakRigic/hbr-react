@@ -90,4 +90,9 @@ export const MenuList = [
         iconStyle: SVGICON.GridDots,
         to: '/ccapn',
     },
+    {
+        title: 'Archive Data',
+        iconStyle: SVGICON.ArchiveData,
+        to: '/downloading-archive-data',
+    },
 ]

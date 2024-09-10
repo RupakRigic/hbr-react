@@ -16,5 +16,8 @@ export default {
     builderDropDown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/builder/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/builder/bulkdestroy/${id}`),
-
+    archiveDownloadData: (userData) => clientAuth.post(`admin/archive/download-data`, { json: userData }),
+    getArchiveFieldList:(tableName)=> clientAuth.get(`admin/archive/get-fields/${tableName}`),
+    getArchiveList:()=> clientAuth.get(`admin/archive/archive-data-list`),
+    destroyArchive: (id) => clientAuth.delete(`admin/archive/destroy/${id}`),
 };

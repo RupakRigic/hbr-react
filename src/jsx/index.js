@@ -48,6 +48,7 @@ import FilterProducts from "./pages/Product/FilterProducts";
 import FilterPermits from "./pages/Permit/FilterPermits";
 import FilterWeeklyTrafficAndSales from "./pages/Trafficsale/FilterWeeklyTrafficAndSales";
 import FilterClosings from "./pages/Closing/FilterClosings";
+import ArchiveData from "./pages/ArchiveData/ArchiveData";
 
 const allroutes = [
   // Dashboard
@@ -158,6 +159,11 @@ const allroutes = [
   {
     url: "/ccapn",
     component: <CCAPNList />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/downloading-archive-data",
+    component: <ArchiveData />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
   {
