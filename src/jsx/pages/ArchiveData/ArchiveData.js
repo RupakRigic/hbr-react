@@ -342,10 +342,9 @@ const ArchiveData = () => {
                                                                             onClick={(e) => {
                                                                                 if(element.download_status == 1) {
                                                                                     swal({
-                                                                                        title: "Are you sure?",
-                                                                                        icon: "warning",
+                                                                                        title: "Are you sure to download?",
                                                                                         buttons: true,
-                                                                                        dangerMode: true,
+                                                                                        dangerMode: false,
                                                                                     }).then((willDelete) => {
                                                                                         if (willDelete) {
                                                                                             handleDownload(e, element.filepath);
