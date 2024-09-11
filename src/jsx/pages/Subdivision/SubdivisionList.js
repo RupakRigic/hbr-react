@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import axios from "axios";
+import './subdivisionList.css';
 
 const SubdivisionList = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
@@ -152,6 +153,11 @@ const SubdivisionList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
+  const [totalLotsOption, setTotalLotsOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+  const [masterPlanFeeOption, setMasterPlanFeeOption] = useState("");
+  const [hOAFeeOption, setHOAFeeOption] = useState("");
   const [totalClosingsOption, setTotalClosingsOption] = useState("");
   const [totalPermitsOption, setTotalPermitsOption] = useState("");
   const [totalNetSalesOption, setTotalNetSalesOption] = useState("");
@@ -181,6 +187,11 @@ const SubdivisionList = () => {
   const [medianClosingPriceSinceOpenOption, setMedianClosingPriceSinceOpenOption] = useState("");
   const [medianClosingPriceThisYearOption, setMedianClosingPriceThisYearOption] = useState("");
 
+  const [totalLotsResult, setTotalLotsResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
+  const [hOAFeeResult, setHOAFeeResult] = useState(0);
+  const [masterPlanFeeResult, setmasterPlanFeeResult] = useState(0);
   const [totalClosingsResult, setTotalClosingsResult] = useState(0);
   const [totalPermitsResult, setTotalPermitsResult] = useState(0);
   const [totalNetSalesResult, setTotalNetSalesResult] = useState(0);
@@ -1510,6 +1521,64 @@ const SubdivisionList = () => {
   };
 
   const totalSumFields = (field) => {
+    if(field == "totallots") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.totallots || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.totallots || 0);
+        }, 0);
+      }
+    }
+    if(field == "lotwidth") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.lotwidth || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.lotwidth || 0);
+        }, 0);
+      }
+    }
+    if(field == "lotsize") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.lotsize || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.lotsize || 0);
+        }, 0);
+      }
+    }
+    if(field == "hoafee") {
+      const parseHoafee = (value) => {
+        return parseFloat(value.replace(/[$,]/g, '')) || 0;
+      };
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + parseHoafee(builder.hoafee);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + parseHoafee(builder.hoafee);
+        }, 0);
+      }
+    }
+    if(field == "masterplanfee") {
+      if(filter){
+        return BuilderList.reduce((sum, builder) => {
+          return sum + (builder.masterplanfee || 0);
+        }, 0);
+      } else {
+        return AllBuilderListExport.reduce((sum, builder) => {
+          return sum + (builder.masterplanfee || 0);
+        }, 0);
+      }
+    }
     if(field == "total_closings") {
       if(filter){
         return BuilderList.reduce((sum, builder) => {
@@ -1833,8 +1902,13 @@ const SubdivisionList = () => {
     const value = e.target.value;
 
     switch (field) {
-      case "total_closings":
-        setTotalClosingsOption(value);
+      case "totallots":
+        setTotalLotsOption(value);
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setHOAFeeOption("");
+        setMasterPlanFeeOption("");
+        setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
         setMonthsOpenOption("");
@@ -1863,6 +1937,386 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setTotalLotsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalLotsResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setTotalLotsOption("");
+        setLotSizeOption("");
+        setHOAFeeOption("");
+        setMasterPlanFeeOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalLotsResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setHOAFeeOption("");
+        setMasterPlanFeeOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      case "hoafee":
+        setHOAFeeOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setHOAFeeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setHOAFeeResult(averageFields(field));
+        }
+        break;
+
+      case "masterplanfee":
+        setMasterPlanFeeOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setHOAFeeOption("");
+        setTotalClosingsOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setTotalClosingsResult(0);
+        setTotalPermitsResult(0);
+        setTotalNetSalesResult(0);
+        setMonthsOpenResult(0);
+        setLatestLotsReleasedResult(0);
+        setLatestStandingInventoryResult(0);
+        setUnsoldLotsResult(0);
+        setAvgSqftAllResult(0);
+        setAvgSqftActiveResult(0);
+        setAvgBasePriceAllResult(0);
+        setAvgBasePriceActiveResult(0);
+        setMinSqftAllResult(0);
+        setMaxSqftAllResult(0);
+        setMinBasePriceAllResult(0);
+        setMinSqftActiveResult(0);
+        setMaxBasePriceAllResult(0);
+        setMaxSqftActiveResult(0);
+        setAvgNetTrafficPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthThisYearResult(0);
+        setAvgClosingsPerMonthThisYearResult(0);
+        setAvgNetSalesPerMonthSinceOpenResult(0);
+        setAvgNetSalesPerMonthLastThreeMonthsResult(0);
+        setMonthNetSoldResult(0);
+        setYearNetSoldResult(0);
+        setAvgClosingPriceResult(0);
+        setPermitsThisYearResult(0);
+        setMedianClosingPriceSinceOpenResult(0);
+        setMedianClosingPriceThisYearResult(0);
+
+        if (value === 'sum') {
+          setmasterPlanFeeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setmasterPlanFeeResult(averageFields(field));
+        }
+        break;
+
+      case "total_closings":
+        setTotalClosingsOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setHOAFeeOption("");
+        setMasterPlanFeeOption("");
+        setTotalPermitsOption("");
+        setTotalNetSalesOption("");
+        setMonthsOpenOption("");
+        setLatestLotsReleasedOption("");
+        setLatestStandingInventoryOption("");
+        setUnsoldLotsOption("");
+        setAvgSqftAllOption("");
+        setAvgSqftActiveOption("");
+        setAvgBasePriceAllOption("");
+        setAvgBasePriceActiveOption("");
+        setMinSqftAllOption("");
+        setMaxSqftAllOption("");
+        setMinBasePriceAllOption("");
+        setMinSqftActiveOption("");
+        setMaxBasePriceAllOption("");
+        setMaxSqftActiveOption("");
+        setAvgNetTrafficPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthThisYearOption("");
+        setAvgClosingsPerMonthThisYearOption("");
+        setAvgNetSalesPerMonthSinceOpenOption("");
+        setAvgNetSalesPerMonthLastThreeMonthsOption("");
+        setMonthNetSoldOption("");
+        setYearNetSoldOption("");
+        setAvgClosingPriceOption("");
+        setPermitsThisYearOption("");
+        setMedianClosingPriceSinceOpenOption("");
+        setMedianClosingPriceThisYearOption("");
+
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
         setMonthsOpenResult(0);
@@ -1900,6 +2354,11 @@ const SubdivisionList = () => {
 
       case "total_permits":
         setTotalPermitsOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalNetSalesOption("");
         setMonthsOpenOption("");
@@ -1928,6 +2387,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalNetSalesResult(0);
         setMonthsOpenResult(0);
@@ -1965,6 +2429,11 @@ const SubdivisionList = () => {
 
       case "total_net_sales":
         setTotalNetSalesOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setMonthsOpenOption("");
@@ -1993,6 +2462,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setMonthsOpenResult(0);
@@ -2030,6 +2504,11 @@ const SubdivisionList = () => {
 
       case "months_open":
         setMonthsOpenOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2058,6 +2537,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2095,6 +2579,11 @@ const SubdivisionList = () => {
 
       case "latest_lots_released":
         setLatestLotsReleasedOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2123,6 +2612,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2160,6 +2654,11 @@ const SubdivisionList = () => {
 
       case "latest_standing_inventory":
         setLatestStandingInventoryOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2188,6 +2687,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2225,6 +2729,11 @@ const SubdivisionList = () => {
 
       case "unsold_lots":
         setUnsoldLotsOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2253,6 +2762,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2290,6 +2804,11 @@ const SubdivisionList = () => {
 
       case "avg_sqft_all":
         setAvgSqftAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2318,6 +2837,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2355,6 +2879,11 @@ const SubdivisionList = () => {
 
       case "avg_sqft_active":
         setAvgSqftActiveOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2383,6 +2912,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2420,6 +2954,11 @@ const SubdivisionList = () => {
 
       case "avg_base_price_all":
         setAvgBasePriceAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2448,6 +2987,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2485,6 +3029,11 @@ const SubdivisionList = () => {
 
       case "avg_base_price_active":
         setAvgBasePriceActiveOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2513,6 +3062,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2550,6 +3104,11 @@ const SubdivisionList = () => {
 
       case "min_sqft_all":
         setMinSqftAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2578,6 +3137,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2615,6 +3179,11 @@ const SubdivisionList = () => {
 
       case "max_sqft_all":
         setMaxSqftAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2643,6 +3212,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2680,6 +3254,11 @@ const SubdivisionList = () => {
 
       case "min_base_price_all":
         setMinBasePriceAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2708,6 +3287,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2745,6 +3329,11 @@ const SubdivisionList = () => {
 
       case "min_sqft_active":
         setMinSqftActiveOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2773,6 +3362,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2810,6 +3404,11 @@ const SubdivisionList = () => {
 
       case "max_base_price_all":
         setMaxBasePriceAllOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2838,6 +3437,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2875,6 +3479,11 @@ const SubdivisionList = () => {
 
       case "max_sqft_active":
         setMaxSqftActiveOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2903,6 +3512,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -2940,6 +3554,11 @@ const SubdivisionList = () => {
 
       case "avg_net_traffic_per_month_this_year":
         setAvgNetTrafficPerMonthThisYearOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -2968,6 +3587,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3005,6 +3629,11 @@ const SubdivisionList = () => {
 
       case "avg_net_sales_per_month_this_year":
         setAvgNetSalesPerMonthThisYearOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3033,6 +3662,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3070,6 +3704,11 @@ const SubdivisionList = () => {
 
       case "avg_closings_per_month_this_year":
         setAvgClosingsPerMonthThisYearOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3098,6 +3737,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3135,6 +3779,11 @@ const SubdivisionList = () => {
 
       case "avg_net_sales_per_month_since_open":
         setAvgNetSalesPerMonthSinceOpenOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3163,6 +3812,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3200,6 +3854,11 @@ const SubdivisionList = () => {
 
       case "avg_net_sales_per_month_last_three_months":
         setAvgNetSalesPerMonthLastThreeMonthsOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3228,6 +3887,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3265,6 +3929,11 @@ const SubdivisionList = () => {
 
       case "month_net_sold":
         setMonthNetSoldOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3293,6 +3962,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3330,6 +4004,11 @@ const SubdivisionList = () => {
 
       case "year_net_sold":
         setYearNetSoldOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3358,6 +4037,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3395,6 +4079,11 @@ const SubdivisionList = () => {
 
       case "avg_closing_price":
         setAvgClosingPriceOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3422,6 +4111,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3458,6 +4152,11 @@ const SubdivisionList = () => {
 
       case "permit_this_year":
         setPermitsThisYearOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3485,6 +4184,11 @@ const SubdivisionList = () => {
         setMedianClosingPriceSinceOpenOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setHOAFeeResult(0);
+        setmasterPlanFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3521,6 +4225,11 @@ const SubdivisionList = () => {
 
       case "median_closing_price_since_open":
         setMedianClosingPriceSinceOpenOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3548,6 +4257,11 @@ const SubdivisionList = () => {
         setPermitsThisYearOption("");
         setMedianClosingPriceThisYearOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -3584,6 +4298,11 @@ const SubdivisionList = () => {
 
       case "median_closing_price_this_year":
         setMedianClosingPriceThisYearOption(value);
+        setTotalLotsOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setMasterPlanFeeOption("");
+        setHOAFeeOption("");
         setTotalClosingsOption("");
         setTotalPermitsOption("");
         setTotalNetSalesOption("");
@@ -3611,6 +4330,11 @@ const SubdivisionList = () => {
         setPermitsThisYearOption("");
         setMedianClosingPriceSinceOpenOption("");
 
+        setTotalLotsResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setmasterPlanFeeResult(0);
+        setHOAFeeResult(0);
         setTotalClosingsResult(0);
         setTotalPermitsResult(0);
         setTotalNetSalesResult(0);
@@ -4416,15 +5140,17 @@ const SubdivisionList = () => {
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "total Lots" &&
-                                  column.id !== "lot Width" && column.id !== "lot Size" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" &&
-                                  column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" && column.id !== "latitude" && column.id !== "longitude" &&
-                                  column.id !== "gas Provider" && column.id !== "hOA Fee" && column.id !== "master Plan Fee" && column.id !== "parcel Group" && column.id !== "phone" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && 
+                                  column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" && 
+                                  column.id !== "latitude" && column.id !== "longitude" && column.id !== "gas Provider" && column.id !== "parcel Group" && column.id !== "phone" &&
                                   column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
                                   column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
                                 ) && (
                                     <>
-                                      <select value={column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption :
+                                    <br />
+                                      <select className="custom-select" value={column.id == "total Lots" ? totalLotsOption : column.id == "lot Width" ? lotWidthOption :
+                                        column.id == "lot Size" ? lotSizeOption : column.id == "master Plan Fee" ? masterPlanFeeOption : 
+                                        column.id == "hOA Fee" ? hOAFeeOption : column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption :
                                         column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
                                         column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
                                         column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
@@ -4439,9 +5165,22 @@ const SubdivisionList = () => {
                                         column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
                                         column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
                                         
-                                        style={{ cursor: "pointer", marginLeft: '10px' }}
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
                                         
-                                        onChange={(e) => column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                        onChange={(e) => column.id == "total Lots" ? handleSelectChange(e, "totallots") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
+                                          column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
+                                          column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
+                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
                                           column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
                                           column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
                                           column.id == "months Open" ? handleSelectChange(e, "months_open") :
@@ -4471,9 +5210,9 @@ const SubdivisionList = () => {
                                           column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
                                         }
                                       >
-                                        <option value="" disabled>CALCULATION</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -4514,13 +5253,13 @@ const SubdivisionList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "total Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{totalLotsResult.toFixed(2)}</td>
                                   }
                                   {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
                                   }
                                   {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
                                   }
                                   {column.id == "zoning" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
@@ -4550,10 +5289,10 @@ const SubdivisionList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "hOA Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{hOAFeeResult.toFixed(2)}</td>
                                   }
                                   {column.id == "master Plan Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{masterPlanFeeResult.toFixed(2)}</td>
                                   }
                                   {column.id == "parcel Group" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>

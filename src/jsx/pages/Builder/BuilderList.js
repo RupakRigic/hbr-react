@@ -20,6 +20,7 @@ import { saveAs } from 'file-saver';
 import BulkBuilderUpdate from "./BulkBuilderUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { MultiSelect } from "react-multi-select-component";
+import '../../pages/Subdivision/subdivisionList.css';
 
 const BuilderTable = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
@@ -2037,13 +2038,22 @@ const BuilderTable = () => {
                                   column.id !== "coporate Office Address latitude" && column.id !== "coporate Office Address longitude" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
                                 ) && (
                                     <>
-                                      <select value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption :
+                                    <br />
+                                      <select className="custom-select" value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption :
                                         column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales this year" ? netSalesThisYearOption :
                                         column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
                                         column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
                                         column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
                                         column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""}
-                                        style={{ cursor: "pointer", marginLeft: '10px' }}
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
                                         onChange={(e) => column.id == "active Communities" ? handleSelectChange(e, "active_communities") :
                                           column.id == "closing This Year" ? handleSelectChange(e, "closing_this_year") :
                                           column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
@@ -2056,9 +2066,9 @@ const BuilderTable = () => {
                                           column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
                                           column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
                                           column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
-                                        <option value="" disabled>CALCULATION</option>
-                                        <option value="sum">Sum</option>
-                                        <option value="avg">Avg</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
