@@ -267,6 +267,11 @@ const WeeklyDataIndex = () => {
                       >
                         Cancel
                       </button>
+                      <button className="btn btn-primary btn-sm me-1"
+                        onClick={() => navigate("/weekly-data")}
+                      >
+                        Go Back
+                      </button>
                     </div>
                   </div>
                   {isLoading ? (
