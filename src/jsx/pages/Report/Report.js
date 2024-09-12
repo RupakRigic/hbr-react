@@ -671,7 +671,9 @@ const BuilderTable = () => {
     try {
       const response = await AdminReportService.Subdivisionbybuilderid(builderId);
       const responseData = await response.json();
-      const formattedData = responseData.data.map((subdivision) => ({
+      const formattedData = responseData.data
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
@@ -686,7 +688,9 @@ const BuilderTable = () => {
     }
   };
 
-  const BuilderOptions = BuilderList.map(element => ({
+  const BuilderOptions = BuilderList
+  .sort((a, b) => a.name.localeCompare(b.name))
+  .map(element => ({
     value: element.id,
     label: element.name
   }));

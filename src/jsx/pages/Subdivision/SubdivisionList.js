@@ -1556,7 +1556,11 @@ const SubdivisionList = () => {
     }
     if(field == "hoafee") {
       const parseHoafee = (value) => {
-        return parseFloat(value.replace(/[$,]/g, '')) || 0;
+        if (value != "" ) {
+          return parseFloat(value.replace(/[$,]/g, '')) || 0;
+        } else {
+          return 0;
+        }
       };
       if(filter){
         return BuilderList.reduce((sum, builder) => {
