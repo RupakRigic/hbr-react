@@ -942,8 +942,6 @@ const LandsaleList = () => {
         }
         break;
 
-      
-
       default:
         break;
     }

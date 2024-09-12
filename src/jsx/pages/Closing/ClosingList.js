@@ -21,6 +21,7 @@ import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const ClosingList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -113,6 +114,16 @@ const ClosingList = () => {
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
+
+  const [closingPriceOption, setClosingPriceOption] = useState("");
+  const [loanAmountOption, setLoanAmountOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+
+  const [closingPriceResult, setClosingPriceResult] = useState(0);
+  const [loanAmountResult, setLoanAmountResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -1228,6 +1239,111 @@ const GetLenderList = async () => {
     });
   };
 
+  const totalSumFields = (field) => {
+    if(field == "closingprice") {
+      return AllClosingListExport.reduce((sum, closings) => {
+        return sum + (closings.closingprice || 0);
+      }, 0);
+    }
+    if(field == "loanamount") {
+      return AllClosingListExport.reduce((sum, closings) => {
+        return sum + (closings.loanamount || 0);
+      }, 0);
+    }
+    if(field == "lotwidth") {
+      return AllClosingListExport.reduce((sum, closings) => {
+        return sum + (closings.subdivision && closings.subdivision.lotwidth || 0);
+      }, 0);
+    }
+    if(field == "lotsize") {
+      return AllClosingListExport.reduce((sum, closings) => {
+        return sum + (closings.subdivision && closings.subdivision.lotsize || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    const sum = totalSumFields(field);
+    return sum / AllClosingListExport.length;
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "closingprice":
+        setClosingPriceOption(value);
+        setLoanAmountOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setLoanAmountResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setClosingPriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setClosingPriceResult(averageFields(field));
+        }
+        break;
+
+      case "loanamount":
+        setLoanAmountOption(value);
+        setClosingPriceOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+  
+        setClosingPriceResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setLoanAmountResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLoanAmountResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setClosingPriceOption("");
+        setLoanAmountOption("");
+        setLotSizeOption("");
+  
+        setClosingPriceResult(0);
+        setLoanAmountResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setClosingPriceOption("");
+        setLoanAmountOption("");
+        setLotWidthOption("");
+  
+        setClosingPriceResult(0);
+        setLoanAmountResult(0);
+        setLotWidthResult(0);
+  
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1467,7 +1583,7 @@ const GetLenderList = async () => {
                             </th>
                             <th>No.</th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "closing Type" ? "closing_type" :
                                 column.id == "closing Price" ? "closingprice" :
                                 column.id == "parcel Number" ? "parcel" :
@@ -1536,11 +1652,142 @@ const GetLenderList = async () => {
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "closing Type" && column.id !== "closing Date" && column.id !== "doc" && 
+                                  column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address" && column.id !== "parcel Number" && 
+                                  column.id !== "sub Legal Name" && column.id !== "seller Legal Name" && column.id !== "buyer Name" && column.id !== "lender" && column.id !== "type" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
+                                ) && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "closing Price" ? closingPriceOption : 
+                                          column.id == "loan Amount" ? loanAmountOption : 
+                                          column.id == "lot Width" ? lotWidthOption : 
+                                          column.id == "lot Size" ? lotSizeOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "closing Price" ? handleSelectChange(e, "closingprice") :
+                                          column.id == "loan Amount" ? handleSelectChange(e, "loanamount") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "closing Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "closing Date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "doc" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "closing Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={closingPriceResult} /></td>
+                                  }
+                                  {column.id == "address" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "parcel Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "sub Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "seller Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "buyer Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lender" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "loan Amount" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={loanAmountResult} /></td>
+                                  }
+                                  {column.id == "type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "__pkRecordID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>
+                          }
                           {ClosingList !== null && ClosingList.length > 0 ? (
                             ClosingList.map((element, index) => (
                               <tr
