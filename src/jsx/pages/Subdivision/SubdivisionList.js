@@ -1557,7 +1557,8 @@ const SubdivisionList = () => {
     if(field == "hoafee") {
       const parseHoafee = (value) => {
         if (value != "" ) {
-          return parseFloat(value.replace(/[$,]/g, '')) || 0;
+          let HOAFee = value.replace(/[$,]/g, '');
+          return parseFloat(HOAFee) || 0;
         } else {
           return 0;
         }
