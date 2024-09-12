@@ -19,6 +19,7 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import moment from 'moment';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const TrafficsaleList = () => {
   const [loading, setLoading] = useState(false);
@@ -109,6 +110,27 @@ const TrafficsaleList = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isFormLoading, setIsFormLoading] = useState(true);
+
+  const [weeklyTrafficOption, setWeeklyTrafficOption] = useState("");
+  const [weeklyGrossSalesOption, setWeeklyGrossSalesOption] = useState("");
+  const [weeklyCancellationsOption, setWeeklyCancellationsOption] = useState("");
+  const [weeklyNetSalesOption, setWeeklyNetSalesOption] = useState("");
+  const [totalLotsOption, setTotalLotsOption] = useState("");
+  const [weeklyLotsReleaseForSaleOption, setWeeklyLotsReleaseForSaleOption] = useState("");
+  const [weeklyUnsoldStandingInventoryOption, setWeeklyUnsoldStandingInventoryOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+
+  const [weeklyTrafficResult, setWeeklyTrafficResult] = useState(0);
+  const [weeklyGrossSalesResult, setWeeklyGrossSalesResult] = useState(0);
+  const [weeklyCancellationsResult, setWeeklyCancellationsResult] = useState(0);
+  const [weeklyNetSalesResult, setWeeklyNetSalesResult] = useState(0);
+  const [totalLotsResult, setTotalLotsResult] = useState(0);
+  const [weeklyLotsReleaseForSaleResult, setWeeklyLotsReleaseForSaleResult] = useState(0);
+  const [weeklyUnsoldStandingInventoryResult, setWeeklyUnsoldStandingInventoryResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
+
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -1189,6 +1211,326 @@ const GetSubdivisionDropDownList = async () => {
     return new Date(year, month - 1, day);
   };
 
+  const totalSumFields = (field) => {
+    if(field == "weeklytraffic") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.weeklytraffic || 0);
+      }, 0);
+    }
+    if(field == "grosssales") {
+      if(filter){
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.grosssales || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.grosssales || 0);
+        }, 0);
+      }
+    }
+    if(field == "cancelations") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.cancelations || 0);
+      }, 0);
+    }
+    if(field == "netsales") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.netsales || 0);
+      }, 0);
+    }
+    if(field == "totallots") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.subdivision && traficSales.subdivision.totallots || 0);
+      }, 0);
+    }
+    if(field == "lotreleased") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.lotreleased || 0);
+      }, 0);
+    }
+    if(field == "unsoldinventory") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.unsoldinventory || 0);
+      }, 0);
+    }
+    if(field == "lotwidth") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.subdivision && traficSales.subdivision.lotwidth || 0);
+      }, 0);
+    }
+    if(field == "lotsize") {
+      return AllTrafficListExport.reduce((sum, traficSales) => {
+        return sum + (traficSales.subdivision && traficSales.subdivision.lotsize || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    const sum = totalSumFields(field);
+    if(field == "grosssales") {
+      if(filter){
+        return sum / trafficsaleList.length;
+      } else{
+        return sum / AllTrafficListExport.length;
+      }
+    } else {
+      const sum = totalSumFields(field);
+      return sum / AllTrafficListExport.length;
+    }
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "weeklytraffic":
+        setWeeklyTrafficOption(value);
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setWeeklyTrafficResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyTrafficResult(averageFields(field));
+        }
+        break;
+
+      case "grosssales":
+        setWeeklyGrossSalesOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setWeeklyGrossSalesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyGrossSalesResult(averageFields(field));
+        }
+        break;
+
+      case "cancelations":
+        setWeeklyCancellationsOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setWeeklyCancellationsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyCancellationsResult(averageFields(field));
+        }
+        break;
+
+      case "netsales":
+        setWeeklyNetSalesOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setWeeklyNetSalesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyNetSalesResult(averageFields(field));
+        }
+        break;
+
+      case "totallots":
+        setTotalLotsOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setTotalLotsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setTotalLotsResult(averageFields(field));
+        }
+        break;
+
+      case "lotreleased":
+        setWeeklyLotsReleaseForSaleOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setWeeklyLotsReleaseForSaleResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyLotsReleaseForSaleResult(averageFields(field));
+        }
+        break;
+
+      case "unsoldinventory":
+        setWeeklyUnsoldStandingInventoryOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setWeeklyUnsoldStandingInventoryResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setWeeklyUnsoldStandingInventoryResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotSizeOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setWeeklyTrafficOption("");
+        setWeeklyGrossSalesOption("");
+        setWeeklyCancellationsOption("");
+        setWeeklyNetSalesOption("");
+        setTotalLotsOption("");
+        setWeeklyLotsReleaseForSaleOption("");
+        setWeeklyUnsoldStandingInventoryOption("");
+        setLotWidthOption("");
+
+        setWeeklyTrafficResult(0);
+        setWeeklyGrossSalesResult(0);
+        setWeeklyCancellationsResult(0);
+        setWeeklyNetSalesResult(0);
+        setTotalLotsResult(0);
+        setWeeklyLotsReleaseForSaleResult(0);
+        setWeeklyUnsoldStandingInventoryResult(0);
+        setLotWidthResult(0);
+  
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1420,7 +1762,7 @@ const GetSubdivisionDropDownList = async () => {
                             </th>
                             <th>No.</th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "week Ending" ? "weekending" :
                                 column.id == "weekly Traffic" ? "weeklytraffic" :
                                 column.id == "weekly Gross Sales" ? "grosssales" :
@@ -1433,7 +1775,7 @@ const GetSubdivisionDropDownList = async () => {
                                 column.id == "_fkSubID" ? "subdivisionCode" :
                                 column.id == ("total Lots" || "weekly Lots Release For Sale" || "weekly Unsold Standing Inventory") ? "lotreleased" : toCamelCase(column.id)) : ""}>
                                 <strong>
-                                  {column.label}
+                                  {column.id == "weekly Lots Release For Sale" ? "Weekly Lots Released for Sale" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "week Ending" ? "weekending" :
@@ -1467,11 +1809,139 @@ const GetSubdivisionDropDownList = async () => {
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "week Ending" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Type" && 
+                                  column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" && 
+                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
+                                ) && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "weekly Traffic" ? weeklyTrafficOption : 
+                                          column.id == "weekly Gross Sales" ? weeklyGrossSalesOption : 
+                                          column.id == "weekly Cancellations" ? weeklyCancellationsOption : 
+                                          column.id == "weekly Net Sales" ? weeklyNetSalesOption : 
+                                          column.id == "total Lots" ? totalLotsOption : 
+                                          column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption : 
+                                          column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption : 
+                                          column.id == "lot Width" ? lotWidthOption : 
+                                          column.id == "lot Size" ? lotSizeOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "weekly Traffic" ? handleSelectChange(e, "weeklytraffic") :
+                                          column.id == "weekly Gross Sales" ? handleSelectChange(e, "grosssales") :
+                                          column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
+                                          column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
+                                          column.id == "total Lots" ? handleSelectChange(e, "totallots") :
+                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
+                                          column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "week Ending" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "weekly Traffic" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyTrafficResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "weekly Gross Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyGrossSalesResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "weekly Cancellations" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyCancellationsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "weekly Net Sales" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyNetSalesResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "total Lots" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{totalLotsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "weekly Lots Release For Sale" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyLotsReleaseForSaleResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "weekly Unsold Standing Inventory" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{weeklyUnsoldStandingInventoryResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "__pkRecordID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>
+                          }
                           {trafficsaleList !== null && trafficsaleList.length > 0 ? (
                             trafficsaleList.map((element, index) => (
                               <tr
