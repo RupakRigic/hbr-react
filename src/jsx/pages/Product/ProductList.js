@@ -23,6 +23,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkProductUpdate from "./BulkProductUpdate";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import { MultiSelect } from "react-multi-select-component";
+import '../../pages/Subdivision/subdivisionList.css';
 
 const ProductList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -370,6 +371,30 @@ const ProductList = () => {
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
+
+  const [squareFootageOption, setSquareFootageOption] = useState("");
+  const [storiesOption, setStoriesOption] = useState("");
+  const [bedRoomsOption, setBedRoomsOption] = useState("");
+  const [bathRoomsOption, setBathRoomsOption] = useState("");
+  const [garageOption, setGarageOption] = useState("");
+  const [currentBasePriceOption, setCurrentBasePriceOption] = useState("");
+  const [currentPricePerSQFTOption, setCurrentPricePerSQFTOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+  const [priceChangeSinceOpenOption, setPriceChangeSinceOpenOption] = useState("");
+  const [priceChangeLast12MonthsOption, setPriceChangeLast12MonthsOption] = useState("");
+
+  const [squareFootageResult, setSquareFootageResult] = useState(0);
+  const [storiesResult, setStoriesResult] = useState(0);
+  const [bedRoomsResult, setBedRoomsResult] = useState(0);
+  const [bathRoomsResult, setBathRoomsResult] = useState(0);
+  const [garageResult, setGarageResult] = useState(0);
+  const [currentBasePriceResult, setCurrentBasePriceResult] = useState(0);
+  const [currentPricePerSQFTResult, setCurrentPricePerSQFTResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
+  const [priceChangeSinceOpenResult, setPriceChangeSinceOpenResult] = useState(0);
+  const [priceChangeLast12MonthsResult, setPriceChangeLast12MonthsResult] = useState(0);
 
 
   const checkFieldExist = (fieldName) => {
@@ -1070,6 +1095,446 @@ const ProductList = () => {
     });
   };
 
+  const totalSumFields = (field) => {
+    if(field == "sqft") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.sqft || 0);
+      }, 0);
+    }
+    if(field == "stories") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.stories || 0);
+      }, 0);
+    }
+    if(field == "bedroom") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.bedroom || 0);
+      }, 0);
+    }
+    if(field == "bathroom") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.bathroom || 0);
+      }, 0);
+    }
+    if(field == "garage") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.garage || 0);
+      }, 0);
+    }
+    if(field == "latest_base_price") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.latest_base_price || 0);
+      }, 0);
+    }
+    if(field == "current_price_per_sqft") {
+      if(filter){
+        return productList.reduce((sum, products) => {
+          return sum + (products.current_price_per_sqft || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.current_price_per_sqft || 0);
+        }, 0);
+      }
+    }
+    if(field == "lotwidth") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.subdivision && products.subdivision.lotwidth || 0);
+      }, 0);
+    }
+    if(field == "lotsize") {
+      return AllProductListExport.reduce((sum, products) => {
+        return sum + (products.subdivision && products.subdivision.lotsize || 0);
+      }, 0);
+    }
+    if(field == "price_changes_since_open") {
+      if(filter){
+        return productList.reduce((sum, products) => {
+          return sum + (products.price_changes_since_open || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.price_changes_since_open || 0);
+        }, 0);
+      }
+    }
+    if(field == "price_changes_last_12_Month") {
+      if(filter){
+        return productList.reduce((sum, products) => {
+          return sum + (products.price_changes_last_12_Month || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.price_changes_last_12_Month || 0);
+        }, 0);
+      }
+    }
+  };
+
+  const averageFields = (field) => {
+    if (field == "current_price_per_sqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
+      const sum = totalSumFields(field);
+      if(filter){
+        return sum / productList.length;
+      } else{
+        return sum / AllProductListExport.length;
+      }
+    } else {
+      const sum = totalSumFields(field);
+      return sum / AllProductListExport.length;
+    }
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "sqft":
+        setSquareFootageOption(value);
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setSquareFootageResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setSquareFootageResult(averageFields(field));
+        }
+        break;
+
+      case "stories":
+        setStoriesOption(value);
+        setSquareFootageOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setStoriesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setStoriesResult(averageFields(field));
+        }
+        break;
+
+      case "bedroom":
+        setBedRoomsOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setBedRoomsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setBedRoomsResult(averageFields(field));
+        }
+        break;
+
+      case "bathroom":
+        setBathRoomsOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setBathRoomsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setBathRoomsResult(averageFields(field));
+        }
+        break;
+
+      case "garage":
+        setGarageOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setGarageResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setGarageResult(averageFields(field));
+        }
+        break;
+
+      case "latest_base_price":
+        setCurrentBasePriceOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setCurrentBasePriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setCurrentBasePriceResult(averageFields(field));
+        }
+        break;
+
+      case "current_price_per_sqft":
+        setCurrentPricePerSQFTOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setCurrentPricePerSQFTResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setCurrentPricePerSQFTResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setPriceChangeSinceOpenOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setPriceChangeSinceOpenResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      case "price_changes_since_open":
+        setPriceChangeSinceOpenOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeLast12MonthsOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeLast12MonthsResult(0);
+
+        if (value === 'sum') {
+          setPriceChangeSinceOpenResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPriceChangeSinceOpenResult(averageFields(field));
+        }
+        break;
+
+      case "price_changes_last_12_Month":
+        setPriceChangeLast12MonthsOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedRoomsOption("");
+        setBathRoomsOption("");
+        setGarageOption("");
+        setCurrentBasePriceOption("");
+        setCurrentPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+        setPriceChangeSinceOpenOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedRoomsResult(0);
+        setBathRoomsResult(0);
+        setGarageResult(0);
+        setCurrentBasePriceResult(0);
+        setCurrentPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+        setPriceChangeSinceOpenResult(0);
+
+        if (value === 'sum') {
+          setPriceChangeLast12MonthsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPriceChangeLast12MonthsResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1307,7 +1772,7 @@ const ProductList = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => (column.id != "action" && column.id != "price Change Since Open" && column.id != "price Change Last 12 Months") ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id != "action" && column.id != "price Change Since Open" && column.id != "price Change Last 12 Months" && e.target.type !== "select-one") ? requestSort(
                                 column.id == "plan Status" ? "status" :
                                 column.id == "product Name" ? "name" :
                                 column.id == "square Footage" ? "sqft" :
@@ -1327,7 +1792,7 @@ const ProductList = () => {
                                 column.id == "__pkProductID" ? "product_code" :
                                 column.id == "_fkSubID" ? "subdivision_id" : toCamelCase(column.id)) : ""}>
                                 <strong>
-                                  {column.id == "bath Rooms" ? "Bathrooms" : column.label}
+                                  {column.id == "bath Rooms" ? "Bathrooms" : column.id == "bed Rooms" ? "Bedrooms" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "plan Status" ? "status" :
@@ -1376,11 +1841,155 @@ const ProductList = () => {
                                     (column.id != "action" && column.id != "price Change Since Open" && column.id != "price Change Last 12 Months") && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "plan Status" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" && 
+                                  column.id !== "product Website" && column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && 
+                                  column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "date Added" &&
+                                  column.id !== "__pkProductID" && column.id !== "_fkSubID" && column.id !== "action"
+                                ) && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "square Footage" ? squareFootageOption : 
+                                          column.id == "stories" ? storiesOption : 
+                                          column.id == "bed Rooms" ? bedRoomsOption : 
+                                          column.id == "bath Rooms" ? bathRoomsOption : 
+                                          column.id == "garage" ? garageOption : 
+                                          column.id == "current Base Price" ? currentBasePriceOption : 
+                                          column.id == "current Price Per SQFT" ? currentPricePerSQFTOption : 
+                                          column.id == "lot Width" ? lotWidthOption : 
+                                          column.id == "lot Size" ? lotSizeOption :
+                                          column.id == "price Change Since Open" ? priceChangeSinceOpenOption : 
+                                          column.id == "price Change Last 12 Months" ? priceChangeLast12MonthsOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "square Footage" ? handleSelectChange(e, "sqft") :
+                                          column.id == "stories" ? handleSelectChange(e, "stories") :
+                                          column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
+                                          column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e, "garage") :
+                                          column.id == "current Base Price" ? handleSelectChange(e, "latest_base_price") :
+                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "current_price_per_sqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
+                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
+                                          column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                    {column.id == "plan Status" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "product Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "square Footage" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{squareFootageResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "stories" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{storiesResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "bed Rooms" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{bedRoomsResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "bath Rooms" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{bathRoomsResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "garage" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{garageResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "current Base Price" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={currentBasePriceResult} /></td>
+                                    }
+                                    {column.id == "current Price Per SQFT" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={currentPricePerSQFTResult} /></td>
+                                    }
+                                    {column.id == "product Website" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "product Type" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "master Plan" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "zip Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "lot Width" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "lot Size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                    }
+                                    {column.id == "zoning" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "age Restricted" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "all Single Story" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "date Added" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "__pkProductID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "_fkSubID" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                    {column.id == "price Change Since Open" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{priceChangeSinceOpenResult.toFixed(1)}</td>
+                                    }
+                                    {column.id == "price Change Last 12 Months" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{priceChangeLast12MonthsResult.toFixed(1)}</td>
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    }
+                                  </>
+                              ))}
+                            </tr>
+                          }
                           {productList !== null && productList.length > 0 ? (
                             productList.map((element, index) => (
                               <tr
