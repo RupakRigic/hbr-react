@@ -20,6 +20,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import moment from 'moment';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const PermitList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -116,6 +117,17 @@ const PermitList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
+
+  const [squareFootageOption, setSquareFootageOption] = useState("");
+  const [valueOption, setValueOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+
+  const [squareFootageResult, setSquareFootageResult] = useState(0);
+  const [valueResult, setValueResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
+
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -1149,6 +1161,111 @@ const GetSubdivisionDropDownList = async () => {
     });
   };
 
+  const totalSumFields = (field) => {
+    if(field == "sqft") {
+      return AllPermitListExport.reduce((sum, permits) => {
+        return sum + (permits.sqft || 0);
+      }, 0);
+    }
+    if(field == "value") {
+      return AllPermitListExport.reduce((sum, permits) => {
+        return sum + (permits.value || 0);
+      }, 0);
+    }
+    if(field == "lotwidth") {
+      return AllPermitListExport.reduce((sum, permits) => {
+        return sum + (permits.subdivision && permits.subdivision.lotwidth || 0);
+      }, 0);
+    }
+    if(field == "lotsize") {
+      return AllPermitListExport.reduce((sum, permits) => {
+        return sum + (permits.subdivision && permits.subdivision.lotsize || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    const sum = totalSumFields(field);
+    return sum / AllPermitListExport.length;
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "sqft":
+        setSquareFootageOption(value);
+        setValueOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setValueResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setSquareFootageResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setSquareFootageResult(averageFields(field));
+        }
+        break;
+
+      case "value":
+        setValueOption(value);
+        setSquareFootageOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+  
+        setSquareFootageResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setValueResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setValueResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setSquareFootageOption("");
+        setValueOption("");
+        setLotSizeOption("");
+  
+        setSquareFootageResult(0);
+        setValueResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setSquareFootageOption("");
+        setValueOption("");
+        setLotWidthOption("");
+  
+        setSquareFootageResult(0);
+        setValueResult(0);
+        setLotWidthResult(0);
+  
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -1381,7 +1498,7 @@ const GetSubdivisionDropDownList = async () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != ("action") ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "parcel Number" ? "parcel" :
                                 column.id == "squre Footage" ? "sqft" :
                                 column.id == "address Number" ? "address2" :
@@ -1395,7 +1512,7 @@ const GetSubdivisionDropDownList = async () => {
                                 column.id == "date Added" ? "created_at" :
                                 column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id)) : ""}>
                                 <strong>
-                                  {column.label}
+                                  {column.id == "squre Footage" ? "Square Footage" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "parcel Number" ? "parcel" :
@@ -1432,11 +1549,142 @@ const GetSubdivisionDropDownList = async () => {
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address Number" && 
+                                  column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" && 
+                                  column.id !== "lot Number" && column.id !== "permit Number" && column.id !== "plan" && column.id !== "sub Legal Name" && column.id !== "product Type" &&
+                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "action"
+                                ) && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "squre Footage" ? squareFootageOption : 
+                                          column.id == "value" ? valueOption : 
+                                          column.id == "lot Width" ? lotWidthOption : 
+                                          column.id == "lot Size" ? lotSizeOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
+                                          column.id == "value" ? handleSelectChange(e, "value") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "address Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "address Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "parcel Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "contractor" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "squre Footage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{squareFootageResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "owner" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "permit Number" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "sub Legal Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "value" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{valueResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "date Added" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "__pkPermitID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>
+                          }
                           {permitList != null && permitList.length > 0 ? (
                             permitList.map((element, index) => (
                               <tr
