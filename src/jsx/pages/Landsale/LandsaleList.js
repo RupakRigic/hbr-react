@@ -21,6 +21,7 @@ import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const LandsaleList = () => {
   const HandleSortDetailClick = (e) => {
@@ -98,6 +99,15 @@ const LandsaleList = () => {
   const [sortConfig, setSortConfig] = useState([]);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(true);
+
+  const [priceOption, setPriceOption] = useState("");
+  const [pricePerOption, setPricePerOption] = useState("");
+  const [sizeOption, setSizeOption] = useState("");
+
+  const [priceResult, setPriceResult] = useState(0);
+  const [pricePerResult, setPricePerResult] = useState(0);
+  const [sizeResult, setSizeResult] = useState(0);
+
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -855,6 +865,90 @@ const LandsaleList = () => {
     }
   };
 
+  const totalSumFields = (field) => {
+    if(field == "price") {
+      return AllProductListExport.reduce((sum, landsales) => {
+        return sum + (landsales.price || 0);
+      }, 0);
+    }
+    if(field == "price_per") {
+      return AllProductListExport.reduce((sum, landsales) => {
+        return sum + (landsales.price_per || 0);
+      }, 0);
+    }
+    if(field == "size") {
+      return AllProductListExport.reduce((sum, landsales) => {
+        return sum + (parseFloat(landsales.noofunit) || 0);
+      }, 0).toFixed(2);
+    }
+  };
+
+  const averageFields = (field) => {
+    if(field == "size") {
+      const sum = totalSumFields(field);
+      return (sum / AllProductListExport.length).toFixed(2);
+    } else {
+      const sum = totalSumFields(field);
+      return sum / AllProductListExport.length;
+    }
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "price":
+        setPriceOption(value);
+        setPricePerOption("");
+        setSizeOption("");
+
+        setPricePerResult(0);
+        setSizeResult(0);
+
+        if (value === 'sum') {
+          setPriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPriceResult(averageFields(field));
+        }
+        break;
+
+      case "price_per":
+        setPricePerOption(value);
+        setPriceOption("");
+        setSizeOption("");
+  
+        setPriceResult(0);
+        setSizeResult(0);
+  
+        if (value === 'sum') {
+          setPricePerResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPricePerResult(averageFields(field));
+        }
+        break;
+
+      case "size":
+        setSizeOption(value);
+        setPriceOption("");
+        setPricePerOption("");
+  
+        setPriceResult(0);
+        setPricePerResult(0);
+  
+        if (value === 'sum') {
+          setSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setSizeResult(averageFields(field));
+        }
+        break;
+
+      
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1093,7 +1187,7 @@ const LandsaleList = () => {
                             </th>
 
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "sIZE MS" ? "typeofunit" :
                                   column.id == "sIZE" ? "noofunit" :
                                     toCamelCase(column.id)) : ""}>
@@ -1119,11 +1213,101 @@ const LandsaleList = () => {
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" && 
+                                  column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" && 
+                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code") && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "price" ? priceOption : 
+                                          column.id == "price Per" ? pricePerOption : 
+                                          column.id == "size" ? sizeOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "price" ? handleSelectChange(e, "price") :
+                                          column.id == "price Per" ? handleSelectChange(e, "price_per") :
+                                          column.id == "size" ? handleSelectChange(e, "size") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "seller" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "buyer" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "location" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "notes" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={priceResult} /></td>
+                                  }
+                                  {column.id == "date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "size MS" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{sizeResult}</td>
+                                  }
+                                  {column.id == "price Per" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={pricePerResult} /></td>
+                                  }
+                                  {column.id == "doc" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "parcel" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>
+                          }
                           {LandsaleList !== null && LandsaleList.length > 0 ? (
                             LandsaleList.map((element, index) => (
                               <tr
