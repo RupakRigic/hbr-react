@@ -12,6 +12,7 @@ import axios from "axios";
 
 const WeeklyDataIndex = () => {
   const [showModal, setShowModal] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const [builderId, setBuilderId] = useState('');
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
@@ -168,13 +169,22 @@ const WeeklyDataIndex = () => {
   };
 
   const GeneratePDF = async (e) => {
+    setPdfLoading(true);
     e.preventDefault();
+    let weekending = localStorage.getItem('enddate');
+    let builder_id = localStorage.getItem('builderId');
 
-  const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+    const reportdata = {
+      weekending: weekending,
+      builder_id: builder_id
+    };
+
+    const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${process.env.REACT_APP_IMAGE_URL}api/admin/weekly/download_pdf`,
-          {
+          reportdata, {
             responseType: "arraybuffer",
             headers: {
               Accept: "application/pdf",
@@ -190,9 +200,8 @@ const WeeklyDataIndex = () => {
       link.download = `Weekly Data Reporting.pdf`;
         
       document.body.appendChild(link);
-        
       link.click();
-        
+      setPdfLoading(false);
       document.body.removeChild(link);
     } catch (error) {
       if (error.response && error.response.data) {
@@ -238,11 +247,11 @@ const WeeklyDataIndex = () => {
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <h4 className="heading mb-0">Data Reporting List</h4>
                     <div className="d-flex">
-                      <button className="btn btn-primary btn-sm me-1"
-                        onClick={(e) => GeneratePDF(e)}
+                      <Button className="btn btn-primary btn-sm me-1"
+                        onClick={(e) => pdfLoading ? "" : GeneratePDF(e)}
                       >
-                        Generate PDF
-                      </button>
+                        {pdfLoading ? "Loading..." : "Generate PDF"}
+                      </Button>
                       <button className="btn btn-primary btn-sm me-1"
                         onClick={() => handleOpenDialog()}
                       >
