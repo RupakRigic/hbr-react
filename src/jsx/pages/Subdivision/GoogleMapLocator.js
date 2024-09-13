@@ -10,10 +10,7 @@ const containerStyle = {
   height: "800px",
 };
 
-const defaultCenter = {
-  lat: 36.201946,
-  lng: -115.120216,
-};
+
 
 const GoogleMapLocator = () => {
   const navigate = useNavigate();
@@ -38,6 +35,11 @@ const GoogleMapLocator = () => {
 
   const onLoad = (map) => {
    mapRef.current = map;
+ };
+
+ const defaultCenter = {
+   lat: parseFloat(subdivisionList[0].lat),
+   lng: parseFloat(subdivisionList[0].lng),
  };
 
   const handleShapeComplete = (shape) => {
@@ -97,7 +99,7 @@ const GoogleMapLocator = () => {
             {drawing && <Button className="btn btn-primary btn-sm me-1" title="Undo" style={{marginTop: "5px", marginLeft: "5px"}} onClick={handleUndo}><i class="fa fa-undo" aria-hidden="true"></i></Button>}
             {drawing && <Button className="btn btn-primary btn-sm me-1" title="Redo" style={{marginTop: "5px", marginLeft: "5px"}} onClick={handleRedo}><i class="fa fa-redo" aria-hidden="true"></i></Button>}
          </div>
-         <GoogleMap mapContainerStyle={containerStyle} zoom={8} onLoad={onLoad} center={defaultCenter}
+         <GoogleMap mapContainerStyle={containerStyle} zoom={subdivisionList.length < 10 ? 14 : 8} onLoad={onLoad} center={defaultCenter}
             options={{
                mapTypeId: "satellite",
             }}
