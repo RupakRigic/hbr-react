@@ -128,6 +128,14 @@ const UserList = () => {
     }
   };
 
+  useEffect((currentPage) => {
+    if (localStorage.getItem("usertoken")) {
+      getuserList(currentPage);
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
+
   useEffect(() => {
     if (Array.isArray(accessList)) {
       const initialCheckedState = {};
@@ -177,7 +185,7 @@ const UserList = () => {
   const [filterQuery, setFilterQuery] = useState({
     role: "",
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
@@ -207,6 +215,7 @@ const UserList = () => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
   const getuserList = async () => {
+    setIsLoading(true);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -218,21 +227,15 @@ const UserList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setUserCount(responseData.total);
       setIsLoading(false);
-
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
     }
+    setIsLoading(false);
   };
-  useEffect((currentPage) => {
-    if (localStorage.getItem("usertoken")) {
-      getuserList(currentPage);
-    } else {
-      navigate("/");
-    }
-  }, [currentPage]);
 
   const handleDelete = async (e) => {
     try {
@@ -896,6 +899,7 @@ const UserList = () => {
         ref={bulkproduct}
         Title="Bulk Edit Users"
         userSelectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
         parentCallback={handleCallback}
       />
       <Offcanvas
@@ -923,43 +927,67 @@ const UserList = () => {
         ) : (
         <div className="offcanvas-body">
           <div className="container-fluid">
-            <div className="row">
-              <div className="col-xl-4 mt-4">
-                <label className="">Name :</label>
-                <div className="fw-bolder">{UserDetails.name || "NA"}</div>
+              <div className="d-flex" style={{width: "100%", height: "10%"}}>
+                <div className="d-flex" style={{width: "50%"}}>
+                  <div>
+                    <label className="" style={{fontSize: "15px"}}>First Name:</label>
+                  </div>
+                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
+                    <span className="fw-bold" style={{marginLeft: "5px"}}></span>
+                  </div>
+                </div>          
+                <div className="d-flex" style={{width: "50%"}}>
+                  <div>
+                    <label className="" style={{fontSize: "15px"}}>Role:</label>
+                  </div>
+                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
+                    <span className="fw-bold" style={{marginLeft: "5px"}}>
+                      {UserDetails.roles.length > 0 ? (
+                        UserDetails.roles.map((role) => (
+                          <td key={role.id}>{role.name}</td>
+                        ))
+                      ) : (
+                        <td>Admin</td>
+                      )}
+                    </span>  
+                  </div>
+                </div>          
               </div>
-
-              <div className="col-xl-4 mt-4">
-                <label className="">Email :</label>
+              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <span className="fw-bold">{UserDetails.email || "NA"}</span>
+                  <label className="" style={{fontSize: "15px"}}>Last Name:</label>
+                </div>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
+                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
                 </div>
               </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Role :</label>
+              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <span className="fw-bold">
-                    {UserDetails.roles.length > 0 ? (
-                      UserDetails.roles.map((role) => (
-                        <td key={role.id}>{role.name}</td>
-                      ))
-                    ) : (
-                      <td>Admin</td>
-                    )}
-                  </span>
+                  <label className="" style={{marginLeft: "35px", fontSize: "15px"}}>Email:</label>
+                </div>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
+                  <span className="fw-bold" style={{marginLeft: "5px"}}>{UserDetails.email || "NA"}</span>
                 </div>
               </div>
 
-              <div className="col-xl-4 mt-4">
-                <label className="">Builder :</label>
+              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <span className="fw-bold">
-                  {UserDetails?.builder?.name ?? "NA"}
-                  </span>
+                  <label className="" style={{fontSize: "15px", marginLeft: "5px"}}>Company:</label>
+                </div>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px",backgroundColor: "#e6e6e6"}}>
+                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
                 </div>
               </div>
-            </div>
+
+              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
+                <div>
+                  <label className="" style={{fontSize: "15px", marginLeft: "30px"}}>Notes:</label>
+                </div>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", height: "250px", backgroundColor: "#e6e6e6"}}>
+                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
+                </div>
+              </div>
           </div>
         </div>)}
       </Offcanvas>

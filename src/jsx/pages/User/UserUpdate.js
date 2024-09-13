@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Form } from "react-bootstrap";
 import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
@@ -15,82 +14,90 @@ const UserUpdate = () => {
   const [UserList, SetUserList] = useState([]);
   const params = useParams();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    GetRoleList();
+    GetBuilderList();
+  }, []);
 
-  const getuserlist = async (id) => {
-    try {
-      let responseData1 = await AdminUserRoleService.show(id).json();
-      SetUserList(responseData1);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(errorJson.message);
-      }
-    }
-  };
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getuserlist(params.id);
+      GetUserList(params.id);
     } else {
       navigate("/");
     }
   }, []);
 
-  const getrolelist = async () => {
+  const GetUserList = async (id) => {
+    try {
+      let responseData1 = await AdminUserRoleService.show(id).json();
+      SetUserList(responseData1);
+      setBuilderCode(responseData1.builder_id);
+      setRoleCode(responseData1.roles[0].id);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
+  const GetRoleList = async () => {
     try {
       let responseData = await AdminUserRoleService.roles().json();
       setRoleList(responseData.data);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
-  useEffect(() => {
-    getrolelist();
-  }, []);
 
-  const getbuilderlist = async () => {
+  const GetBuilderList = async () => {
     try {
-      const response = await AdminBuilderService.index();
+      const response = await AdminBuilderService.all_builder_list();
       const responseData = await response.json();
-      setBuilderList(responseData.data);
+      setBuilderList(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
-  useEffect(() => {
-    getbuilderlist();
-  }, []);
-  const handleBuilderCode = (code) => {
 
-    setBuilderCode(code);
-};
+  const roleOptions = RoleList.map(element => ({
+    value: element.id,
+    label: element.name
+  }));
+
+  const options = BuilderList
+  .sort((a, b) => a.name.localeCompare(b.name))
+  .map(element => ({
+    value: element.id,
+    label: element.name
+  }));
+
+  const handleBuilderCode = (code) => {
+    setBuilderCode(code.value);
+  };
 
   const handleRoleCode = (code) => {
-    setRoleCode(code);
+    setRoleCode(code.value);
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
       var userData = {
-        builder_id: BuilderCode.id,
+        builder_id: BuilderCode,
         name: event.target.name.value,
         email: event.target.email.value,
-        role_id: RoleCode.id,
+        role_id: RoleCode,
       };
 
-      const data = await AdminUserRoleService.update(
-        params.id,
-        userData
-      ).json();
+      const data = await AdminUserRoleService.update(params.id,userData).json();
       if (data.status === true) {
         swal("Product Update Succesfully").then((willDelete) => {
           if (willDelete) {
@@ -101,13 +108,13 @@ const UserUpdate = () => {
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(
           errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
         );
       }
     }
   };
+
   return (
     <Fragment>
       <div className="container-fluid">
@@ -122,13 +129,7 @@ const UserUpdate = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput3"
-                          className="form-label"
-                        >
-                          {" "}
-                          Name <span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput3" className="form-label">{" "}Name <span className="text-danger">*</span></label>
                         <input
                           type="text"
                           name="name"
@@ -138,13 +139,9 @@ const UserUpdate = () => {
                           placeholder=""
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput4"
-                          className="form-label"
-                        >
-                          Email <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger"></span></label>
                         <input
                           type="email"
                           name="email"
@@ -156,32 +153,43 @@ const UserUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">
-                          Role<span className="text-danger">*</span>
-                        </label>
-                        <Form.Group controlId="tournamentList">
+                        <label className="form-label">Role<span className="text-danger">*</span></label>
                         <Select
-                            options={RoleList}
-                            onChange={handleRoleCode}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
-                            value={RoleCode}
-                          ></Select>
-                        </Form.Group>
+                          options={roleOptions}
+                          value={roleOptions.find(option => option.value === RoleCode)}
+                          onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                          placeholder="Select Role"
+                          styles={{
+                            container: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                            }),
+                          }}
+                        />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">
-                          Builder<span className="text-danger">*</span>
-                        </label>
-                        <Form.Group controlId="tournamentList">
-                          <Select
-                            options={BuilderList}
-                            onChange={handleBuilderCode}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
-                            value={BuilderCode}
-                          ></Select>
-                        </Form.Group>
+                        <label className="form-label">Builder<span className="text-danger">*</span></label>
+                        <Select
+                          options={options}
+                          value={options.find(option => option.value === BuilderCode)}
+                          onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                          placeholder="Select Builder"
+                          styles={{
+                            container: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                            }),
+                          }}
+                        />
                       </div>
                       <p className="text-danger fs-12">{Error}</p>
                     </div>

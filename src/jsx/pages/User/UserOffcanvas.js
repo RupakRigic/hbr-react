@@ -1,80 +1,78 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
-
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
+import Select from 'react-select';
+
 const UserOffcanvas = forwardRef((props, ref) => {
-
-
     const [Error, setError] = useState('');
     const [addUser, setAddUser] = useState(false);
     const [BuilderCode, setBuilderCode] = useState('');
     const [BuilderList, setBuilderList] = useState([]);
     const [RoleCode, setRoleCode] = useState('');
     const [RoleList, setRoleList] = useState([]);
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        GetRoleList();
+        GetBuilderList();
+    }, []);
 
-    const getrolelist = async () => {
+    const GetRoleList = async () => {
         try {
-
             let responseData = await AdminUserRoleService.roles().json()
             setRoleList(responseData.data)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message)
             }
         }
-    }
-    useEffect(() => {
-        getrolelist();
-    }, [])
+    };
 
-
-    const getbuilderlist = async () => {
-
+    const GetBuilderList = async () => {
         try {
-
-            let response = await AdminBuilderService.index()
+            let response = await AdminBuilderService.all_builder_list()
             let responseData = await response.json()
-
-            setBuilderList(responseData.data)
-
+            setBuilderList(responseData)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message)
             }
         }
-    }
-    useEffect(() => {
-        getbuilderlist();
-    }, [])
+    };
+
+    const roleOptions = RoleList.map(element => ({
+        value: element.id,
+        label: element.name
+    }));
+
+    const options = BuilderList
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(element => ({
+        value: element.id,
+        label: element.name
+    }));
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
-            setAddUser(true)
+            setAddUser(true);
         }
     }));
-
-    const navigate = useNavigate()
     
-    const handleBuilderCode = code => {
+    const handleBuilderCode = (code) => {
+        setBuilderCode(code.value);
+    };
 
-        setBuilderCode(code.target.value);
-    }
+    const handleRoleCode = (code) => {
+        setRoleCode(code.value);
+    };
 
-    const handleRoleCode = code => {
-
-        setRoleCode(code.target.value);
-    }
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
         try {
             var userData = {
                 "builder_id": BuilderCode,
@@ -85,29 +83,24 @@ const UserOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminUserRoleService.store(userData).json();
             if (data.status === true) {
-
                 swal("User Create Succesfully").then((willDelete) => {
                     if (willDelete) {
-                        setAddUser(false)
+                        setAddUser(false);
                         props.parentCallback();
-
                     }
                 })
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
+    };
 
-
-    }
     return (
-        <>
+        <Fragment>
             <Offcanvas show={addUser} onHide={setAddUser} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
@@ -119,7 +112,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="offcanvas-body">
                     <div className="container-fluid">
-
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
@@ -137,44 +129,41 @@ const UserOffcanvas = forwardRef((props, ref) => {
           
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Role<span className="text-danger">*</span></label>
-                                    <Form.Group controlId="tournamentList">
-
-                                        <Form.Select
-                                            onChange={handleRoleCode}
-                                            value={RoleCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Role</option>
-                                            {
-                                                RoleList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
-                                        </Form.Select>
-                                    </Form.Group>
-
+                                    <Select
+                                        options={roleOptions}
+                                        onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                                        placeholder="Select Role"
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                            }),
+                                        }}
+                                    />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Builder<span className="text-danger">*</span></label>
-                                    <Form.Group controlId="tournamentList">
-
-                                        <Form.Select
-                                            onChange={handleBuilderCode}
-                                            value={BuilderCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Builder</option>
-                                            {
-                                                BuilderList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
-                                        </Form.Select>
-                                    </Form.Group>
-
+                                    <Select
+                                        options={options}
+                                        onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                        placeholder="Select Builder"
+                                        styles={{
+                                          container: (provided) => ({
+                                              ...provided,
+                                              width: '100%',
+                                          }),
+                                          menu: (provided) => ({
+                                              ...provided,
+                                              width: '100%',
+                                          }),
+                                        }}
+                                    />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
@@ -184,7 +173,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     </div>
                 </div>
             </Offcanvas>
-        </>
+        </Fragment>
     );
 });
 
