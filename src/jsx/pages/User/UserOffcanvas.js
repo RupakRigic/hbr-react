@@ -5,6 +5,7 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
 import Select from 'react-select';
+import { MultiSelect } from 'react-multi-select-component';
 
 const UserOffcanvas = forwardRef((props, ref) => {
     const [Error, setError] = useState('');
@@ -12,7 +13,10 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [BuilderCode, setBuilderCode] = useState('');
     const [BuilderList, setBuilderList] = useState([]);
     const [RoleCode, setRoleCode] = useState('');
+    const [standardRoleCode, setStandardRoleCode] = useState([]);
+    const [RoleName, setRoleName] = useState('');
     const [RoleList, setRoleList] = useState([]);
+    const [StandardUser, setStandardUser] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +27,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const GetRoleList = async () => {
         try {
             let responseData = await AdminUserRoleService.roles().json()
-            setRoleList(responseData.data)
+            setRoleList(responseData)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
@@ -50,6 +54,11 @@ const UserOffcanvas = forwardRef((props, ref) => {
         label: element.name
     }));
 
+    const StandardUserOptions = [
+        { value: 10, label: "Account Admin" },
+        { value: 11, label: "Data Uploader" },
+    ];
+
     const options = BuilderList
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(element => ({
@@ -69,6 +78,13 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     const handleRoleCode = (code) => {
         setRoleCode(code.value);
+        setRoleName(code.label);
+    };
+
+    const handleStandardUser = (code) => {
+        const selectedValues = code.map(item => item.value);
+        setStandardRoleCode(selectedValues);
+        setStandardUser(code);
     };
 
     const handleSubmit = async (event) => {
@@ -76,9 +92,12 @@ const UserOffcanvas = forwardRef((props, ref) => {
         try {
             var userData = {
                 "builder_id": BuilderCode,
-                "role_id": RoleCode,
-                "name": event.target.name.value,
+                "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                "name": event.target.firstname.value,
+                "last_name": event.target.lastname.value,
                 "email": event.target.email.value,
+                "notes": event.target.notes.value,
+                "company": event.target.company.value,
                 "password": event.target.password.value
             }
             const data = await AdminUserRoleService.store(userData).json();
@@ -115,8 +134,12 @@ const UserOffcanvas = forwardRef((props, ref) => {
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Name <span className="text-danger">*</span></label>
-                                    <input type="text" name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
+                                    <label htmlFor="exampleFormControlInput2" className="form-label"> First Name <span className="text-danger">*</span></label>
+                                    <input type="text" name='firstname' className="form-control" id="exampleFormControlInput2" placeholder="" />
+                                </div>
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Last Name <span className="text-danger">*</span></label>
+                                    <input type="text" name='lastname' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger"></span></label>
@@ -126,25 +149,15 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput5" className="form-label"> Password <span className="text-danger">*</span></label>
                                     <input type="password" name='password' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
-          
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Role<span className="text-danger">*</span></label>
-                                    <Select
-                                        options={roleOptions}
-                                        onChange={(selectedOption) => handleRoleCode(selectedOption)}
-                                        placeholder="Select Role"
-                                        styles={{
-                                            container: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                            }),
-                                            menu: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                            }),
-                                        }}
-                                    />
+                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Notes <span className="text-danger">*</span></label>
+                                    <input type="text" name='notes' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Company <span className="text-danger">*</span></label>
+                                    <input type="text" name='company' className="form-control" id="exampleFormControlInput7" placeholder="" />
+                                </div>
+          
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Builder<span className="text-danger">*</span></label>
                                     <Select
@@ -155,14 +168,59 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                           container: (provided) => ({
                                               ...provided,
                                               width: '100%',
+                                              color: 'black'
                                           }),
                                           menu: (provided) => ({
                                               ...provided,
                                               width: '100%',
+                                              color: 'black'
                                           }),
                                         }}
                                     />
                                 </div>
+
+                                <div className="col-xl-6 mb-3">
+                                    <label className="form-label">Role<span className="text-danger">*</span></label>
+                                    <Select
+                                        options={roleOptions}
+                                        onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                                        placeholder="Select Role"
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
+                                    />
+                                </div>
+
+                                {(RoleName == "Standard User" && RoleCode == 9) && <div className="col-xl-6 mb-3">
+                                    <label className="form-label">Standard User<span className="text-danger">*</span></label>
+                                    <MultiSelect
+                                        options={StandardUserOptions}
+                                        onChange={(selectedOption) => handleStandardUser(selectedOption)}
+                                        value={StandardUser}
+                                        placeholder="Select Role"
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
+                                    />
+                                </div>}
                                 <p className='text-danger fs-12'>{Error}</p>
                             </div>
                             <div>

@@ -4,14 +4,20 @@ import Select from "react-select";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
+import { MultiSelect } from 'react-multi-select-component';
+import ClipLoader from "react-spinners/ClipLoader";
 
 const UserUpdate = () => {
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState("");
+  const [standardRoleCode, setStandardRoleCode] = useState([]);
+  const [RoleName, setRoleName] = useState('');
   const [RoleList, setRoleList] = useState([]);
   const [UserList, SetUserList] = useState([]);
+  const [StandardUser, setStandardUser] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
   
@@ -29,12 +35,15 @@ const UserUpdate = () => {
   }, []);
 
   const GetUserList = async (id) => {
+    setIsLoading(true);
     try {
       let responseData1 = await AdminUserRoleService.show(id).json();
+      setIsLoading(false);
       SetUserList(responseData1);
       setBuilderCode(responseData1.builder_id);
       setRoleCode(responseData1.roles[0].id);
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -45,7 +54,7 @@ const UserUpdate = () => {
   const GetRoleList = async () => {
     try {
       let responseData = await AdminUserRoleService.roles().json();
-      setRoleList(responseData.data);
+      setRoleList(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -72,6 +81,11 @@ const UserUpdate = () => {
     label: element.name
   }));
 
+  const StandardUserOptions = [
+    { value: 10, label: "Account Admin" },
+    { value: 11, label: "Data Uploader" },
+  ];
+
   const options = BuilderList
   .sort((a, b) => a.name.localeCompare(b.name))
   .map(element => ({
@@ -85,6 +99,13 @@ const UserUpdate = () => {
 
   const handleRoleCode = (code) => {
     setRoleCode(code.value);
+    setRoleName(code.label);
+  };
+
+  const handleStandardUser = (code) => {
+    const selectedValues = code.map(item => item.value);
+    setStandardRoleCode(selectedValues);
+    setStandardUser(code);
   };
 
   const handleSubmit = async (event) => {
@@ -92,9 +113,12 @@ const UserUpdate = () => {
     try {
       var userData = {
         builder_id: BuilderCode,
-        name: event.target.name.value,
+        role_id: RoleCode == 9 ? standardRoleCode : RoleCode,
+        name: event.target.firstname.value,
+        last_name: event.target.lastname.value,
         email: event.target.email.value,
-        role_id: RoleCode,
+        notes: event.target.notes.value,
+        company: event.target.company.value
       };
 
       const data = await AdminUserRoleService.update(params.id,userData).json();
@@ -124,16 +148,33 @@ const UserUpdate = () => {
               <div className="card-header">
                 <h4 className="card-title">Edit User</h4>
               </div>
+              {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "20%"}}>
+                  <ClipLoader color="#4474fc" />
+                </div>
+              ) : (
               <div className="card-body">
                 <div className="form-validation">
                   <form onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput3" className="form-label">{" "}Name <span className="text-danger">*</span></label>
+                        <label htmlFor="exampleFormControlInput2" className="form-label">{" "}First Name <span className="text-danger">*</span></label>
                         <input
                           type="text"
-                          name="name"
+                          name="firstname"
                           defaultValue={UserList.name}
+                          className="form-control"
+                          id="exampleFormControlInput2"
+                          placeholder=""
+                        />
+                      </div>
+
+                      <div className="col-xl-6 mb-3">
+                        <label htmlFor="exampleFormControlInput3" className="form-label">{" "}Last Name <span className="text-danger">*</span></label>
+                        <input
+                          type="text"
+                          name="lastname"
+                          defaultValue={UserList.last_name}
                           className="form-control"
                           id="exampleFormControlInput3"
                           placeholder=""
@@ -153,22 +194,26 @@ const UserUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">Role<span className="text-danger">*</span></label>
-                        <Select
-                          options={roleOptions}
-                          value={roleOptions.find(option => option.value === RoleCode)}
-                          onChange={(selectedOption) => handleRoleCode(selectedOption)}
-                          placeholder="Select Role"
-                          styles={{
-                            container: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                            }),
-                          }}
+                        <label htmlFor="exampleFormControlInput5" className="form-label">Notes <span className="text-danger"></span></label>
+                        <input
+                          type="text"
+                          name="notes"
+                          defaultValue={UserList.notes}
+                          className="form-control"
+                          id="exampleFormControlInput5"
+                          placeholder=""
+                        />
+                      </div>
+
+                      <div className="col-xl-6 mb-3">
+                        <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger"></span></label>
+                        <input
+                          type="text"
+                          name="company"
+                          defaultValue={UserList.notes}
+                          className="form-control"
+                          id="exampleFormControlInput6"
+                          placeholder=""
                         />
                       </div>
 
@@ -183,14 +228,61 @@ const UserUpdate = () => {
                             container: (provided) => ({
                               ...provided,
                               width: '100%',
+                              color: 'black'
                             }),
                             menu: (provided) => ({
                               ...provided,
                               width: '100%',
+                              color: 'black'
                             }),
                           }}
                         />
                       </div>
+
+                      <div className="col-xl-6 mb-3">
+                        <label className="form-label">Role<span className="text-danger">*</span></label>
+                        <Select
+                          options={roleOptions}
+                          value={roleOptions.find(option => option.value === RoleCode)}
+                          onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                          placeholder="Select Role"
+                          styles={{
+                            container: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                              color: 'black'
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                              color: 'black'
+                            }),
+                          }}
+                        />
+                      </div>
+
+                      {(RoleName == "Standard User" && RoleCode == 9) && <div className="col-xl-6 mb-3">
+                        <label className="form-label">Standard User<span className="text-danger">*</span></label>
+                        <MultiSelect
+                          options={StandardUserOptions}
+                          onChange={(selectedOption) => handleStandardUser(selectedOption)}
+                          value={StandardUser}
+                          placeholder="Select Role"
+                          styles={{
+                            container: (provided) => ({
+                               ...provided,
+                               width: '100%',
+                               color: 'black'
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              width: '100%',
+                              color: 'black'
+                            }),
+                          }}
+                        />
+                      </div>}
+                      
                       <p className="text-danger fs-12">{Error}</p>
                     </div>
                     <div>
@@ -203,7 +295,7 @@ const UserUpdate = () => {
                     </div>
                   </form>
                 </div>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>

@@ -930,18 +930,18 @@ const UserList = () => {
               <div className="d-flex" style={{width: "100%", height: "10%"}}>
                 <div className="d-flex" style={{width: "50%"}}>
                   <div>
-                    <label className="" style={{fontSize: "15px"}}>First Name:</label>
+                    <label className="fw-bold" style={{fontSize: "15px"}}>First Name:</label>
                   </div>
-                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
-                    <span className="fw-bold" style={{marginLeft: "5px"}}></span>
+                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
+                    <span style={{marginLeft: "5px"}}>{UserDetails.name || "NA"}</span>
                   </div>
                 </div>          
                 <div className="d-flex" style={{width: "50%"}}>
                   <div>
-                    <label className="" style={{fontSize: "15px"}}>Role:</label>
+                    <label className="fw-bold" style={{fontSize: "15px"}}>Role:</label>
                   </div>
-                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
-                    <span className="fw-bold" style={{marginLeft: "5px"}}>
+                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
+                    <span style={{marginLeft: "5px"}}>
                       {UserDetails.roles.length > 0 ? (
                         UserDetails.roles.map((role) => (
                           <td key={role.id}>{role.name}</td>
@@ -955,37 +955,37 @@ const UserList = () => {
               </div>
               <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <label className="" style={{fontSize: "15px"}}>Last Name:</label>
+                  <label className="fw-bold" style={{fontSize: "15px"}}>Last Name:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
-                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
-                </div>
-              </div>
-
-              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
-                <div>
-                  <label className="" style={{marginLeft: "35px", fontSize: "15px"}}>Email:</label>
-                </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", backgroundColor: "#e6e6e6"}}>
-                  <span className="fw-bold" style={{marginLeft: "5px"}}>{UserDetails.email || "NA"}</span>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
+                  <span style={{marginLeft: "5px"}}>{UserDetails.last_name || "NA"}</span>
                 </div>
               </div>
 
               <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <label className="" style={{fontSize: "15px", marginLeft: "5px"}}>Company:</label>
+                  <label className="fw-bold" style={{marginLeft: "35px", fontSize: "15px"}}>Email:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px",backgroundColor: "#e6e6e6"}}>
-                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
+                  <span style={{marginLeft: "5px"}}>{UserDetails.email || "NA"}</span>
                 </div>
               </div>
 
               <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
                 <div>
-                  <label className="" style={{fontSize: "15px", marginLeft: "30px"}}>Notes:</label>
+                  <label className="fw-bold" style={{fontSize: "15px", marginLeft: "5px"}}>Company:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", border: "1px solid #cecece", width: "250px", height: "250px", backgroundColor: "#e6e6e6"}}>
-                  <span className="fw-bold" style={{marginLeft: "5px"}}></span>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
+                  <span style={{marginLeft: "5px"}}>{UserDetails.company || "NA"}</span>
+                </div>
+              </div>
+
+              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
+                <div>
+                  <label className="fw-bold" style={{fontSize: "15px", marginLeft: "30px"}}>Notes:</label>
+                </div>
+                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px", height: "250px"}}>
+                  <span style={{marginLeft: "5px"}}>{UserDetails.notes || "NA"}</span>
                 </div>
               </div>
           </div>
