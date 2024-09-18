@@ -12,7 +12,9 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [addUser, setAddUser] = useState(false);
     const [BuilderCode, setBuilderCode] = useState('');
     const [BuilderList, setBuilderList] = useState([]);
-    const [RoleCode, setRoleCode] = useState('');
+    const [RoleCode, setRoleCode] = useState([]);
+    console.log("RoleCode",RoleCode);
+    
     const [standardRoleCode, setStandardRoleCode] = useState([]);
     const [RoleList, setRoleList] = useState([]);
     const [subRoleList, setSubRoleList] = useState([]);
@@ -78,7 +80,12 @@ const UserOffcanvas = forwardRef((props, ref) => {
     };
 
     const handleRoleCode = (code) => {
-        setRoleCode(code.value);
+        const formattedRoles = [{
+            value: code.value,
+            label: code.label
+        }];
+        const selectedValues = formattedRoles.map(item => item.value);
+        setRoleCode(selectedValues);
     };
 
     const handleStandardUser = (code) => {
@@ -105,7 +112,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 swal("User Create Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddUser(false);
-                        setRoleCode();
+                        setRoleCode([]);
                         setStandardUser([]);
                         props.parentCallback();
                     }

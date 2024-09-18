@@ -12,7 +12,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
-  const [RoleCode, setRoleCode] = useState("");
+  const [RoleCode, setRoleCode] = useState([]);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
   const [subRoleList, setSubRoleList] = useState([]);
@@ -78,7 +78,12 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   };
 
   const handleRoleCode = (code) => {
-    setRoleCode(code.value);
+    const formattedRoles = [{
+      value: code.value,
+      label: code.label
+    }];
+    const selectedValues = formattedRoles.map(item => item.value);
+    setRoleCode(selectedValues);
   };
 
   const handleStandardUser = (code) => {

@@ -826,12 +826,21 @@ const UserList = () => {
                                   {column.id == "name" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
                                   }
+                                  {column.id == "last Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.last_name}</td>
+                                  }
                                   {column.id == "email" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.email}</td>
                                   }
                                   {column.id == "role" &&
                                   // <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length == 2 ? element.roles[0].name +" & "+ element.roles[1].name : element.roles.length == 1 ? element.roles[0].name : "Admin"}</td>
+                                  }
+                                  {column.id == "company" && 
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.company}</td>
+                                  }
+                                  {column.id == "notes" && 
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.company}</td>
                                   }
                                   {column.id == "builder" && 
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder.name : "NA"}</td>
