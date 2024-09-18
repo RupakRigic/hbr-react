@@ -21,6 +21,7 @@ import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import moment from 'moment';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const PriceList = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -303,6 +304,26 @@ const PriceList = () => {
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);
   const number = [...Array(npage + 1).keys()].slice(1);
+
+  const [squareFootageOption, setSquareFootageOption] = useState("");
+  const [storiesOption, setStoriesOption] = useState("");
+  const [bedroomsOption, setBedroomsOption] = useState("");
+  const [bathroomOption, setBathroomOption] = useState("");
+  const [garageOption, setGarageOption] = useState("");
+  const [basePriceOption, setBasePriceOption] = useState("");
+  const [pricePerSQFTOption, setPricePerSQFTOption] = useState("");
+  const [lotWidthOption, setLotWidthOption] = useState("");
+  const [lotSizeOption, setLotSizeOption] = useState("");
+
+  const [squareFootageResult, setSquareFootageResult] = useState(0);
+  const [storiesResult, setStoriesResult] = useState(0);
+  const [bedroomsResult, setBedroomsResult] = useState(0);
+  const [bathroomResult, setBathroomResult] = useState(0);
+  const [garageResult, setGarageResult] = useState(0);
+  const [basePriceResult, setBasePriceResult] = useState(0);
+  const [pricePerSQFTResult, setPricePerSQFTResult] = useState(0);
+  const [lotWidthResult, setLotWidthResult] = useState(0);
+  const [lotSizeResult, setLotSizeResult] = useState(0);
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -1225,6 +1246,326 @@ useEffect(() => {
     setNormalFilter(true);
   };
 
+  const totalSumFields = (field) => {
+    if(field == "sqft") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.sqft || 0);
+      }, 0);
+    }
+    if(field == "stories") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.stories || 0);
+      }, 0);
+    }
+    if(field == "bedroom") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.bedroom || 0);
+      }, 0);
+    }
+    if(field == "bathroom") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.bathroom || 0);
+      }, 0);
+    }
+    if(field == "garage") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.garage || 0);
+      }, 0);
+    }
+    if(field == "baseprice") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.baseprice || 0);
+      }, 0);
+    }
+    if(field == "price_per_sqft") {
+      if(filter){
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.price_per_sqft || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.price_per_sqft || 0);
+        }, 0);
+      }
+    }
+    if(field == "lotwidth") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.subdivision.lotwidth || 0);
+      }, 0);
+    }
+    if(field == "lotsize") {
+      return AllProductListExport.reduce((sum, prices) => {
+        return sum + (prices.product && prices.product.subdivision.lotsize || 0);
+      }, 0);
+    }
+  };
+
+  const averageFields = (field) => {
+    if (field == "price_per_sqft") {
+      const sum = totalSumFields(field);
+      if(filter){
+        return sum / priceList.length;
+      } else{
+        return sum / AllProductListExport.length;
+      }
+    } else {
+      const sum = totalSumFields(field);
+      return sum / AllProductListExport.length;
+    }
+  };
+
+  const handleSelectChange = (e, field) => {
+    const value = e.target.value;
+
+    switch (field) {
+      case "sqft":
+        setSquareFootageOption(value);
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setSquareFootageResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setSquareFootageResult(averageFields(field));
+        }
+        break;
+
+      case "stories":
+        setStoriesOption(value);
+        setSquareFootageOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setStoriesResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setStoriesResult(averageFields(field));
+        }
+        break;
+
+      case "bedroom":
+        setBedroomsOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setBedroomsResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setBedroomsResult(averageFields(field));
+        }
+        break;
+
+      case "bathroom":
+        setBathroomOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setBathroomResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setBathroomResult(averageFields(field));
+        }
+        break;
+
+      case "garage":
+        setGarageOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setGarageResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setGarageResult(averageFields(field));
+        }
+        break;
+
+      case "baseprice":
+        setBasePriceOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setBasePriceResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setBasePriceResult(averageFields(field));
+        }
+        break;
+
+      case "price_per_sqft":
+        setPricePerSQFTOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setLotWidthOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setLotWidthResult(0);
+        setLotSizeResult(0);
+
+        if (value === 'sum') {
+          setPricePerSQFTResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setPricePerSQFTResult(averageFields(field));
+        }
+        break;
+
+      case "lotwidth":
+        setLotWidthOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotSizeOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotSizeResult(0);
+  
+        if (value === 'sum') {
+          setLotWidthResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotWidthResult(averageFields(field));
+        }
+        break;
+
+      case "lotsize":
+        setLotSizeOption(value);
+        setSquareFootageOption("");
+        setStoriesOption("");
+        setBedroomsOption("");
+        setBathroomOption("");
+        setGarageOption("");
+        setBasePriceOption("");
+        setPricePerSQFTOption("");
+        setLotWidthOption("");
+
+        setSquareFootageResult(0);
+        setStoriesResult(0);
+        setBedroomsResult(0);
+        setBathroomResult(0);
+        setGarageResult(0);
+        setBasePriceResult(0);
+        setPricePerSQFTResult(0);
+        setLotWidthResult(0);
+  
+        if (value === 'sum') {
+          setLotSizeResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setLotSizeResult(averageFields(field));
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -1461,7 +1802,7 @@ useEffect(() => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
                                 column.id == "date" ? "created_at" :
                                 column.id == "squre Footage" ? "sqft" :
                                 column.id == "bedrooms" ? "bedroom" :
@@ -1503,11 +1844,138 @@ useEffect(() => {
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
+
+                                {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" && 
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && 
+                                  column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "__pkPriceID" && column.id !== "_fkProductID" && column.id !== "action" 
+                                ) && 
+                                  (
+                                    <>
+                                    <br />
+                                      <select className="custom-select" 
+                                        value={
+                                          column.id == "squre Footage" ? squareFootageOption : 
+                                          column.id == "stories" ? storiesOption : 
+                                          column.id == "bedrooms" ? bedroomsOption : 
+                                          column.id == "bathroom" ? bathroomOption : 
+                                          column.id == "garage" ? garageOption : 
+                                          column.id == "base Price" ? basePriceOption : 
+                                          column.id == "price Per SQFT" ? pricePerSQFTOption : 
+                                          column.id == "lot Width" ? lotWidthOption : 
+                                          column.id == "lot Size" ? lotSizeOption : ""
+                                        }
+                                        
+                                        style={{ 
+                                          cursor: "pointer", 
+                                          marginLeft: '0px', 
+                                          fontSize: "8px", 
+                                          padding: " 0 5px 0", 
+                                          height: "15px", 
+                                          color: "white",
+                                          appearance: "auto" 
+                                        }}
+                                        
+                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
+                                          column.id == "stories" ? handleSelectChange(e, "stories") :
+                                          column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
+                                          column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e, "garage") :
+                                          column.id == "base Price" ? handleSelectChange(e, "baseprice") :
+                                          column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                      >
+                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
+                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                      </select>
+                                      <br />
+                                    </>
+                                  )}
                               </th>
                             ))}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
+                          {!excelLoading &&
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              {columns.map((column) => (
+                                <>
+                                  {column.id == "date" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "builder Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "product Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "squre Footage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{squareFootageResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "stories" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{storiesResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "bedrooms" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{bedroomsResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "bathroom" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{bathroomResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "garage" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{garageResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "base Price" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={basePriceResult} /></td>
+                                  }
+                                  {column.id == "price Per SQFT" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={pricePerSQFTResult} /></td>
+                                  }
+                                  {column.id == "product Type" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "master Plan" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "zip Code" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "lot Width" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "lot Size" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "zoning" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "age Restricted" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "all Single Story" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "__pkPriceID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "_fkProductID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                </>
+                              ))}
+                            </tr>
+                          }
                           {priceList !== null && priceList.length > 0 ? (
                             priceList.map((element, index) => (
                               <tr

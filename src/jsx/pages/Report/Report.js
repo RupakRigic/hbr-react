@@ -1039,10 +1039,12 @@ const BuilderTable = () => {
                                     container: (provided) => ({
                                         ...provided,
                                         width: '100%',
+                                        color: 'black'
                                     }),
                                     menu: (provided) => ({
                                         ...provided,
                                         width: '180px',
+                                        color: 'black'
                                     }),
                                 }}
                                 />
@@ -1051,12 +1053,12 @@ const BuilderTable = () => {
                               {reportType === "LV Quartley Traffic and Sales Summary" && (
                                 <div className="d-flex align-items-center">
                                   <div className="me-2 mb-2" style={{width: "100px"}}>
-                                    <select id="yearSelect" className="form-select" style={{backgroundColor: "white", height: "35px"}} onChange={(e) => setSelectYear(e.target.value)}>
+                                    <select id="yearSelect" className="form-select" style={{backgroundColor: "white", height: "35px", color: "black"}} onChange={(e) => setSelectYear(e.target.value)}>
                                       <option value="">Select Year</option>
                                       {Array.from({ length: 15 }, (_, i) => {
                                         const year = new Date().getFullYear() - i;
                                         return (
-                                          <option key={year} value={year} style={{width: "0px"}}>
+                                          <option key={year} value={year} style={{width: "0px", color: "black"}}>
                                             {year}
                                           </option>
                                         );
@@ -1064,7 +1066,7 @@ const BuilderTable = () => {
                                     </select>
                                   </div>
                                   <div className="mb-2" style={{width: "150px", marginLeft: "10px"}}>
-                                    <select id="quarterSelect" className="form-select" style={{backgroundColor: "white", height: "35px"}} onChange={(e) => setSelectQuarter(e.target.value)}>
+                                    <select id="quarterSelect" className="form-select" style={{backgroundColor: "white", height: "35px", color: "black"}} onChange={(e) => setSelectQuarter(e.target.value)}>
                                       <option value="">Select Quarter</option>
                                       <option value="Q1">Q1 - Jan to Mar</option>
                                       <option value="Q2">Q2 - Apr to Jun</option>
@@ -1086,10 +1088,12 @@ const BuilderTable = () => {
                                       container: (provided) => ({
                                           ...provided,
                                           width: '100%',
+                                          color: 'black'
                                       }),
                                       menu: (provided) => ({
                                           ...provided,
                                           width: '100%',
+                                          color: 'black'
                                       }),
                                     }}
                                   />
@@ -1104,10 +1108,12 @@ const BuilderTable = () => {
                                       container: (provided) => ({
                                           ...provided,
                                           width: '100%',
+                                          color: 'black'
                                       }),
                                       menu: (provided) => ({
                                           ...provided,
                                           width: '100%',
+                                          color: 'black'
                                       }),
                                     }}
                                   />
