@@ -144,19 +144,19 @@ const UserOffcanvas = forwardRef((props, ref) => {
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> First Name <span className="text-danger">*</span></label>
-                                    <input type="text" name='firstname' className="form-control" id="exampleFormControlInput2" placeholder="" />
+                                    <input type="text" name='firstname' required className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Last Name <span className="text-danger">*</span></label>
-                                    <input type="text" name='lastname' className="form-control" id="exampleFormControlInput3" placeholder="" />
+                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Last Name</label>
+                                    <input type="text" name='lastname' required className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger"></span></label>
-                                    <input type="email" name='email' className="form-control" id="exampleFormControlInput4" placeholder="" />
+                                    <input type="email" name='email' required className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label"> Password <span className="text-danger">*</span></label>
-                                    <input type="password" name='password' className="form-control" id="exampleFormControlInput5" placeholder="" />
+                                    <input type="password" name='password' required className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label"> Notes <span className="text-danger">*</span></label>
@@ -173,6 +173,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         options={options}
                                         onChange={(selectedOption) => handleBuilderCode(selectedOption)}
                                         placeholder="Select Builder"
+                                        required
                                         styles={{
                                           container: (provided) => ({
                                               ...provided,
@@ -194,6 +195,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         options={roleOptions}
                                         onChange={(selectedOption) => handleRoleCode(selectedOption)}
                                         placeholder="Select Role"
+                                        required
                                         styles={{
                                             container: (provided) => ({
                                                 ...provided,
@@ -216,6 +218,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         onChange={(selectedOption) => handleStandardUser(selectedOption)}
                                         value={StandardUser}
                                         placeholder="Select Role"
+                                        required
                                         styles={{
                                             container: (provided) => ({
                                                 ...provided,
