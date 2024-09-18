@@ -13,8 +13,8 @@ const UserUpdate = () => {
   const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState("");
   const [standardRoleCode, setStandardRoleCode] = useState([]);
-  const [RoleName, setRoleName] = useState('');
   const [RoleList, setRoleList] = useState([]);
+  const [subRoleList, setSubRoleList] = useState([]);
   const [UserList, SetUserList] = useState([]);
   const [StandardUser, setStandardUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,20 @@ const UserUpdate = () => {
       setIsLoading(false);
       SetUserList(responseData1);
       setBuilderCode(responseData1.builder_id);
-      setRoleCode(responseData1.roles[0].id);
+
+      let roleIds = responseData1.roles.map(role => role.id);
+
+      if (roleIds.includes(10) || roleIds.includes(11)) {
+        const StandardUserOptions = responseData1.roles.map(role => ({
+          value: role.id,
+          label: role.name
+        }));
+        setRoleCode(9);
+        setStandardRoleCode(responseData1.roles.map(role => role.id));
+        setStandardUser(StandardUserOptions);
+      } else {
+        setRoleCode(responseData1.roles[0].id);
+      }
     } catch (error) {
       setIsLoading(false);
       if (error.name === "HTTPError") {
@@ -54,7 +67,8 @@ const UserUpdate = () => {
   const GetRoleList = async () => {
     try {
       let responseData = await AdminUserRoleService.roles().json();
-      setRoleList(responseData);
+      setRoleList(responseData.main_role);
+      setSubRoleList(responseData.sub_role);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -81,10 +95,10 @@ const UserUpdate = () => {
     label: element.name
   }));
 
-  const StandardUserOptions = [
-    { value: 10, label: "Account Admin" },
-    { value: 11, label: "Data Uploader" },
-  ];
+  const StandardUserOptions = subRoleList.map(element => ({
+    value: element.id,
+    label: element.name
+  }));
 
   const options = BuilderList
   .sort((a, b) => a.name.localeCompare(b.name))
@@ -99,7 +113,6 @@ const UserUpdate = () => {
 
   const handleRoleCode = (code) => {
     setRoleCode(code.value);
-    setRoleName(code.label);
   };
 
   const handleStandardUser = (code) => {
@@ -123,7 +136,7 @@ const UserUpdate = () => {
 
       const data = await AdminUserRoleService.update(params.id,userData).json();
       if (data.status === true) {
-        swal("Product Update Succesfully").then((willDelete) => {
+        swal("User Update Succesfully").then((willDelete) => {
           if (willDelete) {
             navigate("/userlist");
           }
@@ -210,7 +223,7 @@ const UserUpdate = () => {
                         <input
                           type="text"
                           name="company"
-                          defaultValue={UserList.notes}
+                          defaultValue={UserList.company}
                           className="form-control"
                           id="exampleFormControlInput6"
                           placeholder=""
@@ -261,7 +274,7 @@ const UserUpdate = () => {
                         />
                       </div>
 
-                      {(RoleName == "Standard User" && RoleCode == 9) && <div className="col-xl-6 mb-3">
+                      {RoleCode == 9 && <div className="col-xl-6 mb-3">
                         <label className="form-label">Standard User<span className="text-danger">*</span></label>
                         <MultiSelect
                           options={StandardUserOptions}

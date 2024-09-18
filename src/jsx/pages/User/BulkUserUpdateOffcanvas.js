@@ -14,8 +14,8 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState("");
   const [standardRoleCode, setStandardRoleCode] = useState([]);
-  const [RoleName, setRoleName] = useState('');
   const [RoleList, setRoleList] = useState([]);
+  const [subRoleList, setSubRoleList] = useState([]);
   const [StandardUser, setStandardUser] = useState([]);
   const [addUser, setAddUser] = useState(false);
 
@@ -27,7 +27,8 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const GetRoleList = async () => {
     try {
       let responseData = await AdminUserRoleService.roles().json();
-      setRoleList(responseData);
+      setRoleList(responseData.main_role);
+      setSubRoleList(responseData.sub_role);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -54,10 +55,10 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     label: element.name
   }));
 
-  const StandardUserOptions = [
-    { value: 10, label: "Account Admin" },
-    { value: 11, label: "Data Uploader" },
-  ];
+  const StandardUserOptions = subRoleList.map(element => ({
+    value: element.id,
+    label: element.name
+  }));
 
   const options = BuilderList
   .sort((a, b) => a.name.localeCompare(b.name))
@@ -78,7 +79,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
 
   const handleRoleCode = (code) => {
     setRoleCode(code.value);
-    setRoleName(code.label);
   };
 
   const handleStandardUser = (code) => {
@@ -118,6 +118,8 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             swal("User Update Succesfully").then((willDelete) => {
               if (willDelete) {
                 setAddUser(false);
+                setRoleCode();
+                setStandardUser([]);
                 props.parentCallback();
                 props.setSelectedUsers([]);
               }
@@ -141,7 +143,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddUser(false); setRoleCode(""); setBuilderCode(""); setError('') }}
+            onClick={() => { setAddUser(false); setRoleCode(); setBuilderCode(""); setError(''); setStandardUser([]); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -243,7 +245,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   />
                 </div>
 
-                {(RoleName == "Standard User" && RoleCode == 9) && <div className="col-xl-6 mb-3">
+                {RoleCode == 9 && <div className="col-xl-6 mb-3">
                   <label className="form-label">Standard User<span className="text-danger">*</span></label>
                   <MultiSelect
                     options={StandardUserOptions}
@@ -271,7 +273,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                 <button type="submit" className="btn btn-primary me-1">
                   Submit
                 </button>
-                <Link to={"#"} onClick={() => { setAddUser(false); setError('') }} className="btn btn-danger light ms-1">
+                <Link to={"#"} onClick={() => { setAddUser(false); setError(''); setRoleCode(); setStandardUser([]); }} className="btn btn-danger light ms-1">
                   Cancel
                 </Link>
               </div>

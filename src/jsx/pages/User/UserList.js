@@ -830,7 +830,8 @@ const UserList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.email}</td>
                                   }
                                   {column.id == "role" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
+                                  // <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length == 2 ? element.roles[0].name +" & "+ element.roles[1].name : element.roles.length == 1 ? element.roles[0].name : "Admin"}</td>
                                   }
                                   {column.id == "builder" && 
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder.name : "NA"}</td>
@@ -844,8 +845,8 @@ const UserList = () => {
                                         >
                                           <i className="fas fa-pencil-alt"></i>
                                         </Link>
-                                        {element.roles.length > 0
-                                          ? element.roles.map((role) => (
+                                        {/* {element.roles.length > 0
+                                          ? element.roles.map((role) => ( */}
                                             <Link
                                               onClick={() =>
                                                 swal({
@@ -863,8 +864,8 @@ const UserList = () => {
                                             >
                                               <i className="fa fa-trash"></i>
                                             </Link>
-                                          ))
-                                          : ""}
+                                          {/* ))
+                                          : ""} */}
                                       </div>
                                     </td>
                                   }
