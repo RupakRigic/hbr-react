@@ -232,7 +232,6 @@ const SubdivisionList = () => {
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
-  const [seletctedZipcode, setSelectedZipcode] = useState([]);
   const [seletctedGasProvider, setSelectedGasProvider] = useState([]);
 
   // Generate Report
@@ -810,10 +809,6 @@ const SubdivisionList = () => {
         const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
         handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("seletctedZipcodeByFilter")) {
-        const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
-        handleSelectZipcodeChange(seletctedZipcode);
-    }
     if(localStorage.getItem("selectedAgeByFilter")) {
         const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
         handleSelectAgeChange(selectedAge);
@@ -1001,7 +996,6 @@ const SubdivisionList = () => {
     localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
     localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
     localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-    localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
     localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
     localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
     localStorage.setItem("selectedGatedByFilter", JSON.stringify(selectedGated));
@@ -1098,7 +1092,6 @@ const SubdivisionList = () => {
     setProductTypeStatus([]);
     setSelectedArea([]);
     setSelectedMasterPlan([]);
-    setSelectedZipcode([]);
     setSelectedAge([]);
     setSelectedSingle([]);
     setSelectedGated([]);
@@ -1112,7 +1105,6 @@ const SubdivisionList = () => {
     localStorage.removeItem("productTypeStatusByFilter");
     localStorage.removeItem("selectedAreaByFilter");
     localStorage.removeItem("selectedMasterPlanByFilter");
-    localStorage.removeItem("seletctedZipcodeByFilter");
     localStorage.removeItem("selectedAgeByFilter");
     localStorage.removeItem("selectedSingleByFilter");
     localStorage.removeItem("selectedGatedByFilter");
@@ -4552,16 +4544,6 @@ const SubdivisionList = () => {
     { value: "89086", label: "89086" },
   ];
 
-  const handleSelectZipcodeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value).join(', ');
-    setSelectedZipcode(selectedItems);
-    setFilterQuery(prevState => ({
-      ...prevState,
-      zipcode: selectedValues
-    }));
-    setNormalFilter(true);
-  };
-
   const gasProviderOption = [
     { value: "SOUTHWEST GAS", label: "SOUTHWEST GAS" },
   ];
@@ -6611,12 +6593,17 @@ const SubdivisionList = () => {
                       ZIP CODE:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <MultiSelect
-                      name="zipcode"
-                      options={zipCodeOption}
-                      value={seletctedZipcode}
-                      onChange={handleSelectZipcodeChange}
-                      placeholder="Select Zipcode"
+                    <input 
+                      type="text" 
+                      name="zipcode" 
+                      value={filterQuery.zipcode} 
+                      className="form-control" 
+                      onChange={HandleFilter} 
+                      maxLength="5"
+                      pattern="[0-9]*"
+                      onInput={(e) => {
+                          e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                      }}
                     />
                   </div>
                   <div className="col-md-3 mt-3">
