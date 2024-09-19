@@ -2339,7 +2339,18 @@ const ProductList = () => {
                       ZIP CODE:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <input value={filterQuery.zipcode} name="zipcode" className="form-control" onChange={HandleFilter} />
+                    <input 
+                      type="text" 
+                      name="zipcode" 
+                      value={filterQuery.zipcode} 
+                      className="form-control" 
+                      onChange={HandleFilter} 
+                      maxLength="5"
+                      pattern="[0-9]*"
+                      onInput={(e) => {
+                          e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                      }}
+                    />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
