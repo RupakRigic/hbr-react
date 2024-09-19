@@ -56,7 +56,6 @@ function Login(props) {
             localStorage.removeItem("productTypeStatusByFilter");
             localStorage.removeItem("selectedAreaByFilter");
             localStorage.removeItem("selectedMasterPlanByFilter");
-            localStorage.removeItem("seletctedZipcodeByFilter");
             localStorage.removeItem("selectedAgeByFilter");
             localStorage.removeItem("selectedSingleByFilter");
             localStorage.removeItem("selectedGatedByFilter");
