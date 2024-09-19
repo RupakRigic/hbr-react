@@ -164,6 +164,13 @@ const SubdivisionUpdate = () => {
         masterplanfee: event.target.masterplanfee.value,
         zoning: event.target.zoning.value,
         gasprovider: event.target.gasprovider.value,
+        unsoldlots: 0,
+        lotreleased: 0,
+        stadinginventory: 0,
+        permits: 0,
+        netsales: 0,
+        closing: 0,
+        monthsopen: 0,
       };
 
       const data = await AdminSubdevisionService.update(params.id, userData).json();
