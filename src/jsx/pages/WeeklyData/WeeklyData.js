@@ -126,10 +126,12 @@ const BuilderTable = () => {
                                             container: (provided) => ({
                                                 ...provided,
                                                 width: '50%',
+                                                color: 'black'
                                             }),
                                             menu: (provided) => ({
                                                 ...provided,
                                                 width: '100%',
+                                                color: 'black'
                                             }),
                                         }}
                                         />

@@ -5,10 +5,13 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import swal from "sweetalert";
 import Select from "react-select";
-const SubdivisionUpdate = () => {
-  const [BuilderList, setBuilderList] = useState([]);
-  const [BuilderCode, setBuilderCode] = useState([]);
+import ClipLoader from "react-spinners/ClipLoader";
 
+const SubdivisionUpdate = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [BuilderList, setBuilderList] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [BuilderCode, setBuilderCode] = useState([]);
   const [Error, setError] = useState("");
   const [Subdivision, setSubdivision] = useState([]);
   const params = useParams();
@@ -21,8 +24,8 @@ const SubdivisionUpdate = () => {
   const [juridiction, setJuridiction] = useState("");
   const [masterplan, setMasterPlan] = useState("");
   const [gate, setGate] = useState('');
-
   const navigate = useNavigate();
+
   const handleStatus = (e) => {
     setStatus(e.target.value);
   };
@@ -30,18 +33,23 @@ const SubdivisionUpdate = () => {
   const handleProductType = (e) => {
     setProductType(e.target.value);
   };
+
   const handleReporting = (e) => {
     setReporting(e.target.value);
   };
+
   const handleSingle = (e) => {
     setSingle(e.target.value);
   };
+
   const handleAge = (e) => {
     setAge(e.target.value);
   };
+
   const handleArea = (e) => {
     setArea(e.target.value);
   };
+
   const handleJurisdiction = (e) => {
     setJuridiction(e.target.value);
   };
@@ -49,48 +57,78 @@ const SubdivisionUpdate = () => {
   const handleMasterPlan = (e) => {
     setMasterPlan(e.target.value);
   };
+
   const handleGate = e => {
     setGate(e.target.value);
-}
+  }
 
   const GetSubdivision = async (id) => {
+    setIsLoading(true);
     try {
       let responseData = await AdminSubdevisionService.show(id).json();
+      setIsLoading(false);
       setSubdivision(responseData);
-      const response = await AdminBuilderService.index();
-      const responseData1 = await response.json();
-      setBuilderList(responseData1.data);
 
-      let builderdata = responseData1.filter(function (item) {
-        return item.id === responseData.builder_id;
-      });
+      if (responseData.builder) {
+        const formattedBuilderCode = {
+          value: responseData.builder.id,
+          label: responseData.builder.name,
+        };
+        setBuilderCode(formattedBuilderCode);
+      }
 
-      setStatus(responseData.status)
-      setProductType(responseData.product_type)
-      setReporting(responseData.reporting)
-      setProductType(responseData.product_type)
-      setSingle(responseData.single)
-      setAge(responseData.age)
-      setArea(responseData.area)
-      setJuridiction(responseData.juridiction)
-      setMasterPlan(responseData.masterplan_id)
-      setBuilderCode(builderdata);
+      setStatus(responseData.status);
+      setProductType(responseData.product_type);
+      setReporting(responseData.reporting);
+      setProductType(responseData.product_type);
+      setSingle(responseData.single);
+      setAge(responseData.age);
+      setArea(responseData.area);
+      setJuridiction(responseData.juridiction);
+      setMasterPlan(responseData.masterplan_id);
       setGate(responseData.gated);
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
+
+  const GetBuilderlist = async () => {
+    try {
+      const response = await AdminBuilderService.all_builder_list();
+      const responseData = await response.json();
+      setBuilderList(responseData);
+    } catch (error) {
+      console.log(error);
+      if (error.name === 'HTTPError') {
+        const errorJson = await error.response.json();
+        setError(errorJson.message)
+      }
+    }
+  };
+
+  useEffect(() => {
+    const formattedOptions = BuilderList
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(element => ({
+        value: element.id,
+        label: element.name
+      }));
+    setOptions(formattedOptions);
+  }, [BuilderList]);
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
+      GetBuilderlist();
       GetSubdivision(params.id);
     } else {
       navigate("/");
     }
   }, []);
+
   const handleBuilderCode = (code) => {
     setBuilderCode(code);
   };
@@ -100,7 +138,7 @@ const SubdivisionUpdate = () => {
 
     try {
       var userData = {
-        builder_id: BuilderCode.id ? BuilderCode.id : Subdivision.builder_id,
+        builder_id: BuilderCode.value ? BuilderCode.value : Subdivision.builder_id,
         subdivision_code: event.target.subdivision_code.value,
         name: event.target.name.value,
         status: status,
@@ -111,10 +149,10 @@ const SubdivisionUpdate = () => {
         age: age,
         single: single,
         firstpermitdate: event.target.firstpermitdate.value,
-        masterplan_id:masterplan,
+        masterplan_id: masterplan,
         lat: event.target.lat.value,
         lng: event.target.lng.value,
-        area:area,
+        area: area,
         juridiction: juridiction,
         zipcode: event.target.zipcode.value,
         parcel: event.target.parcel.value,
@@ -138,10 +176,9 @@ const SubdivisionUpdate = () => {
         zoning: event.target.zoning.value,
         gasprovider: event.target.gasprovider.value,
       };
-      const data = await AdminSubdevisionService.update(
-        params.id,
-        userData
-      ).json();
+
+      const data = await AdminSubdevisionService.update(params.id, userData).json();
+
       if (data.status === true) {
         swal("Subdivision Update Succesfully").then((willDelete) => {
           if (willDelete) {
@@ -152,7 +189,6 @@ const SubdivisionUpdate = () => {
         var error;
         if (error.name === "HTTPError") {
           const errorJson = await error.response.json();
-
           setError(
             errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
           );
@@ -162,14 +198,11 @@ const SubdivisionUpdate = () => {
       console.log(error)
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(
           errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
         );
       }
     }
-
-    // nav("#");
   };
 
   return (
@@ -181,50 +214,43 @@ const SubdivisionUpdate = () => {
               <div className="card-header">
                 <h4 className="card-title">Edit Subdivision</h4>
               </div>
+              {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "200px"}}>
+                  <ClipLoader color="#4474fc" />
+                </div>
+              ) : (
               <div className="card-body">
                 <div className="form-validation">
                   <form onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">
-                          Builder Code <span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">Builder Code</label>
                         <Form.Group controlId="tournamentList">
                           <Select
-                            options={BuilderList}
-                            onChange={handleBuilderCode}
-                            getOptionValue={(option) => option.name}
-                            getOptionLabel={(option) => option.name}
+                            options={options}
                             value={BuilderCode}
+                            onChange={(selectedOption) => handleBuilderCode(selectedOption)}
                           ></Select>
                         </Form.Group>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput2"
-                          className="form-label"
-                        >
-                          {" "}
-                          Subdivision Code{" "}
-                          <span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput2" className="form-label">Subdivision Code</label>
                         <input
                           type="text"
-                          defaultValue={Subdivision.subdivision_code}
+                          value={Subdivision.subdivision_code}
                           name="subdivision_code"
                           className="form-control"
                           id="exampleFormControlInput2"
                           placeholder=""
+                          onkeydown="return false"
+                          disabled
+                          style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput3"
-                          className="form-label"
-                        >
-                          {" "}
-                          Name <span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput3" className="form-label">Name</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.name}
@@ -234,81 +260,53 @@ const SubdivisionUpdate = () => {
                           placeholder=""
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput4"
-                          className="form-label"
-                        >
-                          Status <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          onChange={handleStatus}
-                          value={status}
-                        >
+                        <label htmlFor="exampleFormControlInput4" className="form-label">Status</label>
+                        <select className="default-select form-control" onChange={handleStatus} value={status}>
                           <option value="1">Active</option>
                           <option value="0">Sold Out</option>
                           <option value="2">Future</option>
-                        </select>{" "}
+                        </select>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput5"
-                          className="form-label"
-                        >
-                          {" "}
-                          Reporting <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          onChange={handleReporting}
-                          value={reporting}
-                        >
+                        <label htmlFor="exampleFormControlInput5" className="form-label">Reporting</label>
+                        <select className="default-select form-control" onChange={handleReporting} value={reporting}>
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                         </select>
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput6"
-                          className="form-label"
-                        >
-                          {" "}
-                          Product Type <span className="text-danger"></span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          onChange={handleProductType}
-                          value={productType}
-                        >
+                        <label htmlFor="exampleFormControlInput6" className="form-label">Product Type</label>
+                        <select className="default-select form-control" onChange={handleProductType} value={productType}>
                           <option value="DET">DET</option>
                           <option value="ATT">ATT</option>
                           <option value="HR">HR</option>
                           <option value="AC">AC</option>
                         </select>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput7"
-                          className="form-label"
-                        >
-                          {" "}
-                          Phone <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput7" className="form-label">Phone</label>
                         <input
-                          type="number"
+                          type="tel"
                           defaultValue={Subdivision.phone}
                           name="phone"
                           className="form-control"
                           id="exampleFormControlInput7"
                           placeholder=""
+                          maxLength="10"
+                          pattern="[0-9]*"
+                          onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                          }}
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">
-                          Open Since<span className="text-danger"></span>
-                        </label>
+                        <label className="form-label">Open Since</label>
                         <input
                           type="date"
                           defaultValue={Subdivision.opensince}
@@ -316,48 +314,25 @@ const SubdivisionUpdate = () => {
                           className="form-control"
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">
-                          Age Restricted<span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          name=""
-                          onChange={handleAge}
-                          value={age}
-                        >
+                        <label className="form-label">Age Restricted</label>
+                        <select className="default-select form-control" name="" onChange={handleAge} value={age}>
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                         </select>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput8"
-                          className="form-label"
-                        >
-                          {" "}
-                          All Single Story{" "}
-                          <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          name=""
-                          onChange={handleSingle}
-                          value={single}
-                        >
+                        <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story</label>
+                        <select className="default-select form-control" name="" onChange={handleSingle} value={single}>
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                         </select>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput9"
-                          className="form-label"
-                        >
-                          {" "}
-                          First Permit Date{" "}
-                          <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                         <input
                           type="date"
                           defaultValue={Subdivision.firstpermitdate}
@@ -369,25 +344,13 @@ const SubdivisionUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput10"
-                          className="form-label"
-                        >
-                          Masterplan<span className="text-danger"></span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          name=""
-                          onChange={handleMasterPlan}
-                          value={masterplan}
-                        >
+                        <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
+                        <select className="default-select form-control" name="" onChange={handleMasterPlan} value={masterplan}>
                           <option value="">Select Masterplan</option>
                           <option value=""></option>
                           <option value="ALIANTE">ALIANTE</option>
                           <option value="ANTHEM">ANTHEM</option>
-                          <option value="ARLINGTON RANCH">
-                            ARLINGTON RANCH
-                          </option>
+                          <option value="ARLINGTON RANCH">ARLINGTON RANCH</option>
                           <option value="ASCAYA">ASCAYA</option>
                           <option value="BUFFALO RANCH">BUFFALO RANCH</option>
                           <option value="CADENCE">CADENCE</option>
@@ -396,19 +359,13 @@ const SubdivisionUpdate = () => {
                           <option value="CORONADO RANCH">CORONADO RANCH</option>
                           <option value="ELDORADO">ELDORADO</option>
                           <option value="GREEN VALLEY">GREEN VALLEY</option>
-                          <option value="HIGHLANDS RANCH">
-                            HIGHLANDS RANCH
-                          </option>
+                          <option value="HIGHLANDS RANCH">HIGHLANDS RANCH</option>
                           <option value="INSPIRADA">INSPIRADA</option>
                           <option value="LAKE LAS VEGAS">LAKE LAS VEGAS</option>
                           <option value="THE LAKES">THE LAKES</option>
-                          <option value="LAS VEGAS COUNTRY CLUB">
-                            LAS VEGAS COUNTRY CLUB
-                          </option>
+                          <option value="LAS VEGAS COUNTRY CLUB">LAS VEGAS COUNTRY CLUB</option>
                           <option value="LONE MOUNTAIN">LONE MOUNTAIN</option>
-                          <option value="MACDONALD RANCH">
-                            MACDONALD RANCH
-                          </option>
+                          <option value="MACDONALD RANCH">MACDONALD RANCH</option>
                           <option value="MOUNTAINS EDGE">MOUNTAINS EDGE</option>
                           <option value="MOUNTAIN FALLS">MOUNTAIN FALLS</option>
                           <option value="NEVADA RANCH">NEVADA RANCH</option>
@@ -419,38 +376,25 @@ const SubdivisionUpdate = () => {
                           <option value="RHODES RANCH">RHODES RANCH</option>
                           <option value="SEDONA RANCH">SEDONA RANCH</option>
                           <option value="SEVEN HILLS">SEVEN HILLS</option>
-                          <option value="SILVERADO RANCH">
-                            SILVERADO RANCH
-                          </option>
-                          <option value="SILVERSTONE RANCH">
-                            SILVERSTONE RANCH
-                          </option>
+                          <option value="SILVERADO RANCH">SILVERADO RANCH</option>
+                          <option value="SILVERSTONE RANCH">SILVERSTONE RANCH</option>
                           <option value="SKYE CANYON">SKYE CANYON</option>
                           <option value="SKYE HILLS">SKYE HILLS</option>
                           <option value="SPANISH TRAIL">SPANISH TRAIL</option>
-                          <option value="SOUTHERN HIGHLANDS">
-                            SOUTHERN HIGHLANDS
-                          </option>
+                          <option value="SOUTHERN HIGHLANDS">SOUTHERN HIGHLANDS</option>
                           <option value="SUMMERLIN">SUMMERLIN</option>
                           <option value="SUNRISE HIGH">SUNRISE HIGH</option>
                           <option value="SUNSTONE">SUNSTONE</option>
                           <option value="TUSCANY">TUSCANY</option>
                           <option value="VALLEY VISTA">VALLEY VISTA</option>
-                          <option value="VILLAGES AT TULE SPRING">
-                            VILLAGES AT TULE SPRINGS
-                          </option>
+                          <option value="VILLAGES AT TULE SPRING">VILLAGES AT TULE SPRINGS</option>
                           <option value="VISTA VERDE">VISTA VERDE</option>
                           <option value="WESTON HILLS">WESTON HILLS</option>
                         </select>
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput11"
-                          className="form-label"
-                        >
-                          Latitude <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput11" className="form-label">Latitude</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.lat}
@@ -460,13 +404,9 @@ const SubdivisionUpdate = () => {
                           placeholder=""
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput12"
-                          className="form-label"
-                        >
-                          Longitude<span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput12" className="form-label">Longitude</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.lng}
@@ -476,19 +416,10 @@ const SubdivisionUpdate = () => {
                           placeholder=""
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput13"
-                          className="form-label"
-                        >
-                          Area<span className="text-danger"></span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          name=""
-                          onChange={handleArea}
-                          value={area}
-                        >
+                        <label htmlFor="exampleFormControlInput13" className="form-label">Area</label>
+                        <select className="default-select form-control" name="" onChange={handleArea} value={area}>
                           <option value="">Select Area</option>
                           <option value="BC">BC</option>
                           <option value="E">E</option>
@@ -506,66 +437,36 @@ const SubdivisionUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput14"
-                          className="form-label"
-                        >
-                          Juridiction<span className="text-danger"></span>
-                        </label>
-                        <select
-                          className="default-select form-control"
-                          name=""
-                          onChange={handleJurisdiction}
-                          value={juridiction}
-                        >
+                        <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
+                        <select className="default-select form-control" name="" onChange={handleJurisdiction}value={juridiction}>
                           <option value="">Select Juridiction</option>
                           <option value="Boulder City">Boulder City</option>
                           <option value="CLV">CLV</option>
                           <option value="CC Enterprise">CC Enterprise</option>
-                          <option value="CC Indian Springs">
-                            CC Indian Springs
-                          </option>
+                          <option value="CC Indian Springs">CC Indian Springs</option>
                           <option value="CC Laughlin">CC Laughlin</option>
                           <option value="Lone Mtn">Lone Mtn</option>
-                          <option value="Lower Kyle Canyon">
-                            Lower Kyle Canyon
-                          </option>
-                          <option value="CC Moapa Valley">
-                            CC Moapa Valley
-                          </option>
-                          <option value="CC Mt Charleston">
-                            CC Mt Charleston
-                          </option>
+                          <option value="Lower Kyle Canyon">Lower Kyle Canyon</option>
+                          <option value="CC Moapa Valley">CC Moapa Valley</option>
+                          <option value="CC Mt Charleston">CC Mt Charleston</option>
                           <option value="CC Mtn Springs">CC Mtn Springs</option>
                           <option value="CC Paradise">CC Paradise</option>
                           <option value="CC Searchlight">CC Searchlight</option>
-                          <option value="CC Spring Valley">
-                            CC Spring Valley
-                          </option>
-                          <option value="CC Summerlin South">
-                            CC Summerlin South
-                          </option>
-                          <option value="CC Sunrise Manor">
-                            CC Sunrise Manor
-                          </option>
+                          <option value="CC Spring Valley">CC Spring Valley</option>
+                          <option value="CC Summerlin South">CC Summerlin South</option>
+                          <option value="CC Sunrise Manor">CC Sunrise Manor</option>
                           <option value="CC Whiteney">CC Whiteney</option>
                           <option value="CC Winchester">CC Winchester</option>
-                          <option value="CC Unincorporated">
-                            CC Unincorporated
-                          </option>
+                          <option value="CC Unincorporated">CC Unincorporated</option>
                           <option value="Henderson">Henderson</option>
                           <option value="Mesquite">Mesquite</option>
-                                        <option value="NLV">NLV</option>
-                                        <option value="NYE">NYE</option>
+                          <option value="NLV">NLV</option>
+                          <option value="NYE">NYE</option>
                         </select>
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput15"
-                          className="form-label"
-                        >
-                          Zipcode<span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput15"className="form-label">Zipcode</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.zipcode}
@@ -577,12 +478,7 @@ const SubdivisionUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput16"
-                          className="form-label"
-                        >
-                          Parcel <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.parcel}
@@ -591,13 +487,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput16"
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput17"
-                          className="form-label"
-                        >
-                          Cross Street <span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput17" className="form-label">Cross Street</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.crossstreet}
@@ -606,13 +498,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput17"
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput18"
-                          className="form-label"
-                        >
-                          Total Lots <span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput18" className="form-label">Total Lots</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.totallots}
@@ -621,43 +509,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput18"
                         />
                       </div>
+                      
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput19"
-                          className="form-label"
-                        >
-                          Unsold Lots<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.unsoldlots}
-                          name="unsoldlots"
-                          className="form-control"
-                          id="exampleFormControlInput19"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput20"
-                          className="form-label"
-                        >
-                          Lot Released<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.lotreleased}
-                          name="lotreleased"
-                          className="form-control"
-                          id="exampleFormControlInput20"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput21"
-                          className="form-label"
-                        >
-                          Lot Width<span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput21" className="form-label">Lot Width</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.lotwidth}
@@ -666,30 +520,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput21"
                         />
                       </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput22"
-                          className="form-label"
-                        >
-                          Stading Inventory
-                          <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.stadinginventory}
-                          name="stadinginventory"
-                          className="form-control"
-                          id="exampleFormControlInput22"
-                        />
-                      </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput23"
-                          className="form-label"
-                        >
-                          Lot Size<span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput23" className="form-label">Lot Size</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.lotsize}
@@ -698,120 +531,18 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput23"
                         />
                       </div>
+                      
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput24"
-                          className="form-label"
-                        >
-                          Permits<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.permits}
-                          name="permits"
-                          className="form-control"
-                          id="exampleFormControlInput24"
-                        />
+                        <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
+                        <select className="default-select form-control" onChange={handleGate} value={gate}>
+                          <option value="">Select Gate</option>
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                        </select>
                       </div>
+                      
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput25"
-                          className="form-label"
-                        >
-                          Net Sales<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.netsales}
-                          name="netsales"
-                          className="form-control"
-                          id="exampleFormControlInput25"
-                        />
-                      </div>
-
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput26"
-                          className="form-label"
-                        >
-                          Closing<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.closing}
-                          name="closing"
-                          className="form-control"
-                          id="exampleFormControlInput26"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput27"
-                          className="form-label"
-                        >
-                          Months Open<span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          defaultValue={Subdivision.monthsopen}
-                          name="monthsopen"
-                          className="form-control"
-                          id="exampleFormControlInput27"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput28"
-                          className="form-label"
-                        >
-                          Gated<span className="text-danger">*</span>
-                        </label>
-                        <select className="default-select form-control" 
-                                    onChange={handleGate} 
-                                    value={gate}
-                                    > 
-                                        <option value="">Select Gate</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>   
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput29"
-                          className="form-label"
-                        >
-                          Sqft Group<span className="text-danger"></span>
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={Subdivision.sqftgroup}
-                          name="sqftgroup"
-                          className="form-control"
-                          id="exampleFormControlInput29"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput30"
-                          className="form-label"
-                        >
-                          Dollar Group<span className="text-danger"></span>
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={Subdivision.dollargroup}
-                          name="dollargroup"
-                          className="form-control"
-                          id="exampleFormControlInput30"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput31"
-                          className="form-label"
-                        >
-                          Master Plan Fee<span className="text-danger">*</span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee</label>
                         <input
                           type="number"
                           defaultValue={Subdivision.masterplanfee}
@@ -820,43 +551,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput31"
                         />
                       </div>
+                      
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput32"
-                          className="form-label"
-                        >
-                          Last Weekly Data<span className="text-danger"></span>
-                        </label>
-                        <input
-                          type="date"
-                          defaultValue={Subdivision.lastweeklydata}
-                          name="lastweeklydata"
-                          className="form-control"
-                          id="exampleFormControlInput32"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput33"
-                          className="form-label"
-                        >
-                          Date Added<span className="text-danger"></span>
-                        </label>
-                        <input
-                          type="date"
-                          defaultValue={Subdivision.dateadded}
-                          name="dateadded"
-                          className="form-control"
-                          id="exampleFormControlInput33"
-                        />
-                      </div>
-                      <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput34"
-                          className="form-label"
-                        >
-                          Zoning<span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput34" className="form-label">Zoning</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.zoning}
@@ -865,13 +562,9 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput34"
                         />
                       </div>
+
                       <div className="col-xl-6 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput35"
-                          className="form-label"
-                        >
-                          Gas Provider<span className="text-danger"></span>
-                        </label>
+                        <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider</label>
                         <input
                           type="text"
                           defaultValue={Subdivision.gasprovider}
@@ -880,6 +573,7 @@ const SubdivisionUpdate = () => {
                           id="exampleFormControlInput35"
                         />
                       </div>
+
                       <p className="text-danger fs-12">{Error}</p>
                     </div>
                     <div>
@@ -896,7 +590,7 @@ const SubdivisionUpdate = () => {
                     </div>
                   </form>
                 </div>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>

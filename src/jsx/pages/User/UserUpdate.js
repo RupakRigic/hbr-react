@@ -12,8 +12,6 @@ const UserUpdate = () => {
   const [BuilderCode, setBuilderCode] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState([]);
-  console.log("userupdate",RoleCode);
-  
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
   const [subRoleList, setSubRoleList] = useState([]);

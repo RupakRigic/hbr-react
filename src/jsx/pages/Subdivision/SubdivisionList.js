@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
+import SubdivisionOffcanvas from "../../pages/WeeklyData/SubdivisionOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Offcanvas, Form } from "react-bootstrap";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
@@ -5429,11 +5429,13 @@ const SubdivisionList = () => {
                             BuilderList.map((element, index) => (
                               <tr
                                 onClick={(e) => {
-                                  if (e.target.type == "checkbox") {
+                                  if (e.target.type === "checkbox") {
                                     return;
-                                  } else if (e.target.className == "btn btn-danger shadow btn-xs sharp" || e.target.className == "fa fa-trash") {
+                                  } else if (e.target.className === "btn btn-danger shadow btn-xs sharp" || e.target.className === "fa fa-trash") {
                                     return;
-                                  } else if (e.target.className == "btn btn-primary shadow btn-xs sharp" || e.target.className == "fa fa-file-text") {
+                                  } else if (e.target.className === "btn btn-primary shadow btn-xs sharp me-1" || e.target.className === "fas fa-pencil-alt") {
+                                    return;
+                                  } else if (e.target.className === "btn btn-primary shadow btn-xs sharp" || e.target.className === "fa fa-file-text") {
                                     return;
                                   } else {
                                     handleRowClick(element.id);
