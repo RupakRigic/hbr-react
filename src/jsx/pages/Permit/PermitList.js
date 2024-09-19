@@ -34,7 +34,6 @@ const PermitList = () => {
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
-  const [seletctedZipcode, setSelectedZipcode] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [AllPermitListExport, setAllPermitListExport] = useState([]);
   const [showSort, setShowSort] = useState(false);
@@ -191,7 +190,6 @@ const PermitList = () => {
     setProductTypeStatus([]);
     setSelectedArea([]);
     setSelectedMasterPlan([]);
-    setSelectedZipcode([]);
     setSelectedAge([]);
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
@@ -201,7 +199,6 @@ const PermitList = () => {
     localStorage.removeItem("productTypeStatusByFilter");
     localStorage.removeItem("selectedAreaByFilter");
     localStorage.removeItem("selectedMasterPlanByFilter");
-    localStorage.removeItem("seletctedZipcodeByFilter");
     localStorage.removeItem("selectedAgeByFilter");
     localStorage.removeItem("selectedSingleByFilter");
     localStorage.removeItem("from");
@@ -246,10 +243,6 @@ const PermitList = () => {
     if(localStorage.getItem("selectedMasterPlanByFilter")) {
       const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
       handleSelectMasterPlanChange(selectedMasterPlan);
-    }
-    if(localStorage.getItem("seletctedZipcodeByFilter")) {
-      const seletctedZipcode = JSON.parse(localStorage.getItem("seletctedZipcodeByFilter"));
-      handleSelectZipcodeChange(seletctedZipcode);
     }
     if(localStorage.getItem("selectedAgeByFilter")) {
       const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
@@ -314,7 +307,6 @@ const PermitList = () => {
         localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
         localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
         localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-        localStorage.setItem("seletctedZipcodeByFilter", JSON.stringify(seletctedZipcode));
         localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
         localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
         localStorage.setItem("from", JSON.stringify(filterQuery.from));
@@ -443,44 +435,6 @@ const PermitList = () => {
       product_type: selectedNames
     }));
   }
-
-  const zipCodeOption = [
-    { value: "89002", label: "89002" },
-    { value: "89005", label: "89005" },
-    { value: "89011", label: "89011" },
-    { value: "89012", label: "89012" },
-    { value: "89014", label: "89014" },
-    { value: "89015", label: "89015" },
-    { value: "89018", label: "89018" },
-    { value: "89021", label: "89021" },
-    { value: "89027", label: "89027" },
-    { value: "89029", label: "89029" },
-    { value: "89030", label: "89030" },
-    { value: "89031", label: "89031" },
-    { value: "89032", label: "89032" },
-    { value: "89044", label: "89044" },
-    { value: "89044", label: "89044" },
-    { value: "89052", label: "89052" },
-    { value: "89055", label: "89055" },
-    { value: "89060", label: "89060" },
-    { value: "89061", label: "89061" },
-    { value: "89074", label: "89074" },
-    { value: "89081", label: "89081" },
-    { value: "89084", label: "89084" },
-    { value: "89085", label: "89085" },
-    { value: "89086", label: "89086" },
-  ];
-
-  const handleSelectZipcodeChange = (selectedItems) => {
-    console.log(selectedItems);
-    const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
-    setSelectedZipcode(selectedItems);
-    setFilterQuery(prevState => ({
-      ...prevState,
-      zipcode: selectedValues
-    }));
-  };
 
   const masterPlanOption = [
     { value: "ALIANTE", label: "ALIANTE" },
@@ -2252,12 +2206,17 @@ const GetSubdivisionDropDownList = async () => {
                       ZIP CODE:{" "}
                       <span className="text-danger"></span>
                     </label>
-                    <MultiSelect
-                      name="zipcode"
-                      options={zipCodeOption}
-                      value={seletctedZipcode}
-                      onChange={handleSelectZipcodeChange}
-                      placeholder="Select Zipcode"
+                    <input 
+                      type="text" 
+                      name="zipcode" 
+                      value={filterQuery.zipcode} 
+                      className="form-control" 
+                      onChange={HandleFilter} 
+                      maxLength="5"
+                      pattern="[0-9]*"
+                      onInput={(e) => {
+                          e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                      }}
                     />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
