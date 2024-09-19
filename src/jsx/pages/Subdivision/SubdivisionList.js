@@ -895,7 +895,7 @@ const SubdivisionList = () => {
   };
 
   const handleCallback = () => {
-    getbuilderlist();
+    getbuilderlist(currentPage, sortConfig, searchQuery);
   };
 
   const handleRowClick = async (id) => {
@@ -5732,9 +5732,10 @@ const SubdivisionList = () => {
       />
       <BulkSubdivisionUpdate
         ref={bulkSubdivision}
-        Title="Bulk Edit Subdivision sale"
+        Title="Bulk Edit Subdivision"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
+        setSelectedLandSales={setSelectedLandSales}
       />
 
       <Modal show={show} onHide={handleClose}>
