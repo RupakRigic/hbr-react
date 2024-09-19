@@ -3,13 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
+import Select from "react-select";
 
 const SubdivisionOffcanvas = forwardRef((props, ref) => {
-
-    const [BuilderCode, setBuilderCode] = useState(localStorage.getItem('builderId'));
+    const [BuilderCode, setBuilderCode] = useState(null);
     const [Error, setError] = useState('');
     const [addSubdivision, setAddSubdivision] = useState(false);
-    const [BuilderList, setBuilderList] = useState([]);
     const [status, setStatus] = useState('1');
     const [productType, setProductType] = useState('');
     const [reporting, setReporting] = useState('1');
@@ -19,74 +18,95 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
     const [juridiction, setJuridiction] = useState('');
     const [masterplan, setMasterPlan] = useState('');
     const [gate, setGate] = useState('0');
+    const [options, setOptions] = useState([]);
 
-    const handleStatus = e => {
+    const handleStatus = (e) => {
         setStatus(e.target.value);
-    }
+    };
 
-    const handleProductType = e => {
+    const handleProductType = (e) => {
         setProductType(e.target.value);
-    }
-    const handleReporting = e => {
-        setReporting(e.target.value);
-    }
-    const handleSingle = e => {
-        setSingle(e.target.value);
-    }
-    const handleAge = e => {
-        setAge(e.target.value);
-    }
-    const handleArea = e => {
-        setArea(e.target.value);
-    }
-    const handleJurisdiction = e => {
-        setJuridiction(e.target.value);
-    }
+    };
 
-    const handleMasterPlan = e => {
+    const handleReporting = (e) => {
+        setReporting(e.target.value);
+    };
+
+    const handleSingle = (e) => {
+        setSingle(e.target.value);
+    };
+
+    const handleAge = (e) => {
+        setAge(e.target.value);
+    };
+
+    const handleArea = (e) => {
+        setArea(e.target.value);
+    };
+
+    const handleJurisdiction = (e) => {
+        setJuridiction(e.target.value);
+    };
+
+    const handleMasterPlan = (e) => {
         setMasterPlan(e.target.value);
-    }
-    const handleGate = e => {
+    };
+
+    const handleGate = (e) => {
         setGate(e.target.value);
-    }
+    };
 
     const getbuilderlist = async () => {
-
         try {
             const response = await AdminBuilderService.all_builder_list();
             const responseData = await response.json();
-            setBuilderList(responseData)
+
+            const formattedOptions = responseData
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(element => ({
+                value: element.id,
+                label: element.name
+              }));
+            setOptions(formattedOptions);
+
+            const builderId = localStorage.getItem('builderId');
+
+            if (builderId) {
+                const foundOption = formattedOptions.find(option => option.value === parseInt(builderId, 10));
+                if (foundOption) {
+                    setBuilderCode(foundOption);
+                }
+            }
         } catch (error) {
             console.log(error)
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message)
+                setError(errorJson.message);
             }
         }
-    }
+    };
+
     useEffect(() => {
-        getbuilderlist();
-    }, [])
+        if (addSubdivision) {
+            getbuilderlist();
+        }
+    }, [addSubdivision]);
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddSubdivision(true)
         }
     }));
-    const nav = useNavigate();
-    const handleBuilderCode = code => {
-        
-        setBuilderCode(code.target.value);
 
-    }
+    const handleBuilderCode = (code) => {
+        setBuilderCode(code);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         try {
             var userData = {
-                "builder_id": BuilderCode,
+                "builder_id": BuilderCode.value,
                 // "subdivision_code": event.target.subdivision_code.value,
                 "name": event.target.name.value,
                 "status": status,
@@ -120,15 +140,9 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "dollargroup": '',
                 "masterplanfee": event.target.masterplanfee.value ? event.target.masterplanfee.value : '',
                 "lastweeklydata": '',
-
                 "dateadded": '',
-
                 "zoning": event.target.zoning.value ? event.target.zoning.value : '',
                 "gasprovider": event.target.gasprovider.value ? event.target.gasprovider.value : '',
-
-
-
-
             }
             const data = await AdminSubdevisionService.store(userData).json();
             if (data.status === true) {
@@ -139,8 +153,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 var error;
                 if (error.name === 'HTTPError') {
                     const errorJson = await error.response.json();
-
-                    setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                    setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
                 }
             }
         }
@@ -148,17 +161,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             console.log(error);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
-
-
-
-
         }
-
-        // nav("#");
-    }
+    };
+    
     return (
         <>
             <Offcanvas show={addSubdivision} onHide={setAddSubdivision} className="offcanvas-end customeoff" placement='end'>
@@ -177,18 +184,23 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Builder Code <span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={handleBuilderCode}
-                                            value={BuilderCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Builder</option>
-                                            {
-                                                BuilderList.map((element) => (
-                                                    <option value={element.id}>{element.name}</option>
-                                                ))
-                                            }
-                                        </Form.Select>
+                                        <Select
+                                          options={options}
+                                          value={BuilderCode}
+                                          onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                          styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
+                                        ></Select>
                                     </Form.Group>
                                 </div>
                                 
