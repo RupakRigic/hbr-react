@@ -77,6 +77,7 @@ const GoogleMapLocator = () => {
    const [circles, setCircles] = useState([]);
    const [centerPoint, setCenterPoint] = useState([]);
    const [circleRadius, setCircleRadius] = useState(null);
+   const [circleArea, setCircleArea] = useState(null);
    const [measurementPoints, setMeasurementPoints] = useState([]);
    const [showMeasurementPopup, setShowMeasurementPopup] = useState(false);
    const [distance, setDistance] = useState("Feet");
@@ -137,8 +138,11 @@ const GoogleMapLocator = () => {
          const radius = shape.getRadius();
          const radiusInMeters = shape.getRadius();
          const radiusInFeet = radiusInMeters * 3.28084;
+         const areaInSquareFeet = Math.PI * Math.pow(radiusInFeet, 2);
+         const areaInAcres = areaInSquareFeet / 43560;
          setCenterPoint(center.toJSON());
-         setCircleRadius(radiusInFeet.toFixed(2));
+         setCircleRadius(radiusInFeet.toFixed(3));
+         setCircleArea(areaInAcres.toFixed(3))
          setCircles((prevCircles) => [
             ...prevCircles,
             { center: center.toJSON(), radius }
@@ -482,6 +486,7 @@ const GoogleMapLocator = () => {
                         <h4>Circle Measurements:</h4>
                         <hr></hr>
                         <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} ft</h6>
+                        <h6 style={{ color: "black" }}>Circle Area: {circleArea} acres</h6>
                      </div>
                   </InfoWindow>
                )}
