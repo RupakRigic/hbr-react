@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager, Polyline } from "@react-google-maps/api";
 import PriceComponent from "../../components/Price/PriceComponent";
 import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -10,18 +10,15 @@ const containerStyle = {
 };
 
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
-   const toRad = (value) => (value * Math.PI) / 180;
-
-   const R = 6371;
-   const dLat = toRad(lat2 - lat1);
-   const dLon = toRad(lon2 - lon1);
-   const lat1Rad = toRad(lat1);
-   const lat2Rad = toRad(lat2);
-
-   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);
+   const R = 6371; // Radius of the Earth in kilometers
+   const dLat = (lat2 - lat1) * Math.PI / 180;
+   const dLon = (lon2 - lon1) * Math.PI / 180;
+   const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-   return R * c;
+   return R * c; // Distance in kilometers
 };
 
 const calculateCentroid = (markers) => {
@@ -61,7 +58,6 @@ const GoogleMapLocator = () => {
    const location = useLocation();
    const state = location.state || {};
 
-   // const [builderList, setBuilderList] = useState([]);
    const subdivisionList = state.subdivisionList;
    const subdivision = state.subdivision;
    const product = state.product;
@@ -78,6 +74,12 @@ const GoogleMapLocator = () => {
    const mapRef = useRef(null);
    const [defaultCenter, setDefaultCenter] = useState({ lat: 0, lng: 0 });
    const [zoomLevel, setZoomLevel] = useState(8);
+   const [circles, setCircles] = useState([]);
+   const [centerPoint, setCenterPoint] = useState([]);
+   const [circleRadius, setCircleRadius] = useState(null);
+   const [measurementPoints, setMeasurementPoints] = useState([]);
+   const [showMeasurementPopup, setShowMeasurementPopup] = useState(false);
+   const [distance, setDistance] = useState("Feet");
 
    const onLoad = (map) => {
       mapRef.current = map;
@@ -87,7 +89,7 @@ const GoogleMapLocator = () => {
       if (subdivisionList && subdivisionList.length > 0) {
          const centroid = calculateCentroid(subdivisionList);
 
-         if(isNaN(centroid.lat) && isNaN(centroid.lng)) {
+         if (isNaN(centroid.lat) && isNaN(centroid.lng)) {
             setDefaultCenter({
                lat: 36.201946,
                lng: -115.120216,
@@ -104,7 +106,7 @@ const GoogleMapLocator = () => {
          console.log('Centroid:', centroid);
          console.log('Radius (in kilometers):', radiusInKm);
 
-         if(!isNaN(centroid.lat) && !isNaN(centroid.lng)) {
+         if (!isNaN(centroid.lat) && !isNaN(centroid.lng)) {
             if (radiusInKm < 5) {
                setZoomLevel(14);
             } else if (radiusInKm < 10) {
@@ -121,7 +123,7 @@ const GoogleMapLocator = () => {
          } else {
             setZoomLevel(8);
          }
-         
+
       }
    }, [subdivisionList]);
 
@@ -129,6 +131,29 @@ const GoogleMapLocator = () => {
       setDrawing(true);
       setShapes((prevShapes) => [...prevShapes, shape]);
       setRedoStack([]);
+
+      if (shape instanceof window.google.maps.Circle) {
+         const center = shape.getCenter();
+         const radius = shape.getRadius();
+         const radiusInMeters = shape.getRadius();
+         const radiusInFeet = radiusInMeters * 3.28084;
+         setCenterPoint(center.toJSON());
+         setCircleRadius(radiusInFeet.toFixed(2));
+         setCircles((prevCircles) => [
+            ...prevCircles,
+            { center: center.toJSON(), radius }
+         ]);
+         setShowMeasurementPopup(true);
+      }
+
+      if (shape instanceof window.google.maps.Polyline) {
+         const path = shape.getPath().getArray().map((latLng) => ({
+            lat: latLng.lat(),
+            lng: latLng.lng(),
+         }));
+         setMeasurementPoints(path);
+         setShowMeasurementPopup(true);
+      }
    };
 
    const handleUndo = () => {
@@ -153,6 +178,39 @@ const GoogleMapLocator = () => {
          }
          return newRedoStack;
       });
+   };
+
+   const calculateTotalDistance = () => {
+      let distance = 0;
+      for (let i = 0; i < measurementPoints.length - 1; i++) {
+         const point1 = measurementPoints[i];
+         const point2 = measurementPoints[i + 1];
+         distance += window.google.maps.geometry.spherical.computeDistanceBetween(
+            new window.google.maps.LatLng(point1.lat, point1.lng),
+            new window.google.maps.LatLng(point2.lat, point2.lng)
+         );
+      }
+      return distance;
+   };
+
+   const calculateTotalDistanceInFeet = () => {
+      const totalDistanceInKm = calculateTotalDistanceInKilometers();
+      return totalDistanceInKm * 3280.84;
+   };
+
+   const calculateTotalDistanceInKilometers = () => {
+      return calculateTotalDistance() / 1000;
+   };
+
+   const toggleMeasurementPopup = () => {
+      setShowMeasurementPopup((prev) => !prev);
+      setMeasurementPoints([]);
+      setDistance("Feet");
+      setShowMeasurementPopup(false);
+   };
+
+   const handleDistance = (e) => {
+      setDistance(e.target.value);
    };
 
    return (
@@ -339,6 +397,89 @@ const GoogleMapLocator = () => {
                         <div>
                            Avg Closing Price : <span>{<PriceComponent price={selectedMarker.avg_closing_price} /> || "NA"} </span>
                         </div>
+                     </div>
+                  </InfoWindow>
+               )}
+
+               <Polyline
+                  path={measurementPoints}
+                  options={{
+                     strokeColor: "#FF0000",
+                     strokeOpacity: 0.8,
+                     strokeWeight: 2,
+                  }}
+               />
+
+               {measurementPoints.map((point, index) => (
+                  <Marker
+                     key={index}
+                     position={point}
+                     icon={{
+                        path: window.google.maps.SymbolPath.CIRCLE,
+                        fillColor: '#FF0000',
+                        fillOpacity: 1,
+                        scale: 2,
+                        strokeColor: '#FF0000',
+                        strokeWeight: 1,
+                     }}
+                  />
+               ))}
+
+               {showMeasurementPopup && measurementPoints.length > 1 && (
+                  <InfoWindow
+                     position={{
+                        lat:
+                           (measurementPoints[0].lat +
+                              measurementPoints[measurementPoints.length - 1].lat) /
+                           2,
+                        lng:
+                           (measurementPoints[0].lng +
+                              measurementPoints[measurementPoints.length - 1].lng) /
+                           2,
+                     }}
+                     onCloseClick={toggleMeasurementPopup}
+                  >
+                     <div>
+                        <h4>Measurements:</h4>
+                        <hr></hr>
+                        <select onChange={handleDistance} value={distance}>
+                           <option value="">Select Distance</option>
+                           <option value="Meter">Meter</option>
+                           <option value="Feet">Feet</option>
+                           <option value="Kilometer">Kilometer</option>
+                        </select>
+                        <div style={{ marginTop: "10px" }}></div>
+                        {distance === "Meter" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistance().toFixed(2)} m
+                           </h6>
+                        )}
+                        {distance === "Feet" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistanceInFeet().toFixed(2)} ft
+                           </h6>
+                        )}
+                        {distance === "Kilometer" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistanceInKilometers().toFixed(2)} km
+                           </h6>
+                        )}
+                     </div>
+                  </InfoWindow>
+               )}
+
+               {showMeasurementPopup && circles.length > 0 && (
+                  <InfoWindow
+                     position={{
+                        lat: centerPoint.lat,
+                        lng: centerPoint.lng,
+                     }}
+                     onCloseClick={toggleMeasurementPopup}
+                  >
+                     <div>
+                        <h4>Circle Measurements:</h4>
+                        <hr></hr>
+                        <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} ft</h6>
                      </div>
                   </InfoWindow>
                )}
