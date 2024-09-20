@@ -144,6 +144,7 @@ const GoogleMapLocator = () => {
             { center: center.toJSON(), radius }
          ]);
          setShowMeasurementPopup(true);
+         setMeasurementPoints([]);
       }
 
       if (shape instanceof window.google.maps.Polyline) {
@@ -153,6 +154,7 @@ const GoogleMapLocator = () => {
          }));
          setMeasurementPoints(path);
          setShowMeasurementPopup(true);
+         setCircles([]);
       }
    };
 
