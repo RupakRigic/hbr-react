@@ -605,7 +605,7 @@ const PriceList = () => {
     setIsLoading(false);
   };
 
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+  // const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   const FetchAllPages = async (searchQuery, sortConfig, priceList, productListCount) => {
     setExcelLoading(true);
@@ -614,7 +614,7 @@ const PriceList = () => {
     const totalPages = Math.ceil(productListCount / recordsPage);
     let allData = priceList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminPriceService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
