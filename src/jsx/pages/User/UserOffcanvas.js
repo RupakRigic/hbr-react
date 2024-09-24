@@ -1,7 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
-import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
 import Select from 'react-select';
@@ -13,13 +12,8 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [Error, setError] = useState('');
     const [addUser, setAddUser] = useState(false);
     const [BuilderCode, setBuilderCode] = useState('');
-    const [BuilderList, setBuilderList] = useState([]);
     const [RoleCode, setRoleCode] = useState([]);
-    console.log("RoleCode",RoleCode);
-    
     const [standardRoleCode, setStandardRoleCode] = useState([]);
-    console.log("standardRoleCode",standardRoleCode);
-
     const [RoleList, setRoleList] = useState([]);
     const [subRoleList, setSubRoleList] = useState([]);
     const [StandardUser, setStandardUser] = useState([]);
@@ -36,7 +30,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     useEffect(() => {
         GetRoleList();
-        GetBuilderList();
     }, []);
 
     const GetRoleList = async () => {
@@ -44,19 +37,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
             let responseData = await AdminUserRoleService.roles().json()
             setRoleList(responseData.main_role);
             setSubRoleList(responseData.sub_role);
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message)
-            }
-        }
-    };
-
-    const GetBuilderList = async () => {
-        try {
-            let response = await AdminBuilderService.all_builder_list()
-            let responseData = await response.json()
-            setBuilderList(responseData)
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
@@ -75,22 +55,11 @@ const UserOffcanvas = forwardRef((props, ref) => {
         label: element.name
     }));
 
-    // const options = BuilderList
-    // .sort((a, b) => a.name.localeCompare(b.name))
-    // .map(element => ({
-    //     value: element.id,
-    //     label: element.name
-    // }));
-
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddUser(true);
         }
     }));
-    
-    // const handleBuilderCode = (code) => {
-    //     setBuilderCode(code.value);
-    // };
 
     const handleRoleCode = (code) => {
         const formattedRoles = [{
@@ -158,7 +127,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
         }
     };
 
-    const handlePopupSave = async(event) => {
+    const handlePopupSave = async (event) => {
         event.preventDefault();
         try {
             var userData = {
@@ -203,7 +172,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => {setAddUser(false); setRoleCode(); setStandardUser([]);}}
+                        onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); }}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -236,28 +205,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
                                     <input type="text" name='company' required className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setCompany(e.target.value)} />
                                 </div>
-          
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Builder<span className="text-danger">*</span></label>
-                                    <Select
-                                        options={options}
-                                        onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                                        placeholder="Select Builder"
-                                        required
-                                        styles={{
-                                          container: (provided) => ({
-                                              ...provided,
-                                              width: '100%',
-                                              color: 'black'
-                                          }),
-                                          menu: (provided) => ({
-                                              ...provided,
-                                              width: '100%',
-                                              color: 'black'
-                                          }),
-                                        }}
-                                    />
-                                </div> */}
 
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Role</label>
@@ -305,7 +252,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => {setAddUser(false); setRoleCode(); setStandardUser([]);}} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); }} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>
@@ -322,7 +269,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                         onClick={() => handlePopupClose()}
                     ></button>
                 </Modal.Header>
-                <Modal.Body style={{color: "black"}}>
+                <Modal.Body style={{ color: "black" }}>
                     {message}
                 </Modal.Body>
                 <Modal.Footer>

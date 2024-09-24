@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
-import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
 import { MultiSelect } from 'react-multi-select-component';
@@ -12,7 +11,6 @@ import { Button } from 'react-bootstrap';
 const UserUpdate = () => {
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
-  const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState([]);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
@@ -31,10 +29,9 @@ const UserUpdate = () => {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [company, setCompany] = useState("");
-  
+
   useEffect(() => {
     GetRoleList();
-    GetBuilderList();
   }, []);
 
   useEffect(() => {
@@ -46,7 +43,7 @@ const UserUpdate = () => {
   }, []);
 
   useEffect(() => {
-    if(UserList.id) {
+    if (UserList.id) {
       setFirstName(UserList.name);
       setLastName(UserList.last_name);
       setEmail(UserList.email);
@@ -98,19 +95,6 @@ const UserUpdate = () => {
     }
   };
 
-  const GetBuilderList = async () => {
-    try {
-      const response = await AdminBuilderService.all_builder_list();
-      const responseData = await response.json();
-      setBuilderList(responseData);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-
   const roleOptions = RoleList.map(element => ({
     value: element.id,
     label: element.name
@@ -120,17 +104,6 @@ const UserUpdate = () => {
     value: element.id,
     label: element.name
   }));
-
-  const options = BuilderList
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map(element => ({
-    value: element.id,
-    label: element.name
-  }));
-
-  const handleBuilderCode = (code) => {
-    setBuilderCode(code.value);
-  };
 
   const handleRoleCode = (code) => {
     const formattedRoles = [{
@@ -151,42 +124,42 @@ const UserUpdate = () => {
     event.preventDefault();
     try {
       const FilterRoleCode = RoleCode == 9 && standardRoleCode.filter((id) => id === 11);
-            if (FilterRoleCode == 11) {
-                var userData = {
-                    "name": firstName,
-                    "company": company,
-                    "last_name": lastName,
-                }
-                const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
-                if (data.status === true) {
-                    setBuilderCode(data.builder_id);
-                    setMessage(data.message);
-                    setSaveBtn(true);
-                    setShowPopup(true);
-                } else {
-                    setMessage(data.message);
-                    setShowPopup(true);
-                }
-            } else {
-                var userData = {
-                    "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
-                    "name": firstName,
-                    "last_name": lastName,
-                    "email": email,
-                    "notes": notes,
-                    "company": company
-                }
-                const data = await AdminUserRoleService.update(params.id,userData).json();
-                if (data.status === true) {
-                    swal("User Create Succesfully").then((willDelete) => {
-                        if (willDelete) {
-                            setRoleCode([]);
-                            setStandardUser([]);
-                            navigate("/userlist");
-                        }
-                    })
-                }
+      if (FilterRoleCode == 11) {
+        var userData = {
+          "name": firstName,
+          "company": company,
+          "last_name": lastName,
+        }
+        const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
+        if (data.status === true) {
+          setBuilderCode(data.builder_id);
+          setMessage(data.message);
+          setSaveBtn(true);
+          setShowPopup(true);
+        } else {
+          setMessage(data.message);
+          setShowPopup(true);
+        }
+      } else {
+        var userData = {
+          "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+          "name": firstName,
+          "last_name": lastName,
+          "email": email,
+          "notes": notes,
+          "company": company
+        }
+        const data = await AdminUserRoleService.update(params.id, userData).json();
+        if (data.status === true) {
+          swal("User Update Succesfully").then((willDelete) => {
+            if (willDelete) {
+              setRoleCode([]);
+              setStandardUser([]);
+              navigate("/userlist");
             }
+          })
+        }
+      }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -197,42 +170,42 @@ const UserUpdate = () => {
     }
   };
 
-  const handlePopupSave = async(event) => {
+  const handlePopupSave = async (event) => {
     event.preventDefault();
     try {
-        var userData = {
-            "builder_id": BuilderCode,
-            "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
-            "name": firstName,
-            "last_name": lastName,
-            "email": email,
-            "notes": notes,
-            "company": company
-        }
-        const data = await AdminUserRoleService.update(params.id,userData).json();
-        if (data.status === true) {
-            setShowPopup(false);
-            setSaveBtn(false);
-            setRoleCode([]);
-            setStandardUser([]);
-            swal("User Create Succesfully").then((willDelete) => {
-                if (willDelete) {
-                  navigate("/userlist");
-                }
-            })
-        }
+      var userData = {
+        "builder_id": BuilderCode,
+        "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+        "name": firstName,
+        "last_name": lastName,
+        "email": email,
+        "notes": notes,
+        "company": company
+      }
+      const data = await AdminUserRoleService.update(params.id, userData).json();
+      if (data.status === true) {
+        setShowPopup(false);
+        setSaveBtn(false);
+        setRoleCode([]);
+        setStandardUser([]);
+        swal("User Update Succesfully").then((willDelete) => {
+          if (willDelete) {
+            navigate("/userlist");
+          }
+        })
+      }
     }
     catch (error) {
-        if (error.name === 'HTTPError') {
-            const errorJson = await error.response.json();
-            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
-        }
+      if (error.name === 'HTTPError') {
+        const errorJson = await error.response.json();
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+      }
     }
-};
+  };
 
   const HandlePopupDetailClick = (e) => {
     setShowPopup(true);
-};
+  };
 
   return (
     <Fragment>
@@ -244,163 +217,137 @@ const UserUpdate = () => {
                 <h4 className="card-title">Edit User</h4>
               </div>
               {isLoading ? (
-                <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "20%"}}>
+                <div className="d-flex justify-content-center align-items-center mb-5" style={{ marginTop: "20%" }}>
                   <ClipLoader color="#4474fc" />
                 </div>
               ) : (
-              <div className="card-body">
-                <div className="form-validation">
-                  <form onSubmit={handleSubmit}>
-                    <div className="row">
-                      <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput2" className="form-label">First Name <span className="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          name="firstname"
-                          defaultValue={firstName}
-                          className="form-control"
-                          id="exampleFormControlInput2"
-                          required
-                          placeholder=""
-                          onChange={(e) => setFirstName(e.target.value)}
-                        />
+                <div className="card-body">
+                  <div className="form-validation">
+                    <form onSubmit={handleSubmit}>
+                      <div className="row">
+                        <div className="col-xl-6 mb-3">
+                          <label htmlFor="exampleFormControlInput2" className="form-label">First Name <span className="text-danger">*</span></label>
+                          <input
+                            type="text"
+                            name="firstname"
+                            defaultValue={firstName}
+                            className="form-control"
+                            id="exampleFormControlInput2"
+                            placeholder=""
+                            onChange={(e) => setFirstName(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-xl-6 mb-3">
+                          <label htmlFor="exampleFormControlInput3" className="form-label">Last Name <span className="text-danger">*</span></label>
+                          <input
+                            type="text"
+                            name="lastname"
+                            defaultValue={lastName}
+                            className="form-control"
+                            id="exampleFormControlInput3"
+                            placeholder=""
+                            onChange={(e) => setLastName(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-xl-6 mb-3">
+                          <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger">*</span></label>
+                          <input
+                            type="email"
+                            name="email"
+                            defaultValue={email}
+                            className="form-control"
+                            id="exampleFormControlInput4"
+                            placeholder=""
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-xl-6 mb-3">
+                          <label htmlFor="exampleFormControlInput5" className="form-label">Notes</label>
+                          <input
+                            type="text"
+                            name="notes"
+                            defaultValue={notes}
+                            className="form-control"
+                            id="exampleFormControlInput5"
+                            placeholder=""
+                            onChange={(e) => setNotes(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-xl-6 mb-3">
+                          <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger">*</span></label>
+                          <input
+                            type="text"
+                            name="company"
+                            defaultValue={company}
+                            className="form-control"
+                            id="exampleFormControlInput6"
+                            placeholder=""
+                            onChange={(e) => setCompany(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="col-xl-6 mb-3">
+                          <label className="form-label">Role</label>
+                          <Select
+                            options={roleOptions}
+                            value={roleOptions.find(option => option.value === RoleCode)}
+                            // value={RoleCode}
+                            onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                            placeholder="Select Role"
+                            styles={{
+                              container: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                              }),
+                              menu: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                              }),
+                            }}
+                          />
+                        </div>
+
+                        {RoleCode == 9 && <div className="col-xl-6 mb-3">
+                          <label className="form-label">Standard User<span className="text-danger">*</span></label>
+                          <MultiSelect
+                            options={StandardUserOptions}
+                            onChange={(selectedOption) => handleStandardUser(selectedOption)}
+                            value={StandardUser}
+                            placeholder="Select Role"
+                            styles={{
+                              container: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                              }),
+                              menu: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                              }),
+                            }}
+                          />
+                        </div>}
+
+                        <p className="text-danger fs-12">{Error}</p>
                       </div>
-
-                      <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput3" className="form-label">Last Name <span className="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          name="lastname"
-                          defaultValue={lastName}
-                          className="form-control"
-                          id="exampleFormControlInput3"
-                          required
-                          placeholder=""
-                          onChange={(e) => setLastName(e.target.value)}
-                        />
+                      <div>
+                        <button type="submit" className="btn btn-primary me-1">
+                          Submit
+                        </button>
+                        <Link to={"/userlist"} className="btn btn-danger light ms-1">
+                          Cancel
+                        </Link>
                       </div>
-
-                      <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger">*</span></label>
-                        <input
-                          type="email"
-                          name="email"
-                          defaultValue={email}
-                          className="form-control"
-                          id="exampleFormControlInput4"
-                          required
-                          placeholder=""
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput5" className="form-label">Notes</label>
-                        <input
-                          type="text"
-                          name="notes"
-                          defaultValue={notes}
-                          className="form-control"
-                          id="exampleFormControlInput5"
-                          placeholder=""
-                          onChange={(e) => setNotes(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger">*</span></label>
-                        <input
-                          type="text"
-                          name="company"
-                          defaultValue={company}
-                          className="form-control"
-                          id="exampleFormControlInput6"
-                          required
-                          placeholder=""
-                          onChange={(e) => setCompany(e.target.value)}
-                        />
-                      </div>
-
-                      {/* <div className="col-xl-6 mb-3">
-                        <label className="form-label">Builder<span className="text-danger">*</span></label>
-                        <Select
-                          options={options}
-                          value={options.find(option => option.value === BuilderCode)}
-                          onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                          placeholder="Select Builder"
-                          styles={{
-                            container: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                              color: 'black'
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                              color: 'black'
-                            }),
-                          }}
-                        />
-                      </div> */}
-
-                      <div className="col-xl-6 mb-3">
-                        <label className="form-label">Role</label>
-                        <Select
-                          options={roleOptions}
-                          value={roleOptions.find(option => option.value === RoleCode)}
-                          // value={RoleCode}
-                          onChange={(selectedOption) => handleRoleCode(selectedOption)}
-                          placeholder="Select Role"
-                          styles={{
-                            container: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                              color: 'black'
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                              color: 'black'
-                            }),
-                          }}
-                        />
-                      </div>
-
-                      {RoleCode == 9 && <div className="col-xl-6 mb-3">
-                        <label className="form-label">Standard User<span className="text-danger">*</span></label>
-                        <MultiSelect
-                          options={StandardUserOptions}
-                          onChange={(selectedOption) => handleStandardUser(selectedOption)}
-                          value={StandardUser}
-                          placeholder="Select Role"
-                          styles={{
-                            container: (provided) => ({
-                               ...provided,
-                               width: '100%',
-                               color: 'black'
-                            }),
-                            menu: (provided) => ({
-                              ...provided,
-                              width: '100%',
-                              color: 'black'
-                            }),
-                          }}
-                        />
-                      </div>}
-                      
-                      <p className="text-danger fs-12">{Error}</p>
-                    </div>
-                    <div>
-                      <button type="submit" className="btn btn-primary me-1">
-                        Submit
-                      </button>
-                      <Link to={"/userlist"} className="btn btn-danger light ms-1">
-                        Cancel
-                      </Link>
-                    </div>
-                  </form>
-                </div>
-              </div>)}
+                    </form>
+                  </div>
+                </div>)}
             </div>
           </div>
         </div>
@@ -408,26 +355,26 @@ const UserUpdate = () => {
 
       {/* Popup */}
       <Modal show={showPopup} onHide={HandlePopupDetailClick}>
-                <Modal.Header handlePopupClose>
-                    <Modal.Title>Confirmation</Modal.Title>
-                    <button
-                        className="btn-close"
-                        aria-label="Close"
-                        onClick={() => handlePopupClose()}
-                    ></button>
-                </Modal.Header>
-                <Modal.Body style={{color: "black"}}>
-                    {message}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={handlePopupClose}>
-                        Close
-                    </Button>
-                    {saveBtn && <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
-                        Okay
-                    </Button>}
-                </Modal.Footer>
-            </Modal>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Confirmation</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ color: "black" }}>
+          {message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handlePopupClose}>
+            Close
+          </Button>
+          {saveBtn && <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
+            Okay
+          </Button>}
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 };

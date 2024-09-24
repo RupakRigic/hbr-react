@@ -1,27 +1,35 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
-import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
 import Select from "react-select";
 import { MultiSelect } from 'react-multi-select-component';
+import Modal from "react-bootstrap/Modal";
+import { Button } from 'react-bootstrap';
 
 const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const { userSelectedUsers } = props;
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
-  const [BuilderList, setBuilderList] = useState([]);
   const [RoleCode, setRoleCode] = useState([]);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
   const [subRoleList, setSubRoleList] = useState([]);
   const [StandardUser, setStandardUser] = useState([]);
   const [addUser, setAddUser] = useState(false);
+  const handlePopupClose = () => setShowPopup(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [saveBtn, setSaveBtn] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+  const [company, setCompany] = useState("");
 
   useEffect(() => {
     GetRoleList();
-    GetBuilderList();
   }, []);
 
   const GetRoleList = async () => {
@@ -29,19 +37,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
       let responseData = await AdminUserRoleService.roles().json();
       setRoleList(responseData.main_role);
       setSubRoleList(responseData.sub_role);
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-
-  const GetBuilderList = async () => {
-    try {
-      const response = await AdminBuilderService.all_builder_list();
-      const responseData = await response.json();
-      setBuilderList(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -60,22 +55,11 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     label: element.name
   }));
 
-  const options = BuilderList
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map(element => ({
-    value: element.id,
-    label: element.name
-  }));
-
   useImperativeHandle(ref, () => ({
     showEmployeModal() {
       setAddUser(true);
     }
   }));
-
-  const handleBuilderCode = (code) => {
-    setBuilderCode(code.value);
-  };
 
   const handleRoleCode = (code) => {
     const formattedRoles = [{
@@ -105,30 +89,54 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          var userData = {
-            builder_id: BuilderCode,
-            role_id: RoleCode == 9 ? standardRoleCode : RoleCode,
-            name: event.target.firstname.value,
-            last_name: event.target.lastname.value,
-            email: event.target.email.value,
-            notes: event.target.notes.value,
-            company: event.target.company.value
-          };
-
-          const data = await AdminUserRoleService.bulkupdate(
-            userSelectedUsers,
-            userData
-          ).json();
-          if (data.status === true) {
-            swal("User Update Succesfully").then((willDelete) => {
-              if (willDelete) {
-                setAddUser(false);
-                setRoleCode();
-                setStandardUser([]);
-                props.parentCallback();
-                props.setSelectedUsers([]);
-              }
-            });
+          if (!company) {
+            setShowPopup(true);
+            setMessage("Please enter valid company.");
+            return;
+          }
+          const FilterRoleCode = RoleCode == 9 && standardRoleCode.filter((id) => id === 11);
+          if (FilterRoleCode == 11) {
+            var userData = {
+              "name": firstName,
+              "company": company,
+              "last_name": lastName,
+            }
+            const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
+            if (data.status === true) {
+              setBuilderCode(data.builder_id);
+              setMessage("Selected users are the Data Uploader for " + data.builder_name + ".");
+              setSaveBtn(true);
+              setShowPopup(true);
+            } else {
+              setMessage(data.message);
+              setShowPopup(true);
+            }
+          } else {
+            var userData = {
+              "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+              "name": firstName,
+              "last_name": lastName,
+              "email": email,
+              "notes": notes,
+              "company": company
+            }
+            const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
+            if (data.status === true) {
+              swal("User Update Succesfully").then((willDelete) => {
+                if (willDelete) {
+                  setAddUser(false);
+                  setRoleCode();
+                  setFirstName("");
+                  setLastName("");
+                  setEmail("");
+                  setNotes("");
+                  setCompany("");
+                  setStandardUser([]);
+                  props.parentCallback();
+                  props.setSelectedUsers([]);
+                }
+              });
+            }
           }
         } catch (error) {
           if (error.name === "HTTPError") {
@@ -140,6 +148,50 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
         }
       }
     })
+  };
+
+  const handlePopupSave = async (event) => {
+    event.preventDefault();
+    try {
+      var userData = {
+        "builder_id": BuilderCode,
+        "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+        "name": firstName,
+        "last_name": lastName,
+        "email": email,
+        "notes": notes,
+        "company": company
+      }
+      const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
+      if (data.status === true) {
+        setShowPopup(false);
+        setSaveBtn(false);
+        setRoleCode([]);
+        setStandardUser([]);
+        swal("User Update Succesfully").then((willDelete) => {
+          if (willDelete) {
+            setAddUser(false);
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setNotes("");
+            setCompany("");
+            props.parentCallback();
+            props.setSelectedUsers([]);
+          }
+        });
+      }
+    }
+    catch (error) {
+      if (error.name === 'HTTPError') {
+        const errorJson = await error.response.json();
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+      }
+    }
+  };
+
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
   };
 
   return (
@@ -165,6 +217,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput2"
                     placeholder=""
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -175,6 +228,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput3"
                     placeholder=""
+                    onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -185,6 +239,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput4"
                     placeholder=""
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -195,6 +250,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput4"
                     placeholder=""
+                    onChange={(e) => setNotes(e.target.value)}
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -205,27 +261,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput5"
                     placeholder=""
-                  />
-                </div>
-
-                <div className="col-xl-6 mb-3">
-                  <label className="form-label">Builder</label>
-                  <Select
-                    options={options}
-                    onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                    placeholder="Select Builder"
-                    styles={{
-                      container: (provided) => ({
-                        ...provided,
-                        width: '100%',
-                        color: 'black'
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        width: '100%',
-                        color: 'black'
-                      }),
-                    }}
+                    onChange={(e) => setCompany(e.target.value)}
                   />
                 </div>
 
@@ -271,7 +307,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     }}
                   />
                 </div>}
-                
+
                 <p className="text-danger fs-12">{Error}</p>
               </div>
               <div>
@@ -286,6 +322,29 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
           </div>
         </div>
       </Offcanvas>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+        <Modal.Header handlePopupClose>
+          <Modal.Title>Confirmation</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handlePopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ color: "black" }}>
+          {message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handlePopupClose}>
+            Close
+          </Button>
+          {saveBtn && <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
+            Okay
+          </Button>}
+        </Modal.Footer>
+      </Modal>
     </>
   );
 });
