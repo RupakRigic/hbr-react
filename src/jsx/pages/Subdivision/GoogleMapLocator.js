@@ -74,12 +74,22 @@ const GoogleMapLocator = () => {
    const mapRef = useRef(null);
    const [defaultCenter, setDefaultCenter] = useState({ lat: 0, lng: 0 });
    const [zoomLevel, setZoomLevel] = useState(8);
-   const [circles, setCircles] = useState([]);
    const [centerPoint, setCenterPoint] = useState([]);
    const [circleRadius, setCircleRadius] = useState(null);
    const [circleArea, setCircleArea] = useState(null);
    const [measurementPoints, setMeasurementPoints] = useState([]);
    const [showMeasurementPopup, setShowMeasurementPopup] = useState(false);
+   const [showMeasurementPopupCircle, setShowMeasurementPopupCircle] = useState(false);
+   const [showMeasurementPopupPolygon, setShowMeasurementPopupPolygon] = useState(false);
+   const [showMeasurementPopupRectangle, setShowMeasurementPopupRectangle] = useState(false);
+   const [drawingShape, setDrawingShape] = useState(null);
+   const [polygonPerimeter, setPolygonPerimeter] = useState('');
+   const [rectangleBounds, setRectangleBounds] = useState(null);
+   const [rectangleMeasurements, setRectangleMeasurements] = useState({
+      width: 0,
+      height: 0,
+      area: 0,
+   });
    const [distance, setDistance] = useState("Feet");
 
    const onLoad = (map) => {
@@ -134,32 +144,114 @@ const GoogleMapLocator = () => {
       setRedoStack([]);
 
       if (shape instanceof window.google.maps.Circle) {
-         const center = shape.getCenter();
-         const radius = shape.getRadius();
-         const radiusInMeters = shape.getRadius();
-         const radiusInFeet = radiusInMeters * 3.28084;
-         const areaInSquareFeet = Math.PI * Math.pow(radiusInFeet, 2);
-         const areaInAcres = areaInSquareFeet / 43560;
-         setCenterPoint(center.toJSON());
-         setCircleRadius(radiusInFeet.toFixed(3));
-         setCircleArea(areaInAcres.toFixed(3))
-         setCircles((prevCircles) => [
-            ...prevCircles,
-            { center: center.toJSON(), radius }
-         ]);
-         setShowMeasurementPopup(true);
+         setDrawingShape(shape);
+         updateCircleMeasurements(shape);
+         setShowMeasurementPopupCircle(true);
          setMeasurementPoints([]);
+
+         shape.addListener('radius_changed', () => updateCircleMeasurements(shape));
+         shape.addListener('center_changed', () => updateCircleMeasurements(shape));
       }
 
       if (shape instanceof window.google.maps.Polyline) {
+         setDrawingShape(shape);
+         setShowMeasurementPopup(true);
          const path = shape.getPath().getArray().map((latLng) => ({
             lat: latLng.lat(),
             lng: latLng.lng(),
-         }));
-         setMeasurementPoints(path);
-         setShowMeasurementPopup(true);
-         setCircles([]);
+          }));
+          setMeasurementPoints(path);
+
+         shape.getPath().addListener('set_at', () => updatePolylineInfo(shape));
+         shape.getPath().addListener('insert_at', () => updatePolylineInfo(shape));
       }
+
+      if (shape instanceof window.google.maps.Polygon) {
+         setDrawingShape(shape);
+         setShowMeasurementPopupPolygon(true);
+         updatePolygonInfo(shape);
+   
+         shape.getPath().addListener('set_at', () => updatePolygonInfo(shape));
+         shape.getPath().addListener('insert_at', () => updatePolygonInfo(shape));
+      }
+
+      if (shape instanceof window.google.maps.Rectangle) {
+         setShowMeasurementPopupRectangle(true);
+         updateRectangleMeasurements(shape);
+   
+         shape.addListener('bounds_changed', () => updateRectangleMeasurements(shape));
+      }
+   };
+
+   const updateCircleMeasurements = (circle) => {
+      const center = circle.getCenter();
+      const radiusInMeters = circle.getRadius();
+      const radiusInFeet = radiusInMeters * 3.28084;
+      const areaInSquareFeet = Math.PI * Math.pow(radiusInFeet, 2);
+      const areaInAcres = areaInSquareFeet / 43560;
+   
+      setCenterPoint(center.toJSON());
+      setCircleRadius(radiusInFeet.toFixed(3));
+      setCircleArea(areaInAcres.toFixed(3));
+      setShowMeasurementPopupCircle(true);
+   };
+
+   const handleCloseInfoWindowCircle = () => {
+      setShowMeasurementPopupCircle(false);
+   };
+
+   const updatePolylineInfo = (polyline) => {
+      const path = polyline.getPath().getArray().map((latLng) => ({
+        lat: latLng.lat(),
+        lng: latLng.lng(),
+      }));
+      setMeasurementPoints(path);
+    };
+
+   const updatePolygonInfo = (polygon) => {
+      const path = polygon.getPath();
+      let distance = 0;
+   
+      for (let i = 0; i < path.getLength() - 1; i++) {
+         distance += window.google.maps.geometry.spherical.computeDistanceBetween(
+            path.getAt(i),
+            path.getAt(i + 1)
+         );
+      }
+   
+      const distanceInFeet = distance * 3.28084;
+      setPolygonPerimeter(distanceInFeet.toFixed(3));
+   };
+
+   const handleCloseInfoWindowPolygon = () => {
+      setShowMeasurementPopupPolygon(false);
+   };
+
+   const updateRectangleMeasurements = (rectangle) => {
+      const bounds = rectangle.getBounds();
+      setRectangleBounds(bounds);
+  
+      const ne = bounds.getNorthEast();
+      const sw = bounds.getSouthWest();
+      const width = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(ne.lat(), sw.lng()),
+        new window.google.maps.LatLng(ne.lat(), ne.lng())
+      );
+      const height = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(ne.lat(), sw.lng()),
+        new window.google.maps.LatLng(sw.lat(), sw.lng())
+      );
+      const area = width * height;
+  
+      setRectangleMeasurements({
+        width: (width * 3.28084).toFixed(2), // convert to feet
+        height: (height * 3.28084).toFixed(2), // convert to feet
+        area: (area * 10.7639).toFixed(2), // convert to square feet
+      });
+   };
+
+   const handleCloseInfoWindowRectangle = () => {
+      setShowMeasurementPopupRectangle(false);
    };
 
    const handleUndo = () => {
@@ -172,6 +264,7 @@ const GoogleMapLocator = () => {
          }
          return newShapes;
       });
+      setMeasurementPoints([]);
    };
 
    const handleRedo = () => {
@@ -206,13 +299,6 @@ const GoogleMapLocator = () => {
 
    const calculateTotalDistanceInKilometers = () => {
       return calculateTotalDistance() / 1000;
-   };
-
-   const toggleMeasurementPopup = () => {
-      setShowMeasurementPopup((prev) => !prev);
-      setMeasurementPoints([]);
-      setDistance("Feet");
-      setShowMeasurementPopup(false);
    };
 
    const handleDistance = (e) => {
@@ -407,14 +493,14 @@ const GoogleMapLocator = () => {
                   </InfoWindow>
                )}
 
-               <Polyline
+               {/* <Polyline
                   path={measurementPoints}
                   options={{
                      strokeColor: "#FF0000",
                      strokeOpacity: 0.8,
                      strokeWeight: 2,
                   }}
-               />
+               /> */}
 
                {measurementPoints.map((point, index) => (
                   <Marker
@@ -432,55 +518,55 @@ const GoogleMapLocator = () => {
                ))}
 
                {showMeasurementPopup && measurementPoints.length > 1 && (
-                  <InfoWindow
-                     position={{
-                        lat:
-                           (measurementPoints[0].lat +
-                              measurementPoints[measurementPoints.length - 1].lat) /
-                           2,
-                        lng:
-                           (measurementPoints[0].lng +
-                              measurementPoints[measurementPoints.length - 1].lng) /
-                           2,
-                     }}
-                     onCloseClick={toggleMeasurementPopup}
-                  >
-                     <div>
-                        <h4>Measurements:</h4>
-                        <hr></hr>
-                        <select onChange={handleDistance} value={distance}>
-                           <option value="">Select Distance</option>
-                           <option value="Meter">Meter</option>
-                           <option value="Feet">Feet</option>
-                           <option value="Kilometer">Kilometer</option>
-                        </select>
-                        <div style={{ marginTop: "10px" }}></div>
-                        {distance === "Meter" && (
-                           <h6 style={{ color: "black" }}>
-                              Total Distance: {calculateTotalDistance().toFixed(2)} m
-                           </h6>
-                        )}
-                        {distance === "Feet" && (
-                           <h6 style={{ color: "black" }}>
-                              Total Distance: {calculateTotalDistanceInFeet().toFixed(2)} ft
-                           </h6>
-                        )}
-                        {distance === "Kilometer" && (
-                           <h6 style={{ color: "black" }}>
-                              Total Distance: {calculateTotalDistanceInKilometers().toFixed(2)} km
-                           </h6>
-                        )}
-                     </div>
-                  </InfoWindow>
+                 <InfoWindow
+                  position={{
+                    lat:
+                     (measurementPoints[0].lat +
+                        measurementPoints[measurementPoints.length - 1].lat) /
+                     2,
+                    lng:
+                     (measurementPoints[0].lng +
+                        measurementPoints[measurementPoints.length - 1].lng) /
+                     2,
+                  }}
+                  onCloseClick={() => setShowMeasurementPopup(false)}
+                 >
+                  <div>
+                     <h4>PolyLine Measurements:</h4>
+                     <hr></hr>
+                     <select onChange={handleDistance} value={distance}>
+                       <option value="">Select Distance</option>
+                       <option value="Meter">Meter</option>
+                       <option value="Feet">Feet</option>
+                       <option value="Kilometer">Kilometer</option>
+                     </select>
+                     <div style={{ marginTop: "10px" }}></div>
+                     {distance === "Meter" && (
+                       <h6 style={{ color: "black" }}>
+                           Total Distance: {calculateTotalDistance().toFixed(2)} m
+                       </h6>
+                     )}
+                     {distance === "Feet" && (
+                       <h6 style={{ color: "black" }}>
+                           Total Distance: {calculateTotalDistanceInFeet().toFixed(2)} ft
+                       </h6>
+                     )}
+                     {distance === "Kilometer" && (
+                       <h6 style={{ color: "black" }}>
+                           Total Distance: {calculateTotalDistanceInKilometers().toFixed(2)} km
+                       </h6>
+                     )}
+                  </div>
+                 </InfoWindow>
                )}
 
-               {showMeasurementPopup && circles.length > 0 && (
+               {showMeasurementPopupCircle && (
                   <InfoWindow
                      position={{
                         lat: centerPoint.lat,
                         lng: centerPoint.lng,
                      }}
-                     onCloseClick={toggleMeasurementPopup}
+                     onCloseClick={handleCloseInfoWindowCircle}
                   >
                      <div>
                         <h4>Circle Measurements:</h4>
@@ -491,6 +577,40 @@ const GoogleMapLocator = () => {
                   </InfoWindow>
                )}
 
+               {showMeasurementPopupPolygon && (
+                  <InfoWindow
+                     position={drawingShape.getPath().getAt(0).toJSON()}
+                     onCloseClick={handleCloseInfoWindowPolygon}
+                  >
+                     <div>
+                        <h4>Polygon Measurements:</h4>
+                        <hr></hr>
+                        <h6 style={{ color: "black" }}>Perimeter: {polygonPerimeter} ft</h6>
+                     </div>
+                  </InfoWindow>
+               )}
+
+               {showMeasurementPopupRectangle && (
+                  <InfoWindow
+                     position={rectangleBounds.getCenter()}
+                     onCloseClick={handleCloseInfoWindowRectangle}
+                  >
+                     <div>
+                        <h4>Rectangle Measurements:</h4>
+                        <hr />
+                        <h6 style={{ color: "black" }}>
+                           Width: {rectangleMeasurements.width} ft
+                        </h6>
+                        <h6 style={{ color: "black" }}>
+                           Height: {rectangleMeasurements.height} ft
+                        </h6>
+                        <h6 style={{ color: "black" }}>
+                           Area: {rectangleMeasurements.area} sq ft
+                        </h6>
+                     </div>
+                 </InfoWindow>
+               )}
+               
                <DrawingManager
                   onCircleComplete={handleShapeComplete}
                   onPolygonComplete={handleShapeComplete}
