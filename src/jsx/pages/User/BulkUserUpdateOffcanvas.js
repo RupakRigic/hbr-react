@@ -89,7 +89,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          if (!company) {
+          if (!company && RoleCode == 9) {
             setShowPopup(true);
             setMessage("Please enter valid company.");
             return;
@@ -287,7 +287,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                 </div>
 
                 {RoleCode == 9 && <div className="col-xl-6 mb-3">
-                  <label className="form-label">Standard User<span className="text-danger">*</span></label>
+                  <label className="form-label">Standard User</label>
                   <MultiSelect
                     options={StandardUserOptions}
                     onChange={(selectedOption) => handleStandardUser(selectedOption)}

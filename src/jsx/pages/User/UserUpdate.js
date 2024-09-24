@@ -314,7 +314,7 @@ const UserUpdate = () => {
                         </div>
 
                         {RoleCode == 9 && <div className="col-xl-6 mb-3">
-                          <label className="form-label">Standard User<span className="text-danger">*</span></label>
+                          <label className="form-label">Standard User</label>
                           <MultiSelect
                             options={StandardUserOptions}
                             onChange={(selectedOption) => handleStandardUser(selectedOption)}
