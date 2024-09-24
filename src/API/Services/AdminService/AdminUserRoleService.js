@@ -11,5 +11,5 @@ export default {
     manageAccessFields:(userData) =>  clientAuth.post(`admin/user/manage-access-fields`,{ json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/user/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/user/bulkdestroy/${id}`),
-
+    checkBuilderForCompany: (userData) => clientAuth.post(`admin/user/check-company-builder`, { json: userData })
 };

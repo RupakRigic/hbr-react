@@ -6,6 +6,8 @@ import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRo
 import swal from "sweetalert";
 import { MultiSelect } from 'react-multi-select-component';
 import ClipLoader from "react-spinners/ClipLoader";
+import Modal from "react-bootstrap/Modal";
+import { Button } from 'react-bootstrap';
 
 const UserUpdate = () => {
   const [Error, setError] = useState("");
@@ -20,6 +22,15 @@ const UserUpdate = () => {
   const [isLoading, setIsLoading] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
+  const handlePopupClose = () => setShowPopup(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [saveBtn, setSaveBtn] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+  const [company, setCompany] = useState("");
   
   useEffect(() => {
     GetRoleList();
@@ -33,6 +44,16 @@ const UserUpdate = () => {
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+    if(UserList.id) {
+      setFirstName(UserList.name);
+      setLastName(UserList.last_name);
+      setEmail(UserList.email);
+      setNotes(UserList.notes);
+      setCompany(UserList.company);
+    }
+  }, [UserList]);
 
   const GetUserList = async (id) => {
     setIsLoading(true);
@@ -129,24 +150,43 @@ const UserUpdate = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      var userData = {
-        builder_id: BuilderCode,
-        role_id: RoleCode == 9 ? standardRoleCode : RoleCode,
-        name: event.target.firstname.value,
-        last_name: event.target.lastname.value,
-        email: event.target.email.value,
-        notes: event.target.notes.value,
-        company: event.target.company.value
-      };
-
-      const data = await AdminUserRoleService.update(params.id,userData).json();
-      if (data.status === true) {
-        swal("User Update Succesfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/userlist");
-          }
-        });
-      }
+      const FilterRoleCode = RoleCode == 9 && standardRoleCode.filter((id) => id === 11);
+            if (FilterRoleCode == 11) {
+                var userData = {
+                    "name": firstName,
+                    "company": company,
+                    "last_name": lastName,
+                }
+                const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
+                if (data.status === true) {
+                    setBuilderCode(data.builder_id);
+                    setMessage(data.message);
+                    setSaveBtn(true);
+                    setShowPopup(true);
+                } else {
+                    setMessage(data.message);
+                    setShowPopup(true);
+                }
+            } else {
+                var userData = {
+                    "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                    "name": firstName,
+                    "last_name": lastName,
+                    "email": email,
+                    "notes": notes,
+                    "company": company
+                }
+                const data = await AdminUserRoleService.update(params.id,userData).json();
+                if (data.status === true) {
+                    swal("User Create Succesfully").then((willDelete) => {
+                        if (willDelete) {
+                            setRoleCode([]);
+                            setStandardUser([]);
+                            navigate("/userlist");
+                        }
+                    })
+                }
+            }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -156,6 +196,43 @@ const UserUpdate = () => {
       }
     }
   };
+
+  const handlePopupSave = async(event) => {
+    event.preventDefault();
+    try {
+        var userData = {
+            "builder_id": BuilderCode,
+            "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+            "name": firstName,
+            "last_name": lastName,
+            "email": email,
+            "notes": notes,
+            "company": company
+        }
+        const data = await AdminUserRoleService.update(params.id,userData).json();
+        if (data.status === true) {
+            setShowPopup(false);
+            setSaveBtn(false);
+            setRoleCode([]);
+            setStandardUser([]);
+            swal("User Create Succesfully").then((willDelete) => {
+                if (willDelete) {
+                  navigate("/userlist");
+                }
+            })
+        }
+    }
+    catch (error) {
+        if (error.name === 'HTTPError') {
+            const errorJson = await error.response.json();
+            setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
+    }
+};
+
+  const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+};
 
   return (
     <Fragment>
@@ -176,66 +253,75 @@ const UserUpdate = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="row">
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput2" className="form-label">{" "}First Name <span className="text-danger">*</span></label>
+                        <label htmlFor="exampleFormControlInput2" className="form-label">First Name <span className="text-danger">*</span></label>
                         <input
                           type="text"
                           name="firstname"
-                          defaultValue={UserList.name}
+                          defaultValue={firstName}
                           className="form-control"
                           id="exampleFormControlInput2"
+                          required
                           placeholder=""
+                          onChange={(e) => setFirstName(e.target.value)}
                         />
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput3" className="form-label">{" "}Last Name <span className="text-danger">*</span></label>
+                        <label htmlFor="exampleFormControlInput3" className="form-label">Last Name <span className="text-danger">*</span></label>
                         <input
                           type="text"
                           name="lastname"
-                          defaultValue={UserList.last_name}
+                          defaultValue={lastName}
                           className="form-control"
                           id="exampleFormControlInput3"
+                          required
                           placeholder=""
+                          onChange={(e) => setLastName(e.target.value)}
                         />
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger"></span></label>
+                        <label htmlFor="exampleFormControlInput4" className="form-label">Email <span className="text-danger">*</span></label>
                         <input
                           type="email"
                           name="email"
-                          defaultValue={UserList.email}
+                          defaultValue={email}
                           className="form-control"
                           id="exampleFormControlInput4"
+                          required
                           placeholder=""
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput5" className="form-label">Notes <span className="text-danger"></span></label>
+                        <label htmlFor="exampleFormControlInput5" className="form-label">Notes</label>
                         <input
                           type="text"
                           name="notes"
-                          defaultValue={UserList.notes}
+                          defaultValue={notes}
                           className="form-control"
                           id="exampleFormControlInput5"
                           placeholder=""
+                          onChange={(e) => setNotes(e.target.value)}
                         />
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger"></span></label>
+                        <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger">*</span></label>
                         <input
                           type="text"
                           name="company"
-                          defaultValue={UserList.company}
+                          defaultValue={company}
                           className="form-control"
                           id="exampleFormControlInput6"
+                          required
                           placeholder=""
+                          onChange={(e) => setCompany(e.target.value)}
                         />
                       </div>
 
-                      <div className="col-xl-6 mb-3">
+                      {/* <div className="col-xl-6 mb-3">
                         <label className="form-label">Builder<span className="text-danger">*</span></label>
                         <Select
                           options={options}
@@ -255,10 +341,10 @@ const UserUpdate = () => {
                             }),
                           }}
                         />
-                      </div>
+                      </div> */}
 
                       <div className="col-xl-6 mb-3">
-                        <label className="form-label">Role<span className="text-danger">*</span></label>
+                        <label className="form-label">Role</label>
                         <Select
                           options={roleOptions}
                           value={roleOptions.find(option => option.value === RoleCode)}
@@ -319,6 +405,29 @@ const UserUpdate = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup */}
+      <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+                <Modal.Header handlePopupClose>
+                    <Modal.Title>Confirmation</Modal.Title>
+                    <button
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => handlePopupClose()}
+                    ></button>
+                </Modal.Header>
+                <Modal.Body style={{color: "black"}}>
+                    {message}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handlePopupClose}>
+                        Close
+                    </Button>
+                    {saveBtn && <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
+                        Okay
+                    </Button>}
+                </Modal.Footer>
+            </Modal>
     </Fragment>
   );
 };
