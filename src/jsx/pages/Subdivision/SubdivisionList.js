@@ -6599,10 +6599,9 @@ const SubdivisionList = () => {
                       value={filterQuery.zipcode} 
                       className="form-control" 
                       onChange={HandleFilter} 
-                      maxLength="5"
-                      pattern="[0-9]*"
+                      pattern="[0-9, ]*"
                       onInput={(e) => {
-                          e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                          e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
                       }}
                     />
                   </div>
