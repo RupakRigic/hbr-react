@@ -168,7 +168,8 @@ const GoogleMapLocator = () => {
       }
 
       if (shape instanceof window.google.maps.Polygon) {
-         setDrawingShape(shape);
+         const firstVertex = shape.getPath().getAt(0);
+         setDrawingShape(firstVertex);
          setShowMeasurementPopupPolygon(true);
          updatePolygonInfo(shape);
    
@@ -494,30 +495,6 @@ const GoogleMapLocator = () => {
                   </InfoWindow>
                )}
 
-               {/* <Polyline
-                  path={measurementPoints}
-                  options={{
-                     strokeColor: "#FF0000",
-                     strokeOpacity: 0.8,
-                     strokeWeight: 2,
-                  }}
-               /> */}
-
-               {measurementPoints.map((point, index) => (
-                  <Marker
-                     key={index}
-                     position={point}
-                     icon={{
-                        path: window.google.maps.SymbolPath.CIRCLE,
-                        fillColor: '#FF0000',
-                        fillOpacity: 1,
-                        scale: 2,
-                        strokeColor: '#FF0000',
-                        strokeWeight: 1,
-                     }}
-                  />
-               ))}
-
                {showMeasurementPopup && measurementPoints.length > 1 && (
                  <InfoWindow
                   position={{
@@ -580,7 +557,7 @@ const GoogleMapLocator = () => {
 
                {showMeasurementPopupPolygon && (
                   <InfoWindow
-                     position={drawingShape.getPath().getAt(0).toJSON()}
+                     position={drawingShape}
                      onCloseClick={handleCloseInfoWindowPolygon}
                   >
                      <div style={{width: "230px"}}>
