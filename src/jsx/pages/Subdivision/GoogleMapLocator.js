@@ -3,6 +3,7 @@ import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager, Polyline } f
 import PriceComponent from "../../components/Price/PriceComponent";
 import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from 'react-router-dom';
+import '../../pages/Subdivision/subdivisionList.css';
 
 const containerStyle = {
    width: "100%",
@@ -531,10 +532,10 @@ const GoogleMapLocator = () => {
                   }}
                   onCloseClick={() => setShowMeasurementPopup(false)}
                  >
-                  <div>
-                     <h4>PolyLine Measurements:</h4>
+                  <div style={{width: "230px"}}>
+                     <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>PolyLine Measurements</h4>
                      <hr></hr>
-                     <select onChange={handleDistance} value={distance}>
+                     <select onChange={handleDistance} value={distance} style={{ border: "1px solid #db7e2e"}}>
                        <option value="">Select Distance</option>
                        <option value="Meter">Meter</option>
                        <option value="Feet">Feet</option>
@@ -568,8 +569,8 @@ const GoogleMapLocator = () => {
                      }}
                      onCloseClick={handleCloseInfoWindowCircle}
                   >
-                     <div>
-                        <h4>Circle Measurements:</h4>
+                     <div style={{width: "230px"}}>
+                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Circle Measurements</h4>
                         <hr></hr>
                         <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} ft</h6>
                         <h6 style={{ color: "black" }}>Circle Area: {circleArea} acres</h6>
@@ -582,8 +583,8 @@ const GoogleMapLocator = () => {
                      position={drawingShape.getPath().getAt(0).toJSON()}
                      onCloseClick={handleCloseInfoWindowPolygon}
                   >
-                     <div>
-                        <h4>Polygon Measurements:</h4>
+                     <div style={{width: "230px"}}>
+                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Polygon Measurements</h4>
                         <hr></hr>
                         <h6 style={{ color: "black" }}>Perimeter: {polygonPerimeter} ft</h6>
                      </div>
@@ -595,8 +596,8 @@ const GoogleMapLocator = () => {
                      position={rectangleBounds.getCenter()}
                      onCloseClick={handleCloseInfoWindowRectangle}
                   >
-                     <div>
-                        <h4>Rectangle Measurements:</h4>
+                     <div style={{width: "230px"}}>
+                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Rectangle Measurements</h4>
                         <hr />
                         <h6 style={{ color: "black" }}>
                            Width: {rectangleMeasurements.width} ft
