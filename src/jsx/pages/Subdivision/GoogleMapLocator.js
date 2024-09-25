@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager, Polyline } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker, InfoWindow, DrawingManager } from "@react-google-maps/api";
 import PriceComponent from "../../components/Price/PriceComponent";
 import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -75,7 +75,7 @@ const GoogleMapLocator = () => {
    const mapRef = useRef(null);
    const [defaultCenter, setDefaultCenter] = useState({ lat: 0, lng: 0 });
    const [zoomLevel, setZoomLevel] = useState(8);
-   const [centerPoint, setCenterPoint] = useState([]);
+   const [centerPoint, setCenterPoint] = useState({ lat: 0, lng: 0 });
    const [circleRadius, setCircleRadius] = useState(null);
    const [circleArea, setCircleArea] = useState(null);
    const [measurementPoints, setMeasurementPoints] = useState([]);
@@ -85,7 +85,7 @@ const GoogleMapLocator = () => {
    const [showMeasurementPopupRectangle, setShowMeasurementPopupRectangle] = useState(false);
    const [drawingShape, setDrawingShape] = useState(null);
    const [polygonPerimeter, setPolygonPerimeter] = useState('');
-   const [rectangleBounds, setRectangleBounds] = useState(null);
+   const [rectangleBounds, setRectangleBounds] = useState({ lat: 0, lng: 0 });
    const [rectangleMeasurements, setRectangleMeasurements] = useState({
       width: 0,
       height: 0,
@@ -191,8 +191,10 @@ const GoogleMapLocator = () => {
       const radiusInFeet = radiusInMeters * 3.28084;
       const areaInSquareFeet = Math.PI * Math.pow(radiusInFeet, 2);
       const areaInAcres = areaInSquareFeet / 43560;
-   
-      setCenterPoint(center.toJSON());
+      const radiusInDegrees = radiusInMeters / 111139;
+      const upperPointLat = center.lat() + radiusInDegrees;
+      const upperPointLng = center.lng();
+      setCenterPoint({ lat: upperPointLat, lng: upperPointLng });
       setCircleRadius(radiusInFeet.toFixed(3));
       setCircleArea(areaInAcres.toFixed(3));
       setShowMeasurementPopupCircle(true);
@@ -231,7 +233,6 @@ const GoogleMapLocator = () => {
 
    const updateRectangleMeasurements = (rectangle) => {
       const bounds = rectangle.getBounds();
-      setRectangleBounds(bounds);
   
       const ne = bounds.getNorthEast();
       const sw = bounds.getSouthWest();
@@ -250,6 +251,16 @@ const GoogleMapLocator = () => {
         height: (height * 3.28084).toFixed(2), // convert to feet
         area: (area * 10.7639).toFixed(2), // convert to square feet
       });
+
+      const centerLat = (ne.lat() + sw.lat()) / 2;
+      const centerLng = (ne.lng() + sw.lng()) / 2;
+      const halfHeightInDegrees = (height / 2) / 111139;
+
+      const upperSidePoint = {
+        lat: centerLat + halfHeightInDegrees,
+        lng: centerLng,
+      };
+      setRectangleBounds(upperSidePoint);
    };
 
    const handleCloseInfoWindowRectangle = () => {
@@ -540,10 +551,7 @@ const GoogleMapLocator = () => {
 
                {showMeasurementPopupCircle && (
                   <InfoWindow
-                     position={{
-                        lat: centerPoint.lat,
-                        lng: centerPoint.lng,
-                     }}
+                     position={centerPoint}
                      onCloseClick={handleCloseInfoWindowCircle}
                   >
                      <div style={{width: "230px"}}>
@@ -570,7 +578,7 @@ const GoogleMapLocator = () => {
 
                {showMeasurementPopupRectangle && (
                   <InfoWindow
-                     position={rectangleBounds.getCenter()}
+                     position={rectangleBounds}
                      onCloseClick={handleCloseInfoWindowRectangle}
                   >
                      <div style={{width: "230px"}}>

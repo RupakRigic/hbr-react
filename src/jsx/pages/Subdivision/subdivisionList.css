@@ -26,3 +26,7 @@
     right: 0;
     z-index: 2;
   }
+
+  .gm-style .gm-style-iw-tc::after {
+    background-color: transparent;
+  }
