@@ -58,14 +58,12 @@ const GoogleMapLocator = () => {
    const navigate = useNavigate();
    const location = useLocation();
    const state = location.state || {};
-
    const subdivisionList = state.subdivisionList;
    const subdivision = state.subdivision;
    const product = state.product;
    const closings = state.closings;
    const permits = state.permits;
    const landsales = state.landsales;
-
    const [selectedMarker, setSelectedMarker] = useState(null);
    const [drawing, setDrawing] = useState(false);
    const [shapes, setShapes] = useState([]);
@@ -139,7 +137,6 @@ const GoogleMapLocator = () => {
          } else {
             setZoomLevel(8);
          }
-
       }
    }, [subdivisionList]);
 
@@ -206,7 +203,7 @@ const GoogleMapLocator = () => {
          setDrawingShape(firstVertex);
          setShowMeasurementPopupPolygon(true);
          updatePolygonInfo(shape);
-   
+
          shape.getPath().addListener('set_at', () => updatePolygonInfo(shape));
          shape.getPath().addListener('insert_at', () => updatePolygonInfo(shape));
       }
@@ -224,7 +221,7 @@ const GoogleMapLocator = () => {
          setRedoStack([]);
          setShowMeasurementPopupRectangle(true);
          updateRectangleMeasurements(shape);
-   
+
          shape.addListener('bounds_changed', () => updateRectangleMeasurements(shape));
       }
    };
@@ -259,8 +256,8 @@ const GoogleMapLocator = () => {
 
    const updatePolylineInfo = (polyline) => {
       const path = polyline.getPath().getArray().map((latLng) => ({
-        lat: latLng.lat(),
-        lng: latLng.lng(),
+         lat: latLng.lat(),
+         lng: latLng.lng(),
       }));
       setMeasurementPoints(path);
    };
@@ -281,14 +278,14 @@ const GoogleMapLocator = () => {
    const updatePolygonInfo = (polygon) => {
       const path = polygon.getPath();
       let distance = 0;
-   
+
       for (let i = 0; i < path.getLength() - 1; i++) {
          distance += window.google.maps.geometry.spherical.computeDistanceBetween(
             path.getAt(i),
             path.getAt(i + 1)
          );
       }
-   
+
       const distanceInFeet = distance * 3.28084;
       setPolygonPerimeter(distanceInFeet.toFixed(3));
    };
@@ -308,23 +305,23 @@ const GoogleMapLocator = () => {
 
    const updateRectangleMeasurements = (rectangle) => {
       const bounds = rectangle.getBounds();
-  
+
       const ne = bounds.getNorthEast();
       const sw = bounds.getSouthWest();
       const width = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(ne.lat(), sw.lng()),
-        new window.google.maps.LatLng(ne.lat(), ne.lng())
+         new window.google.maps.LatLng(ne.lat(), sw.lng()),
+         new window.google.maps.LatLng(ne.lat(), ne.lng())
       );
       const height = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(ne.lat(), sw.lng()),
-        new window.google.maps.LatLng(sw.lat(), sw.lng())
+         new window.google.maps.LatLng(ne.lat(), sw.lng()),
+         new window.google.maps.LatLng(sw.lat(), sw.lng())
       );
       const area = width * height;
-  
+
       setRectangleMeasurements({
-        width: (width * 3.28084).toFixed(2), // convert to feet
-        height: (height * 3.28084).toFixed(2), // convert to feet
-        area: (area * 10.7639).toFixed(2), // convert to square feet
+         width: (width * 3.28084).toFixed(2), // convert to feet
+         height: (height * 3.28084).toFixed(2), // convert to feet
+         area: (area * 10.7639).toFixed(2), // convert to square feet
       });
 
       const centerLat = (ne.lat() + sw.lat()) / 2;
@@ -332,8 +329,8 @@ const GoogleMapLocator = () => {
       const halfHeightInDegrees = (height / 2) / 111139;
 
       const upperSidePoint = {
-        lat: centerLat + halfHeightInDegrees,
-        lng: centerLng,
+         lat: centerLat + halfHeightInDegrees,
+         lng: centerLng,
       };
       setRectangleBounds(upperSidePoint);
    };
@@ -358,6 +355,21 @@ const GoogleMapLocator = () => {
          if (shapeToRemove) {
             shapeToRemove.setMap(null);
             setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+
+            if (shapeToRemove instanceof window.google.maps.Circle) {
+               setShowMeasurementPopupCircle(false);
+            } else if (shapeToRemove instanceof window.google.maps.Polygon) {
+               setShowMeasurementPopupPolygon(false);
+            } else if (shapeToRemove instanceof window.google.maps.Polyline) {
+               const path = shapeToRemove.getPath().getArray().map((latLng) => ({
+                  lat: latLng.lat(),
+                  lng: latLng.lng(),
+               }));
+               setMeasurementPoints(path);
+               setShowMeasurementPopup(false);
+            } else if (shapeToRemove instanceof window.google.maps.Rectangle) {
+               setShowMeasurementPopupRectangle(false);
+            }
          }
          return newShapes;
       });
@@ -371,6 +383,21 @@ const GoogleMapLocator = () => {
          if (shapeToRedo && mapRef.current) {
             shapeToRedo.setMap(mapRef.current);
             setShapes((prevShapes) => [...prevShapes, shapeToRedo]);
+
+            if (shapeToRedo instanceof window.google.maps.Circle) {
+               setShowMeasurementPopupCircle(true);
+            } else if (shapeToRedo instanceof window.google.maps.Polygon) {
+               setShowMeasurementPopupPolygon(true);
+            } else if (shapeToRedo instanceof window.google.maps.Polyline) {
+               const path = shapeToRedo.getPath().getArray().map((latLng) => ({
+                  lat: latLng.lat(),
+                  lng: latLng.lng(),
+               }));
+               setMeasurementPoints(path);
+               setShowMeasurementPopup(true);
+            } else if (shapeToRedo instanceof window.google.maps.Rectangle) {
+               setShowMeasurementPopupRectangle(true);
+            }
          }
          return newRedoStack;
       });
@@ -591,46 +618,46 @@ const GoogleMapLocator = () => {
                )}
 
                {showMeasurementPopup && measurementPoints.length > 1 && (
-                 <InfoWindow
-                  position={{
-                    lat:
-                     (measurementPoints[0].lat +
-                        measurementPoints[measurementPoints.length - 1].lat) /
-                     2,
-                    lng:
-                     (measurementPoints[0].lng +
-                        measurementPoints[measurementPoints.length - 1].lng) /
-                     2,
-                  }}
-                  onCloseClick={handleCloseInfoWindowPolyLine}
-                 >
-                  <div style={{width: "230px"}}>
-                     <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>PolyLine Measurements</h4>
-                     <hr></hr>
-                     <select onChange={handleDistance} value={distance} style={{ border: "1px solid #db7e2e"}}>
-                       <option value="">Select Distance</option>
-                       <option value="Meter">Meter</option>
-                       <option value="Feet">Feet</option>
-                       <option value="Kilometer">Kilometer</option>
-                     </select>
-                     <div style={{ marginTop: "10px" }}></div>
-                     {distance === "Meter" && (
-                       <h6 style={{ color: "black" }}>
-                           Total Distance: {calculateTotalDistance().toFixed(2)} m
-                       </h6>
-                     )}
-                     {distance === "Feet" && (
-                       <h6 style={{ color: "black" }}>
-                           Total Distance: {calculateTotalDistanceInFeet().toFixed(2)} ft
-                       </h6>
-                     )}
-                     {distance === "Kilometer" && (
-                       <h6 style={{ color: "black" }}>
-                           Total Distance: {calculateTotalDistanceInKilometers().toFixed(2)} km
-                       </h6>
-                     )}
-                  </div>
-                 </InfoWindow>
+                  <InfoWindow
+                     position={{
+                        lat:
+                           (measurementPoints[0].lat +
+                              measurementPoints[measurementPoints.length - 1].lat) /
+                           2,
+                        lng:
+                           (measurementPoints[0].lng +
+                              measurementPoints[measurementPoints.length - 1].lng) /
+                           2,
+                     }}
+                     onCloseClick={handleCloseInfoWindowPolyLine}
+                  >
+                     <div style={{ width: "230px" }}>
+                        <h4 style={{ position: "relative", zIndex: "1", paddingTop: "15px" }}>PolyLine Measurements</h4>
+                        <hr></hr>
+                        <select onChange={handleDistance} value={distance} style={{ border: "1px solid #db7e2e" }}>
+                           <option value="">Select Distance</option>
+                           <option value="Meter">Meter</option>
+                           <option value="Feet">Feet</option>
+                           <option value="Kilometer">Kilometer</option>
+                        </select>
+                        <div style={{ marginTop: "10px" }}></div>
+                        {distance === "Meter" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistance().toFixed(2)} m
+                           </h6>
+                        )}
+                        {distance === "Feet" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistanceInFeet().toFixed(2)} ft
+                           </h6>
+                        )}
+                        {distance === "Kilometer" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistanceInKilometers().toFixed(2)} km
+                           </h6>
+                        )}
+                     </div>
+                  </InfoWindow>
                )}
 
                {showMeasurementPopupCircle && (
@@ -638,8 +665,8 @@ const GoogleMapLocator = () => {
                      position={centerPoint}
                      onCloseClick={handleCloseInfoWindowCircle}
                   >
-                     <div style={{width: "230px"}}>
-                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Circle Measurements</h4>
+                     <div style={{ width: "230px" }}>
+                        <h4 style={{ position: "relative", zIndex: "1", paddingTop: "15px" }}>Circle Measurements</h4>
                         <hr></hr>
                         <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} ft</h6>
                         <h6 style={{ color: "black" }}>Circle Area: {circleArea} acres</h6>
@@ -652,8 +679,8 @@ const GoogleMapLocator = () => {
                      position={drawingShape}
                      onCloseClick={handleCloseInfoWindowPolygon}
                   >
-                     <div style={{width: "230px"}}>
-                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Polygon Measurements</h4>
+                     <div style={{ width: "230px" }}>
+                        <h4 style={{ position: "relative", zIndex: "1", paddingTop: "15px" }}>Polygon Measurements</h4>
                         <hr></hr>
                         <h6 style={{ color: "black" }}>Perimeter: {polygonPerimeter} ft</h6>
                      </div>
@@ -665,8 +692,8 @@ const GoogleMapLocator = () => {
                      position={rectangleBounds}
                      onCloseClick={handleCloseInfoWindowRectangle}
                   >
-                     <div style={{width: "230px"}}>
-                        <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>Rectangle Measurements</h4>
+                     <div style={{ width: "230px" }}>
+                        <h4 style={{ position: "relative", zIndex: "1", paddingTop: "15px" }}>Rectangle Measurements</h4>
                         <hr />
                         <h6 style={{ color: "black" }}>
                            Width: {rectangleMeasurements.width} ft
@@ -678,9 +705,9 @@ const GoogleMapLocator = () => {
                            Area: {rectangleMeasurements.area} sq ft
                         </h6>
                      </div>
-                 </InfoWindow>
+                  </InfoWindow>
                )}
-               
+
                <DrawingManager
                   onCircleComplete={handleShapeComplete}
                   onPolygonComplete={handleShapeComplete}
