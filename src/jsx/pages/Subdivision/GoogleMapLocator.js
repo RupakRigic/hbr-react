@@ -92,6 +92,10 @@ const GoogleMapLocator = () => {
       area: 0,
    });
    const [distance, setDistance] = useState("Feet");
+   const [currentCircle, setCurrentCircle] = useState(null);
+   const [currentPolyline, setCurrentPolyline] = useState(null);
+   const [currentPolygon, setCurrentPolygon] = useState(null);
+   const [currentRectangle, setCurrentRectangle] = useState(null);
 
    const onLoad = (map) => {
       mapRef.current = map;
@@ -145,6 +149,16 @@ const GoogleMapLocator = () => {
       setRedoStack([]);
 
       if (shape instanceof window.google.maps.Circle) {
+         if (currentCircle) {
+            currentCircle.setMap(null);
+         }
+
+         setCurrentCircle(shape);
+         setShapes((prevShapes) => [
+            ...prevShapes.filter(s => !(s instanceof window.google.maps.Circle)),
+            shape
+         ]);
+         setRedoStack([]);
          setDrawingShape(shape);
          updateCircleMeasurements(shape);
          setShowMeasurementPopupCircle(true);
@@ -155,19 +169,39 @@ const GoogleMapLocator = () => {
       }
 
       if (shape instanceof window.google.maps.Polyline) {
+         if (currentPolyline) {
+            currentPolyline.setMap(null);
+         }
+
+         setCurrentPolyline(shape);
+         setShapes((prevShapes) => [
+            ...prevShapes.filter(s => !(s instanceof window.google.maps.Polyline)),
+            shape
+         ]);
+         setRedoStack([]);
          setDrawingShape(shape);
          setShowMeasurementPopup(true);
          const path = shape.getPath().getArray().map((latLng) => ({
             lat: latLng.lat(),
             lng: latLng.lng(),
-          }));
-          setMeasurementPoints(path);
+         }));
+         setMeasurementPoints(path);
 
          shape.getPath().addListener('set_at', () => updatePolylineInfo(shape));
          shape.getPath().addListener('insert_at', () => updatePolylineInfo(shape));
       }
 
       if (shape instanceof window.google.maps.Polygon) {
+         if (currentPolygon) {
+            currentPolygon.setMap(null);
+         }
+
+         setCurrentPolygon(shape);
+         setShapes((prevShapes) => [
+            ...prevShapes.filter(s => !(s instanceof window.google.maps.Polygon)),
+            shape
+         ]);
+         setRedoStack([]);
          const firstVertex = shape.getPath().getAt(0);
          setDrawingShape(firstVertex);
          setShowMeasurementPopupPolygon(true);
@@ -178,6 +212,16 @@ const GoogleMapLocator = () => {
       }
 
       if (shape instanceof window.google.maps.Rectangle) {
+         if (currentRectangle) {
+            currentRectangle.setMap(null);
+         }
+
+         setCurrentRectangle(shape);
+         setShapes((prevShapes) => [
+            ...prevShapes.filter(s => !(s instanceof window.google.maps.Rectangle)),
+            shape
+         ]);
+         setRedoStack([]);
          setShowMeasurementPopupRectangle(true);
          updateRectangleMeasurements(shape);
    
@@ -202,6 +246,15 @@ const GoogleMapLocator = () => {
 
    const handleCloseInfoWindowCircle = () => {
       setShowMeasurementPopupCircle(false);
+      setShapes((prevShapes) => {
+         const newShapes = [...prevShapes];
+         const shapeToRemove = newShapes.pop();
+         if (shapeToRemove) {
+            shapeToRemove.setMap(null);
+            setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+         }
+         return newShapes;
+      });
    };
 
    const updatePolylineInfo = (polyline) => {
@@ -210,7 +263,20 @@ const GoogleMapLocator = () => {
         lng: latLng.lng(),
       }));
       setMeasurementPoints(path);
-    };
+   };
+
+   const handleCloseInfoWindowPolyLine = () => {
+      setShowMeasurementPopup(false);
+      setShapes((prevShapes) => {
+         const newShapes = [...prevShapes];
+         const shapeToRemove = newShapes.pop();
+         if (shapeToRemove) {
+            shapeToRemove.setMap(null);
+            setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+         }
+         return newShapes;
+      });
+   }
 
    const updatePolygonInfo = (polygon) => {
       const path = polygon.getPath();
@@ -229,6 +295,15 @@ const GoogleMapLocator = () => {
 
    const handleCloseInfoWindowPolygon = () => {
       setShowMeasurementPopupPolygon(false);
+      setShapes((prevShapes) => {
+         const newShapes = [...prevShapes];
+         const shapeToRemove = newShapes.pop();
+         if (shapeToRemove) {
+            shapeToRemove.setMap(null);
+            setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+         }
+         return newShapes;
+      });
    };
 
    const updateRectangleMeasurements = (rectangle) => {
@@ -265,6 +340,15 @@ const GoogleMapLocator = () => {
 
    const handleCloseInfoWindowRectangle = () => {
       setShowMeasurementPopupRectangle(false);
+      setShapes((prevShapes) => {
+         const newShapes = [...prevShapes];
+         const shapeToRemove = newShapes.pop();
+         if (shapeToRemove) {
+            shapeToRemove.setMap(null);
+            setRedoStack((prevRedoStack) => [shapeToRemove, ...prevRedoStack]);
+         }
+         return newShapes;
+      });
    };
 
    const handleUndo = () => {
@@ -518,7 +602,7 @@ const GoogleMapLocator = () => {
                         measurementPoints[measurementPoints.length - 1].lng) /
                      2,
                   }}
-                  onCloseClick={() => setShowMeasurementPopup(false)}
+                  onCloseClick={handleCloseInfoWindowPolyLine}
                  >
                   <div style={{width: "230px"}}>
                      <h4 style={{position: "relative", zIndex: "1", paddingTop: "15px"}}>PolyLine Measurements</h4>
