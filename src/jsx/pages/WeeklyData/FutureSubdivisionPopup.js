@@ -1,71 +1,68 @@
-import React, { useState,useEffect,useNa } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import Select from "react-select";
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 
 const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
     const [Error, setError] = useState('');
-    const[builderId,setBuilderId] = useState('');
+    const [builderId, setBuilderId] = useState('');
     const navigate = useNavigate();
     const [BuilderList, setBuilderList] = useState([]);
-    const getFutureBuilderlist = async () => {
-        try {
-        const response = await AdminSubdevisionService.getByBuilderId(localStorage.getItem('builderId'));
-          const responseData = await response.json();
-          console.log(responseData);
-          setBuilderList(responseData);
-        } catch (error) {
-          console.log(error);
-          if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message);
-          }
-        }
-      };
-      useEffect(() => {
+    
+    useEffect(() => {
         if (localStorage.getItem("usertoken")) {
-            getFutureBuilderlist();
+            GetFutureBuilderList();
         } else {
-          navigate("/");
+            navigate("/");
         }
-      }, []);
+    }, []);
+
+    const GetFutureBuilderList = async () => {
+        try {
+            const response = await AdminSubdevisionService.getByBuilderId(localStorage.getItem('builderId'));
+            const responseData = await response.json();
+            console.log(responseData);
+            setBuilderList(responseData);
+        } catch (error) {
+            console.log(error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
 
     const HandleSelectChange = (e) => {
         console.log(e);
         setBuilderId(e.id);
     };
-    console.log(builderId);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         try {
-           var userData = {
+            var userData = {
                 "status": true
             }
-            const data = await AdminSubdevisionService.bulkupdate(builderId,userData).json();
+            const data = await AdminSubdevisionService.bulkupdate(builderId, userData).json();
             if (data.status === true) {
-
                 swal("Subdivision Added Succesfully").then((willDelete) => {
                     if (willDelete) {
                         handleClose();
                         getWeeklyList();
+                        GetFutureBuilderList();
                     }
                 })
-
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
         }
-
-
-    }
+    };
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -81,7 +78,7 @@ const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
                         getOptionValue={(option) => option.id}
                         getOptionLabel={(option) => option.name}
                         options={BuilderList}
-                        onChange={(e) =>HandleSelectChange(e)}
+                        onChange={(e) => HandleSelectChange(e)}
                         value={BuilderList.id}
                         name="builder_name"
                     ></Select>
