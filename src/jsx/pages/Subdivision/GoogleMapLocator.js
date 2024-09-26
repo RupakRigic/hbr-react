@@ -89,7 +89,7 @@ const GoogleMapLocator = () => {
       height: 0,
       area: 0,
    });
-   const [distance, setDistance] = useState("Feet");
+   const [distance, setDistance] = useState("Miles");
    const [currentCircle, setCurrentCircle] = useState(null);
    const [currentPolyline, setCurrentPolyline] = useState(null);
    const [currentPolygon, setCurrentPolygon] = useState(null);
@@ -230,13 +230,14 @@ const GoogleMapLocator = () => {
       const center = circle.getCenter();
       const radiusInMeters = circle.getRadius();
       const radiusInFeet = radiusInMeters * 3.28084;
+      const radiusInMiles = radiusInMeters * 0.000621371;
       const areaInSquareFeet = Math.PI * Math.pow(radiusInFeet, 2);
       const areaInAcres = areaInSquareFeet / 43560;
       const radiusInDegrees = radiusInMeters / 111139;
       const upperPointLat = center.lat() + radiusInDegrees;
       const upperPointLng = center.lng();
       setCenterPoint({ lat: upperPointLat, lng: upperPointLng });
-      setCircleRadius(radiusInFeet.toFixed(3));
+      setCircleRadius(radiusInMiles.toFixed(3));
       setCircleArea(areaInAcres.toFixed(3));
       setShowMeasurementPopupCircle(true);
    };
@@ -423,6 +424,11 @@ const GoogleMapLocator = () => {
 
    const calculateTotalDistanceInKilometers = () => {
       return calculateTotalDistance() / 1000;
+   };
+
+   const calculateTotalDistanceInMiles = () => {
+      const totalDistanceInKm = calculateTotalDistanceInKilometers();
+      return totalDistanceInKm * 0.621371;
    };
 
    const handleDistance = (e) => {
@@ -636,11 +642,17 @@ const GoogleMapLocator = () => {
                         <hr></hr>
                         <select onChange={handleDistance} value={distance} style={{ border: "1px solid #db7e2e" }}>
                            <option value="">Select Distance</option>
+                           <option value="Miles">Miles</option>
                            <option value="Meter">Meter</option>
                            <option value="Feet">Feet</option>
                            <option value="Kilometer">Kilometer</option>
                         </select>
                         <div style={{ marginTop: "10px" }}></div>
+                        {distance === "Miles" && (
+                           <h6 style={{ color: "black" }}>
+                              Total Distance: {calculateTotalDistanceInMiles().toFixed(2)} miles
+                           </h6>
+                        )}
                         {distance === "Meter" && (
                            <h6 style={{ color: "black" }}>
                               Total Distance: {calculateTotalDistance().toFixed(2)} m
@@ -668,7 +680,7 @@ const GoogleMapLocator = () => {
                      <div style={{ width: "230px" }}>
                         <h4 style={{ position: "relative", zIndex: "1", paddingTop: "15px" }}>Circle Measurements</h4>
                         <hr></hr>
-                        <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} ft</h6>
+                        <h6 style={{ color: "black" }}>Circle Radius: {circleRadius} miles</h6>
                         <h6 style={{ color: "black" }}>Circle Area: {circleArea} acres</h6>
                      </div>
                   </InfoWindow>
