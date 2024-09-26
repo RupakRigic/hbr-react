@@ -114,7 +114,13 @@ const LandsaleList = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
   const [selectedFields, setSelectedFields] = useState([]);
-  const [sortOrders, setSortOrders] = useState({});
+  const [sortOrders, setSortOrders] = useState(() => {
+    const defaultSortOrders = {};
+    fieldOptions.forEach(field => {
+      defaultSortOrders[field.value] = 'asc';
+    });
+    return defaultSortOrders;
+  });
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
@@ -1991,7 +1997,7 @@ const LandsaleList = () => {
                 {fieldOptions.map((field, index) => {
                   const isChecked = selectedFields.some(selected => selected.value === field.value);
                   return (
-                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
                       <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
                         <input
                           type="checkbox"
@@ -2008,7 +2014,7 @@ const LandsaleList = () => {
                       </div>
 
                       {isChecked && (
-                        <div className="radio-group d-flex" style={{ flex: '0 0 60%' }}>
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
                           <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
                             <input
                               type="radio"
@@ -2016,7 +2022,7 @@ const LandsaleList = () => {
                               name={`sortOrder-${field.value}`}
                               id={`asc-${field.value}`}
                               value="asc"
-                              checked={sortOrders[field.value] === 'asc'}
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
                               onChange={() => handleSortOrderChange(field.value, 'asc')}
                               style={{ cursor: "pointer" }}
                             />
@@ -2049,8 +2055,8 @@ const LandsaleList = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleSortingPopupClose}>Close</Button>
-          <Button variant="primary" onClick={handleApplySorting}>Apply</Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
+          <Button variant="success" onClick={handleApplySorting}>Apply</Button>
         </Modal.Footer>
       </Modal>
     </>
