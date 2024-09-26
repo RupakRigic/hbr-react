@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import LandsaleOffcanvas from "./LandsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -26,7 +26,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 const LandsaleList = () => {
   const HandleSortDetailClick = (e) => {
     setShowSort(true);
-  }
+  };
+
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
       setSelectedCheckboxes(prev => [...prev, key]);
@@ -34,6 +35,7 @@ const LandsaleList = () => {
       setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
   };
+
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
     : "";
@@ -43,6 +45,7 @@ const LandsaleList = () => {
     setSortConfig(newSortConfig);
     setSelectedCheckboxes([]);
   };
+
   const [showSort, setShowSort] = useState(false);
   const handleSortClose = () => setShowSort(false);
 
@@ -107,22 +110,26 @@ const LandsaleList = () => {
   const [priceResult, setPriceResult] = useState(0);
   const [pricePerResult, setPricePerResult] = useState(0);
   const [sizeResult, setSizeResult] = useState(0);
-
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [sortOrders, setSortOrders] = useState({});
 
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
   }, [sortConfig]);
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+    if (localStorage.getItem("selectedBuilderNameByFilter")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
+    if (localStorage.getItem("selectedSubdivisionNameByFilter")) {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-}, []);
+  }, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -154,12 +161,12 @@ const LandsaleList = () => {
   const HandleFilterForm = (e) => {
     if (filterQuery.from == "" || filterQuery.to == "") {
       setShowPopup(true);
-      if(filterQuery.from == "" && filterQuery.to == "") {
-          setMessage("Please select from and to date.");
+      if (filterQuery.from == "" && filterQuery.to == "") {
+        setMessage("Please select from and to date.");
       } else if (filterQuery.from == "") {
-          setMessage("Please select from date.");
+        setMessage("Please select from date.");
       } else if (filterQuery.to == "") {
-          setMessage("Please select to date.");
+        setMessage("Please select to date.");
       }
       return;
     } else {
@@ -196,6 +203,7 @@ const LandsaleList = () => {
       }
     }
   };
+
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
@@ -594,7 +602,7 @@ const LandsaleList = () => {
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -692,7 +700,7 @@ const LandsaleList = () => {
       ...prevState,
       builder_name: selectedNames
     }));
-  }
+  };
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
     setSelectedSubdivisionName(selectedItems);
@@ -701,27 +709,33 @@ const LandsaleList = () => {
       ...prevState,
       subdivision_name: selectedNames
     }));
-  }
-
-  const requestSort = (key) => {
-    let direction = "asc";
-
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    getLandsaleList(currentPage, newSortConfig, searchQuery);
   };
 
+  // const requestSort = (key, Direction) => {
+  //   if (key == "" || Direction == "") {
+  //     setShowSortingPopup(false);
+  //     return;
+  //   }
+
+  //   let direction = Direction;
+
+  //   const newSortConfig = [...sortConfig];
+  //   const keyIndex = sortConfig.findIndex((item) => item.key === key);
+  //   if (keyIndex !== -1) {
+  //     direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+  //     newSortConfig[keyIndex].direction = direction;
+  //   } else {
+  //     newSortConfig.push({ key, direction });
+  //   }
+  //   setSortConfig(newSortConfig);
+  //   getLandsaleList(currentPage, newSortConfig, searchQuery);
+  //   setShowSortingPopup(false);
+  // };
 
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
+
   const handleUploadClick = async () => {
     const file = selectedFile;
 
@@ -788,9 +802,11 @@ const LandsaleList = () => {
       setSelectedFileError("Please select a CSV file.");
     }
   };
+
   const handlBuilderClick = (e) => {
     setShow(true);
   };
+
   console.log(sortConfig);
 
   const handleOpenDialog = () => {
@@ -849,16 +865,16 @@ const LandsaleList = () => {
 
   const addToBuilderList = () => {
     let subdivisionID = LandsaleList.filter((data) => data.subdivision_id != null);
-    if(subdivisionID.length === 0) {
+    if (subdivisionID.length === 0) {
       setShowPopup(true);
       setMessage("Subdivion is not there in land.");
       return;
     } else {
       let subdivisionList = LandsaleList.map((data) => data.subdivision);
-  
+
       navigate('/google-map-locator', {
-        state: { 
-          subdivisionList: subdivisionList ,
+        state: {
+          subdivisionList: subdivisionList,
           landsales: true
         },
       });
@@ -866,17 +882,17 @@ const LandsaleList = () => {
   };
 
   const totalSumFields = (field) => {
-    if(field == "price") {
+    if (field == "price") {
       return AllProductListExport.reduce((sum, landsales) => {
         return sum + (landsales.price || 0);
       }, 0);
     }
-    if(field == "price_per") {
+    if (field == "price_per") {
       return AllProductListExport.reduce((sum, landsales) => {
         return sum + (landsales.price_per || 0);
       }, 0);
     }
-    if(field == "size") {
+    if (field == "size") {
       return AllProductListExport.reduce((sum, landsales) => {
         return sum + (parseFloat(landsales.noofunit) || 0);
       }, 0).toFixed(2);
@@ -884,7 +900,7 @@ const LandsaleList = () => {
   };
 
   const averageFields = (field) => {
-    if(field == "size") {
+    if (field == "size") {
       const sum = totalSumFields(field);
       return (sum / AllProductListExport.length).toFixed(2);
     } else {
@@ -916,10 +932,10 @@ const LandsaleList = () => {
         setPricePerOption(value);
         setPriceOption("");
         setSizeOption("");
-  
+
         setPriceResult(0);
         setSizeResult(0);
-  
+
         if (value === 'sum') {
           setPricePerResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -931,10 +947,10 @@ const LandsaleList = () => {
         setSizeOption(value);
         setPriceOption("");
         setPricePerOption("");
-  
+
         setPriceResult(0);
         setPricePerResult(0);
-  
+
         if (value === 'sum') {
           setSizeResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -944,6 +960,80 @@ const LandsaleList = () => {
 
       default:
         break;
+    }
+  };
+
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === 'sizeMS') {
+          value = 'typeofunit';
+        }
+        if (value === 'size') {
+          value = 'noofunit';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
+
+  useEffect(() => {
+    if (showPopup) {
+      setSelectedFields([]);
+      setSortOrders({});
+    }
+  }, [showPopup]);
+
+  const HandleSortingPopupDetailClick = (e) => {
+    setShowSortingPopup(true);
+  };
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    getLandsaleList(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
+  };
+
+  const handleSortingCheckboxChange = (e, field) => {
+    let updatedFields;
+    if (e.target.checked) {
+      updatedFields = [...selectedFields, field];
+    } else {
+      updatedFields = selectedFields.filter(selected => selected.value !== field.value);
+    }
+
+    setSelectedFields(updatedFields);
+
+    // Check if all fields are selected and update "Select All" checkbox
+    if (updatedFields.length === fieldOptions.length) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders((prevSortOrders) => ({
+      ...prevSortOrders,
+      [fieldValue]: order,
+    }));
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+    } else {
+      setSelectedFields([]);
     }
   };
 
@@ -980,7 +1070,7 @@ const LandsaleList = () => {
                     </div>
                     {SyestemUserRole == "Data Uploader" ||
                       SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                        <div style={{ marginTop: "10px" }}>
+                      <div style={{ marginTop: "10px" }}>
                         <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
                           {/* Set Columns Order */}
                           <i className="fa-solid fa-list"></i>
@@ -995,8 +1085,8 @@ const LandsaleList = () => {
                           <i class="fa-solid fa-sort"></i>
                         </Button>
                         <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ? 
-                            <div class="spinner-border spinner-border-sm" role="status" /> 
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
                             :
                             <i class="fas fa-file-excel" />
                           }
@@ -1015,14 +1105,14 @@ const LandsaleList = () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
                         </Button>
                         <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ? 
-                            <div class="spinner-border spinner-border-sm" role="status" /> 
+                          {excelLoading ?
+                            <div class="spinner-border spinner-border-sm" role="status" />
                             :
                             <i class="fas fa-file-excel" />
                           }
@@ -1185,10 +1275,12 @@ const LandsaleList = () => {
                             </th>
 
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
-                                column.id == "sIZE MS" ? "typeofunit" :
-                                  column.id == "sIZE" ? "noofunit" :
-                                    toCamelCase(column.id)) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
+                              // onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
+                              // column.id == "sIZE MS" ? "typeofunit" :
+                              //   column.id == "sIZE" ? "noofunit" :
+                              //     toCamelCase(column.id)) : ""}
+                              >
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
@@ -1212,36 +1304,36 @@ const LandsaleList = () => {
                                   )}
                                 </strong>
 
-                                {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" && 
-                                  column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" && 
-                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code") && 
+                                {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
+                                  column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" &&
+                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code") &&
                                   (
                                     <>
-                                    <br />
-                                      <select className="custom-select" 
+                                      <br />
+                                      <select className="custom-select"
                                         value={
-                                          column.id == "price" ? priceOption : 
-                                          column.id == "price Per" ? pricePerOption : 
-                                          column.id == "size" ? sizeOption : ""
+                                          column.id == "price" ? priceOption :
+                                            column.id == "price Per" ? pricePerOption :
+                                              column.id == "size" ? sizeOption : ""
                                         }
-                                        
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
+
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: '0px',
+                                          fontSize: "8px",
+                                          padding: " 0 5px 0",
+                                          height: "15px",
                                           color: "white",
-                                          appearance: "auto" 
+                                          appearance: "auto"
                                         }}
-                                        
+
                                         onChange={(e) => column.id == "price" ? handleSelectChange(e, "price") :
                                           column.id == "price Per" ? handleSelectChange(e, "price_per") :
-                                          column.id == "size" ? handleSelectChange(e, "size") : ""}
+                                            column.id == "size" ? handleSelectChange(e, "size") : ""}
                                       >
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -1862,6 +1954,103 @@ const LandsaleList = () => {
         <Modal.Body>{message}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+        <Modal.Header handleSortingPopupClose>
+          <Modal.Title>Sorting Popup</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>Sorted Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                    />
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
+                    </label>
+                  </div>
+                </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%' }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc'}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleSortingPopupClose}>Close</Button>
+          <Button variant="primary" onClick={handleApplySorting}>Apply</Button>
         </Modal.Footer>
       </Modal>
     </>

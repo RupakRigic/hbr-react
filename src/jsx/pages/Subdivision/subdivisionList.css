@@ -30,3 +30,25 @@
   .gm-style .gm-style-iw-tc::after {
     background-color: transparent;
   }
+
+  .field-checkbox-list .form-check {
+    margin-bottom: 0.5rem;
+  }
+  
+  .radio-group {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .radio-group .form-check {
+    flex: 0 0 50%;
+    text-align: center;
+  }
+  
+  .form-check-input {
+    margin: 0;
+  }
+  
+  .form-check-label {
+    margin: 0;
+  }
