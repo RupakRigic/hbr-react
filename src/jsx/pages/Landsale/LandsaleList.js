@@ -1294,7 +1294,7 @@ const LandsaleList = () => {
                                       column.id == "sIZE MS" ? "typeofunit" :
                                         column.id == "sIZE" ? "noofunit" :
                                           toCamelCase(column.id))
-                                  ) ? (
+                                  ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
@@ -1305,9 +1305,11 @@ const LandsaleList = () => {
                                         ? "↑"
                                         : "↓"}
                                     </span>
-                                  ) : (
-                                    column.id != "action" && <span>↑↓</span>
-                                  )}
+                                  ) 
+                                  // : (
+                                  //   column.id != "action" && <span>↑↓</span>
+                                  // )
+                                  }
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
