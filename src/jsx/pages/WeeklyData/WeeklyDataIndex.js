@@ -475,7 +475,7 @@ const WeeklyDataIndex = () => {
         BuilderList={BuilderList}
         setBuilderId={setBuilderId}
         handleClose={() => setShowModal(false)}
-        handleSave={() => { setShowModal(false); }}
+        getWeeklyList={() => getWeeklyList()}
       />
 
       {/* Popup */}

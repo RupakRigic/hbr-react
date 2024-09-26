@@ -5,7 +5,7 @@ import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSub
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 
-const FutureSubdivisionPopup = ({ show, handleClose }) => {
+const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
     const [Error, setError] = useState('');
     const[builderId,setBuilderId] = useState('');
     const navigate = useNavigate();
@@ -50,7 +50,7 @@ const FutureSubdivisionPopup = ({ show, handleClose }) => {
                 swal("Subdivision Added Succesfully").then((willDelete) => {
                     if (willDelete) {
                         handleClose();
-                        window.location.reload();
+                        getWeeklyList();
                     }
                 })
 
