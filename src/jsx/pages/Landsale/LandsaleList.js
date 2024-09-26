@@ -1966,7 +1966,7 @@ const LandsaleList = () => {
       {/* Sorting */}
       <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
         <Modal.Header handleSortingPopupClose>
-          <Modal.Title>Sorting Popup</Modal.Title>
+          <Modal.Title>Sorted Fields</Modal.Title>
           <button
             className="btn-close"
             aria-label="Close"
@@ -1976,7 +1976,7 @@ const LandsaleList = () => {
         <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
           <div className="row">
             <div style={{ marginTop: "-15px" }}>
-              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>Sorted Fields:</label>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
               <div className="field-checkbox-list">
                 <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
                   <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
