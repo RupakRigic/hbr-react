@@ -36,8 +36,6 @@ const PermitList = () => {
   const [productTypeStatus, setProductTypeStatus] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [AllPermitListExport, setAllPermitListExport] = useState([]);
-  const [showSort, setShowSort] = useState(false);
-  const handleSortClose = () => setShowSort(false);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [Error, setError] = useState("");
@@ -72,7 +70,6 @@ const PermitList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
@@ -127,24 +124,22 @@ const PermitList = () => {
   const [lotWidthResult, setLotWidthResult] = useState(0);
   const [lotSizeResult, setLotSizeResult] = useState(0);
 
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [sortOrders, setSortOrders] = useState(() => {
+    const defaultSortOrders = {};
+    fieldOptions.forEach(field => {
+      defaultSortOrders[field.value] = 'asc';
+    });
+    return defaultSortOrders;
+  });
+
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
     : "";
-  const HandleSortDetailClick = (e) => {
-    setShowSort(true);
-  }
-  const handleSortCheckboxChange = (e, key) => {
-    if (e.target.checked) {
-      setSelectedCheckboxes(prev => [...prev, key]);
-    } else {
-      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-    }
-  };
-
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-  }, [sortConfig]);
 
   const bulkPermit = useRef();
 
@@ -154,12 +149,6 @@ const PermitList = () => {
     } else {
       setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
     }
-  };
-
-  const handleRemoveSelected = () => {
-    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-    setSortConfig(newSortConfig);
-    setSelectedCheckboxes([]);
   };
 
   const HandleCancelFilter = (e) => {
@@ -969,21 +958,6 @@ const PermitList = () => {
     return new Date(year, month - 1, day);
   };
 
-  const requestSort = (key) => {
-    let direction = "asc";
-
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    getPermitList(currentPage, newSortConfig, searchQuery);
-  };
-
   const handleOpenDialog = () => {
     setDraggedColumns(columns);
     setOpenDialog(true);
@@ -1220,6 +1194,126 @@ const GetSubdivisionDropDownList = async () => {
     }
   };
 
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === 'addressNumber') {
+          value = 'address2';
+        }
+        if (value === 'addressName') {
+          value = 'address1';
+        }
+        if (value === 'parcelNumber') {
+          value = 'parcel';
+        }
+        if (value === 'squreFootage') {
+          value = 'sqft';
+        }
+        if (value === 'lotNumber') {
+          value = 'lotnumber';
+        }
+        if (value === 'permitNumber') {
+          value = 'permitnumber';
+        }
+        if (value === 'subLegalName') {
+          value = 'sublegal_name';
+        }
+        if (value === 'productType') {
+          value = 'product_type';
+        }
+        if (value === 'masterPlan') {
+          value = 'masterplan_id';
+        }
+        if (value === 'zipCode') {
+          value = 'zipcode';
+        }
+        if (value === 'lotWidth') {
+          value = 'lotwidth';
+        }
+        if (value === 'lotSize') {
+          value = 'lotsize';
+        }
+        if (value === 'dateAdded') {
+          value = 'created_at';
+        }
+        if (value === 'ageRestricted') {
+          value = 'age';
+        }
+        if (value === 'allSingleStory') {
+          value = 'single';
+        }
+        if (value === '__pkPermitID') {
+          value = 'permitnumber';
+        }
+
+        if (value === '_fkSubID') {
+          value = 'subdivision_code';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
+
+  useEffect(() => {
+    if (showPopup) {
+      setSelectedFields([]);
+      setSortOrders({});
+    }
+  }, [showPopup]);
+
+  const HandleSortingPopupDetailClick = (e) => {
+    setShowSortingPopup(true);
+  };
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    getPermitList(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
+  };
+
+  const handleSortingCheckboxChange = (e, field) => {
+    let updatedFields;
+    if (e.target.checked) {
+      updatedFields = [...selectedFields, field];
+    } else {
+      updatedFields = selectedFields.filter(selected => selected.value !== field.value);
+    }
+
+    setSelectedFields(updatedFields);
+
+    // Check if all fields are selected and update "Select All" checkbox
+    if (updatedFields.length === fieldOptions.length) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders((prevSortOrders) => ({
+      ...prevSortOrders,
+      [fieldValue]: order,
+    }));
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+    } else {
+      setSelectedFields([]);
+    }
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -1257,7 +1351,7 @@ const GetSubdivisionDropDownList = async () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
@@ -1282,7 +1376,7 @@ const GetSubdivisionDropDownList = async () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
@@ -1452,55 +1546,51 @@ const GetSubdivisionDropDownList = async () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
-                                column.id == "parcel Number" ? "parcel" :
-                                column.id == "squre Footage" ? "sqft" :
-                                column.id == "address Number" ? "address2" :
-                                column.id == "address Name" ? "address1" :
-                                column.id == "lot Number" ? "lotnumber" :
-                                column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" :
-                                column.id == "sub Legal Name" ? "Sublegal_name" :
-                                column.id == "lot Size" ? "lotsize" :
-                                column.id == "age Restricted" ? "age" :
-                                column.id == "all Single Story" ? "stories" :
-                                column.id == "date Added" ? "created_at" :
-                                column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id)) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
                                   {column.id == "squre Footage" ? "Square Footage" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "parcel Number" ? "parcel" :
-                                      column.id == "squre Footage" ? "sqft" :
                                       column.id == "address Number" ? "address2" :
                                       column.id == "address Name" ? "address1" :
+                                      column.id == "parcel Number" ? "parcel" :
+                                      column.id == "squre Footage" ? "sqft" :
                                       column.id == "lot Number" ? "lotnumber" :
-                                      column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" :
-                                      column.id == "sub Legal Name" ? "Sublegal_name" :
+                                      column.id == "permit Number" ? "permitnumber" :
+                                      column.id == "sub Legal Name" ? "sublegal_name" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "stories" :
+                                      column.id == "all Single Story" ? "single" :
                                       column.id == "date Added" ? "created_at" :
-                                      column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id))
-                                  ) ? (
+                                      column.id == "__pkPermitID" ? "permitnumber" :
+                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                  ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
-                                          column.id == "parcel Number" ? "parcel" :
-                                          column.id == "squre Footage" ? "sqft" :
                                           column.id == "address Number" ? "address2" :
                                           column.id == "address Name" ? "address1" :
+                                          column.id == "parcel Number" ? "parcel" :
+                                          column.id == "squre Footage" ? "sqft" :
                                           column.id == "lot Number" ? "lotnumber" :
-                                          column.id == ("permit Number" || "__pkPermitID") ? "permitnumber" :
-                                          column.id == "sub Legal Name" ? "Sublegal_name" :
+                                          column.id == "permit Number" ? "permitnumber" :
+                                          column.id == "sub Legal Name" ? "sublegal_name" :
+                                          column.id == "product Type" ? "product_type" :
+                                          column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
+                                          column.id == "lot Width" ? "lotwidth" :
                                           column.id == "lot Size" ? "lotsize" :
                                           column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "stories" :
+                                          column.id == "all Single Story" ? "single" :
                                           column.id == "date Added" ? "created_at" :
-                                          column.id == "_fkSubID" ? "subdivisionCode" : toCamelCase(column.id))
+                                          column.id == "__pkPermitID" ? "permitnumber" :
+                                          column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                  ) : (
-                                    column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
 
@@ -1818,51 +1908,100 @@ const GetSubdivisionDropDownList = async () => {
         selectedLandSales={selectedLandSales}
       />
 
-      <Modal show={showSort} onHide={HandleSortDetailClick}>
-        <Modal.Header handleSortClose>
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+        <Modal.Header handleSortingPopupClose>
           <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
         </Modal.Header>
-        <Modal.Body>
-          {sortConfig.length > 0 ? (
-            sortConfig.map((col) => (
-              <div className="row" key={col.key}>
-                <div className="col-md-6">
-                  <div className="form-check">
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
                     <input
-                      className="form-check-input"
                       type="checkbox"
-                      name={col.key}
-                      defaultChecked={true}
-                      id={`checkbox-${col.key}`}
-                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
                     />
-                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                      <span>
-                        {columns.find(column => column.key === col.key)?.label !== undefined
-                          ? columns.find(column => column.key === col.key)?.label
-                          : col.key}
-
-
-                      </span>:<span>{col.direction}</span>
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
                     </label>
                   </div>
                 </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {field.label == "Squre Footage" ? "Square Footage" : field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))
-          ) : (
-            <p>N/A</p>
-          )}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortClose}>
-            cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleRemoveSelected}
-          >
-            Clear Sort
-          </Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
+          <Button variant="success" onClick={handleApplySorting}>Apply</Button>
         </Modal.Footer>
       </Modal>
 
