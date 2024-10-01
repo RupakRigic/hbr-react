@@ -1085,7 +1085,7 @@ const LandsaleList = () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
