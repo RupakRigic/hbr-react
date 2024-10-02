@@ -128,14 +128,8 @@ const PermitList = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
   const [selectedFields, setSelectedFields] = useState([]);
-  const [sortOrders, setSortOrders] = useState(() => {
-    const defaultSortOrders = {};
-    fieldOptions.forEach(field => {
-      defaultSortOrders[field.value] = 'asc';
-    });
-    return defaultSortOrders;
-  });
-
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -1282,35 +1276,45 @@ const GetSubdivisionDropDownList = async () => {
   };
 
   const handleSortingCheckboxChange = (e, field) => {
-    let updatedFields;
-    if (e.target.checked) {
-      updatedFields = [...selectedFields, field];
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
     } else {
-      updatedFields = selectedFields.filter(selected => selected.value !== field.value);
-    }
-
-    setSelectedFields(updatedFields);
-
-    // Check if all fields are selected and update "Select All" checkbox
-    if (updatedFields.length === fieldOptions.length) {
-      setSelectAll(true);
-    } else {
-      setSelectAll(false);
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
     }
   };
 
   const handleSortOrderChange = (fieldValue, order) => {
-    setSortOrders((prevSortOrders) => ({
-      ...prevSortOrders,
+    setSortOrders({
+      ...sortOrders,
       [fieldValue]: order,
-    }));
+    });
   };
 
   const handleSelectAllChange = (e) => {
     if (e.target.checked) {
       setSelectedFields(fieldOptions);
+      const newOrder = {};
+      fieldOptions.forEach((field, index) => {
+        newOrder[field.value] = index + 1;
+      });
+      setSelectionOrder(newOrder);
     } else {
       setSelectedFields([]);
+      setSelectionOrder({});
     }
   };
 
@@ -1941,6 +1945,8 @@ const GetSubdivisionDropDownList = async () => {
 
                 {fieldOptions.map((field, index) => {
                   const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value];
+
                   return (
                     <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
                       <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
@@ -1954,6 +1960,7 @@ const GetSubdivisionDropDownList = async () => {
                           style={{ marginRight: '0.2rem', cursor: "pointer" }}
                         />
                         <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>}
                           {field.label == "Squre Footage" ? "Square Footage" : field.label}
                         </label>
                       </div>
@@ -2001,7 +2008,7 @@ const GetSubdivisionDropDownList = async () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
-          <Button variant="success" onClick={handleApplySorting}>Apply</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
 

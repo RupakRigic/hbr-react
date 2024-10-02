@@ -686,27 +686,6 @@ const LandsaleList = () => {
     }));
   };
 
-  // const requestSort = (key, Direction) => {
-  //   if (key == "" || Direction == "") {
-  //     setShowSortingPopup(false);
-  //     return;
-  //   }
-
-  //   let direction = Direction;
-
-  //   const newSortConfig = [...sortConfig];
-  //   const keyIndex = sortConfig.findIndex((item) => item.key === key);
-  //   if (keyIndex !== -1) {
-  //     direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-  //     newSortConfig[keyIndex].direction = direction;
-  //   } else {
-  //     newSortConfig.push({ key, direction });
-  //   }
-  //   setSortConfig(newSortConfig);
-  //   getLandsaleList(currentPage, newSortConfig, searchQuery);
-  //   setShowSortingPopup(false);
-  // };
-
   const handleFileChange = async (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -1260,12 +1239,7 @@ const LandsaleList = () => {
                             </th>
 
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
-                              // onClick={(e) => column.id == "action" ? "" : e.target.type !== "select-one" ? requestSort(
-                              // column.id == "sIZE MS" ? "typeofunit" :
-                              //   column.id == "sIZE" ? "noofunit" :
-                              //     toCamelCase(column.id)) : ""}
-                              >
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
@@ -1284,11 +1258,7 @@ const LandsaleList = () => {
                                         ? "↑"
                                         : "↓"}
                                     </span>
-                                  ) 
-                                  // : (
-                                  //   column.id != "action" && <span>↑↓</span>
-                                  // )
-                                  }
+                                  )}
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
@@ -1904,103 +1874,103 @@ const LandsaleList = () => {
 
       {/* Sorting */}
       <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
-      <Modal.Header handleSortingPopupClose>
-        <Modal.Title>Sorted Fields</Modal.Title>
-        <button
-          className="btn-close"
-          aria-label="Close"
-          onClick={() => handleSortingPopupClose()}
-        ></button>
-      </Modal.Header>
-      <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
-        <div className="row">
-          <div style={{ marginTop: "-15px" }}>
-            <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
-            <div className="field-checkbox-list">
-              <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
-                <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="select-all-fields"
-                    checked={selectedFields.length === fieldOptions.length}
-                    onChange={handleSelectAllChange}
-                    style={{ marginRight: '0.2rem', cursor: "pointer" }}
-                  />
-                  <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
-                    Select All
-                  </label>
-                </div>
-              </div>
-
-              {fieldOptions.map((field, index) => {
-                const isChecked = selectedFields.some(selected => selected.value === field.value);
-                const fieldOrder = selectionOrder[field.value]; // Get the selection order
-
-                return (
-                  <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
-                    <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id={`field-checkbox-${index}`}
-                        value={field.value}
-                        checked={isChecked}
-                        onChange={(e) => handleSortingCheckboxChange(e, field)}
-                        style={{ marginRight: '0.2rem', cursor: "pointer" }}
-                      />
-                      <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
-                        {isChecked && <span>{fieldOrder}. </span>} {/* Display selection number */}
-                        {field.label}
-                      </label>
-                    </div>
-
-                    {isChecked && (
-                      <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
-                        <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
-                          <input
-                            type="radio"
-                            className="form-check-input"
-                            name={`sortOrder-${field.value}`}
-                            id={`asc-${field.value}`}
-                            value="asc"
-                            checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
-                            onChange={() => handleSortOrderChange(field.value, 'asc')}
-                            style={{ cursor: "pointer" }}
-                          />
-                          <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
-                            Ascending
-                          </label>
-                        </div>
-                        <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
-                          <input
-                            type="radio"
-                            className="form-check-input"
-                            name={`sortOrder-${field.value}`}
-                            id={`desc-${field.value}`}
-                            value="desc"
-                            checked={sortOrders[field.value] === 'desc'}
-                            onChange={() => handleSortOrderChange(field.value, 'desc')}
-                            style={{ cursor: "pointer" }}
-                          />
-                          <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
-                            Descending
-                          </label>
-                        </div>
-                      </div>
-                    )}
+        <Modal.Header handleSortingPopupClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                    />
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
+                    </label>
                   </div>
-                );
-              })}
+                </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value]; // Get the selection order
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>} {/* Display selection number */}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
-        <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
-      </Modal.Footer>
-    </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
