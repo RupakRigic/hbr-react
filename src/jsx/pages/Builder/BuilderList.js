@@ -155,6 +155,14 @@ const BuilderTable = () => {
 
   const [selectedValues, setSelectedValues] = useState([]);
 
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
+  const [showPopup, setShowPopup] = useState(false);
+
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
   };
@@ -1743,6 +1751,132 @@ const BuilderTable = () => {
     setNormalFilter(true);
   };
 
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action' && field !== 'logo')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === '__pkBuilderID') {
+          value = 'builder_code';
+        }
+        if (value === 'officeAddress1') {
+          value = 'officeaddress1';
+        }
+        if (value === 'officeAddressState') {
+          value = 'officeaddress2';
+        }
+        if (value === 'companyType') {
+          value = 'company_type';
+        }
+        if (value === 'active') {
+          value = 'is_active';
+        }
+        if (value === 'stockMarket') {
+          value = 'stock_market';
+        }
+        if (value === 'currentDivisionPresident') {
+          value = 'current_division_president';
+        }
+        if (value === 'stockSymbol') {
+          value = 'stock_symbol';
+        }
+        if (value === 'currentLandAquisitions') {
+          value = 'current_land_aquisitions';
+        }
+        if (value === 'coporateOfficeAddress1') {
+          value = 'coporate_officeaddress_1';
+        }
+        if (value === 'corporateOfficeAddressState') {
+          value = 'coporate_officeaddress_2';
+        }
+        if (value === 'coporateOfficeAddressCity') {
+          value = 'coporate_officeaddress_city';
+        }
+        if (value === 'coporateofficeaddresszipcode') {
+          value = 'coporate_officeaddress_zipcode';
+        }
+        if (value === 'coporateOfficeAddresslatitude') {
+          value = 'coporate_officeaddress_lat';
+        }
+        if (value === 'coporateOfficeAddresslongitude') {
+          value = 'coporate_officeaddress_lng';
+        }
+        if (value === 'emailAddress') {
+          value = 'email_address';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
+
+  useEffect(() => {
+    if (showPopup) {
+      setSelectedFields([]);
+      setSortOrders({});
+    }
+  }, [showPopup]);
+
+  const HandleSortingPopupDetailClick = (e) => {
+    setShowSortingPopup(true);
+  };
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    getbuilderlist(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
+  };
+
+  const handleSortingCheckboxChange = (e, field) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
+    } else {
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders({
+      ...sortOrders,
+      [fieldValue]: order,
+    });
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+      const newOrder = {};
+      fieldOptions.forEach((field, index) => {
+        newOrder[field.value] = index + 1;
+      });
+      setSelectionOrder(newOrder);
+    } else {
+      setSelectedFields([]);
+      setSelectionOrder({});
+    }
+  };
+
   return (
     <>
       {/* <MainPagetitle
@@ -1786,7 +1920,7 @@ const BuilderTable = () => {
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
-                            onClick={HandleSortDetailClick}
+                            onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
                             <i class="fa-solid fa-sort"></i>
@@ -1811,7 +1945,7 @@ const BuilderTable = () => {
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
-                            onClick={HandleSortDetailClick}
+                            onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
                             <i class="fa-solid fa-sort"></i>
@@ -1975,60 +2109,68 @@ const BuilderTable = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id == "action" || column.id == "logo") ? "" : e.target.type !== "select-one" ? requestSort(
-                                column.id == "active Communities" ? "active_communities" :
-                                  column.id == "closing This Year" ? "closing_this_year" :
-                                  column.id == "permits This Year" ? "permits_this_year" :
-                                  column.id == "net Sales this year" ? "net_sales_this_year" :
-                                  column.id == "current Avg Base Price" ? "current_avg_base_Price" :
-                                  column.id == "median Closing Price This Year" ? "median_closing_price_this_year" :
-                                  column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" :
-                                  column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                  column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                  column.id == "total Closings" ? "total_closings" :
-                                  column.id == "total Permits" ? "total_permits" :
-                                  column.id == "total Net Sales" ? "total_net_sales" :
-                                  column.id == "date Of First Closing" ? "date_of_first_closing" :
-                                  column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id)) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} 
+                              // onClick={(e) => (column.id == "action" || column.id == "logo") ? "" : e.target.type !== "select-one" ? requestSort(
+                              //   column.id == "active Communities" ? "active_communities" :
+                              //     column.id == "closing This Year" ? "closing_this_year" :
+                              //     column.id == "permits This Year" ? "permits_this_year" :
+                              //     column.id == "net Sales this year" ? "net_sales_this_year" :
+                              //     column.id == "current Avg Base Price" ? "current_avg_base_Price" :
+                              //     column.id == "median Closing Price This Year" ? "median_closing_price_this_year" :
+                              //     column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" :
+                              //     column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                              //     column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                              //     column.id == "total Closings" ? "total_closings" :
+                              //     column.id == "total Permits" ? "total_permits" :
+                              //     column.id == "total Net Sales" ? "total_net_sales" :
+                              //     column.id == "date Of First Closing" ? "date_of_first_closing" :
+                              //     column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id)) : ""}
+                                >
                                 <strong>
                                   {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "active Communities" ? "active_communities" :
-                                      column.id == "closing This Year" ? "closing_this_year" :
-                                      column.id == "permits This Year" ? "permits_this_year" :
-                                      column.id == "net Sales this year" ? "net_sales_this_year" :
-                                      column.id == "current Avg Base Price" ? "current_avg_base_Price" :
-                                      column.id == "median Closing Price This Year" ? "median_closing_price_this_year" :
-                                      column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" :
-                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                      column.id == "total Closings" ? "total_closings" :
-                                      column.id == "total Permits" ? "total_permits" :
-                                      column.id == "total Net Sales" ? "total_net_sales" :
-                                      column.id == "date Of First Closing" ? "date_of_first_closing" :
-                                      column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))
-                                  ) ? (
+                                      column.id == "__pkBuilderID" ? "builder_code" :
+                                      column.id == "office Address 1" ? "officeaddress1" :
+                                      column.id == "office Address State" ? "officeaddress2" :
+                                      column.id == "company Type" ? "company_type" :
+                                      column.id == "active" ? "is_active" :
+                                      column.id == "stock Market" ? "stock_market" :
+                                      column.id == "current Division President" ? "current_division_president" :
+                                      column.id == "stock Symbol" ? "stock_symbol" :
+                                      column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                      column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                      column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                      column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                      column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                      column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                      column.id == "email Address" ? "email_address" : toCamelCase(column.id))
+                                  ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
-                                          column.id == "active Communities" ? "active_communities" :
-                                          column.id == "closing This Year" ? "closing_this_year" :
-                                          column.id == "permits This Year" ? "permits_this_year" :
-                                          column.id == "net Sales this year" ? "net_sales_this_year" :
-                                          column.id == "current Avg Base Price" ? "current_avg_base_Price" :
-                                          column.id == "median Closing Price This Year" ? "median_closing_price_this_year" :
-                                          column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" :
-                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                          column.id == "total Closings" ? "total_closings" :
-                                          column.id == "total Permits" ? "total_permits" :
-                                          column.id == "total Net Sales" ? "total_net_sales" :
-                                          column.id == "date Of First Closing" ? "date_of_first_closing" :
-                                          column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id))
+                                          column.id == "__pkBuilderID" ? "builder_code" :
+                                          column.id == "office Address 1" ? "officeaddress1" :
+                                          column.id == "office Address State" ? "officeaddress2" :
+                                          column.id == "company Type" ? "company_type" :
+                                          column.id == "active" ? "is_active" :
+                                          column.id == "stock Market" ? "stock_market" :
+                                          column.id == "current Division President" ? "current_division_president" :
+                                          column.id == "stock Symbol" ? "stock_symbol" :
+                                          column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                          column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                          column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                          column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                          column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                          column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                          column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                          column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                  ) : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>)
+                                  ) 
+                                //   : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>
+                                // )
                                   }
                                 </strong>
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "email Address" && column.id !== "__pkBuilderID" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
@@ -2278,7 +2420,11 @@ const BuilderTable = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.company_type}</td>
                                     }
                                     {column.id == "active" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.is_active}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {element.is_active}
+                                        {/* {element.is_active === 1 && "Yes"}
+                                        {element.is_active === 0 && "No"} */}
+                                      </td>
                                     }
                                     {column.id == "stock Market" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.stock_market}</td>
@@ -2453,45 +2599,103 @@ const BuilderTable = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showSort} onHide={HandleSortDetailClick}>
-        <Modal.Header handleSortClose>
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+        <Modal.Header handleSortingPopupClose>
           <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
         </Modal.Header>
-        <Modal.Body>
-          {sortConfig.length > 0 ? (
-            sortConfig.map((col) => (
-              <div className="row" key={col.key}>
-                <div className="col-md-6">
-                  <div className="form-check">
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
                     <input
-                      className="form-check-input"
                       type="checkbox"
-                      name={col.key}
-                      defaultChecked={true}
-                      id={`checkbox-${col.key}`}
-                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
                     />
-                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                      <span>{exportColumns.find(column => column.key === col.key)?.label}</span>:<span>{col.direction}</span>
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
                     </label>
                   </div>
                 </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value]; // Get the selection order
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "40px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))
-          ) : (
-            <p>N/A</p>
-          )}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortClose}>
-            cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleRemoveSelected}
-          >
-            Clear Sort
-          </Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
       <Offcanvas
