@@ -33,13 +33,13 @@ const SubdivisionList = () => {
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(true);
 
-  const handleSortCheckboxChange = (e, key) => {
-    if (e.target.checked) {
-      setSelectedCheckboxes(prev => [...prev, key]);
-    } else {
-      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-    }
-  };
+  // const handleSortCheckboxChange = (e, key) => {
+  //   if (e.target.checked) {
+  //     setSelectedCheckboxes(prev => [...prev, key]);
+  //   } else {
+  //     setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+  //   }
+  // };
 
   const addToBuilderList = () => {
     navigate('/google-map-locator', {
@@ -50,11 +50,11 @@ const SubdivisionList = () => {
     });
   };
 
-  const handleRemoveSelected = () => {
-    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-    setSortConfig(newSortConfig);
-    setSelectedCheckboxes([]);
-  };
+  // const handleRemoveSelected = () => {
+  //   const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+  //   setSortConfig(newSortConfig);
+  //   setSelectedCheckboxes([]);
+  // };
 
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkSubdivision = useRef();
@@ -67,8 +67,8 @@ const SubdivisionList = () => {
     }
   };
 
-  const [showSort, setShowSort] = useState(false);
-  const handleSortClose = () => setShowSort(false);
+  // const [showSort, setShowSort] = useState(false);
+  // const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryBySubdivisionFilter") ? JSON.parse(localStorage.getItem("searchQueryBySubdivisionFilter")) : "");
@@ -233,6 +233,14 @@ const SubdivisionList = () => {
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
   const [seletctedGasProvider, setSelectedGasProvider] = useState([]);
+
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
 
   // Generate Report
   const today = new Date();
@@ -709,11 +717,11 @@ const SubdivisionList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState([]);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  // const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
 
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-  }, [sortConfig]);
+  // useEffect(() => {
+  //   setSelectedCheckboxes(sortConfig.map(col => col.key));
+  // }, [sortConfig]);
 
   function prePage() {
     if (currentPage !== 1) {
@@ -731,9 +739,9 @@ const SubdivisionList = () => {
     }
   }
 
-  const HandleSortDetailClick = (e) => {
-    setShowSort(true);
-  }
+  // const HandleSortDetailClick = (e) => {
+  //   setShowSort(true);
+  // }
 
   const subdivision = useRef();
   const [show, setShow] = useState(false);
@@ -1156,20 +1164,20 @@ const SubdivisionList = () => {
     navigate("/landsalelist");
   };
 
-  const requestSort = (key) => {
-    let direction = "asc";
+  // const requestSort = (key) => {
+  //   let direction = "asc";
 
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    getbuilderlist(currentPage, newSortConfig, searchQuery);
-  };
+  //   const newSortConfig = [...sortConfig];
+  //   const keyIndex = sortConfig.findIndex((item) => item.key === key);
+  //   if (keyIndex !== -1) {
+  //     direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
+  //     newSortConfig[keyIndex].direction = direction;
+  //   } else {
+  //     newSortConfig.push({ key, direction });
+  //   }
+  //   setSortConfig(newSortConfig);
+  //   getbuilderlist(currentPage, newSortConfig, searchQuery);
+  // };
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -4726,6 +4734,144 @@ const SubdivisionList = () => {
     }
   };
 
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === 'builder') {
+          value = 'builderName';
+        }
+        if (value === 'productType') {
+          value = 'product_type';
+        }
+        if (value === 'masterPlan') {
+          value = 'masterplan_id';
+        }
+        if (value === 'zipCode') {
+          value = 'zipcode';
+        }
+        if (value === 'totalLots') {
+          value = 'totallots';
+        }
+        if (value === 'lotWidth') {
+          value = 'lotwidth';
+        }
+        if (value === 'lotSize') {
+          value = 'lotsize';
+        }
+        if (value === 'ageRestricted') {
+          value = 'age';
+        }
+        if (value === 'allSingleStory') {
+          value = 'single';
+        }
+        if (value === 'crossStreets') {
+          value = 'location';
+        }
+        if (value === 'latitude') {
+          value = 'lat';
+        }
+        if (value === 'longitude') {
+          value = 'lng';
+        }
+        if (value === 'gasProvider') {
+          value = 'gasprovider';
+        }
+        if (value === 'hOAFee') {
+          value = 'hoafee';
+        }
+        if (value === 'masterPlanFee') {
+          value = 'masterplanfee';
+        }
+        if (value === 'parcelGroup') {
+          value = 'parcel';
+        }
+        if (value === 'dateAdded') {
+          value = 'dateadded';
+        }
+        if (value === '__pkSubID') {
+          value = 'subdivision_code';
+        }
+        if (value === '_fkBuilderID') {
+          value = 'builder_code';
+        }
+        if (value === 'openSince') {
+          value = 'opensince';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
+
+  useEffect(() => {
+    if (showPopup) {
+      setSelectedFields([]);
+      setSortOrders({});
+    }
+  }, [showPopup]);
+
+  const HandleSortingPopupDetailClick = (e) => {
+    setShowSortingPopup(true);
+  };
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    getbuilderlist(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
+  };
+
+  const handleSortingCheckboxChange = (e, field) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
+    } else {
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders({
+      ...sortOrders,
+      [fieldValue]: order,
+    });
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+      const newOrder = {};
+      fieldOptions.forEach((field, index) => {
+        newOrder[field.value] = index + 1;
+      });
+      setSelectionOrder(newOrder);
+    } else {
+      setSelectedFields([]);
+      setSelectionOrder({});
+    }
+  };
+
   return (
     <>
       <MainPagetitle
@@ -4767,7 +4913,7 @@ const SubdivisionList = () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
@@ -4792,7 +4938,7 @@ const SubdivisionList = () => {
                         <Button
                           className="btn-sm me-1"
                           variant="secondary"
-                          onClick={HandleSortDetailClick}
+                          onClick={HandleSortingPopupDetailClick}
                           title="Sorted Fields"
                         >
                           <i class="fa-solid fa-sort"></i>
@@ -4967,54 +5113,55 @@ const SubdivisionList = () => {
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
-                                column.id == "builder" ? "builderName" :
-                                column.id == "product Type" ? "product_type" :
-                                column.id == "master Plan" ? "masterplan_id" :
-                                column.id == "total Lots" ? "totallots" :
-                                column.id == "lot Width" ? "lotwidth" :
-                                column.id == "lot Size" ? "lotsize" :
-                                column.id == "age Restricted" ? "age" :
-                                column.id == "all Single Story" ? "single" :
-                                column.id == "latitude" ? "lat" :
-                                column.id == "longitude" ? "lng" :
-                                column.id == "gas Provider" ? "gasprovider" :
-                                column.id == "hOA Fee" ? "hoafee" :
-                                column.id == "master Plan Fee" ? "masterplanfee" :
-                                column.id == "parcel Group" ? "parcel" :
-                                column.id == "date Added" ? "created_at" :
-                                column.id == "__pkSubID" ? "subdivision_code" :
-                                column.id == "_fkBuilderID" ? "builder_code" :
-                                column.id == "total Closings" ? "total_closings" :
-                                column.id == "total Permits" ? "total_permits" :
-                                column.id == "total Net Sales" ? "total_net_sales" :
-                                column.id == "months Open" ? "months_open" :
-                                column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
-                                column.id == "latest Lots Released" ? "latest_lots_released" :
-                                column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
-                                column.id == "unsold Lots" ? "unsold_lots" :
-                                column.id == "avg Sqft All" ? "avg_sqft_all" :
-                                column.id == "avg Sqft Active" ? "avg_sqft_active" :
-                                column.id == "avg Base Price All" ? "avg_base_price_all" :
-                                column.id == "avg Base Price Active" ? "avg_base_price_active" :
-                                column.id == "min Sqft All" ? "min_sqft_all" :
-                                column.id == "max Sqft All" ? "max_sqft_all" :
-                                column.id == "max Sqft Active" ? "max_sqft_active_current" :
-                                column.id == "min Base Price All" ? "min_base_price_all" :
-                                column.id == "min Sqft Active" ? "min_sqft_active_current" :
-                                column.id == "max Base Price All" ? "max_base_price_all" :
-                                column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
-                                column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
-                                column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
-                                column.id == "max Week Ending" ? "max_week_ending" :
-                                column.id == "min Week Ending" ? "min_week_ending" :
-                                column.id == "sqft Group" ? "sqft_group" :
-                                column.id == "price Group" ? "price_group" :
-                                column.id == "month Net Sold" ? "month_net_sold" :
-                                column.id == "year Net Sold" ? "year_net_sold" :
-                                column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} 
+                              // onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
+                              //   column.id == "builder" ? "builderName" :
+                              //   column.id == "product Type" ? "product_type" :
+                              //   column.id == "master Plan" ? "masterplan_id" :
+                              //   column.id == "total Lots" ? "totallots" :
+                              //   column.id == "lot Width" ? "lotwidth" :
+                              //   column.id == "lot Size" ? "lotsize" :
+                              //   column.id == "age Restricted" ? "age" :
+                              //   column.id == "all Single Story" ? "single" :
+                              //   column.id == "latitude" ? "lat" :
+                              //   column.id == "longitude" ? "lng" :
+                              //   column.id == "gas Provider" ? "gasprovider" :
+                              //   column.id == "hOA Fee" ? "hoafee" :
+                              //   column.id == "master Plan Fee" ? "masterplanfee" :
+                              //   column.id == "parcel Group" ? "parcel" :
+                              //   column.id == "date Added" ? "created_at" :
+                              //   column.id == "__pkSubID" ? "subdivision_code" :
+                              //   column.id == "_fkBuilderID" ? "builder_code" :
+                              //   column.id == "total Closings" ? "total_closings" :
+                              //   column.id == "total Permits" ? "total_permits" :
+                              //   column.id == "total Net Sales" ? "total_net_sales" :
+                              //   column.id == "months Open" ? "months_open" :
+                              //   column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
+                              //   column.id == "latest Lots Released" ? "latest_lots_released" :
+                              //   column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
+                              //   column.id == "unsold Lots" ? "unsold_lots" :
+                              //   column.id == "avg Sqft All" ? "avg_sqft_all" :
+                              //   column.id == "avg Sqft Active" ? "avg_sqft_active" :
+                              //   column.id == "avg Base Price All" ? "avg_base_price_all" :
+                              //   column.id == "avg Base Price Active" ? "avg_base_price_active" :
+                              //   column.id == "min Sqft All" ? "min_sqft_all" :
+                              //   column.id == "max Sqft All" ? "max_sqft_all" :
+                              //   column.id == "max Sqft Active" ? "max_sqft_active_current" :
+                              //   column.id == "min Base Price All" ? "min_base_price_all" :
+                              //   column.id == "min Sqft Active" ? "min_sqft_active_current" :
+                              //   column.id == "max Base Price All" ? "max_base_price_all" :
+                              //   column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
+                              //   column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                              //   column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                              //   column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
+                              //   column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
+                              //   column.id == "max Week Ending" ? "max_week_ending" :
+                              //   column.id == "min Week Ending" ? "min_week_ending" :
+                              //   column.id == "sqft Group" ? "sqft_group" :
+                              //   column.id == "price Group" ? "price_group" :
+                              //   column.id == "month Net Sold" ? "month_net_sold" :
+                              //   column.id == "year Net Sold" ? "year_net_sold" :
+                              //   column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
                               >
                                 <strong>
 
@@ -5024,106 +5171,53 @@ const SubdivisionList = () => {
                                       column.id == "builder" ? "builderName" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
                                       column.id == "total Lots" ? "totallots" :
                                       column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "all SingleStory" ? "single" :
+                                      column.id == "cross Streets" ? "location" :
                                       column.id == "latitude" ? "lat" :
                                       column.id == "longitude" ? "lng" :
                                       column.id == "gas Provider" ? "gasprovider" :
                                       column.id == "hOA Fee" ? "hoafee" :
                                       column.id == "master Plan Fee" ? "masterplanfee" :
                                       column.id == "parcel Group" ? "parcel" :
-                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "date Added" ? "dateadded" :
                                       column.id == "__pkSubID" ? "subdivision_code" :
                                       column.id == "_fkBuilderID" ? "builder_code" :
-                                      column.id == "total Closings" ? "total_closings" :
-                                      column.id == "total Permits" ? "total_permits" :
-                                      column.id == "total Net Sales" ? "total_net_sales" :
-                                      column.id == "months Open" ? "months_open" :
-                                      column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
-                                      column.id == "latest Lots Released" ? "latest_lots_released" :
-                                      column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
-                                      column.id == "unsold Lots" ? "unsold_lots" :
-                                      column.id == "avg Sqft All" ? "avg_sqft_all" :
-                                      column.id == "avg Sqft Active" ? "avg_sqft_active" :
-                                      column.id == "avg Base Price All" ? "avg_base_price_all" :
-                                      column.id == "avg Base Price Active" ? "avg_base_price_active" :
-                                      column.id == "min Sqft All" ? "min_sqft_all" :
-                                      column.id == "max Sqft All" ? "max_sqft_all" :
-                                      column.id == "max Sqft Active" ? "max_sqft_active_current" :
-                                      column.id == "min Base Price All" ? "min_base_price_all" :
-                                      column.id == "min Sqft Active" ? "min_sqft_active_current" :
-                                      column.id == "max Base Price All" ? "max_base_price_all" :
-                                      column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
-                                      column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                      column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                      column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
-                                      column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
-                                      column.id == "max Week Ending" ? "max_week_ending" :
-                                      column.id == "min Week Ending" ? "min_week_ending" :
-                                      column.id == "sqft Group" ? "sqft_group" :
-                                      column.id == "price Group" ? "price_group" :
-                                      column.id == "month Net Sold" ? "month_net_sold" :
-                                      column.id == "year Net Sold" ? "year_net_sold" :
-                                      column.id == "avg Closing Price" ? "avg_closing_price" :
-                                      column.id == "parcel" ? "parcel" : toCamelCase(column.id))
-                                    ) ? (
+                                      column.id == "open Since" ? "opensince" : toCamelCase(column.id))
+                                    ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
                                           column.id == "builder" ? "builderName" :
                                           column.id == "product Type" ? "product_type" :
                                           column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
                                           column.id == "total Lots" ? "totallots" :
                                           column.id == "lot Width" ? "lotwidth" :
                                           column.id == "lot Size" ? "lotsize" :
                                           column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "single" :
+                                          column.id == "all SingleStory" ? "single" :
+                                          column.id == "cross Streets" ? "location" :
                                           column.id == "latitude" ? "lat" :
                                           column.id == "longitude" ? "lng" :
                                           column.id == "gas Provider" ? "gasprovider" :
                                           column.id == "hOA Fee" ? "hoafee" :
                                           column.id == "master Plan Fee" ? "masterplanfee" :
                                           column.id == "parcel Group" ? "parcel" :
-                                          column.id == "date Added" ? "created_at" :
+                                          column.id == "date Added" ? "dateadded" :
                                           column.id == "__pkSubID" ? "subdivision_code" :
                                           column.id == "_fkBuilderID" ? "builder_code" :
-                                          column.id == "total Closings" ? "total_closings" :
-                                          column.id == "total Permits" ? "total_permits" :
-                                          column.id == "total Net Sales" ? "total_net_sales" :
-                                          column.id == "months Open" ? "months_open" :
-                                          column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
-                                          column.id == "latest Lots Released" ? "latest_lots_released" :
-                                          column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
-                                          column.id == "unsold Lots" ? "unsold_lots" :
-                                          column.id == "avg Sqft All" ? "avg_sqft_all" :
-                                          column.id == "avg Sqft Active" ? "avg_sqft_active" :
-                                          column.id == "avg Base Price All" ? "avg_base_price_all" :
-                                          column.id == "avg Base Price Active" ? "avg_base_price_active" :
-                                          column.id == "min Sqft All" ? "min_sqft_all" :
-                                          column.id == "max Sqft All" ? "max_sqft_all" :
-                                          column.id == "max Sqft Active" ? "max_sqft_active_current" :
-                                          column.id == "min Base Price All" ? "min_base_price_all" :
-                                          column.id == "min Sqft Active" ? "min_sqft_active_current" :
-                                          column.id == "max Base Price All" ? "max_base_price_all" :
-                                          column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
-                                          column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                                          column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                                          column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
-                                          column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
-                                          column.id == "max Week Ending" ? "max_week_ending" :
-                                          column.id == "min Week Ending" ? "min_week_ending" :
-                                          column.id == "sqft Group" ? "sqft_group" :
-                                          column.id == "price Group" ? "price_group" :
-                                          column.id == "month Net Sold" ? "month_net_sold" :
-                                          column.id == "year Net Sold" ? "year_net_sold" :
-                                          column.id == "parcel" ? "parcel" : toCamelCase(column.id))
+                                          column.id == "open Since" ? "opensince" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
-                                    ) : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
-                                  )}
+                                    ) 
+                                  //   : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
+                                  // )
+                                  }
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
@@ -5745,46 +5839,103 @@ const SubdivisionList = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={showSort} onHide={HandleSortDetailClick}>
-        <Modal.Header handleSortClose>
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+        <Modal.Header handleSortingPopupClose>
           <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
         </Modal.Header>
-        <Modal.Body>
-          {sortConfig.length > 0 ? (
-            sortConfig.map((col) => (
-              <div className="row" key={col.key}>
-                <div className="col-md-6">
-                  <div className="form-check">
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
                     <input
-                      className="form-check-input"
                       type="checkbox"
-                      name={col.key}
-                      defaultChecked={true}
-                      id={`checkbox-${col.key}`}
-                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
                     />
-                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                      <span>{col.key}</span>:<span>{col.direction}</span>
-
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
                     </label>
                   </div>
                 </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value]; // Get the selection order
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "35px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>} {/* Display selection number */}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))
-          ) : (
-            <p>N/A</p>
-          )}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortClose}>
-            cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleRemoveSelected}
-          >
-            Clear Sort
-          </Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
       <Offcanvas
