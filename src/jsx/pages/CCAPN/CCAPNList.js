@@ -424,11 +424,13 @@ console.log(searchQuery);
                             styles={{
                               container: (provided) => ({
                                   ...provided,
-                                  color: 'black'
+                                  color: 'black',
+                                  width: '200px',
                               }),
                               menu: (provided) => ({
                                   ...provided,
-                                  color: 'black'
+                                  color: 'black',
+                                  width: '200px',
                               }),
                             }}
                           />
@@ -444,11 +446,13 @@ console.log(searchQuery);
                             styles={{
                               container: (provided) => ({
                                   ...provided,
-                                  color: 'black'
+                                  color: 'black',
+                                  width: '200px',
                               }),
                               menu: (provided) => ({
                                   ...provided,
-                                  color: 'black'
+                                  color: 'black',
+                                  width: '200px',
                               }),
                             }}
                           />
