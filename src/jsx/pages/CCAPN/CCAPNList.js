@@ -419,9 +419,18 @@ console.log(searchQuery);
                           <Select
                             name="builder_name"
                             options={builderListDropDown}
-                            // value={selectedBuilderName}
                             onChange={(e) => handleSelectBuilderNameChange(e)}
                             placeholder="Select Builder Name"
+                            styles={{
+                              container: (provided) => ({
+                                  ...provided,
+                                  color: 'black'
+                              }),
+                              menu: (provided) => ({
+                                  ...provided,
+                                  color: 'black'
+                              }),
+                            }}
                           />
                         </Form.Group>
                       </div>
@@ -430,9 +439,18 @@ console.log(searchQuery);
                           <Select
                             name="subdivision_name"
                             options={BuilderList}
-                            // value={selectedSubdivisionName}
                             onChange={(e) => handleSelectSubdivisionNameChange(e)}
                             placeholder={"Select Subdivision Name"}
+                            styles={{
+                              container: (provided) => ({
+                                  ...provided,
+                                  color: 'black'
+                              }),
+                              menu: (provided) => ({
+                                  ...provided,
+                                  color: 'black'
+                              }),
+                            }}
                           />
                         </Form.Group>
                       </div>
@@ -739,6 +757,16 @@ console.log(searchQuery);
                     value={selectedBuilderName}
                     onChange={handleSelectBuilderNameChange}
                     placeholder={"Select Builder Name"}
+                    styles={{
+                      container: (provided) => ({
+                          ...provided,
+                          color: 'black'
+                      }),
+                      menu: (provided) => ({
+                          ...provided,
+                          color: 'black'
+                      }),
+                    }}
                   />
                 </Form.Group>
               </div>
@@ -750,6 +778,16 @@ console.log(searchQuery);
                     value={selectedSubdivisionName}
                     onChange={handleSelectSubdivisionNameChange}
                     placeholder={"Select Subdivision Name"}
+                    styles={{
+                      container: (provided) => ({
+                          ...provided,
+                          color: 'black'
+                      }),
+                      menu: (provided) => ({
+                          ...provided,
+                          color: 'black'
+                      }),
+                    }}
                   />
                 </Form.Group>
               </div>
