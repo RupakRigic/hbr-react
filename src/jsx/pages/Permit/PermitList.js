@@ -1240,7 +1240,7 @@ const GetSubdivisionDropDownList = async () => {
           value = 'single';
         }
         if (value === '__pkPermitID') {
-          value = 'permitnumber';
+          value = 'id';
         }
 
         if (value === '_fkSubID') {
@@ -1570,7 +1570,7 @@ const GetSubdivisionDropDownList = async () => {
                                       column.id == "age Restricted" ? "age" :
                                       column.id == "all Single Story" ? "single" :
                                       column.id == "date Added" ? "created_at" :
-                                      column.id == "__pkPermitID" ? "permitnumber" :
+                                      column.id == "__pkPermitID" ? "id" :
                                       column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                   ) && (
                                     <span>
@@ -1591,7 +1591,7 @@ const GetSubdivisionDropDownList = async () => {
                                           column.id == "age Restricted" ? "age" :
                                           column.id == "all Single Story" ? "single" :
                                           column.id == "date Added" ? "created_at" :
-                                          column.id == "__pkPermitID" ? "permitnumber" :
+                                          column.id == "__pkPermitID" ? "id" :
                                           column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
@@ -1842,7 +1842,7 @@ const GetSubdivisionDropDownList = async () => {
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.created_at} /></td>
                                     }
                                     {column.id == "__pkPermitID" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.permitnumber}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.id}</td>
                                     }
                                     {column.id == "_fkSubID" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.subdivision_code}</td>

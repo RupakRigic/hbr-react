@@ -929,6 +929,9 @@ const LandsaleList = () => {
         if (value === 'size') {
           value = 'noofunit';
         }
+        if (value === 'zipCode') {
+          value = 'zip';
+        }
         return {
           value: value,
           label: field,
@@ -1244,15 +1247,17 @@ const LandsaleList = () => {
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "sIZE MS" ? "typeofunit" :
-                                        column.id == "sIZE" ? "noofunit" :
+                                      column.id == "size MS" ? "typeofunit" :
+                                        column.id == "size" ? "noofunit" :
+                                        column.id == "zip Code" ? "zip" :
                                           toCamelCase(column.id))
                                   ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
-                                          column.id == "sIZE MS" ? "typeofunit" :
-                                            column.id == "sIZE" ? "noofunit" :
+                                          column.id == "size MS" ? "typeofunit" :
+                                            column.id == "size" ? "noofunit" :
+                                            column.id == "zip Code" ? "zip" :
                                               toCamelCase(column.id))
                                       ).direction === "asc"
                                         ? "↑"
@@ -1462,7 +1467,7 @@ const LandsaleList = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="15" style={{ textAlign: "center" }}>
+                              <td colSpan="17" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>
