@@ -5,13 +5,11 @@ import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import swal from "sweetalert";
 import AdminCCAPNService from "../../../API/Services/AdminService/AdminCCAPNService";
-import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import DateComponent from "../../components/date/DateFormat";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
-import { Form, Offcanvas, Row } from "react-bootstrap";
-import { MultiSelect } from "react-multi-select-component";
+import { Form, Offcanvas } from "react-bootstrap";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -20,6 +18,62 @@ const CCAPNList = () => {
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState({
+    parcel: "",
+    address: "",
+  });
+  const [BuilderList, setBuilderList] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
+  const [selectedBuilderName, setSelectedBuilderName] = useState("");
+  const [builderListDropDown, setBuilderListDropDown] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [Error, setError] = useState("");
+  const [fileListCount, setFileListCount] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPage = 100;
+  const lastIndex = currentPage * recordsPage;
+  const [npage, setNpage] = useState(0);
+  const number = [...Array(npage + 1).keys()].slice(1);
+  const navigate = useNavigate();
+  const [ccapnList, setCCAPNList] = useState([]);
+  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
+  const [excelLoading, setExcelLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState([]);
+  const [show, setShow] = useState(false);
+  const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFileError, setSelectedFileError] = useState("");
+
+  useEffect(() => {
+    setSearchQuery(filterString());
+  }, [filterQuery]);
+
+  useEffect(() => {
+    getbuilderDoplist();
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      GetCCAPNList(currentPage, sortConfig, searchQuery);
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
+
+  const prePage = () => {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const changeCPage = (id) => {
+    setCurrentPage(id);
+  };
+
+  const nextPage = () => {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const handleEditCheckboxChange = (e, userId) => {
     if (e.target.checked) {
@@ -34,11 +88,6 @@ const CCAPNList = () => {
     }
   };
 
-  const [filterQuery, setFilterQuery] = useState({
-    parcel :"",
-    address: "",
-  });
-
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -46,7 +95,7 @@ const CCAPNList = () => {
       [name]: value,
     }));
   };
-console.log(searchQuery);
+
   const filterString = () => {
     const queryString = Object.keys(filterQuery)
       .map(
@@ -57,15 +106,7 @@ console.log(searchQuery);
 
     return queryString ? `&${queryString}` : "";
   };
-
-  useEffect(() => {
-    setSearchQuery(filterString());
-  }, [filterQuery]);
-  const [BuilderList, setBuilderList] = useState([]);
-  console.log(BuilderList);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
-
-  const [selectedBuilderName, setSelectedBuilderName] = useState("");
+  
   const handleSelectBuilderNameChange = (e) => {
     setSelectedBuilderName(e);
     console.log(e.value);
@@ -73,7 +114,6 @@ console.log(searchQuery);
   };
 
   const getbuilderlist = async (builderId) => {
-    console.log(builderId);
     try {
       const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
       const responseData = await response.json();
@@ -93,6 +133,7 @@ console.log(searchQuery);
       }
     }
   };
+
   const handleSelectSubdivisionNameChange = (e) => {
     setSelectedSubdivisionName(e.value);
   };
@@ -100,32 +141,16 @@ console.log(searchQuery);
   const handleRowEdit = async (id) => {
     setShowOffcanvas(true);
     setSelectedLandSales((prevSelectedUsers) => [
-        ...prevSelectedUsers,
-        id,
-      ]);
+      ...prevSelectedUsers,
+      id,
+    ]);
   };
-  const [builderListDropDown, setBuilderListDropDown] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [Error, setError] = useState("");
-  const [fileListCount, setFileListCount] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPage = 100;
-  const lastIndex = currentPage * recordsPage;
-  const [npage, setNpage] = useState(0);
-  const number = [...Array(npage + 1).keys()].slice(1);
-  const navigate = useNavigate();
-  const [ccapnList, setCCAPNList] = useState([]);
-  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
-  const [excelLoading, setExcelLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState([]);
-  const [show, setShow] = useState(false);
-  const [selectedFile, setSelectedFile] = useState("");
-  const [selectedFileError, setSelectedFileError] = useState("");
 
   const handleClose = () => {
     setShow(false);
     // GetCCAPNList();
   };
+
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
     : "";
@@ -160,100 +185,57 @@ console.log(searchQuery);
       }
     }
   };
-  useEffect(() => {
-    getbuilderDoplist();
-  }, []);
 
-  console.log(ccapnList);
-
-  const GetCCAPNList = async (pageNumber) => {
+  const GetCCAPNList = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
-    
-    console.log(searchQuery);
+    setSearchQuery(searchQuery);
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-
       const response = await AdminCCAPNService.index(
         pageNumber,
         searchQuery,
         sortConfigString
       );
       const responseData = await response.json();
-
       setIsLoading(false);
       setCCAPNList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
+      if (responseData.total > 100) {
+        // FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      } else {
+        setExcelLoading(false);
+        setAllBuilderExport(responseData.data);
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage, searchQuery);
-      fetchAllPages(searchQuery, sortConfig);
-    } else {
-      navigate("/");
-    }
-  }, [currentPage,searchQuery]);
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const fetchAllPages = async (searchQuery, sortConfig) => {
-    const response = await AdminCCAPNService.index(
-      1,
-      searchQuery,
-      sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : ""
-    );
-    const responseData = await response.json();
-    const totalPages = Math.ceil(responseData.total / recordsPage);
-    let allData = responseData.data;
+  const FetchAllPages = async (searchQuery, sortConfig, CCAPNList, ccapnListCount) => {
+    const totalPages = Math.ceil(ccapnListCount / recordsPage);
+    let allData = CCAPNList;
 
     for (let page = 2; page <= totalPages; page++) {
-      const pageResponse = await AdminCCAPNService.index(
-        page,
-        searchQuery,
-        sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : ""
-      );
+      await delay(1000);
+      const pageResponse = await AdminCCAPNService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);
     }
     setAllBuilderExport(allData);
     setExcelLoading(false);
   };
-
-  const prePage = () => {
-    if (currentPage !== 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const changeCPage = (id) => {
-    setCurrentPage(id);
-  };
-
-  const nextPage = () => {
-    if (currentPage !== npage) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage);
-    } else {
-      navigate("/");
-    }
-  }, [currentPage]);
 
   const handlBuilderClick = (e) => {
     setShow(true);
@@ -300,41 +282,43 @@ console.log(searchQuery);
           );
           if (response.status !== 200) {
             throw new Error("HTTPError");
-          }
-
-          currentChunk++;
-          console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
-          setSelectedFile("");
-          document.getElementById("fileInput").value = null;
-          setIsLoading(false);
-
-          if (response.data) {
-            console.log(response.data);
-            let message = response.data.message;
-            if (response.data.failed_records > 0) {
-              const problematicRows = response.failed_records_details
-                .map((detail) => detail.row)
-                .join(", ");
-              message += " Problematic Record Rows: " + problematicRows + ".";
-            }
-            message += ". Record Imported: " + response.data.successful_records;
-            message += ". Failed Record Count: " + response.data.failed_records;
-            message += ". Last Row: " + response.data.last_processed_row;
-            swal(message).then((willDelete) => {
-              if (willDelete) {
-                navigate("/ccapn");
-                setShow(false);
-              }
-            });
           } else {
-            swal("Error: " + response.error).then((willDelete) => {
-              if (willDelete) {
-                navigate("/ccapn");
+            currentChunk++;
+            console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
+            setSelectedFile("");
+            document.getElementById("fileInput").value = null;
+
+            if (response.data) {
+              if (response.data.failed_records === 0) {
+                let message = response.data.message;
+                setIsLoading(false);
                 setShow(false);
+                swal(message).then((willDelete) => {
+                  if (willDelete) {
+                    GetCCAPNList(currentPage, sortConfig, searchQuery);
+                  }
+                });
+              } else {
+                let message = response.data.message;
+                if (response.data.failed_records > 0) {
+                  const problematicRows = response.failed_records_details
+                    .map((detail) => detail.row)
+                    .join(", ");
+                  message += " Problematic Record Rows: " + problematicRows + ".";
+                }
+                message += ". Record Imported: " + response.data.successful_records;
+                message += ". Failed Record Count: " + response.data.failed_records;
+                message += ". Last Row: " + response.data.last_processed_row;
+                setIsLoading(false);
+                setShow(false);
+                swal(message).then((willDelete) => {
+                  if (willDelete) {
+                    GetCCAPNList(currentPage, sortConfig, searchQuery);
+                  }
+                });
               }
-            });
+            }
           }
-          GetCCAPNList();
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
@@ -342,16 +326,10 @@ console.log(searchQuery);
             setError(errorJson.message);
             document.getElementById("fileInput").value = null;
             setIsLoading(false);
-          } else {
-            swal("Error: " + error.name).then((willDelete) => {
-              if (willDelete) {
-                navigate("/ccapn");
-                setShow(false);
-              }
-            });
           }
         }
-      }
+      };
+      setSelectedFileError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
@@ -385,7 +363,7 @@ console.log(searchQuery);
             swal("Ccapn Updated Succesfully").then((willDelete) => {
               if (willDelete) {
                 navigate("/ccapn");
-                GetCCAPNList();
+                GetCCAPNList(currentPage, sortConfig, searchQuery);
               }
             });
           }
@@ -423,14 +401,14 @@ console.log(searchQuery);
                             placeholder="Select Builder Name"
                             styles={{
                               container: (provided) => ({
-                                  ...provided,
-                                  color: 'black',
-                                  width: '200px',
+                                ...provided,
+                                color: 'black',
+                                width: '200px',
                               }),
                               menu: (provided) => ({
-                                  ...provided,
-                                  color: 'black',
-                                  width: '200px',
+                                ...provided,
+                                color: 'black',
+                                width: '200px',
                               }),
                             }}
                           />
@@ -445,14 +423,14 @@ console.log(searchQuery);
                             placeholder={"Select Subdivision Name"}
                             styles={{
                               container: (provided) => ({
-                                  ...provided,
-                                  color: 'black',
-                                  width: '200px',
+                                ...provided,
+                                color: 'black',
+                                width: '200px',
                               }),
                               menu: (provided) => ({
-                                  ...provided,
-                                  color: 'black',
-                                  width: '200px',
+                                ...provided,
+                                color: 'black',
+                                width: '200px',
                               }),
                             }}
                           />
@@ -467,45 +445,45 @@ console.log(searchQuery);
                     </div>
 
                     {SyestemUserRole == "Data Uploader" ||
-                    SyestemUserRole == "User" ||
-                    SyestemUserRole == "Standard User" ? (
+                      SyestemUserRole == "User" ||
+                      SyestemUserRole == "Standard User" ? (
                       ""
                     ) : (
                       <div className="d-flex justify-content-between">
                         <div className="me-3">
-                <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              variant="success"
+                              className="btn-sm"
+                              id="dropdown-basic"
+                            >
+                              <i className="fa fa-filter"></i>
+                            </Dropdown.Toggle>
 
-                        <Dropdown.Menu style={{width:"400px",overflow:"unset"}}>
+                            <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
 
-                        <label className="form-label">
-                        Parcel :
-                          </label>
-                        <input type="search" name="parcel" className="form-control"  onChange={HandleFilter} />     
+                              <label className="form-label">
+                                Parcel :
+                              </label>
+                              <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
 
-                        <label className="form-label">
-                        Address :
-                          </label>
-                        <input type="search" name="address"className="form-control" onChange={HandleFilter} />                        
-                   
-                        </Dropdown.Menu>
+                              <label className="form-label">
+                                Address :
+                              </label>
+                              <input type="search" name="address" className="form-control" onChange={HandleFilter} />
+
+                            </Dropdown.Menu>
                           </Dropdown>
 
-                      </div>
-                      <div>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
+                        </div>
+                        <div>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            Import
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -539,9 +517,8 @@ console.log(searchQuery);
                             ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
@@ -556,9 +533,8 @@ console.log(searchQuery);
                           } else {
                             return (
                               <Link
-                                className={`paginate_button ${
-                                  currentPage === n ? "current" : ""
-                                } `}
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
                                 key={i}
                                 onClick={() => changeCPage(n)}
                               >
@@ -605,8 +581,8 @@ console.log(searchQuery);
                                 onChange={(e) =>
                                   e.target.checked
                                     ? setSelectedLandSales(
-                                        ccapnList.map((user) => user.id)
-                                      )
+                                      ccapnList.map((user) => user.id)
+                                    )
                                     : setSelectedLandSales([])
                                 }
                               />
@@ -763,12 +739,12 @@ console.log(searchQuery);
                     placeholder={"Select Builder Name"}
                     styles={{
                       container: (provided) => ({
-                          ...provided,
-                          color: 'black'
+                        ...provided,
+                        color: 'black'
                       }),
                       menu: (provided) => ({
-                          ...provided,
-                          color: 'black'
+                        ...provided,
+                        color: 'black'
                       }),
                     }}
                   />
@@ -784,23 +760,23 @@ console.log(searchQuery);
                     placeholder={"Select Subdivision Name"}
                     styles={{
                       container: (provided) => ({
-                          ...provided,
-                          color: 'black'
+                        ...provided,
+                        color: 'black'
                       }),
                       menu: (provided) => ({
-                          ...provided,
-                          color: 'black'
+                        ...provided,
+                        color: 'black'
                       }),
                     }}
                   />
                 </Form.Group>
               </div>
               <div className="col-md-4">
-              <button onClick={handleSubmit} className="btn btn-sm btn-primary">
-                Assign
-              </button>
-              
-            </div>
+                <button onClick={handleSubmit} className="btn btn-sm btn-primary">
+                  Assign
+                </button>
+
+              </div>
             </div>
           </div>
         </div>

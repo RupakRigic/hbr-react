@@ -611,7 +611,7 @@ const PriceList = () => {
     try {
       let responseData = await AdminPriceService.destroy(e).json();
       if (responseData.status === true) {
-        getpriceList();
+        getpriceList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -625,7 +625,7 @@ const PriceList = () => {
     try {
       let responseData = await AdminPriceService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getpriceList();
+        getpriceList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -636,7 +636,7 @@ const PriceList = () => {
   };
 
   const handleCallback = () => {
-    getpriceList();
+    getpriceList(currentPage, sortConfig, searchQuery);
   };
 
   const handleRowClick = async (id) => {
@@ -876,7 +876,7 @@ const PriceList = () => {
             swal('Error: ' + responseData.error);
             setShow(false);
           }
-          getpriceList();
+          getpriceList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();

@@ -615,7 +615,7 @@ const LandsaleList = () => {
     try {
       let responseData = await AdminLandsaleService.destroy(e).json();
       if (responseData.status === true) {
-        getLandsaleList();
+        getLandsaleList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -629,7 +629,7 @@ const LandsaleList = () => {
     try {
       let responseData = await AdminLandsaleService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getLandsaleList();
+        getLandsaleList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -640,7 +640,7 @@ const LandsaleList = () => {
   };
 
   const handleCallback = () => {
-    getLandsaleList();
+    getLandsaleList(currentPage, sortConfig, searchQuery);
   };
 
   const handleRowClick = async (id) => {
@@ -739,7 +739,7 @@ const LandsaleList = () => {
             swal('Error: ' + responseData.error);
             setShow(false);
           }
-          getLandsaleList();
+          getLandsaleList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();

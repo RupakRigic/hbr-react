@@ -679,7 +679,7 @@ const ClosingList = () => {
     try {
       let responseData = await AdminClosingService.destroy(e).json();
       if (responseData.status === true) {
-        getClosingList();
+        getClosingList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -693,7 +693,7 @@ const ClosingList = () => {
     try {
       let responseData = await AdminClosingService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getClosingList();
+        getClosingList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -781,7 +781,7 @@ const ClosingList = () => {
 
   const handleCallback = () => {
     // Update the name in the component's state
-    getClosingList();
+    getClosingList(currentPage, sortConfig, searchQuery);
   };
 
 

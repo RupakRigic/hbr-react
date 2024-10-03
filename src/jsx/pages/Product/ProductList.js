@@ -549,7 +549,7 @@ const ProductList = () => {
     try {
       let responseData = await AdminProductService.destroy(e).json();
       if (responseData.status === true) {
-        getproductList();
+        getproductList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -563,7 +563,7 @@ const ProductList = () => {
     try {
       let responseData = await AdminProductService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getproductList();
+        getproductList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -575,7 +575,7 @@ const ProductList = () => {
 
   const handleCallback = () => {
     // Update the name in the component's state
-    getproductList();
+    getproductList(currentPage, sortConfig, searchQuery);
   };
 
   const HandleRole = (e) => {
@@ -799,7 +799,7 @@ const ProductList = () => {
             swal('Error: ' + responseData);
             setShow(false);
           }
-          getproductList();
+          getproductList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();

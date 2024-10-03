@@ -795,7 +795,7 @@ const PermitList = () => {
     try {
       let responseData = await AdminPermitService.destroy(e).json();
       if (responseData.status === true) {
-        getPermitList();
+        getPermitList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -809,7 +809,7 @@ const PermitList = () => {
     try {
       let responseData = await AdminPermitService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getPermitList();
+        getPermitList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -821,7 +821,7 @@ const PermitList = () => {
 
   const handleCallback = () => {
     // Update the name in the component's state
-    getPermitList();
+    getPermitList(currentPage, sortConfig, searchQuery);
   };
 
   const handleFileChange = async (e) => {
@@ -866,7 +866,7 @@ const PermitList = () => {
           swal('Error: ' + response.error);
           setShow(false);
         }
-        getPermitList();
+        getPermitList(currentPage, sortConfig, searchQuery);
       } catch (error) {
         let errorMessage = "An error occurred. Please try again.";
         if (error.response && error.response.data) {

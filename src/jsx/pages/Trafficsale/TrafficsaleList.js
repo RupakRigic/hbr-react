@@ -710,7 +710,7 @@ const TrafficsaleList = () => {
     try {
       let responseData = await AdminTrafficsaleService.destroy(e).json();
       if (responseData.status === true) {
-        gettrafficsaleList();
+        gettrafficsaleList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -724,7 +724,7 @@ const TrafficsaleList = () => {
     try {
       let responseData = await AdminTrafficsaleService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        gettrafficsaleList();
+        gettrafficsaleList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -736,7 +736,7 @@ const TrafficsaleList = () => {
 
   const handleCallback = () => {
     // Update the name in the component's state
-    gettrafficsaleList();
+    gettrafficsaleList(currentPage, sortConfig, searchQuery);
   };
 
   const handleRowClick = async (id) => {
@@ -1069,7 +1069,7 @@ const GetSubdivisionDropDownList = async () => {
           } else {
             swal('Error: ' + responseData.error);
           }
-          gettrafficsaleList();
+          gettrafficsaleList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();

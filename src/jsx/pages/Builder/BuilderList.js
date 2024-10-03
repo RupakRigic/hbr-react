@@ -923,7 +923,7 @@ const BuilderTable = () => {
             swal('Error: ' + responseData.error);
             setShow(false);
           }
-          getbuilderlist();
+          getbuilderlist(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
