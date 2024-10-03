@@ -285,11 +285,12 @@ const CCAPNList = () => {
           } else {
             currentChunk++;
             console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
-            setSelectedFile("");
+            
             document.getElementById("fileInput").value = null;
 
             if (response.data) {
               if (response.data.failed_records === 0) {
+                setSelectedFile("");
                 let message = response.data.message;
                 setIsLoading(false);
                 setShow(false);
@@ -301,14 +302,15 @@ const CCAPNList = () => {
               } else {
                 let message = response.data.message;
                 if (response.data.failed_records > 0) {
-                  const problematicRows = response.failed_records_details
-                    .map((detail) => detail.row)
+                  const problematicRows = response.data.failed_records_details
+                    .map((detail) => detail.error)
                     .join(", ");
                   message += " Problematic Record Rows: " + problematicRows + ".";
                 }
                 message += ". Record Imported: " + response.data.successful_records;
                 message += ". Failed Record Count: " + response.data.failed_records;
                 message += ". Last Row: " + response.data.last_processed_row;
+                setSelectedFile("");
                 setIsLoading(false);
                 setShow(false);
                 swal(message).then((willDelete) => {
