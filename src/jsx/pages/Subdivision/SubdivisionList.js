@@ -4736,7 +4736,23 @@ const SubdivisionList = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action')
+      .filter((field) => field !== 'Action' && field !== 'Total Closings' 
+        && field !== 'Total Permits' && field !== 'Total Net Sales'
+        && field !== 'Months Open' && field !== 'Latest Traffic/Sales Data'
+        && field !== 'Latest Lots Released' && field !== 'Latest Standing Inventory'
+        && field !== 'Unsold Lots' && field !== 'Avg Sqft All'
+        && field !== 'Avg Sqft Active' && field !== 'Avg Base Price All'
+        && field !== 'Avg Base Price Active' && field !== 'Min Sqft All'
+        && field !== 'Max Sqft All' && field !== 'Min Base Price All'
+        && field !== 'Min Sqft Active' && field !== 'Max Base Price All'
+        && field !== 'Max Sqft Active' && field !== 'Avg Traffic Per Month This Year'
+        && field !== 'Avg Net Sales Per Month This Year' && field !== 'Avg Closings Per Month This Year'
+        && field !== 'Avg Net Sales Per Month Since Open' && field !== 'Avg Net Sales Per Month Last 3 Months'
+        && field !== 'Max Week Ending' && field !== 'Min Week Ending'
+        && field !== 'Sqft Group' && field !== 'Price Group'
+        && field !== 'Month Net Sold' && field !== 'Year Net Sold'
+        && field !== 'Avg Closing Price' && field !== 'Permits This Year'
+        && field !== 'Median Closing Price Since Open' && field !== 'Median Closing Price This Year')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 

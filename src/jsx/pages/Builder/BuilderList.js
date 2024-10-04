@@ -1753,7 +1753,13 @@ const BuilderTable = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action' && field !== 'logo')
+      .filter((field) => field !== 'Action' && field !== 'logo' 
+        && field !== 'Active Communities' && field !== 'Closing This Year' 
+        && field !== 'Permits This Year' && field !== 'Net Sales this year' 
+        && field !== 'Current Avg Base Price' && field !== 'Median Closing Price This Year' 
+        && field !== 'Median Closing Price Last Year' && field !== 'Avg Net Sales Per Month This Year' 
+        && field !== 'Avg Closings Per Month This Year' && field !== 'Total Closings' && field !== 'Total Permits'
+        && field !== 'Total Net Sales' && field !== 'Date Of First Closing' && field !== 'Date Of Latest Closing')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 
@@ -2541,7 +2547,7 @@ const BuilderTable = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
+                              <td colSpan="15" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>

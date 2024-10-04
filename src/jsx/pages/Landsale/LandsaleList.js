@@ -919,7 +919,7 @@ const LandsaleList = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action')
+      .filter((field) => field !== 'Action' && field !== 'Price Per')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 
