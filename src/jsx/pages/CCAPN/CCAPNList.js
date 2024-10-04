@@ -288,29 +288,25 @@ const CCAPNList = () => {
             
             document.getElementById("fileInput").value = null;
 
-            if (response.data) {
-              if (response.data.failed_records === 0) {
-                setSelectedFile("");
-                let message = response.data.message;
-                setIsLoading(false);
-                setShow(false);
-                swal(message).then((willDelete) => {
-                  if (willDelete) {
-                    GetCCAPNList(currentPage, sortConfig, searchQuery);
-                  }
-                });
-              } else {
-                let message = response.data.message;
-                if (response.data.failed_records > 0) {
-                  const problematicRows = response.data.failed_records_details
-                    .map((detail) => detail.error)
-                    .join(", ");
-                  message += " Problematic Record Rows: " + problematicRows + ".";
+            if (response.data.failed_records > 0) {
+              let message = response.data.message;
+              const problematicRows = response.data.failed_records_details.map((detail) => detail.error).join(", ");
+              message += " Problematic Record Rows: " + problematicRows + ".";
+              message += ". Record Imported: " + response.data.successful_records;
+              message += ". Failed Record Count: " + response.data.failed_records;
+              message += ". Last Row: " + response.data.last_processed_row;
+              setSelectedFile("");
+              setIsLoading(false);
+              setShow(false);
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  GetCCAPNList(currentPage, sortConfig, searchQuery);
                 }
-                message += ". Record Imported: " + response.data.successful_records;
-                message += ". Failed Record Count: " + response.data.failed_records;
-                message += ". Last Row: " + response.data.last_processed_row;
+              });
+            } else {
+              if (response.data.message) {
                 setSelectedFile("");
+                let message = response.data.message;
                 setIsLoading(false);
                 setShow(false);
                 swal(message).then((willDelete) => {
