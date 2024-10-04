@@ -979,7 +979,7 @@ const BuilderTable = () => {
                             <div className="col-md-12" style={{marginTop: "10px"}}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
-                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ?  message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : "Select week ending date and click save"}
+                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ?  message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
                                 </p>
                               </div>
                             </div>
@@ -991,10 +991,13 @@ const BuilderTable = () => {
                                 {reportType == "Subdivision Analysis Report" ? 
                                   <div className="ms-4 sm-m-0">Select Builder & Subdivision</div>
                                   : 
-                                  <div className="ms-4 sm-m-0">Select Period</div>
+                                  (reportType == "List of Active New Home Builders" ? 
+                                    <div className="ms-4 sm-m-0"></div>
+                                  :
+                                  <div className="ms-4 sm-m-0">Select Period</div>)
                                 }
                               </div>
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report") && <div className="me-2 mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="me-2 mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -1013,7 +1016,7 @@ const BuilderTable = () => {
 
                               </div>}
 
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report") && <div className="mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
