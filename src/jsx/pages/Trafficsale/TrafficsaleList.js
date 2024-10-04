@@ -1050,26 +1050,30 @@ const GetSubdivisionDropDownList = async () => {
           document.getElementById("fileInput").value = null;
           console.log(responseData);
           setLoading(false);
-          if (responseData.message) {
+          if (responseData.failed_records > 0) {
             let message = responseData.message;
-            if (responseData.failed_records > 0) {
-              const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows + '.';
-            }
+            const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+            message += ' Problematic Record Rows: ' + problematicRows + '.';
             message += ' Record Imported: ' + responseData.successful_records;
             message += '. Failed Record Count: ' + responseData.failed_records;
             message += '. Last Row: ' + responseData.last_processed_row;
-
+            setShow(false);
             swal(message).then((willDelete) => {
               if (willDelete) {
-                navigate("/trafficsalelist");
-                setShow(false);
+                gettrafficsaleList(currentPage, sortConfig, searchQuery);
               }
             });
           } else {
-            swal('Error: ' + responseData.error);
+            if(responseData.message) {
+              let message = responseData.message;
+              setShow(false);
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  gettrafficsaleList(currentPage, sortConfig, searchQuery);
+                }
+              });
+            }
           }
-          gettrafficsaleList(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();

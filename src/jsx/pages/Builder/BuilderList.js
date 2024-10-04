@@ -917,13 +917,15 @@ const BuilderTable = () => {
               }
             });
           } else {
-            let message = responseData.message;
-            setShow(false);
-            swal(message).then((willDelete) => {
-              if (willDelete) {
-                getbuilderlist(currentPage, sortConfig, searchQuery);
-              }
-            });
+            if(responseData.message) {
+              let message = responseData.message;
+              setShow(false);
+              swal(message).then((willDelete) => {
+                if (willDelete) {
+                  getbuilderlist(currentPage, sortConfig, searchQuery);
+                }
+              });
+            }
           }
         } catch (error) {
           if (error.name === "HTTPError") {

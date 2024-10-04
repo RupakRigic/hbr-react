@@ -859,13 +859,15 @@ const PermitList = () => {
             }
           });
         } else {
-          let message = response.data.message;
-          setShow(false);
-          swal(message).then((willDelete) => {
-            if (willDelete) {
-              getPermitList(currentPage, sortConfig, searchQuery);
-            }
-          });
+          if(response.data.message) {
+            let message = response.data.message;
+            setShow(false);
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                getPermitList(currentPage, sortConfig, searchQuery);
+              }
+            });
+          }
         }
       } catch (error) {
         let errorMessage = "An error occurred. Please try again.";
