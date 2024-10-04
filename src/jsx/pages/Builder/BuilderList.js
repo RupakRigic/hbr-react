@@ -902,28 +902,29 @@ const BuilderTable = () => {
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          if (responseData.data) {
+          if (responseData.failed_records > 0) {
             console.log(responseData);
-            let message = responseData.data.message;
-            if (responseData.data.failed_records > 0) {
-              const problematicRows = responseData.data.failed_records_details.map(detail => detail.row).join(', ');
-              message += ' Problematic Record Rows: ' + problematicRows + '.';
-            }
-            message += '. Record Imported: ' + responseData.data.successful_records;
-            message += '. Failed Record Count: ' + responseData.data.failed_records;
-            message += '. Last Row: ' + responseData.data.last_processed_row;
-
+            let message = responseData.message;
+            const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
+            message += ' Problematic Record Rows: ' + problematicRows + '.';
+            message += '. Record Imported: ' + responseData.successful_records;
+            message += '. Failed Record Count: ' + responseData.failed_records;
+            message += '. Last Row: ' + responseData.last_processed_row;
+            setShow(false);
             swal(message).then((willDelete) => {
               if (willDelete) {
-                navigate("/builderlist");
-                setShow(false);
+                getbuilderlist(currentPage, sortConfig, searchQuery);
               }
             });
           } else {
-            swal('Error: ' + responseData.error);
+            let message = responseData.message;
             setShow(false);
+            swal(message).then((willDelete) => {
+              if (willDelete) {
+                getbuilderlist(currentPage, sortConfig, searchQuery);
+              }
+            });
           }
-          getbuilderlist(currentPage, sortConfig, searchQuery);
         } catch (error) {
           if (error.name === "HTTPError") {
             const errorJson = error.response.json();
@@ -934,7 +935,6 @@ const BuilderTable = () => {
           }
         }
       };
-
       setSelectedFileError("");
     } else {
       setSelectedFile("");
