@@ -844,29 +844,29 @@ const PermitList = () => {
         setSelectedFile(null);
         document.getElementById("fileInput").value = null;
         setLoading(false);
-        if (response.data) {
+        if (response.data.failed_records > 0) {
           console.log(response);
           let message = response.data.message;
-          if (response.data.failed_records > 0) {
-            const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
-            message += ' Problematic Record Rows: ' + problematicRows + '.';
-          }
+          const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
+          message += ' Problematic Record Rows: ' + problematicRows + '.';
           message += '. Record Imported: ' + response.data.successful_records;
           message += '. Failed Record Count: ' + response.data.failed_records;
           message += '. Last Row: ' + response.data.last_processed_row;
-
+          setShow(false);
           swal(message).then((willDelete) => {
             if (willDelete) {
-              navigate("/permitlist");
-              window.location.reload();
-              setShow(false);
+              getPermitList(currentPage, sortConfig, searchQuery);
             }
           });
         } else {
-          swal('Error: ' + response.error);
+          let message = response.data.message;
           setShow(false);
+          swal(message).then((willDelete) => {
+            if (willDelete) {
+              getPermitList(currentPage, sortConfig, searchQuery);
+            }
+          });
         }
-        getPermitList(currentPage, sortConfig, searchQuery);
       } catch (error) {
         let errorMessage = "An error occurred. Please try again.";
         if (error.response && error.response.data) {
