@@ -52,3 +52,57 @@
   .form-check-label {
     margin: 0;
   }
+
+  div#employee-tbl_wrapper {
+    height: 70vh;
+    overflow: auto;
+}
+div#employee-tbl_wrapper table tr th{
+    position: sticky;
+    top: 0;
+}
+div#employee-tbl_wrapper table tr th:first-child{
+ left: 0;
+ z-index: 2;
+}
+div#employee-tbl_wrapper table tr th:nth-child(2) {
+    left: 27px;
+    z-index: 2;
+}
+div#employee-tbl_wrapper table tr th:nth-child(3) {
+    left: 74px;
+    z-index: 2;
+}
+div#employee-tbl_wrapper table tr th:nth-child(4) {
+    left: 183px;
+    z-index: 2;
+}
+div#employee-tbl_wrapper table tr td:first-child {
+    width: 100px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: #FFFFFF !important;
+}
+div#employee-tbl_wrapper table tr td:nth-child(2) {
+    width: 100px;
+    position: sticky;
+    left: 27px;
+	z-index: 1;
+    background-color: #FFFFFF ! IMPORTANT;
+}
+div#employee-tbl_wrapper table tr td:nth-child(3) {
+    width: 100px;
+    position: sticky;
+    left: 74px;
+    background-color: #FFFFFF ! IMPORTANT;
+}
+div#employee-tbl_wrapper table tr td:nth-child(4) {
+    width: 100px;
+    position: sticky;
+    left: 183px;
+    background-color: #FFFFFF ! IMPORTANT;
+}
+div#employee-tbl_wrapper table tr th {
+    z-index: 1;
+}

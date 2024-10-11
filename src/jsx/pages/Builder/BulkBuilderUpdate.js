@@ -212,7 +212,29 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                             </div>
                                             <div className="col-xl-6 mb-3">
                                                 <label htmlFor="exampleFormControlInput4" className="form-label">Mobile <span className="text-danger"></span></label>
-                                                <input type="number" name='phone' defaultValue={Builder.phone} className="form-control" id="exampleFormControlInput4" placeholder="" />
+                                                <input
+                                                  type="tel"
+                                                  defaultValue={Builder.phone}
+                                                  name="phone"
+                                                  className="form-control"
+                                                  id="exampleFormControlInput7"
+                                                  placeholder=""
+                                                  maxLength="12"
+                                                  onInput={(e) => {
+                                                    let input = e.target.value.replace(/\D/g, '');
+                                                    if (input.length > 0) {
+                                                      input = input.substring(0, 10);
+                                                      if (input.length > 3 && input.length <= 6) {
+                                                        input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
+                                                      } else if (input.length > 6) {
+                                                        input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
+                                                      } else {
+                                                        input = input;
+                                                      }
+                                                    }
+                                                    e.target.value = input;
+                                                  }}
+                                                />
                                             </div>
                                             <div className="col-xl-6 mb-3">
                                                 <label htmlFor="exampleFormControlInput5" className="form-label"> Fax <span className="text-danger"></span></label>
