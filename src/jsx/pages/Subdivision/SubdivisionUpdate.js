@@ -293,10 +293,20 @@ const SubdivisionUpdate = () => {
                           className="form-control"
                           id="exampleFormControlInput7"
                           placeholder=""
-                          maxLength="10"
-                          pattern="[0-9]*"
+                          maxLength="12"
                           onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                            let input = e.target.value.replace(/\D/g, '');
+                            if (input.length > 0) {
+                              input = input.substring(0, 10);
+                              if (input.length > 3 && input.length <= 6) {
+                                input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
+                              } else if (input.length > 6) {
+                                input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
+                              } else {
+                                input = input;
+                              }
+                            }
+                            e.target.value = input;
                           }}
                         />
                       </div>

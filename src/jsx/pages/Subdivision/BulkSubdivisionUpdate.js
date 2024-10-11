@@ -84,15 +84,15 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         setBuilderCode(formattedBuilderCode);
       }
 
-      setStatus(responseData.status)
-      setProductType(responseData.product_type)
-      setReporting(responseData.reporting)
-      setProductType(responseData.product_type)
-      setSingle(responseData.single)
-      setAge(responseData.age)
-      setArea(responseData.area)
-      setJuridiction(responseData.juridiction)
-      setMasterPlan(responseData.masterplan_id)
+      setStatus(responseData.status);
+      setProductType(responseData.product_type);
+      setReporting(responseData.reporting);
+      setProductType(responseData.product_type);
+      setSingle(responseData.single);
+      setAge(responseData.age);
+      setArea(responseData.area);
+      setJuridiction(responseData.juridiction);
+      setMasterPlan(responseData.masterplan_id);
       setGate(responseData.gated);
     } catch (error) {
       setIsLoading(false);
@@ -304,19 +304,29 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput7" className="form-label">Phone</label>
-                  <input
-                    type="tel"
-                    defaultValue={Subdivision.phone}
-                    name="phone"
-                    className="form-control"
-                    id="exampleFormControlInput7"
-                    placeholder=""
-                    maxLength="10"
-                    pattern="[0-9]*"
-                    onInput={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    }}
-                  />
+                    <input
+                      type="tel"
+                      defaultValue={Subdivision.phone}
+                      name="phone"
+                      className="form-control"
+                      id="exampleFormControlInput7"
+                      placeholder=""
+                      maxLength="12"
+                      onInput={(e) => {
+                        let input = e.target.value.replace(/\D/g, '');
+                        if (input.length > 0) {
+                          input = input.substring(0, 10);
+                          if (input.length > 3 && input.length <= 6) {
+                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
+                          } else if (input.length > 6) {
+                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
+                          } else {
+                            input = input;
+                          }
+                        }
+                        e.target.value = input;
+                      }}
+                    />
                 </div>
 
                 <div className="col-xl-6 mb-3">
