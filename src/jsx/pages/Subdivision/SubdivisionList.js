@@ -5100,7 +5100,7 @@ const SubdivisionList = () => {
                     ) : (
                       <table
                         id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 subdivion-table"
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>

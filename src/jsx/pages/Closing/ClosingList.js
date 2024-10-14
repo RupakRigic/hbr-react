@@ -1607,7 +1607,7 @@ const GetLenderList = async () => {
                     ) : (
                       <table
                         id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 closing-table"
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
