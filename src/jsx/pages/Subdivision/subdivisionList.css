@@ -72,37 +72,44 @@ div#employee-tbl_wrapper table tr th:nth-child(2) {
 div#employee-tbl_wrapper table tr th:nth-child(3) {
     left: 74px;
     z-index: 2;
+    padding: 8px 95px;
 }
 div#employee-tbl_wrapper table tr th:nth-child(4) {
-    left: 183px;
+    left: 304px;
     z-index: 2;
 }
 div#employee-tbl_wrapper table tr td:first-child {
-    width: 100px;
+
     position: sticky;
     left: 0;
     z-index: 1;
     background-color: #FFFFFF !important;
 }
 div#employee-tbl_wrapper table tr td:nth-child(2) {
-    width: 100px;
+
     position: sticky;
     left: 27px;
 	z-index: 1;
     background-color: #FFFFFF ! IMPORTANT;
 }
 div#employee-tbl_wrapper table tr td:nth-child(3) {
-    width: 100px;
+
     position: sticky;
     left: 74px;
     background-color: #FFFFFF ! IMPORTANT;
 }
 div#employee-tbl_wrapper table tr td:nth-child(4) {
-    width: 100px;
+
     position: sticky;
-    left: 183px;
+    left: 304px;
     background-color: #FFFFFF ! IMPORTANT;
 }
 div#employee-tbl_wrapper table tr th {
     z-index: 1;
+}
+.content-body .container-fluid .row .shorting {
+  height: auto !important;
+}
+.dataTables_info {
+  padding-left: 20px;
 }
