@@ -2933,7 +2933,7 @@ const BuilderTable = () => {
                             >
                               <table
                                 id="empoloyees-tblwrapper"
-                                className="table ItemsCheckboxSec dataTable no-footer mb-0 mt-5"
+                                className="table ItemsCheckboxSec dataTable no-footer mb-0 mt-5 builder-table"
                               >
                                 <thead>
                                   <tr style={{ textAlign: "center" }}>
