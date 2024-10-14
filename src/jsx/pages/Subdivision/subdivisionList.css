@@ -113,4 +113,29 @@ div#employee-tbl_wrapper table tr th {
 .dataTables_info {
   padding-left: 20px;
 }
+
+div#employee-tbl_wrapper table.builder-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.builder-table tr td:nth-child(4){
+  left: 348px;
+}
+div#employee-tbl_wrapper table.permit-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.permit-table tr td:nth-child(4){
+  left: 290px;
+}
+div#employee-tbl_wrapper table.traffic-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.traffic-table tr td:nth-child(4){
+  left: 334px;
+}
+div#employee-tbl_wrapper table.price-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.price-table tr td:nth-child(4){
+  left: 290px;
+}
+div#employee-tbl_wrapper table.closing-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.closing-table tr td:nth-child(4){
+  left: 332px;
+}
+div#employee-tbl_wrapper table.landsale-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.landsale-table tr td:nth-child(4){
+  left: 339px;
+}
 /* Table Scroll Css */
