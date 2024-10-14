@@ -138,4 +138,8 @@ div#employee-tbl_wrapper table.landsale-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.landsale-table tr td:nth-child(4){
   left: 339px;
 }
+div#employee-tbl_wrapper table.product-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.product-table tr td:nth-child(4){
+  left: 326px;
+}
 /* Table Scroll Css */
