@@ -52,7 +52,7 @@
   .form-check-label {
     margin: 0;
   }
-
+/* Table Scroll Css */
   div#employee-tbl_wrapper {
     height: 70vh;
     overflow: auto;
@@ -89,7 +89,7 @@ div#employee-tbl_wrapper table tr td:nth-child(2) {
 
     position: sticky;
     left: 27px;
-	z-index: 1;
+	  z-index: 1;
     background-color: #FFFFFF ! IMPORTANT;
 }
 div#employee-tbl_wrapper table tr td:nth-child(3) {
@@ -113,3 +113,4 @@ div#employee-tbl_wrapper table tr th {
 .dataTables_info {
   padding-left: 20px;
 }
+/* Table Scroll Css */
