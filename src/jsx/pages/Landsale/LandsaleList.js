@@ -1472,9 +1472,7 @@ const LandsaleList = () => {
                     )}
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
                       Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
                       {landSaleListCount} entries
@@ -1539,7 +1537,10 @@ const LandsaleList = () => {
                         <i className="fa-solid fa-angle-right" />
                       </Link>
                     </div>
+                  </div>
+              </div>
             </div>
+            
           </div>
         </div>
       </div>
