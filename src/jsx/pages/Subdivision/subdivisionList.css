@@ -116,23 +116,23 @@ div#employee-tbl_wrapper table tr th {
 
 div#employee-tbl_wrapper table.builder-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.builder-table tr td:nth-child(4){
-  left: 348px;
+  left: 338px;
 }
 div#employee-tbl_wrapper table.permit-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.permit-table tr td:nth-child(4){
-  left: 290px;
+  left: 339px;
 }
 div#employee-tbl_wrapper table.traffic-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.traffic-table tr td:nth-child(4){
-  left: 334px;
+  left: 339px;
 }
 div#employee-tbl_wrapper table.price-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.price-table tr td:nth-child(4){
-  left: 290px;
+  left: 339px;
 }
 div#employee-tbl_wrapper table.closing-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.closing-table tr td:nth-child(4){
-  left: 332px;
+  left: 339px;
 }
 div#employee-tbl_wrapper table.landsale-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.landsale-table tr td:nth-child(4){
@@ -140,6 +140,6 @@ div#employee-tbl_wrapper table.landsale-table tr td:nth-child(4){
 }
 div#employee-tbl_wrapper table.product-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.product-table tr td:nth-child(4){
-  left: 326px;
+  left: 339px;
 }
 /* Table Scroll Css */
