@@ -1398,7 +1398,7 @@ const GetLenderList = async () => {
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
-            <div className="card" style={{ overflow: "auto" }}>
+            <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
