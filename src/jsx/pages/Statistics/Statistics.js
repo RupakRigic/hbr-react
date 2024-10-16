@@ -6,7 +6,7 @@ const Statistics = () => {
     
     <>
 
-    <div className="container-fluid pt-0">
+    <div className="container pt-0">
       <div className="row mt-3">
         <div className="col-md-12">
           <RechartJs />
