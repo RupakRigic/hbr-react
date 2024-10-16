@@ -49,6 +49,7 @@ import FilterPermits from "./pages/Permit/FilterPermits";
 import FilterWeeklyTrafficAndSales from "./pages/Trafficsale/FilterWeeklyTrafficAndSales";
 import FilterClosings from "./pages/Closing/FilterClosings";
 import ArchiveData from "./pages/ArchiveData/ArchiveData";
+import SubscriberList from "./pages/Subscriber/SubscriberList";
 
 const allroutes = [
   // Dashboard
@@ -164,6 +165,11 @@ const allroutes = [
   {
     url: "/downloading-archive-data",
     component: <ArchiveData />,
+    allowedRoles: ["Admin", "User","Standard User"],
+  },
+  {
+    url: "/subscriberlist",
+    component: <SubscriberList />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
   {

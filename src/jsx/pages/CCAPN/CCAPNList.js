@@ -563,7 +563,7 @@ const CCAPNList = () => {
                     ) : (
                       <table
                         id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 ccapns-table"
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
@@ -589,6 +589,12 @@ const CCAPNList = () => {
                               <strong>No.</strong>
                             </th>
                             <th>
+                              <strong>Builder</strong>
+                            </th>
+                            <th>
+                              <strong>Subdivision</strong>
+                            </th>
+                            <th>
                               <strong>Parcel Number</strong>
                             </th>
                             <th>
@@ -602,12 +608,6 @@ const CCAPNList = () => {
                             </th>
                             <th>
                               <strong>Sub ID</strong>
-                            </th>
-                            <th>
-                              <strong>Subdivision</strong>
-                            </th>
-                            <th>
-                              <strong>Builder</strong>
                             </th>
                             <th>
                               <strong>Permits</strong>
@@ -645,6 +645,15 @@ const CCAPNList = () => {
                                   {index + 1}
                                 </td>
                                 <td style={{ textAlign: "center" }}>
+                                  {element.subdivision &&
+                                    element.subdivision.builder &&
+                                    element.subdivision.builder.name}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {element.subdivision &&
+                                    element.subdivision.name}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
                                   {element.parcel}
                                 </td>
                                 <td style={{ textAlign: "center" }}>
@@ -661,15 +670,6 @@ const CCAPNList = () => {
                                 <td style={{ textAlign: "center" }}>
                                   {element.subdivision &&
                                     element.subdivision.subdivision_code}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.name}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.builder &&
-                                    element.subdivision.builder.name}
                                 </td>
                                 <td style={{ textAlign: "center" }}>-</td>
                                 <td style={{ textAlign: "center" }}>-</td>
@@ -690,7 +690,7 @@ const CCAPNList = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="11" style={{ textAlign: "left" }}>
+                              <td colSpan="13" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>
