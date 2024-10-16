@@ -690,7 +690,7 @@ const CCAPNList = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="11" style={{ textAlign: "left" }}>
+                              <td colSpan="13" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>
