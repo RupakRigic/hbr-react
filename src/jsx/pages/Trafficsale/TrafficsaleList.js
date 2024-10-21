@@ -104,8 +104,8 @@ const TrafficsaleList = () => {
     age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
     single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const [weeklyTrafficOption, setWeeklyTrafficOption] = useState("");
   const [weeklyGrossSalesOption, setWeeklyGrossSalesOption] = useState("");

@@ -283,8 +283,8 @@ const ProductList = () => {
     price_changes_last_12_Month: "",
   });
 
-  const [isFormLoading, setIsFormLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const product = useRef();
 

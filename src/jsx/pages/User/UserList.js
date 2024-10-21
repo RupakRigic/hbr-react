@@ -186,7 +186,7 @@ const UserList = () => {
     role: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));

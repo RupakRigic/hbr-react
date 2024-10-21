@@ -532,8 +532,8 @@ const LandsaleList = () => {
     }
   }, []);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
 
   function prePage() {

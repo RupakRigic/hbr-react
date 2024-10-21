@@ -44,7 +44,7 @@ const File = () => {
   const [fileListCount, setFileListCount] = useState('');
   const [TotalFileListCount, setTotalFileListCount] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
   const [sortConfigKey, setSortConfigKey] = useState('');
   const [sortConfigDirection, setSortConfigDirection] = useState('');

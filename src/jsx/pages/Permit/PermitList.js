@@ -67,8 +67,8 @@ const PermitList = () => {
     single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
   });
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByPermitsFilter") ? JSON.parse(localStorage.getItem("searchQueryByPermitsFilter")) : "");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);

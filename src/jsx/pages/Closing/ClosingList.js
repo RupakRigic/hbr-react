@@ -102,8 +102,8 @@ const ClosingList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);

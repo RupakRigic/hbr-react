@@ -272,8 +272,8 @@ const PriceList = () => {
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [sortConfig, setSortConfig] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(true);
   const [ProductList, setProductList] = useState([]);

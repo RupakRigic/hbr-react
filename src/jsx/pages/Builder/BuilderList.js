@@ -631,8 +631,8 @@ const BuilderTable = () => {
     GetBuilderDropDownList();
   }, []);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
