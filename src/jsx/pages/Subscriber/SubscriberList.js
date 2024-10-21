@@ -32,7 +32,7 @@ const SubscriberList = () => {
   };
 
   useEffect(() => {
-    GetSubscriberList();
+    // GetSubscriberList();
 }, []);
 
   const GetSubscriberList = async () => {

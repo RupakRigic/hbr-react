@@ -96,7 +96,7 @@ export const MenuList = [
         to: '/downloading-archive-data',
     },
     {
-        title: 'Subscribe Data',
+        title: 'Subscriber',
         iconStyle: SVGICON.SubscribeData,
         to: '/subscriberlist',
     },

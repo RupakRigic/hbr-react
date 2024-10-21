@@ -50,13 +50,20 @@ import FilterWeeklyTrafficAndSales from "./pages/Trafficsale/FilterWeeklyTraffic
 import FilterClosings from "./pages/Closing/FilterClosings";
 import ArchiveData from "./pages/ArchiveData/ArchiveData";
 import SubscriberList from "./pages/Subscriber/SubscriberList";
+import SubscriptionPlan from "./pages/SubscriptionPlan/SubscriptionPlan";
 
 const allroutes = [
   // Dashboard
-  { url: "", component: <Login /> },
-  { url: "dashboard", component: <Home />, allowedRoles: ["Admin","Standard User"] },
-
-  { url: "/builderList", component: <BuilderTable />, allowedRoles: ["Admin", "Data Uploader", "User","Standard User"] },
+  { url: "", 
+    component: <Login /> 
+  },
+  { url: "dashboard", component: <Home />, 
+    allowedRoles: ["Admin","Standard User"] 
+  },
+  { url: "/builderList", 
+    component: <BuilderTable />, 
+    allowedRoles: ["Admin", "Data Uploader", "User","Standard User"] 
+  },
   {
     url: "/subdivisionlist",
     component: <SubdivisionList />,
@@ -92,13 +99,19 @@ const allroutes = [
     component: <ProductUpdate />,
     allowedRoles: ["Admin","Standard User"],
   },
-  { url: "/userlist", component: <UserListList />, allowedRoles: ["Admin","Standard User"] },
+  { url: "/userlist", 
+    component: <UserListList />, 
+    allowedRoles: ["Admin","Standard User"] 
+  },
   {
     url: "/userupdate/:id",
     component: <UserUpdate />,
     allowedRoles: ["Admin","Standard User"],
   },
-  { url: "/permitlist", component: <PermitList />, allowedRoles: ["Admin","Standard User"] },
+  { url: "/permitlist", 
+    component: <PermitList />, 
+    allowedRoles: ["Admin","Standard User"] 
+  },
   {
     url: "/permitupdate/:id",
     component: <PermitUpdate />,
@@ -145,8 +158,14 @@ const allroutes = [
     component: <WeeklyDataIndex />,
     allowedRoles: ["Admin", "Data Uploader","Standard User"],
   },
-  { url: "/files", component: <File />, allowedRoles: ["Admin","Standard User"] },
-  { url: "/report", component: <Report />, allowedRoles: ["Admin", "User","Standard User"] },
+  { url: "/files", 
+    component: <File />, 
+    allowedRoles: ["Admin","Standard User"] 
+  },
+  { url: "/report", 
+    component: <Report />, 
+    allowedRoles: ["Admin", "User","Standard User"] 
+  },
   {
     url: "/report-list",
     component: <ReportList />,
@@ -170,7 +189,12 @@ const allroutes = [
   {
     url: "/subscriberlist",
     component: <SubscriberList />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin"],
+  },
+  {
+    url: "/subscriptionplan",
+    component: <SubscriptionPlan />,
+    allowedRoles: ["Data Uploader", "Standard User"],
   },
   {
     url: "/filterbuilder",

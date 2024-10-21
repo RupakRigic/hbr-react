@@ -14,14 +14,15 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3 }) => {
   const onClick = (name) => setToggle(toggle === name ? "" : name);
   let sidebar = null;
   const loginRole = JSON.parse(localStorage.getItem('user')).role;
-  if (loginRole === "Admin" || loginRole === "Standard User" ) {
+  if (loginRole === "Admin" || loginRole=='Data Uploader') {
     sidebar = <SideBar />;
-  }if(loginRole=='Data Uploader'){
+  }if(loginRole === "Standard User" ||  loginRole=='User'){
     sidebar = <DataUploaderSideBar />;
-  }if(loginRole=='User'){
-    console.log(loginRole);
-    sidebar = <UserSideBar />;
   }
+  // if(loginRole=='User'){
+  //   console.log(loginRole);
+  //   sidebar = <UserSideBar />;
+  // }
   
   return (
     <Fragment>

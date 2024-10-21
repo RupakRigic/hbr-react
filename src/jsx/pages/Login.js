@@ -127,7 +127,7 @@ function Login(props) {
             localStorage.removeItem("typeofunit");
             localStorage.removeItem("searchQueryByLandSalesFilter");
             localStorage.removeItem("firstTime");
-          } else if (userRole == "Data Uploader") {
+          } else if (userRole == "Standard User" || userRole == "Data Uploader") {
             navigate("/weekly-data");
           } else {
             navigate("/report");

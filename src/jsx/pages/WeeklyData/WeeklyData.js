@@ -99,7 +99,7 @@ const BuilderTable = () => {
                             <div className="card-body p-0">
                                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
                                     <div className="tbl-caption d-flex justify-content-center text-wrap align-items-center">
-                                        <h4 className="heading mb-0">Enter Data Reporting</h4>
+                                        <h4 className="heading mb-0" style={{backgroundColor: "#4974b9"}}>Enter Data Reporting</h4>
                                     </div> 
                                     {isLoading ? (
                                         <div className="d-flex justify-content-center align-items-center mb-5">

@@ -13,5 +13,10 @@ export const DataUploaderMenuList = [
         iconStyle: SVGICON.GridDots,
         to: '/weekly-data',
     },
+    {
+        title: 'Subscription Plan',
+        iconStyle: SVGICON.SubscribeData,
+        to: '/subscriptionplan',
+    },
 
 ]
