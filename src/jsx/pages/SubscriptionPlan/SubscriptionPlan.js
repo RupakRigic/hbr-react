@@ -1,49 +1,7 @@
 import React from 'react';
 import './SubscriptionPlan.css';
-// import { loadStripe } from '@stripe/stripe-js';
-// import axios from "axios";
 
 const SubscriptionPlan = () => {
-
-    // const MakePayment = async() => {
-    //     const stripe = await loadStripe("..........Publish_Key...........");
-
-    //     const reportdata = {
-    //         products: "..........Data in array........."
-    //     }
-    //     // const headers = {
-    //     //     "Content-Type":"application/json"
-    //     // }
-    //     // const response = await fetch("api/admin/......", {
-    //     //     method:"POST",
-    //     //     headers:headers,
-    //     //     body:JSON.stringify(body)
-    //     // });
-    //     const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
-    //     const response = await axios.post(`${process.env.REACT_APP_IMAGE_URL}api/admin/...........`,
-    //         reportdata,
-    //         {
-    //             responseType: "arraybuffer",
-    //             headers: {
-    //                 "Content-Type":"application/json",
-    //                 Accept: "application/json",
-    //                 Authorization: `Bearer ${bearerToken}`,
-    //             },
-    //           }
-    //         );
-
-    //     const session = await response.json();
-
-    //     const result = stripe.redirectToCheckout({
-    //         sessionId:session.id
-    //     });
-
-    //     if(result.error) {
-    //         console.log(result.error);
-            
-    //     }
-    // };
-
     return (
         <div className="subscription-container">
             <h1>Choose Your Subscription Plan</h1>
