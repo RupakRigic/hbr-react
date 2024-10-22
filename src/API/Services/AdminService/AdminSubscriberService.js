@@ -1,5 +1,5 @@
 import clientAuth from "../../clientAuth";
 
 export default {
-    getSubscriberList:()=> clientAuth.get(``),
+    getSubscriberList:()=> clientAuth.get(`subscription/index`)
 };

@@ -33,25 +33,25 @@ const SubscriberList = () => {
 
   useEffect(() => {
     // GetSubscriberList();
-}, []);
+  }, []);
 
   const GetSubscriberList = async () => {
     setIsLoading(true);
     try {
-        const response = await AdminSubscriberService.getSubscriberList();
-        const responseData = await response.json();
-        setSubscriberList(responseData);
-        setNpage(Math.ceil(responseData.length / recordsPage));
-        setSubscriberListCount(responseData.length);
-        setIsLoading(false);
+      const response = await AdminSubscriberService.getSubscriberList();
+      const responseData = await response.json();
+      setSubscriberList(responseData);
+      setNpage(Math.ceil(responseData.length / recordsPage));
+      setSubscriberListCount(responseData.length);
+      setIsLoading(false);
     } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-        if (error.name === "HTTPError") {
-            console.log(error.name);
-        }
+      console.log(error);
+      setIsLoading(false);
+      if (error.name === "HTTPError") {
+        console.log(error.name);
+      }
     }
-};
+  };
 
   return (
     <Fragment>

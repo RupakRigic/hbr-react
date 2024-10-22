@@ -1,50 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './SubscriptionPlan.css';
+import AdminSubscriberService from '../../../API/Services/AdminService/AdminSubscriberService';
+import ClipLoader from 'react-spinners/ClipLoader';
+import PriceComponent from '../../components/Price/PriceComponent';
 
 const SubscriptionPlan = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [subscriptionList, setSubscriptionList] = useState([]);
+
+    useEffect(() => {
+        GetSubscriberList();
+    }, []);
+
+    const GetSubscriberList = async () => {
+        debugger
+        setIsLoading(true);
+        try {
+            const response = await AdminSubscriberService.getSubscriberList();
+            const responseData = await response.json();
+            setSubscriptionList(responseData.data);
+            setIsLoading(false);
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            if (error.name === "HTTPError") {
+                console.log(error.name);
+            }
+        }
+    };
+
     return (
         <div className="subscription-container">
-            <h1>Choose Your Subscription Plan</h1>
-            <div className="card-container">
-                <div className="subscription-card">
-                    <h2>Basic</h2>
-                    <p>Price: Free</p>
-                    <div className="features">
-                        <p>Features:</p>
-                        <ul>
-                            <li>Access to basic features</li>
-                            <li>Community support</li>
-                        </ul>
-                    </div>
-                    <button className='subscribe-btn'>Subscribe</button>
+            {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center mb-5">
+                    <ClipLoader color="#4474fc" />
                 </div>
-                <div className="subscription-card">
-                    <h2>Standard</h2>
-                    <p>Price: $9.99/month</p>
-                    <div className="features">
-                        <p>Features:</p>
-                        <ul>
-                            <li>Access to all basic features</li>
-                            <li>Priority support</li>
-                            <li>Access to exclusive content</li>
-                        </ul>
+            ) : (
+                <>
+                    <h1>Choose Your Subscription Plan</h1>
+                    <div className="card-container">
+                        {subscriptionList.length > 0 && subscriptionList.map((data) => (
+                            <div className="subscription-card">
+                                <h2>{data.title}</h2>
+                                <p>Price: {<PriceComponent price={data.price} />}</p>
+                                <div className="features">
+                                    <p>Content:</p>
+                                    <ul>
+                                        <li>{data.content}</li>
+                                    </ul>
+                                </div>
+                                <button className='subscribe-btn'>Subscribe</button>
+                            </div>
+                        ))}
                     </div>
-                    <button className='subscribe-btn'>Subscribe</button>
-                </div>
-                <div className="subscription-card">
-                    <h2>Premium</h2>
-                    <p>Price: $19.99/month</p>
-                    <div className="features">
-                        <p>Features:</p>
-                        <ul>
-                            <li>Access to all features</li>
-                            <li>24/7 support</li>
-                            <li>Personalized content</li>
-                        </ul>
-                    </div>
-                    <button className='subscribe-btn'>Subscribe</button>
-                </div>
-            </div>
+                </>)}
         </div>
     );
 }
