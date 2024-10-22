@@ -13,7 +13,6 @@ const SubscriptionPlan = () => {
     }, []);
 
     const GetSubscriberList = async () => {
-        debugger
         setIsLoading(true);
         try {
             const response = await AdminSubscriberService.getSubscriberList();
