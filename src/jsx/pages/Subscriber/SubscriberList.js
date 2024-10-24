@@ -1,10 +1,14 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import MainPagetitle from '../../layouts/MainPagetitle';
 import AdminSubscriberService from '../../../API/Services/AdminService/AdminSubscriberService';
+import PriceComponent from '../../components/Price/PriceComponent';
+import '../Subdivision/subdivisionList.css';
+
 
 const SubscriberList = () => {
+  const navigate = useNavigate();
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,18 +36,26 @@ const SubscriberList = () => {
   };
 
   useEffect(() => {
-    // GetSubscriberList();
-  }, []);
+    if (localStorage.getItem("usertoken")) {
+      GetSubscriberList();
+    } else {
+      navigate("/");
+    }
+  }, [currentPage]);
 
   const GetSubscriberList = async () => {
     setIsLoading(true);
     try {
       const response = await AdminSubscriberService.getSubscriberList();
       const responseData = await response.json();
-      setSubscriberList(responseData);
-      setNpage(Math.ceil(responseData.length / recordsPage));
-      setSubscriberListCount(responseData.length);
-      setIsLoading(false);
+      if (responseData.status === true) {
+        setSubscriberList(responseData.data);
+        setNpage(Math.ceil(responseData.data.length / recordsPage));
+        setSubscriberListCount(responseData.data.length);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -149,25 +161,40 @@ const SubscriberList = () => {
                     ) : (
                       <table
                         id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 subscriber-table"
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>No.</th>
-                            <th>Type</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>File Name</th>
-                            <th>Download</th>
-                            <th>Action</th>
+                            <th>Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Subscription Title</th>
+                            <th>Subscription Type</th>
+                            <th>Subscription Status</th>
+                            <th>Subscription Price</th>
+                            <th>Payment Status</th>
+                            <th>Subscription Start</th>
+                            <th>Subscription Renewed</th>
+                            <th>Subscription Content</th>
                           </tr>
                         </thead>
                         <tbody>
                           {subscriberList !== null && subscriberList.length > 0 ? (
                             subscriberList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
-                                
-                                
+                                <td>{index + 1}</td>
+                                <td>{element.user_name}</td>
+                                <td>{element.user_last_name}</td>
+                                <td>{element.user_email}</td>
+                                <td>{element.subscription_title}</td>
+                                <td>{element.subscription_type}</td>
+                                <td>{element.subscription_status}</td>
+                                <td>{<PriceComponent price={element.subscription_price} />}</td>
+                                <td>{element.payment_status}</td>
+                                <td>{element.subscription_start_at}</td>
+                                <td>{element.subscription_renewed_at}</td>
+                                <td>{element.subscription_content}</td>
                               </tr>
                             ))) : (
                             <tr>

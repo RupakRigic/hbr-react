@@ -51,6 +51,7 @@ import FilterClosings from "./pages/Closing/FilterClosings";
 import ArchiveData from "./pages/ArchiveData/ArchiveData";
 import SubscriberList from "./pages/Subscriber/SubscriberList";
 import SubscriptionPlan from "./pages/SubscriptionPlan/SubscriptionPlan";
+import ThankYouPage from "./pages/ThankYouPage";
 
 const allroutes = [
   // Dashboard
@@ -236,6 +237,11 @@ const allroutes = [
     component: <FilterClosings />,
     allowedRoles: ["Admin", "User","Standard User"],
   },
+  // {
+  //   url: "/thank-you",
+  //   component: <ThankYouPage />,
+  //   allowedRoles: ["User","Standard User"],
+  // },
 ];
 
 const Markup = () => {
@@ -282,6 +288,7 @@ const Markup = () => {
           ))}
         </Route>
         <Route path="*" element={<NotFound />} />
+        {userData?.role !== "Admin" && <Route path="/thank-you" element={<ThankYouPage />} />}
       </Routes>
       <ScrollToTop />
     </>

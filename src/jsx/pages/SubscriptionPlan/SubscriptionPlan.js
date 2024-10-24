@@ -3,22 +3,55 @@ import './SubscriptionPlan.css';
 import AdminSubscriberService from '../../../API/Services/AdminService/AdminSubscriberService';
 import ClipLoader from 'react-spinners/ClipLoader';
 import PriceComponent from '../../components/Price/PriceComponent';
+import swal from "sweetalert";
 
 const SubscriptionPlan = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [subscriptionList, setSubscriptionList] = useState([]);
 
     useEffect(() => {
-        GetSubscriberList();
+        if (localStorage.getItem("usertoken")) {
+            GetSubscriptionList();
+        }
     }, []);
 
-    const GetSubscriberList = async () => {
+    const GetSubscriptionList = async () => {
         setIsLoading(true);
         try {
-            const response = await AdminSubscriberService.getSubscriberList();
+            const response = await AdminSubscriberService.getSubscriptionPlanList();
             const responseData = await response.json();
-            setSubscriptionList(responseData.data);
+            if (responseData.status === true) {
+                setSubscriptionList(responseData.data);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.log(error);
             setIsLoading(false);
+            if (error.name === "HTTPError") {
+                console.log(error.name);
+            }
+        }
+    };
+
+    const handleSubcriptionPlan = async (price_id) => {
+        setIsLoading(true);
+        try {
+            var userData = {
+                plan_price_id: price_id
+            }
+            const response = await AdminSubscriberService.subscribPaln(userData);
+            const responseData = await response.json();
+            if (responseData.status === true) {
+                window.open(responseData.url, '_blank');
+                setIsLoading(false);
+            } else {
+                swal(responseData.message).then((willDelete) => {
+                    if (willDelete) {
+                        GetSubscriptionList();
+                        setIsLoading(false);
+                    }
+                });
+            }
         } catch (error) {
             console.log(error);
             setIsLoading(false);
@@ -41,14 +74,15 @@ const SubscriptionPlan = () => {
                         {subscriptionList.length > 0 && subscriptionList.map((data) => (
                             <div className="subscription-card">
                                 <h2>{data.title}</h2>
-                                <p>Price: {<PriceComponent price={data.price} />}</p>
+                                <p style={{ color: "black" }}>Price: {<PriceComponent price={data.price} />}</p>
                                 <div className="features">
-                                    <p>Content:</p>
+                                    <p style={{ color: "black" }}>Content:</p>
                                     <ul>
-                                        <li>{data.content}</li>
+                                        <li style={{ color: "black" }}>{data.content}</li>
                                     </ul>
                                 </div>
-                                <button className='subscribe-btn'>Subscribe</button>
+                                &nbsp;
+                                <button className='subscribe-btn' onClick={() => handleSubcriptionPlan(data.price_id)}>Subscribe</button>
                             </div>
                         ))}
                     </div>
