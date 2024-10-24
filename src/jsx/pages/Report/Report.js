@@ -238,7 +238,8 @@ const BuilderTable = () => {
               },
             }
           );
-
+          setIsLoading(false);
+          handlePdfResponse(response);
           let responseData = await AdminReportService.pdfSave(reportdata).json();
           if (responseData.status) {
             swal("Report Saved Succesfully").then((willDelete) => {
@@ -248,8 +249,6 @@ const BuilderTable = () => {
               }
             });
           }
-          setIsLoading(false);
-          handlePdfResponse(response);
         } catch (error) {
           setIsLoading(false);
           if (error.name === "HTTPError") {
@@ -295,6 +294,8 @@ const BuilderTable = () => {
             },
           }
         );
+        setIsLoading(false);
+        handlePdfResponse(response);
         let responseData = await AdminReportService.pdfSave(reportdata).json();
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
@@ -304,8 +305,6 @@ const BuilderTable = () => {
             }
           });
         }
-        setIsLoading(false);
-        handlePdfResponse(response);
       } catch (error) {
         setIsLoading(false);
         if (error.name === "HTTPError") {
@@ -406,6 +405,8 @@ const BuilderTable = () => {
             },
           }
         );
+        setIsLoading(false);
+        handlePdfResponse(response);
         let responseData = await AdminReportService.pdfSave(reportdata).json();
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
@@ -415,8 +416,6 @@ const BuilderTable = () => {
             }
           });
         }
-        setIsLoading(false);
-        handlePdfResponse(response);
       } catch (error) {
         setIsLoading(false);
         if (error.name === "HTTPError") {
@@ -459,6 +458,8 @@ const BuilderTable = () => {
             },
           }
         );
+        setIsLoading(false);
+        handlePdfResponse(response);
         let responseData = await AdminReportService.pdfSave(reportdata).json();
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
@@ -468,8 +469,6 @@ const BuilderTable = () => {
             }
           });
         }
-        setIsLoading(false);
-        handlePdfResponse(response);
       } catch (error) {
         setIsLoading(false);
         if (error.name === "HTTPError") {
@@ -504,6 +503,8 @@ const BuilderTable = () => {
             },
           }
         );
+        setIsLoading(false);
+        handlePdfResponse(response);
         let responseData = await AdminReportService.pdfSave(reportdata).json();
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
@@ -513,8 +514,6 @@ const BuilderTable = () => {
             }
           });
         }
-        setIsLoading(false);
-        handlePdfResponse(response);
       } catch (error) {
         setIsLoading(false);
         if (error.name === "HTTPError") {
