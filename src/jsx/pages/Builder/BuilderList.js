@@ -55,14 +55,14 @@ const BuilderTable = () => {
 
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
-  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBuilderFilter") ? JSON.parse(localStorage.getItem("searchQueryByBuilderFilter")) : "");
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBuilderFilter_Builder") ? JSON.parse(localStorage.getItem("searchQueryByBuilderFilter_Builder")) : "");
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
   const [filterQuery, setFilterQuery] = useState({
-    name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-    is_active: localStorage.getItem("is_active") ? JSON.parse(localStorage.getItem("is_active")) : "",
-    active_communities: localStorage.getItem("active_communities") ? JSON.parse(localStorage.getItem("active_communities")) : "",
-    company_type: localStorage.getItem("company_type") ? JSON.parse(localStorage.getItem("company_type")) : ""
+    name: localStorage.getItem("builder_name_Builder") ? JSON.parse(localStorage.getItem("builder_name_Builder")) : "",
+    is_active: localStorage.getItem("is_active_Builder") ? JSON.parse(localStorage.getItem("is_active_Builder")) : "",
+    active_communities: localStorage.getItem("active_communities_Builder") ? JSON.parse(localStorage.getItem("active_communities_Builder")) : "",
+    company_type: localStorage.getItem("company_type_Builder") ? JSON.parse(localStorage.getItem("company_type_Builder")) : ""
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     closing_this_year: "",
@@ -493,7 +493,7 @@ const BuilderTable = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
-    localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery));
+    localStorage.setItem("searchQueryByBuilderFilter_Builder", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -527,24 +527,24 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter")) {
+    if(localStorage.getItem("selectedBuilderNameByFilterBuilder")) {
       if (localStorage.getItem("UpdateBuilderName") && localStorage.getItem("UpdateID")) {
-        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
         const id = JSON.parse(localStorage.getItem("UpdateID"));
         const UpdateID = Array.isArray(id) ? id : [id];
         const UpdateBuilderName = JSON.parse(localStorage.getItem("UpdateBuilderName"));
         handleSelectBuilderNameChange(selectedBuilderName,"", UpdateID, UpdateBuilderName);
       } else {
-        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
         handleSelectBuilderNameChange(selectedBuilderName);
       }
     }
-    if(localStorage.getItem("selectedStatusByBuilderFilter")) {
-      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilter"));
+    if(localStorage.getItem("selectedStatusByBuilderFilterBuilder")) {
+      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilterBuilder"));
       handleSelectStatusChange(selectedStatus);
     }
-    if(localStorage.getItem("selectedCompanyTypeByFilter")) {
-      const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilter"));
+    if(localStorage.getItem("selectedCompanyTypeByFilterBuilder")) {
+      const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilterBuilder"));
       handleSelectCompanyTypeChange(selectedCompanyType);
     }
   }, []);
@@ -647,7 +647,7 @@ const BuilderTable = () => {
       let responseData = await AdminBuilderService.destroy(id).json();
       if (responseData.status === true) {
         if(id) {
-          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
           const ID = Array.isArray(id) ? id : [id];
           console.log(ID);
           
@@ -669,7 +669,7 @@ const BuilderTable = () => {
       let responseData = await AdminBuilderService.bulkdestroy(id).json();
       if (responseData.status === true) {
         if(id) {
-          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
           handleSelectBuilderNameChange(selectedBuilderName, id);
         }
         getbuilderlist(currentPage, sortConfig, searchQuery);
@@ -708,7 +708,7 @@ const BuilderTable = () => {
   const HandleFilterForm = (e) => {
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
     if (!isAnyFilterApplied) {
-      localStorage.removeItem("firstTime");
+      localStorage.removeItem("setBuilderFilter");
     }
     e.preventDefault();
     setFilter(false);
@@ -739,14 +739,14 @@ const BuilderTable = () => {
     setTotalClosingsResult(0);
     setTotalPermitsResult(0);
     setTotalNetSalesResult(0);
-    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-    localStorage.setItem("selectedStatusByBuilderFilter", JSON.stringify(selectedStatus));
-    localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyType));
-    localStorage.setItem("builder_name", JSON.stringify(filterQuery.name));
-    localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
-    localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
-    localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
-    localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery));
+    localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("selectedStatusByBuilderFilterBuilder", JSON.stringify(selectedStatus));
+    localStorage.setItem("selectedCompanyTypeByFilterBuilder", JSON.stringify(selectedCompanyType));
+    localStorage.setItem("builder_name_Builder", JSON.stringify(filterQuery.name));
+    localStorage.setItem("is_active_Builder", JSON.stringify(filterQuery.is_active));
+    localStorage.setItem("active_communities_Builder", JSON.stringify(filterQuery.active_communities));
+    localStorage.setItem("company_type_Builder", JSON.stringify(filterQuery.company_type));
+    localStorage.setItem("searchQueryByBuilderFilter_Builder", JSON.stringify(searchQuery));
   };
 
   const HandleFilter = (e) => {
@@ -798,14 +798,14 @@ const BuilderTable = () => {
     setSelectedCompanyType([]);
     getbuilderlist(1, sortConfig, "");
     setManageFilterOffcanvas(false);
-    localStorage.removeItem("selectedBuilderNameByFilter");
-    localStorage.removeItem("selectedStatusByBuilderFilter");
-    localStorage.removeItem("selectedCompanyTypeByFilter");
-    localStorage.removeItem("builder_name");
-    localStorage.removeItem("is_active");
-    localStorage.removeItem("active_communities");
-    localStorage.removeItem("company_type");
-    localStorage.removeItem("firstTime");
+    localStorage.removeItem("selectedBuilderNameByFilterBuilder");
+    localStorage.removeItem("selectedStatusByBuilderFilterBuilder");
+    localStorage.removeItem("selectedCompanyTypeByFilterBuilder");
+    localStorage.removeItem("builder_name_Builder");
+    localStorage.removeItem("is_active_Builder");
+    localStorage.removeItem("active_communities_Builder");
+    localStorage.removeItem("company_type_Builder");
+    localStorage.removeItem("setBuilderFilter");
   };
 
   const handleDetailRedirectClick = () => {
@@ -1667,10 +1667,10 @@ const BuilderTable = () => {
   const handleSelectBuilderNameChange = (selectedItems, ID, UpdateID, UpdateBuilderName) => {
     if(ID && Array.isArray(ID)){
       const newValues = selectedItems.filter(item => !ID.includes(item.value));
-      localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(newValues));
+      localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(newValues));
       const selectedValues = newValues.map(item => item.value);
       const selectedNames = newValues.map(item => item.label).join(', ');
-      localStorage.setItem("builder_name", JSON.stringify(selectedNames));
+      localStorage.setItem("builder_name_Builder", JSON.stringify(selectedNames));
       setSelectedValues(selectedValues);
       setSelectedBuilderName(newValues);
       setFilterQuery(prevState => ({
@@ -1694,12 +1694,12 @@ const BuilderTable = () => {
       });
 
       console.log("updatedItems", updatedItems);
-      localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(updatedItems));
+      localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(updatedItems));
 
       const selectedValues = updatedItems.map(item => item.value);
       const selectedNames = updatedItems.map(item => item.label).join(', ');
 
-      localStorage.setItem("builder_name", JSON.stringify(selectedNames));
+      localStorage.setItem("builder_name_Builder", JSON.stringify(selectedNames));
       setSelectedValues(selectedValues);
       setSelectedBuilderName(updatedItems);
       setFilterQuery(prevState => ({

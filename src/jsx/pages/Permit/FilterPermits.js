@@ -25,54 +25,54 @@ const FilterPermits = () => {
     const [message, setMessage] = useState(false);
     const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
-        from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-        to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-        builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-        subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-        address2: localStorage.getItem("address2") ? JSON.parse(localStorage.getItem("address2")) : "",
-        address1: localStorage.getItem("address1") ? JSON.parse(localStorage.getItem("address1")) : "",
-        parcel: localStorage.getItem("parcel") ? JSON.parse(localStorage.getItem("parcel")) : "",
-        sqft: localStorage.getItem("sqft") ? JSON.parse(localStorage.getItem("sqft")) : "",
-        lotnumber: localStorage.getItem("lotnumber") ? JSON.parse(localStorage.getItem("lotnumber")) : "",
-        permitnumber: localStorage.getItem("permitnumber") ? JSON.parse(localStorage.getItem("permitnumber")) : "",
-        plan: localStorage.getItem("plan") ? JSON.parse(localStorage.getItem("plan")) : "",
-        product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
-        area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
-        masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
-        zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
-        lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
-        lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
-        age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
-        single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
+        from: localStorage.getItem("from_Permit") ? JSON.parse(localStorage.getItem("from_Permit")) : "",
+        to: localStorage.getItem("to_Permit") ? JSON.parse(localStorage.getItem("to_Permit")) : "",
+        builder_name: localStorage.getItem("builder_name_Permit") ? JSON.parse(localStorage.getItem("builder_name_Permit")) : "",
+        subdivision_name: localStorage.getItem("subdivision_name_Permit") ? JSON.parse(localStorage.getItem("subdivision_name_Permit")) : "",
+        address2: localStorage.getItem("address2_Permit") ? JSON.parse(localStorage.getItem("address2_Permit")) : "",
+        address1: localStorage.getItem("address1_Permit") ? JSON.parse(localStorage.getItem("address1_Permit")) : "",
+        parcel: localStorage.getItem("parcel_Permit") ? JSON.parse(localStorage.getItem("parcel_Permit")) : "",
+        sqft: localStorage.getItem("sqft_Permit") ? JSON.parse(localStorage.getItem("sqft_Permit")) : "",
+        lotnumber: localStorage.getItem("lotnumber_Permit") ? JSON.parse(localStorage.getItem("lotnumber_Permit")) : "",
+        permitnumber: localStorage.getItem("permitnumber_Permit") ? JSON.parse(localStorage.getItem("permitnumber_Permit")) : "",
+        plan: localStorage.getItem("plan_Permit") ? JSON.parse(localStorage.getItem("plan_Permit")) : "",
+        product_type: localStorage.getItem("product_type_Permit") ? JSON.parse(localStorage.getItem("product_type_Permit")) : "",
+        area: localStorage.getItem("area_Permit") ? JSON.parse(localStorage.getItem("area_Permit")) : "",
+        masterplan_id: localStorage.getItem("masterplan_id_Permit") ? JSON.parse(localStorage.getItem("masterplan_id_Permit")) : "",
+        zipcode: localStorage.getItem("zipcode_Permit") ? JSON.parse(localStorage.getItem("zipcode_Permit")) : "",
+        lotwidth: localStorage.getItem("lotwidth_Permit") ? JSON.parse(localStorage.getItem("lotwidth_Permit")) : "",
+        lotsize: localStorage.getItem("lotsize_Permit") ? JSON.parse(localStorage.getItem("lotsize_Permit")) : "",
+        age: localStorage.getItem("age_Permit") ? JSON.parse(localStorage.getItem("age_Permit")) : "",
+        single: localStorage.getItem("single_Permit") ? JSON.parse(localStorage.getItem("single_Permit")) : "",
     });
 
     useEffect(() => {
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        if(localStorage.getItem("selectedBuilderNameByFilter_Permit")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Permit"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+        if(localStorage.getItem("selectedSubdivisionNameByFilter_Permit")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Permit"));
           handleSelectSubdivisionNameChange(selectedSubdivisionName);
         }
-        if(localStorage.getItem("productTypeStatusByFilter")) {
-          const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+        if(localStorage.getItem("productTypeStatusByFilter_Permit")) {
+          const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Permit"));
           handleSelectProductTypeChange(productTypeStatus);
         }
-        if(localStorage.getItem("selectedAreaByFilter")) {
-            const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+        if(localStorage.getItem("selectedAreaByFilter_Permit")) {
+            const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Permit"));
             handleSelectAreaChange(selectedArea);
         }
-        if(localStorage.getItem("selectedMasterPlanByFilter")) {
-          const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+        if(localStorage.getItem("selectedMasterPlanByFilter_Permit")) {
+          const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Permit"));
           handleSelectMasterPlanChange(selectedMasterPlan);
         }
-        if(localStorage.getItem("selectedAgeByFilter")) {
-            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+        if(localStorage.getItem("selectedAgeByFilter_Permit")) {
+            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Permit"));
             handleSelectAgeChange(selectedAge);
         }
-        if(localStorage.getItem("selectedSingleByFilter")) {
-          const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+        if(localStorage.getItem("selectedSingleByFilter_Permit")) {
+          const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Permit"));
           handleSelectSingleChange(selectedSingle);
         }
     }, []);
@@ -143,14 +143,14 @@ const FilterPermits = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setPermitFilter") == "true") {
                 setShowPopup(true);
                 setMessage("Please select date.");
-                localStorage.removeItem("firstTime");
+                localStorage.removeItem("setPermitFilter");
                 return;
             }
         } else {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setPermitFilter") == "true") {
                 if((searchQuery == "") || (searchQuery == "&from=&to=&builder_name=&subdivision_name=&address2=&address1=&parcel=&sqft=&lotnumber=&permitnumber=&plan=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
                     return;
                 } else {
@@ -160,37 +160,37 @@ const FilterPermits = () => {
                     let totaldays = Math.ceil(days) + 1;
                     if (totaldays < 367) {
                         navigate("/permitlist");
-                        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
-                        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
-                        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
-                        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
-                        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
-                        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                        localStorage.setItem("address2", JSON.stringify(filterQuery.address2));
-                        localStorage.setItem("address1", JSON.stringify(filterQuery.address1));
-                        localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                        localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
-                        localStorage.setItem("lotnumber", JSON.stringify(filterQuery.lotnumber));
-                        localStorage.setItem("permitnumber", JSON.stringify(filterQuery.permitnumber));
-                        localStorage.setItem("plan", JSON.stringify(filterQuery.plan));
-                        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-                        localStorage.setItem("area", JSON.stringify(filterQuery.area));
-                        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-                        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-                        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-                        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-                        localStorage.setItem("age", JSON.stringify(filterQuery.age));
-                        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                        localStorage.setItem("selectedBuilderNameByFilter_Permit", JSON.stringify(selectedBuilderNameByFilter));
+                        localStorage.setItem("selectedSubdivisionNameByFilter_Permit", JSON.stringify(selectedSubdivisionNameByFilter));
+                        localStorage.setItem("productTypeStatusByFilter_Permit", JSON.stringify(productTypeStatusByFilter));
+                        localStorage.setItem("selectedAreaByFilter_Permit", JSON.stringify(selectedAreaByFilter));
+                        localStorage.setItem("selectedMasterPlanByFilter_Permit", JSON.stringify(selectedMasterPlanByFilter));
+                        localStorage.setItem("selectedAgeByFilter_Permit", JSON.stringify(selectedAgeByFilter));
+                        localStorage.setItem("selectedSingleByFilter_Permit", JSON.stringify(selectedSingleByFilter));
+                        localStorage.setItem("from_Permit", JSON.stringify(filterQuery.from));
+                        localStorage.setItem("to_Permit", JSON.stringify(filterQuery.to));
+                        localStorage.setItem("builder_name_Permit", JSON.stringify(filterQuery.builder_name));
+                        localStorage.setItem("subdivision_name_Permit", JSON.stringify(filterQuery.subdivision_name));
+                        localStorage.setItem("address2_Permit", JSON.stringify(filterQuery.address2));
+                        localStorage.setItem("address1_Permit", JSON.stringify(filterQuery.address1));
+                        localStorage.setItem("parcel_Permit", JSON.stringify(filterQuery.parcel));
+                        localStorage.setItem("sqft_Permit", JSON.stringify(filterQuery.sqft));
+                        localStorage.setItem("lotnumber_Permit", JSON.stringify(filterQuery.lotnumber));
+                        localStorage.setItem("permitnumber_Permit", JSON.stringify(filterQuery.permitnumber));
+                        localStorage.setItem("plan_Permit", JSON.stringify(filterQuery.plan));
+                        localStorage.setItem("product_type_Permit", JSON.stringify(filterQuery.product_type));
+                        localStorage.setItem("area_Permit", JSON.stringify(filterQuery.area));
+                        localStorage.setItem("masterplan_id_Permit", JSON.stringify(filterQuery.masterplan_id));
+                        localStorage.setItem("zipcode_Permit", JSON.stringify(filterQuery.zipcode));
+                        localStorage.setItem("lotwidth_Permit", JSON.stringify(filterQuery.lotwidth));
+                        localStorage.setItem("lotsize_Permit", JSON.stringify(filterQuery.lotsize));
+                        localStorage.setItem("age_Permit", JSON.stringify(filterQuery.age));
+                        localStorage.setItem("single_Permit", JSON.stringify(filterQuery.single));
                         localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
-                        localStorage.removeItem("firstTime");
+                        localStorage.removeItem("setPermitFilter");
                         return;
                     }
                 }
@@ -217,34 +217,34 @@ const FilterPermits = () => {
             if (totaldays < 367) {
                 e.preventDefault();
                 navigate("/permitlist");
-                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
-                localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
-                localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
-                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
-                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
-                localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                localStorage.setItem("address2", JSON.stringify(filterQuery.address2));
-                localStorage.setItem("address1", JSON.stringify(filterQuery.address1));
-                localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
-                localStorage.setItem("lotnumber", JSON.stringify(filterQuery.lotnumber));
-                localStorage.setItem("permitnumber", JSON.stringify(filterQuery.permitnumber));
-                localStorage.setItem("plan", JSON.stringify(filterQuery.plan));
-                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-                localStorage.setItem("area", JSON.stringify(filterQuery.area));
-                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-                localStorage.setItem("age", JSON.stringify(filterQuery.age));
-                localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                localStorage.setItem("selectedBuilderNameByFilter_Permit", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter_Permit", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("productTypeStatusByFilter_Permit", JSON.stringify(productTypeStatusByFilter));
+                localStorage.setItem("selectedAreaByFilter_Permit", JSON.stringify(selectedAreaByFilter));
+                localStorage.setItem("selectedMasterPlanByFilter_Permit", JSON.stringify(selectedMasterPlanByFilter));
+                localStorage.setItem("selectedAgeByFilter_Permit", JSON.stringify(selectedAgeByFilter));
+                localStorage.setItem("selectedSingleByFilter_Permit", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("from_Permit", JSON.stringify(filterQuery.from));
+                localStorage.setItem("to_Permit", JSON.stringify(filterQuery.to));
+                localStorage.setItem("builder_name_Permit", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("subdivision_name_Permit", JSON.stringify(filterQuery.subdivision_name));
+                localStorage.setItem("address2_Permit", JSON.stringify(filterQuery.address2));
+                localStorage.setItem("address1_Permit", JSON.stringify(filterQuery.address1));
+                localStorage.setItem("parcel_Permit", JSON.stringify(filterQuery.parcel));
+                localStorage.setItem("sqft_Permit", JSON.stringify(filterQuery.sqft));
+                localStorage.setItem("lotnumber_Permit", JSON.stringify(filterQuery.lotnumber));
+                localStorage.setItem("permitnumber_Permit", JSON.stringify(filterQuery.permitnumber));
+                localStorage.setItem("plan_Permit", JSON.stringify(filterQuery.plan));
+                localStorage.setItem("product_type_Permit", JSON.stringify(filterQuery.product_type));
+                localStorage.setItem("area_Permit", JSON.stringify(filterQuery.area));
+                localStorage.setItem("masterplan_id_Permit", JSON.stringify(filterQuery.masterplan_id));
+                localStorage.setItem("zipcode_Permit", JSON.stringify(filterQuery.zipcode));
+                localStorage.setItem("lotwidth_Permit", JSON.stringify(filterQuery.lotwidth));
+                localStorage.setItem("lotsize_Permit", JSON.stringify(filterQuery.lotsize));
+                localStorage.setItem("age_Permit", JSON.stringify(filterQuery.age));
+                localStorage.setItem("single_Permit", JSON.stringify(filterQuery.single));
                 localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
-                localStorage.setItem("firstTime", false);
+                localStorage.setItem("setPermitFilter", true);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");

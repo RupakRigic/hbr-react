@@ -71,7 +71,7 @@ const SubdivisionList = () => {
   // const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryBySubdivisionFilter") ? JSON.parse(localStorage.getItem("searchQueryBySubdivisionFilter")) : "");
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryBySubdivisionFilter_Subdivision") ? JSON.parse(localStorage.getItem("searchQueryBySubdivisionFilter_Subdivision")) : "");
   const [BuilderList, setBuilderList] = useState([]);
   const [BuilderListCount, setBuilderListCount] = useState('');
 
@@ -94,23 +94,23 @@ const SubdivisionList = () => {
   const [normalFilter, setNormalFilter] = useState(false);
 
   const [filterQuery, setFilterQuery] = useState({
-    status: localStorage.getItem("subdivision_status") ? JSON.parse(localStorage.getItem("subdivision_status")) : "",
-    reporting: localStorage.getItem("reporting") ? JSON.parse(localStorage.getItem("reporting")) : "",
-    name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
-    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
-    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
-    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
-    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
-    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
-    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
-    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
-    gated: localStorage.getItem("gated") ? JSON.parse(localStorage.getItem("gated")) : "",
-    juridiction: localStorage.getItem("juridiction") ? JSON.parse(localStorage.getItem("juridiction")) : "",
-    gasprovider: localStorage.getItem("gasprovider") ? JSON.parse(localStorage.getItem("gasprovider")) : "",
-    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
+    status: localStorage.getItem("subdivision_status_Subdivision") ? JSON.parse(localStorage.getItem("subdivision_status_Subdivision")) : "",
+    reporting: localStorage.getItem("reporting_Subdivision") ? JSON.parse(localStorage.getItem("reporting_Subdivision")) : "",
+    name: localStorage.getItem("subdivision_name_Subdivision") ? JSON.parse(localStorage.getItem("subdivision_name_Subdivision")) : "",
+    builder_name: localStorage.getItem("builder_name_Subdivision") ? JSON.parse(localStorage.getItem("builder_name_Subdivision")) : "",
+    product_type: localStorage.getItem("product_type_Subdivision") ? JSON.parse(localStorage.getItem("product_type_Subdivision")) : "",
+    area: localStorage.getItem("area_Subdivision") ? JSON.parse(localStorage.getItem("area_Subdivision")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id_Subdivision") ? JSON.parse(localStorage.getItem("masterplan_id_Subdivision")) : "",
+    zipcode: localStorage.getItem("zipcode_Subdivision") ? JSON.parse(localStorage.getItem("zipcode_Subdivision")) : "",
+    lotwidth: localStorage.getItem("lotwidth_Subdivision") ? JSON.parse(localStorage.getItem("lotwidth_Subdivision")) : "",
+    lotsize: localStorage.getItem("lotsize_Subdivision") ? JSON.parse(localStorage.getItem("lotsize_Subdivision")) : "",
+    age: localStorage.getItem("age_Subdivision") ? JSON.parse(localStorage.getItem("age_Subdivision")) : "",
+    single: localStorage.getItem("single_Subdivision") ? JSON.parse(localStorage.getItem("single_Subdivision")) : "",
+    gated: localStorage.getItem("gated_Subdivision") ? JSON.parse(localStorage.getItem("gated_Subdivision")) : "",
+    juridiction: localStorage.getItem("juridiction_Subdivision") ? JSON.parse(localStorage.getItem("juridiction_Subdivision")) : "",
+    gasprovider: localStorage.getItem("gasprovider_Subdivision") ? JSON.parse(localStorage.getItem("gasprovider_Subdivision")) : "",
+    from: localStorage.getItem("from_Subdivision") ? JSON.parse(localStorage.getItem("from_Subdivision")) : "",
+    to: localStorage.getItem("to_Subdivision") ? JSON.parse(localStorage.getItem("to_Subdivision")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     months_open: "",
@@ -758,7 +758,7 @@ const SubdivisionList = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
-    localStorage.setItem("searchQueryBySubdivisionFilter", JSON.stringify(searchQuery));
+    localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
       if (sortConfig !== null) {
@@ -793,48 +793,48 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedStatusBySubdivisionFilter")) {
-      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusBySubdivisionFilter"));
+    if(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
+      const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision"));
       handleSelectStatusChange(selectedStatus);
     }
-    if(localStorage.getItem("selectedReportingByFilter")) {
-        const selectedReporting = JSON.parse(localStorage.getItem("selectedReportingByFilter"));
+    if(localStorage.getItem("selectedReportingByFilter_Subdivision")) {
+        const selectedReporting = JSON.parse(localStorage.getItem("selectedReportingByFilter_Subdivision"));
         handleSelectReportingChange(selectedReporting);
     }
-    if(localStorage.getItem("selectedBuilderNameByFilter")) {
-        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+    if(localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
+        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Subdivision"));
         handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter")) {
-        const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+    if(localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
+        const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Subdivision"));
         handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter")) {
-        const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+    if(localStorage.getItem("selectedAreaByFilter_Subdivision")) {
+        const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
         handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter")) {
-        const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+    if(localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
+        const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
         handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter")) {
-        const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+    if(localStorage.getItem("selectedAgeByFilter_Subdivision")) {
+        const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Subdivision"));
         handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter")) {
-        const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+    if(localStorage.getItem("selectedSingleByFilter_Subdivision")) {
+        const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Subdivision"));
         handleSelectSingleChange(selectedSingle);
     }
-    if(localStorage.getItem("selectedGatedByFilter")) {
-        const selectedGated = JSON.parse(localStorage.getItem("selectedGatedByFilter"));
+    if(localStorage.getItem("selectedGatedByFilter_Subdivision")) {
+        const selectedGated = JSON.parse(localStorage.getItem("selectedGatedByFilter_Subdivision"));
         handleSelectGatedChange(selectedGated);
     }
-    if(localStorage.getItem("selectedJurisdicitionByFilter")) {
-        const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter"));
+    if(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision")) {
+        const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision"));
         handleSelectJurisdictionChange(selectedJurisdicition);
     }
-    if(localStorage.getItem("seletctedGasProviderByFilter")) {
-        const seletctedGasProvider = JSON.parse(localStorage.getItem("seletctedGasProviderByFilter"));
+    if(localStorage.getItem("seletctedGasProviderByFilter_Subdivision")) {
+        const seletctedGasProvider = JSON.parse(localStorage.getItem("seletctedGasProviderByFilter_Subdivision"));
         handleGasProviderChange(seletctedGasProvider);
     }
   }, []);
@@ -943,7 +943,7 @@ const SubdivisionList = () => {
   const HandleFilterForm = (e) => {
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
     if (!isAnyFilterApplied) {
-      localStorage.removeItem("firstTime");
+      localStorage.removeItem("setSubdivisionFilter");
     }
     e.preventDefault();
     setFilter(false);
@@ -998,35 +998,35 @@ const SubdivisionList = () => {
     setAvgNetSalesPerMonthLastThreeMonthsResult(0);
     setMonthNetSoldResult(0);
     setYearNetSoldResult(0);
-    localStorage.setItem("selectedStatusBySubdivisionFilter", JSON.stringify(selectedStatus));
-    localStorage.setItem("selectedReportingByFilter", JSON.stringify(selectedReporting));
-    localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-    localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
-    localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
-    localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-    localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
-    localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
-    localStorage.setItem("selectedGatedByFilter", JSON.stringify(selectedGated));
-    localStorage.setItem("selectedJurisdicitionByFilter", JSON.stringify(selectedJurisdicition));
-    localStorage.setItem("seletctedGasProviderByFilter", JSON.stringify(seletctedGasProvider));
-    localStorage.setItem("subdivision_status", JSON.stringify(filterQuery.status));
-    localStorage.setItem("reporting", JSON.stringify(filterQuery.reporting));
-    localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.name));
-    localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-    localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-    localStorage.setItem("area", JSON.stringify(filterQuery.area));
-    localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-    localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-    localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-    localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-    localStorage.setItem("age", JSON.stringify(filterQuery.age));
-    localStorage.setItem("single", JSON.stringify(filterQuery.single));
-    localStorage.setItem("gated", JSON.stringify(filterQuery.gated));
-    localStorage.setItem("juridiction", JSON.stringify(filterQuery.juridiction));
-    localStorage.setItem("gasprovider", JSON.stringify(filterQuery.gasprovider));
-    localStorage.setItem("from", JSON.stringify(filterQuery.from));
-    localStorage.setItem("to", JSON.stringify(filterQuery.to));
-    localStorage.setItem("searchQueryBySubdivisionFilter", JSON.stringify(searchQuery));
+    localStorage.setItem("selectedStatusBySubdivisionFilter_Subdivision", JSON.stringify(selectedStatus));
+    localStorage.setItem("selectedReportingByFilter_Subdivision", JSON.stringify(selectedReporting));
+    localStorage.setItem("selectedBuilderNameByFilter_Subdivision", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatus));
+    localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedArea));
+    localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlan));
+    localStorage.setItem("selectedAgeByFilter_Subdivision", JSON.stringify(selectedAge));
+    localStorage.setItem("selectedSingleByFilter_Subdivision", JSON.stringify(selectedSingle));
+    localStorage.setItem("selectedGatedByFilter_Subdivision", JSON.stringify(selectedGated));
+    localStorage.setItem("selectedJurisdicitionByFilter_Subdivision", JSON.stringify(selectedJurisdicition));
+    localStorage.setItem("seletctedGasProviderByFilter_Subdivision", JSON.stringify(seletctedGasProvider));
+    localStorage.setItem("subdivision_status_Subdivision", JSON.stringify(filterQuery.status));
+    localStorage.setItem("reporting_Subdivision", JSON.stringify(filterQuery.reporting));
+    localStorage.setItem("subdivision_name_Subdivision", JSON.stringify(filterQuery.name));
+    localStorage.setItem("builder_name_Subdivision", JSON.stringify(filterQuery.builder_name));
+    localStorage.setItem("product_type_Subdivision", JSON.stringify(filterQuery.product_type));
+    localStorage.setItem("area_Subdivision", JSON.stringify(filterQuery.area));
+    localStorage.setItem("masterplan_id_Subdivision", JSON.stringify(filterQuery.masterplan_id));
+    localStorage.setItem("zipcode_Subdivision", JSON.stringify(filterQuery.zipcode));
+    localStorage.setItem("lotwidth_Subdivision", JSON.stringify(filterQuery.lotwidth));
+    localStorage.setItem("lotsize_Subdivision", JSON.stringify(filterQuery.lotsize));
+    localStorage.setItem("age_Subdivision", JSON.stringify(filterQuery.age));
+    localStorage.setItem("single_Subdivision", JSON.stringify(filterQuery.single));
+    localStorage.setItem("gated_Subdivision", JSON.stringify(filterQuery.gated));
+    localStorage.setItem("juridiction_Subdivision", JSON.stringify(filterQuery.juridiction));
+    localStorage.setItem("gasprovider_Subdivision", JSON.stringify(filterQuery.gasprovider));
+    localStorage.setItem("from_Subdivision", JSON.stringify(filterQuery.from));
+    localStorage.setItem("to_Subdivision", JSON.stringify(filterQuery.to));
+    localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery));
   };
 
   const HandleFilter = (e) => {
@@ -1107,35 +1107,35 @@ const SubdivisionList = () => {
     setSelectedGasProvider([]);
     getbuilderlist(1, sortConfig, "");
     setManageFilterOffcanvas(false);
-    localStorage.removeItem("selectedStatusBySubdivisionFilter");
-    localStorage.removeItem("selectedReportingByFilter");
-    localStorage.removeItem("selectedBuilderNameByFilter");
-    localStorage.removeItem("productTypeStatusByFilter");
-    localStorage.removeItem("selectedAreaByFilter");
-    localStorage.removeItem("selectedMasterPlanByFilter");
-    localStorage.removeItem("selectedAgeByFilter");
-    localStorage.removeItem("selectedSingleByFilter");
-    localStorage.removeItem("selectedGatedByFilter");
-    localStorage.removeItem("selectedJurisdicitionByFilter");
-    localStorage.removeItem("seletctedGasProviderByFilter");
-    localStorage.removeItem("subdivision_status");
-    localStorage.removeItem("reporting");
-    localStorage.removeItem("subdivision_name");
-    localStorage.removeItem("builder_name");
-    localStorage.removeItem("product_type");
-    localStorage.removeItem("area");
-    localStorage.removeItem("masterplan_id");
-    localStorage.removeItem("zipcode");
-    localStorage.removeItem("lotwidth");
-    localStorage.removeItem("lotsize");
-    localStorage.removeItem("age");
-    localStorage.removeItem("single");
-    localStorage.removeItem("gated");
-    localStorage.removeItem("juridiction");
-    localStorage.removeItem("gasprovider");
-    localStorage.removeItem("from");
-    localStorage.removeItem("to");
-    localStorage.removeItem("firstTime");
+    localStorage.removeItem("selectedStatusBySubdivisionFilter_Subdivision");
+    localStorage.removeItem("selectedReportingByFilter_Subdivision");
+    localStorage.removeItem("selectedBuilderNameByFilter_Subdivision");
+    localStorage.removeItem("productTypeStatusByFilter_Subdivision");
+    localStorage.removeItem("selectedAreaByFilter_Subdivision");
+    localStorage.removeItem("selectedMasterPlanByFilter_Subdivision");
+    localStorage.removeItem("selectedAgeByFilter_Subdivision");
+    localStorage.removeItem("selectedSingleByFilter_Subdivision");
+    localStorage.removeItem("selectedGatedByFilter_Subdivision");
+    localStorage.removeItem("selectedJurisdicitionByFilter_Subdivision");
+    localStorage.removeItem("seletctedGasProviderByFilter_Subdivision");
+    localStorage.removeItem("subdivision_status_Subdivision");
+    localStorage.removeItem("reporting_Subdivision");
+    localStorage.removeItem("subdivision_name_Subdivision");
+    localStorage.removeItem("builder_name_Subdivision");
+    localStorage.removeItem("product_type_Subdivision");
+    localStorage.removeItem("area_Subdivision");
+    localStorage.removeItem("masterplan_id_Subdivision");
+    localStorage.removeItem("zipcode_Subdivision");
+    localStorage.removeItem("lotwidth_Subdivision");
+    localStorage.removeItem("lotsize_Subdivision");
+    localStorage.removeItem("age_Subdivision");
+    localStorage.removeItem("single_Subdivision");
+    localStorage.removeItem("gated_Subdivision");
+    localStorage.removeItem("juridiction_Subdivision");
+    localStorage.removeItem("gasprovider_Subdivision");
+    localStorage.removeItem("from_Subdivision");
+    localStorage.removeItem("to_Subdivision");
+    localStorage.removeItem("setSubdivisionFilter_Subdivision");
   };
 
   const [value, setValue] = React.useState("1");
@@ -4562,7 +4562,6 @@ const SubdivisionList = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    localStorage.setItem("builder_name", JSON.stringify(selectedNames));
     setSelectedValues(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({

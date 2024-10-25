@@ -84,25 +84,25 @@ const TrafficsaleList = () => {
   const [message, setMessage] = useState(false);
   const handlePopupClose = () => setShowPopup(false);
   const [filterQuery, setFilterQuery] = useState({
-    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-    weeklytraffic: localStorage.getItem("weeklytraffic") ? JSON.parse(localStorage.getItem("weeklytraffic")) : "",
-    cancelations: localStorage.getItem("cancelations") ? JSON.parse(localStorage.getItem("cancelations")) : "",
-    netsales: localStorage.getItem("netsales") ? JSON.parse(localStorage.getItem("netsales")) : "",
-    totallots: localStorage.getItem("totallots") ? JSON.parse(localStorage.getItem("totallots")) : "",
-    lotreleased: localStorage.getItem("lotreleased") ? JSON.parse(localStorage.getItem("lotreleased")) : "",
-    unsoldinventory: localStorage.getItem("unsoldinventory") ? JSON.parse(localStorage.getItem("unsoldinventory")) : "",
-    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
-    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
-    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
-    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
-    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
-    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
-    zoning: localStorage.getItem("zoning") ? JSON.parse(localStorage.getItem("zoning")) : "",
-    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
-    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
+    from: localStorage.getItem("from_TrafficSale") ? JSON.parse(localStorage.getItem("from_TrafficSale")) : "",
+    to: localStorage.getItem("to_TrafficSale") ? JSON.parse(localStorage.getItem("to_TrafficSale")) : "",
+    builder_name: localStorage.getItem("builder_name_TrafficSale") ? JSON.parse(localStorage.getItem("builder_name_TrafficSale")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name_TrafficSale") ? JSON.parse(localStorage.getItem("subdivision_name_TrafficSale")) : "",
+    weeklytraffic: localStorage.getItem("weeklytraffic_TrafficSale") ? JSON.parse(localStorage.getItem("weeklytraffic_TrafficSale")) : "",
+    cancelations: localStorage.getItem("cancelations_TrafficSale") ? JSON.parse(localStorage.getItem("cancelations_TrafficSale")) : "",
+    netsales: localStorage.getItem("netsales_TrafficSale") ? JSON.parse(localStorage.getItem("netsales_TrafficSale")) : "",
+    totallots: localStorage.getItem("totallots_TrafficSale") ? JSON.parse(localStorage.getItem("totallots_TrafficSale")) : "",
+    lotreleased: localStorage.getItem("lotreleased_TrafficSale") ? JSON.parse(localStorage.getItem("lotreleased_TrafficSale")) : "",
+    unsoldinventory: localStorage.getItem("unsoldinventory_TrafficSale") ? JSON.parse(localStorage.getItem("unsoldinventory_TrafficSale")) : "",
+    product_type: localStorage.getItem("product_type_TrafficSale") ? JSON.parse(localStorage.getItem("product_type_TrafficSale")) : "",
+    area: localStorage.getItem("area_TrafficSale") ? JSON.parse(localStorage.getItem("area_TrafficSale")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id_TrafficSale") ? JSON.parse(localStorage.getItem("masterplan_id_TrafficSale")) : "",
+    zipcode: localStorage.getItem("zipcode_TrafficSale") ? JSON.parse(localStorage.getItem("zipcode_TrafficSale")) : "",
+    lotwidth: localStorage.getItem("lotwidth_TrafficSale") ? JSON.parse(localStorage.getItem("lotwidth_TrafficSale")) : "",
+    lotsize: localStorage.getItem("lotsize_TrafficSale") ? JSON.parse(localStorage.getItem("lotsize_TrafficSale")) : "",
+    zoning: localStorage.getItem("zoning_TrafficSale") ? JSON.parse(localStorage.getItem("zoning_TrafficSale")) : "",
+    age: localStorage.getItem("age_TrafficSale") ? JSON.parse(localStorage.getItem("age_TrafficSale")) : "",
+    single: localStorage.getItem("single_TrafficSale") ? JSON.parse(localStorage.getItem("single_TrafficSale")) : "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
@@ -166,32 +166,32 @@ const TrafficsaleList = () => {
   }
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter")) {
-      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+    if(localStorage.getItem("selectedBuilderNameByFilter_TrafficSale")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_TrafficSale"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+    if(localStorage.getItem("selectedSubdivisionNameByFilter_TrafficSale")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_TrafficSale"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter")) {
-      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+    if(localStorage.getItem("productTypeStatusByFilter_TrafficSale")) {
+      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_TrafficSale"));
       handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter")) {
-      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+    if(localStorage.getItem("selectedAreaByFilter_TrafficSale")) {
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_TrafficSale"));
       handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter")) {
-      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+    if(localStorage.getItem("selectedMasterPlanByFilter_TrafficSale")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_TrafficSale"));
       handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter")) {
-      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+    if(localStorage.getItem("selectedAgeByFilter_TrafficSale")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_TrafficSale"));
       handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter")) {
-      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+    if(localStorage.getItem("selectedSingleByFilter_TrafficSale")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_TrafficSale"));
       handleSelectSingleChange(selectedSingle);
     }
 }, []);
@@ -242,32 +242,32 @@ const TrafficsaleList = () => {
         e.preventDefault();
         gettrafficsaleList(currentPage, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
-        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
-        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
-        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
-        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
-        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
-        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-        localStorage.setItem("weeklytraffic", JSON.stringify(filterQuery.weeklytraffic));
-        localStorage.setItem("cancelations", JSON.stringify(filterQuery.cancelations));
-        localStorage.setItem("netsales", JSON.stringify(filterQuery.netsales));
-        localStorage.setItem("totallots", JSON.stringify(filterQuery.totallots));
-        localStorage.setItem("lotreleased", JSON.stringify(filterQuery.lotreleased));
-        localStorage.setItem("unsoldinventory", JSON.stringify(filterQuery.unsoldinventory));
-        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-        localStorage.setItem("area", JSON.stringify(filterQuery.area));
-        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-        localStorage.setItem("zoning", JSON.stringify(filterQuery.zoning));
-        localStorage.setItem("age", JSON.stringify(filterQuery.age));
-        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+        localStorage.setItem("selectedBuilderNameByFilter_TrafficSale", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter_TrafficSale", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("productTypeStatusByFilter_TrafficSale", JSON.stringify(productTypeStatus));
+        localStorage.setItem("selectedAreaByFilter_TrafficSale", JSON.stringify(selectedArea));
+        localStorage.setItem("selectedMasterPlanByFilter_TrafficSale", JSON.stringify(selectedMasterPlan));
+        localStorage.setItem("selectedAgeByFilter_TrafficSale", JSON.stringify(selectedAge));
+        localStorage.setItem("selectedSingleByFilter_TrafficSale", JSON.stringify(selectedSingle));
+        localStorage.setItem("from_TrafficSale", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to_TrafficSale", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name_TrafficSale", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name_TrafficSale", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("weeklytraffic_TrafficSale", JSON.stringify(filterQuery.weeklytraffic));
+        localStorage.setItem("cancelations_TrafficSale", JSON.stringify(filterQuery.cancelations));
+        localStorage.setItem("netsales_TrafficSale", JSON.stringify(filterQuery.netsales));
+        localStorage.setItem("totallots_TrafficSale", JSON.stringify(filterQuery.totallots));
+        localStorage.setItem("lotreleased_TrafficSale", JSON.stringify(filterQuery.lotreleased));
+        localStorage.setItem("unsoldinventory_TrafficSale", JSON.stringify(filterQuery.unsoldinventory));
+        localStorage.setItem("product_type_TrafficSale", JSON.stringify(filterQuery.product_type));
+        localStorage.setItem("area_TrafficSale", JSON.stringify(filterQuery.area));
+        localStorage.setItem("masterplan_id_TrafficSale", JSON.stringify(filterQuery.masterplan_id));
+        localStorage.setItem("zipcode_TrafficSale", JSON.stringify(filterQuery.zipcode));
+        localStorage.setItem("lotwidth_TrafficSale", JSON.stringify(filterQuery.lotwidth));
+        localStorage.setItem("lotsize_TrafficSale", JSON.stringify(filterQuery.lotsize));
+        localStorage.setItem("zoning_TrafficSale", JSON.stringify(filterQuery.zoning));
+        localStorage.setItem("age_TrafficSale", JSON.stringify(filterQuery.age));
+        localStorage.setItem("single_TrafficSale", JSON.stringify(filterQuery.single));
         localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery));
       } else {
         setShowPopup(true);
@@ -808,33 +808,33 @@ const TrafficsaleList = () => {
     setSelectedSingle([]);
     setManageFilterOffcanvas(false);
     gettrafficsaleList(1, sortConfig, "");
-    localStorage.removeItem("selectedBuilderNameByFilter");
-    localStorage.removeItem("selectedSubdivisionNameByFilter");
-    localStorage.removeItem("productTypeStatusByFilter");
-    localStorage.removeItem("selectedAreaByFilter");
-    localStorage.removeItem("selectedMasterPlanByFilter");
-    localStorage.removeItem("selectedAgeByFilter");
-    localStorage.removeItem("selectedSingleByFilter");
-    localStorage.removeItem("from");
-    localStorage.removeItem("to");
-    localStorage.removeItem("builder_name");
-    localStorage.removeItem("subdivision_name");
-    localStorage.removeItem("weeklytraffic");
-    localStorage.removeItem("cancelations");
-    localStorage.removeItem("netsales");
-    localStorage.removeItem("totallots");
-    localStorage.removeItem("lotreleased");
-    localStorage.removeItem("unsoldinventory");
-    localStorage.removeItem("product_type");
-    localStorage.removeItem("area");
-    localStorage.removeItem("masterplan_id");
-    localStorage.removeItem("zipcode");
-    localStorage.removeItem("lotwidth");
-    localStorage.removeItem("lotsize");
-    localStorage.removeItem("zoning");
-    localStorage.removeItem("age");
-    localStorage.removeItem("single");
-    localStorage.removeItem("firstTime");
+    localStorage.removeItem("selectedBuilderNameByFilter_TrafficSale");
+    localStorage.removeItem("selectedSubdivisionNameByFilter_TrafficSale");
+    localStorage.removeItem("productTypeStatusByFilter_TrafficSale");
+    localStorage.removeItem("selectedAreaByFilter_TrafficSale");
+    localStorage.removeItem("selectedMasterPlanByFilter_TrafficSale");
+    localStorage.removeItem("selectedAgeByFilter_TrafficSale");
+    localStorage.removeItem("selectedSingleByFilter_TrafficSale");
+    localStorage.removeItem("from_TrafficSale");
+    localStorage.removeItem("to_TrafficSale");
+    localStorage.removeItem("builder_name_TrafficSale");
+    localStorage.removeItem("subdivision_name_TrafficSale");
+    localStorage.removeItem("weeklytraffic_TrafficSale");
+    localStorage.removeItem("cancelations_TrafficSale");
+    localStorage.removeItem("netsales_TrafficSale");
+    localStorage.removeItem("totallots_TrafficSale");
+    localStorage.removeItem("lotreleased_TrafficSale");
+    localStorage.removeItem("unsoldinventory_TrafficSale");
+    localStorage.removeItem("product_type_TrafficSale");
+    localStorage.removeItem("area_TrafficSale");
+    localStorage.removeItem("masterplan_id_TrafficSale");
+    localStorage.removeItem("zipcode_TrafficSale");
+    localStorage.removeItem("lotwidth_TrafficSale");
+    localStorage.removeItem("lotsize_TrafficSale");
+    localStorage.removeItem("zoning_TrafficSale");
+    localStorage.removeItem("age_TrafficSale");
+    localStorage.removeItem("single_TrafficSale");
+    localStorage.removeItem("setTrafficFilter");
   };
 
   const handleOpenDialog = () => {

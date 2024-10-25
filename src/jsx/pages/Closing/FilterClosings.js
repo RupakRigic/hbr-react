@@ -29,64 +29,64 @@ const FilterClosings = () => {
     const [message, setMessage] = useState(false);
     const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
-        from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-        to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-        closing_type: localStorage.getItem("closing_type") ? JSON.parse(localStorage.getItem("closing_type")) : "",
-        document: localStorage.getItem("document") ? JSON.parse(localStorage.getItem("document")) : "",
-        builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-        subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-        closingprice: localStorage.getItem("closingprice") ? JSON.parse(localStorage.getItem("closingprice")) : "",
-        address: localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : "",
-        parcel: localStorage.getItem("parcel") ? JSON.parse(localStorage.getItem("parcel")) : "",
-        sellerleagal: localStorage.getItem("sellerleagal") ? JSON.parse(localStorage.getItem("sellerleagal")) : "",
-        buyer: localStorage.getItem("buyer") ? JSON.parse(localStorage.getItem("buyer")) : "",
-        lender_name: localStorage.getItem("lender_name") ? JSON.parse(localStorage.getItem("lender_name")) : "",
-        loanamount: localStorage.getItem("loanamount") ? JSON.parse(localStorage.getItem("loanamount")) : "",
-        product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
-        area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
-        masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
-        zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
-        lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
-        lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
-        age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
-        single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
+        from: localStorage.getItem("from_Closing") ? JSON.parse(localStorage.getItem("from_Closing")) : "",
+        to: localStorage.getItem("to_Closing") ? JSON.parse(localStorage.getItem("to_Closing")) : "",
+        closing_type: localStorage.getItem("closing_type_Closing") ? JSON.parse(localStorage.getItem("closing_type_Closing")) : "",
+        document: localStorage.getItem("document_Closing") ? JSON.parse(localStorage.getItem("document_Closing")) : "",
+        builder_name: localStorage.getItem("builder_name_Closing") ? JSON.parse(localStorage.getItem("builder_name_Closing")) : "",
+        subdivision_name: localStorage.getItem("subdivision_name_Closing") ? JSON.parse(localStorage.getItem("subdivision_name_Closing")) : "",
+        closingprice: localStorage.getItem("closingprice_Closing") ? JSON.parse(localStorage.getItem("closingprice_Closing")) : "",
+        address: localStorage.getItem("address_Closing") ? JSON.parse(localStorage.getItem("address_Closing")) : "",
+        parcel: localStorage.getItem("parcel_Closing") ? JSON.parse(localStorage.getItem("parcel_Closing")) : "",
+        sellerleagal: localStorage.getItem("sellerleagal_Closing") ? JSON.parse(localStorage.getItem("sellerleagal_Closing")) : "",
+        buyer: localStorage.getItem("buyer_Closing") ? JSON.parse(localStorage.getItem("buyer_Closing")) : "",
+        lender_name: localStorage.getItem("lender_name_Closing") ? JSON.parse(localStorage.getItem("lender_name_Closing")) : "",
+        loanamount: localStorage.getItem("loanamount_Closing") ? JSON.parse(localStorage.getItem("loanamount_Closing")) : "",
+        product_type: localStorage.getItem("product_type_Closing") ? JSON.parse(localStorage.getItem("product_type_Closing")) : "",
+        area: localStorage.getItem("area_Closing") ? JSON.parse(localStorage.getItem("area_Closing")) : "",
+        masterplan_id: localStorage.getItem("masterplan_id_Closing") ? JSON.parse(localStorage.getItem("masterplan_id_Closing")) : "",
+        zipcode: localStorage.getItem("zipcode_Closing") ? JSON.parse(localStorage.getItem("zipcode_Closing")) : "",
+        lotwidth: localStorage.getItem("lotwidth_Closing") ? JSON.parse(localStorage.getItem("lotwidth_Closing")) : "",
+        lotsize: localStorage.getItem("lotsize_Closing") ? JSON.parse(localStorage.getItem("lotsize_Closing")) : "",
+        age: localStorage.getItem("age_Closing") ? JSON.parse(localStorage.getItem("age_Closing")) : "",
+        single: localStorage.getItem("single_Closing") ? JSON.parse(localStorage.getItem("single_Closing")) : "",
     });
 
     useEffect(() => {
-        if(localStorage.getItem("seletctedClosingTypeByFilter")) {
-            const seletctedClosingType = JSON.parse(localStorage.getItem("seletctedClosingTypeByFilter"));
+        if(localStorage.getItem("seletctedClosingTypeByFilter_Closing")) {
+            const seletctedClosingType = JSON.parse(localStorage.getItem("seletctedClosingTypeByFilter_Closing"));
             handleSelectClosingTypeChange(seletctedClosingType);
         }
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        if(localStorage.getItem("selectedBuilderNameByFilter_Closing")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Closing"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+        if(localStorage.getItem("selectedSubdivisionNameByFilter_Closing")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Closing"));
           handleSelectSubdivisionNameChange(selectedSubdivisionName);
         }
-        if(localStorage.getItem("seletctedLenderByFilter")) {
-            const seletctedLender = JSON.parse(localStorage.getItem("seletctedLenderByFilter"));
+        if(localStorage.getItem("seletctedLenderByFilter_Closing")) {
+            const seletctedLender = JSON.parse(localStorage.getItem("seletctedLenderByFilter_Closing"));
             handleSelectLenderChange(seletctedLender);
         }
-        if(localStorage.getItem("productTypeStatusByFilter")) {
-            const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+        if(localStorage.getItem("productTypeStatusByFilter_Closing")) {
+            const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Closing"));
             handleSelectProductTypeChange(productTypeStatus);
         }
-        if(localStorage.getItem("selectedAreaByFilter")) {
-            const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+        if(localStorage.getItem("selectedAreaByFilter_Closing")) {
+            const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Closing"));
             handleSelectAreaChange(selectedArea);
         }
-        if(localStorage.getItem("selectedMasterPlanByFilter")) {
-            const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+        if(localStorage.getItem("selectedMasterPlanByFilter_Closing")) {
+            const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Closing"));
             handleSelectMasterPlanChange(selectedMasterPlan);
         }
-        if(localStorage.getItem("selectedAgeByFilter")) {
-            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+        if(localStorage.getItem("selectedAgeByFilter_Closing")) {
+            const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Closing"));
             handleSelectAgeChange(selectedAge);
         }
-        if(localStorage.getItem("selectedSingleByFilter")) {
-            const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+        if(localStorage.getItem("selectedSingleByFilter_Closing")) {
+            const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Closing"));
             handleSelectSingleChange(selectedSingle);
         }
     }, []);
@@ -175,14 +175,14 @@ const FilterClosings = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setClosingFilter") == "true") {
                 setShowPopup(true);
                 setMessage("Please select date.");
-                localStorage.removeItem("firstTime");
+                localStorage.removeItem("setClosingFilter");
                 return;
             }
         } else {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setClosingFilter") == "true") {
                 if((searchQuery == "") || (searchQuery == "&closing_type=&from=&to=&document=&builder_name=&subdivision_name=&closingprice=&address=&parcel=&sellerleagal=&buyer=&lender_name=&loanamount=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
                     return;
                 } else {
@@ -192,41 +192,41 @@ const FilterClosings = () => {
                     let totaldays = Math.ceil(days) + 1;
                     if (totaldays < 367) {
                         navigate("/closingsalelist");
-                        localStorage.setItem("seletctedClosingTypeByFilter", JSON.stringify(seletctedClosingTypeByFilter));
-                        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                        localStorage.setItem("seletctedLenderByFilter", JSON.stringify(seletctedLenderByFilter));
-                        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
-                        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
-                        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
-                        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
-                        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
-                        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                        localStorage.setItem("closing_type", JSON.stringify(filterQuery.closing_type));
-                        localStorage.setItem("document", JSON.stringify(filterQuery.document));
-                        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                        localStorage.setItem("closingprice", JSON.stringify(filterQuery.closingprice));
-                        localStorage.setItem("address", JSON.stringify(filterQuery.address));
-                        localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                        localStorage.setItem("sellerleagal", JSON.stringify(filterQuery.sellerleagal));
-                        localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-                        localStorage.setItem("lender_name", JSON.stringify(filterQuery.lender_name));
-                        localStorage.setItem("loanamount", JSON.stringify(filterQuery.loanamount));
-                        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-                        localStorage.setItem("area", JSON.stringify(filterQuery.area));
-                        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-                        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-                        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-                        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-                        localStorage.setItem("age", JSON.stringify(filterQuery.age));
-                        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                        localStorage.setItem("seletctedClosingTypeByFilter_Closing", JSON.stringify(seletctedClosingTypeByFilter));
+                        localStorage.setItem("selectedBuilderNameByFilter_Closing", JSON.stringify(selectedBuilderNameByFilter));
+                        localStorage.setItem("selectedSubdivisionNameByFilter_Closing", JSON.stringify(selectedSubdivisionNameByFilter));
+                        localStorage.setItem("seletctedLenderByFilter_Closing", JSON.stringify(seletctedLenderByFilter));
+                        localStorage.setItem("productTypeStatusByFilter_Closing", JSON.stringify(productTypeStatusByFilter));
+                        localStorage.setItem("selectedAreaByFilter_Closing", JSON.stringify(selectedAreaByFilter));
+                        localStorage.setItem("selectedMasterPlanByFilter_Closing", JSON.stringify(selectedMasterPlanByFilter));
+                        localStorage.setItem("selectedAgeByFilter_Closing", JSON.stringify(selectedAgeByFilter));
+                        localStorage.setItem("selectedSingleByFilter_Closing", JSON.stringify(selectedSingleByFilter));
+                        localStorage.setItem("from_Closing", JSON.stringify(filterQuery.from));
+                        localStorage.setItem("to_Closing", JSON.stringify(filterQuery.to));
+                        localStorage.setItem("closing_type_Closing", JSON.stringify(filterQuery.closing_type));
+                        localStorage.setItem("document_Closing", JSON.stringify(filterQuery.document));
+                        localStorage.setItem("builder_name_Closing", JSON.stringify(filterQuery.builder_name));
+                        localStorage.setItem("subdivision_name_Closing", JSON.stringify(filterQuery.subdivision_name));
+                        localStorage.setItem("closingprice_Closing", JSON.stringify(filterQuery.closingprice));
+                        localStorage.setItem("address_Closing", JSON.stringify(filterQuery.address));
+                        localStorage.setItem("parcel_Closing", JSON.stringify(filterQuery.parcel));
+                        localStorage.setItem("sellerleagal_Closing", JSON.stringify(filterQuery.sellerleagal));
+                        localStorage.setItem("buyer_Closing", JSON.stringify(filterQuery.buyer));
+                        localStorage.setItem("lender_name_Closing", JSON.stringify(filterQuery.lender_name));
+                        localStorage.setItem("loanamount_Closing", JSON.stringify(filterQuery.loanamount));
+                        localStorage.setItem("product_type_Closing", JSON.stringify(filterQuery.product_type));
+                        localStorage.setItem("area_Closing", JSON.stringify(filterQuery.area));
+                        localStorage.setItem("masterplan_id_Closing", JSON.stringify(filterQuery.masterplan_id));
+                        localStorage.setItem("zipcode_Closing", JSON.stringify(filterQuery.zipcode));
+                        localStorage.setItem("lotwidth_Closing", JSON.stringify(filterQuery.lotwidth));
+                        localStorage.setItem("lotsize_Closing", JSON.stringify(filterQuery.lotsize));
+                        localStorage.setItem("age_Closing", JSON.stringify(filterQuery.age));
+                        localStorage.setItem("single_Closing", JSON.stringify(filterQuery.single));
                         localStorage.setItem("searchQueryByClosingsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
-                        localStorage.removeItem("firstTime");
+                        localStorage.removeItem("setClosingFilter");
                         return;
                     }
                 }
@@ -253,38 +253,38 @@ const FilterClosings = () => {
             if (totaldays < 367) {
                 e.preventDefault();
                 navigate("/closingsalelist");
-                localStorage.setItem("seletctedClosingTypeByFilter", JSON.stringify(seletctedClosingTypeByFilter));
-                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                localStorage.setItem("seletctedLenderByFilter", JSON.stringify(seletctedLenderByFilter));
-                localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatusByFilter));
-                localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedAreaByFilter));
-                localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlanByFilter));
-                localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAgeByFilter));
-                localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingleByFilter));
-                localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                localStorage.setItem("closing_type", JSON.stringify(filterQuery.closing_type));
-                localStorage.setItem("document", JSON.stringify(filterQuery.document));
-                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                localStorage.setItem("closingprice", JSON.stringify(filterQuery.closingprice));
-                localStorage.setItem("address", JSON.stringify(filterQuery.address));
-                localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                localStorage.setItem("sellerleagal", JSON.stringify(filterQuery.sellerleagal));
-                localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-                localStorage.setItem("lender_name", JSON.stringify(filterQuery.lender_name));
-                localStorage.setItem("loanamount", JSON.stringify(filterQuery.loanamount));
-                localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-                localStorage.setItem("area", JSON.stringify(filterQuery.area));
-                localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-                localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-                localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-                localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-                localStorage.setItem("age", JSON.stringify(filterQuery.age));
-                localStorage.setItem("single", JSON.stringify(filterQuery.single));
+                localStorage.setItem("seletctedClosingTypeByFilter_Closing", JSON.stringify(seletctedClosingTypeByFilter));
+                localStorage.setItem("selectedBuilderNameByFilter_Closing", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter_Closing", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("seletctedLenderByFilter_Closing", JSON.stringify(seletctedLenderByFilter));
+                localStorage.setItem("productTypeStatusByFilter_Closing", JSON.stringify(productTypeStatusByFilter));
+                localStorage.setItem("selectedAreaByFilter_Closing", JSON.stringify(selectedAreaByFilter));
+                localStorage.setItem("selectedMasterPlanByFilter_Closing", JSON.stringify(selectedMasterPlanByFilter));
+                localStorage.setItem("selectedAgeByFilter_Closing", JSON.stringify(selectedAgeByFilter));
+                localStorage.setItem("selectedSingleByFilter_Closing", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("from_Closing", JSON.stringify(filterQuery.from));
+                localStorage.setItem("to_Closing", JSON.stringify(filterQuery.to));
+                localStorage.setItem("closing_type_Closing", JSON.stringify(filterQuery.closing_type));
+                localStorage.setItem("document_Closing", JSON.stringify(filterQuery.document));
+                localStorage.setItem("builder_name_Closing", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("subdivision_name_Closing", JSON.stringify(filterQuery.subdivision_name));
+                localStorage.setItem("closingprice_Closing", JSON.stringify(filterQuery.closingprice));
+                localStorage.setItem("address_Closing", JSON.stringify(filterQuery.address));
+                localStorage.setItem("parcel_Closing", JSON.stringify(filterQuery.parcel));
+                localStorage.setItem("sellerleagal_Closing", JSON.stringify(filterQuery.sellerleagal));
+                localStorage.setItem("buyer_Closing", JSON.stringify(filterQuery.buyer));
+                localStorage.setItem("lender_name_Closing", JSON.stringify(filterQuery.lender_name));
+                localStorage.setItem("loanamount_Closing", JSON.stringify(filterQuery.loanamount));
+                localStorage.setItem("product_type_Closing", JSON.stringify(filterQuery.product_type));
+                localStorage.setItem("area_Closing", JSON.stringify(filterQuery.area));
+                localStorage.setItem("masterplan_id_Closing", JSON.stringify(filterQuery.masterplan_id));
+                localStorage.setItem("zipcode_Closing", JSON.stringify(filterQuery.zipcode));
+                localStorage.setItem("lotwidth_Closing", JSON.stringify(filterQuery.lotwidth));
+                localStorage.setItem("lotsize_Closing", JSON.stringify(filterQuery.lotsize));
+                localStorage.setItem("age_Closing", JSON.stringify(filterQuery.age));
+                localStorage.setItem("single_Closing", JSON.stringify(filterQuery.single));
                 localStorage.setItem("searchQueryByClosingsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
-                localStorage.setItem("firstTime", false);
+                localStorage.setItem("setClosingFilter", true);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");

@@ -20,29 +20,29 @@ const FilterLandSales = () => {
     const [message, setMessage] = useState(false);
     const handlePopupClose = () => setShowPopup(false);
     const [filterQuery, setFilterQuery] = useState({
-        from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-        to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-        builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-        subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-        seller: localStorage.getItem("seller") ? JSON.parse(localStorage.getItem("seller")) : "",
-        buyer: localStorage.getItem("buyer") ? JSON.parse(localStorage.getItem("buyer")) : "",
-        location: localStorage.getItem("location") ? JSON.parse(localStorage.getItem("location")) : "",
-        notes: localStorage.getItem("notes") ? JSON.parse(localStorage.getItem("notes")) : "",
-        price: localStorage.getItem("price") ? JSON.parse(localStorage.getItem("price")) : "",
-        priceperunit: localStorage.getItem("priceperunit") ? JSON.parse(localStorage.getItem("priceperunit")) : "",
-        parcel: localStorage.getItem("parcel") ? JSON.parse(localStorage.getItem("parcel")) : "",
-        doc: localStorage.getItem("document") ? JSON.parse(localStorage.getItem("document")) : "",
-        noofunit: localStorage.getItem("noofunit") ? JSON.parse(localStorage.getItem("noofunit")) : "",
-        typeofunit: localStorage.getItem("typeofunit") ? JSON.parse(localStorage.getItem("typeofunit")) : "",
+        from: localStorage.getItem("from_LandSale") ? JSON.parse(localStorage.getItem("from_LandSale")) : "",
+        to: localStorage.getItem("to_LandSale") ? JSON.parse(localStorage.getItem("to_LandSale")) : "",
+        builder_name: localStorage.getItem("builder_name_LandSale") ? JSON.parse(localStorage.getItem("builder_name_LandSale")) : "",
+        subdivision_name: localStorage.getItem("subdivision_name_LandSale") ? JSON.parse(localStorage.getItem("subdivision_name_LandSale")) : "",
+        seller: localStorage.getItem("seller_LandSale") ? JSON.parse(localStorage.getItem("seller_LandSale")) : "",
+        buyer: localStorage.getItem("buyer_LandSale") ? JSON.parse(localStorage.getItem("buyer_LandSale")) : "",
+        location: localStorage.getItem("location_LandSale") ? JSON.parse(localStorage.getItem("location_LandSale")) : "",
+        notes: localStorage.getItem("notes_LandSale") ? JSON.parse(localStorage.getItem("notes_LandSale")) : "",
+        price: localStorage.getItem("price_LandSale") ? JSON.parse(localStorage.getItem("price_LandSale")) : "",
+        priceperunit: localStorage.getItem("priceperunit_LandSale") ? JSON.parse(localStorage.getItem("priceperunit_LandSale")) : "",
+        parcel: localStorage.getItem("parcel_LandSale") ? JSON.parse(localStorage.getItem("parcel_LandSale")) : "",
+        doc: localStorage.getItem("document_LandSale") ? JSON.parse(localStorage.getItem("document_LandSale")) : "",
+        noofunit: localStorage.getItem("noofunit_LandSale") ? JSON.parse(localStorage.getItem("noofunit_LandSale")) : "",
+        typeofunit: localStorage.getItem("typeofunit_LandSale") ? JSON.parse(localStorage.getItem("typeofunit_LandSale")) : "",
     });
 
     useEffect(() => {
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        if(localStorage.getItem("selectedBuilderNameByFilter_LandSale")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_LandSale"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+        if(localStorage.getItem("selectedSubdivisionNameByFilter_LandSale")) {
+          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_LandSale"));
           handleSelectSubdivisionNameChange(selectedSubdivisionName);
         }
     }, []);
@@ -111,14 +111,14 @@ const FilterLandSales = () => {
 
     useEffect(() => {
         if (filterQuery.from == "" || filterQuery.to == "") {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setLansSaleFilter") == "true") {
                 setShowPopup(true);
                 setMessage("Please select date.");
-                localStorage.removeItem("firstTime");
+                localStorage.removeItem("setLansSaleFilter");
                 return;
             }
         } else {
-            if(localStorage.getItem("firstTime") == "false") {
+            if(localStorage.getItem("setLansSaleFilter") == "true") {
                 if((searchQuery == "") || (searchQuery == "&builder_name=&subdivision_name=&seller=&buyer=&location=&notes=&price=&from=&to=&priceperunit=&parcel=&doc=&noofunit=&typeofunit=")){
                     return;
                 } else {
@@ -128,27 +128,27 @@ const FilterLandSales = () => {
                     let totaldays = Math.ceil(days) + 1;
                     if (totaldays < 367) {
                         navigate("/landsalelist");
-                        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                        localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
-                        localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-                        localStorage.setItem("location", JSON.stringify(filterQuery.location));
-                        localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
-                        localStorage.setItem("price", JSON.stringify(filterQuery.price));
-                        localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
-                        localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                        localStorage.setItem("document", JSON.stringify(filterQuery.doc));
-                        localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
-                        localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
+                        localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderNameByFilter));
+                        localStorage.setItem("selectedSubdivisionNameByFilter_LandSale", JSON.stringify(selectedSubdivisionNameByFilter));
+                        localStorage.setItem("from_LandSale", JSON.stringify(filterQuery.from));
+                        localStorage.setItem("to_LandSale", JSON.stringify(filterQuery.to));
+                        localStorage.setItem("builder_name_LandSale", JSON.stringify(filterQuery.builder_name));
+                        localStorage.setItem("subdivision_name_LandSale", JSON.stringify(filterQuery.subdivision_name));
+                        localStorage.setItem("seller_LandSale", JSON.stringify(filterQuery.seller));
+                        localStorage.setItem("buyer_LandSale", JSON.stringify(filterQuery.buyer));
+                        localStorage.setItem("location_LandSale", JSON.stringify(filterQuery.location));
+                        localStorage.setItem("notes_LandSale", JSON.stringify(filterQuery.notes));
+                        localStorage.setItem("price_LandSale", JSON.stringify(filterQuery.price));
+                        localStorage.setItem("priceperunit_LandSale", JSON.stringify(filterQuery.priceperunit));
+                        localStorage.setItem("parcel_LandSale", JSON.stringify(filterQuery.parcel));
+                        localStorage.setItem("document_LandSale", JSON.stringify(filterQuery.doc));
+                        localStorage.setItem("noofunit_LandSale", JSON.stringify(filterQuery.noofunit));
+                        localStorage.setItem("typeofunit_LandSale", JSON.stringify(filterQuery.typeofunit));
                         localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
                     } else {
                         setShowPopup(true);
                         setMessage("Please select date between 366 days.");
-                        localStorage.removeItem("firstTime");
+                        localStorage.removeItem("setLansSaleFilter");
                         return;
                     }
                 }
@@ -175,24 +175,24 @@ const FilterLandSales = () => {
             if (totaldays < 367) {
                 e.preventDefault();
                 navigate("/landsalelist");
-                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionNameByFilter));
-                localStorage.setItem("from", JSON.stringify(filterQuery.from));
-                localStorage.setItem("to", JSON.stringify(filterQuery.to));
-                localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-                localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-                localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
-                localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-                localStorage.setItem("location", JSON.stringify(filterQuery.location));
-                localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
-                localStorage.setItem("price", JSON.stringify(filterQuery.price));
-                localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
-                localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-                localStorage.setItem("document", JSON.stringify(filterQuery.doc));
-                localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
-                localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
+                localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter_LandSale", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("from_LandSale", JSON.stringify(filterQuery.from));
+                localStorage.setItem("to_LandSale", JSON.stringify(filterQuery.to));
+                localStorage.setItem("builder_name_LandSale", JSON.stringify(filterQuery.builder_name));
+                localStorage.setItem("subdivision_name_LandSale", JSON.stringify(filterQuery.subdivision_name));
+                localStorage.setItem("seller_LandSale", JSON.stringify(filterQuery.seller));
+                localStorage.setItem("buyer_LandSale", JSON.stringify(filterQuery.buyer));
+                localStorage.setItem("location_LandSale", JSON.stringify(filterQuery.location));
+                localStorage.setItem("notes_LandSale", JSON.stringify(filterQuery.notes));
+                localStorage.setItem("price_LandSale", JSON.stringify(filterQuery.price));
+                localStorage.setItem("priceperunit_LandSale", JSON.stringify(filterQuery.priceperunit));
+                localStorage.setItem("parcel_LandSale", JSON.stringify(filterQuery.parcel));
+                localStorage.setItem("document_LandSale", JSON.stringify(filterQuery.doc));
+                localStorage.setItem("noofunit_LandSale", JSON.stringify(filterQuery.noofunit));
+                localStorage.setItem("typeofunit_LandSale", JSON.stringify(filterQuery.typeofunit));
                 localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
-                localStorage.setItem("firstTime", false);
+                localStorage.setItem("setLansSaleFilter", true);
             } else {
                 setShowPopup(true);
                 setMessage("Please select date between 366 days.");

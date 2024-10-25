@@ -212,25 +212,25 @@ const PriceList = () => {
   };
 
   const [filterQuery, setFilterQuery] = useState({
-    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-    name: localStorage.getItem("product_name") ? JSON.parse(localStorage.getItem("product_name")) : "",
-    sqft: localStorage.getItem("sqft") ? JSON.parse(localStorage.getItem("sqft")) : "",
-    stories: localStorage.getItem("stories") ? JSON.parse(localStorage.getItem("stories")) : "",
-    bedroom: localStorage.getItem("bedroom") ? JSON.parse(localStorage.getItem("bedroom")) : "",
-    bathroom: localStorage.getItem("bathroom") ? JSON.parse(localStorage.getItem("bathroom")) : "",
-    garage: localStorage.getItem("garage") ? JSON.parse(localStorage.getItem("garage")) : "",
-    baseprice: localStorage.getItem("baseprice") ? JSON.parse(localStorage.getItem("baseprice")) : "",
-    product_type: localStorage.getItem("product_type") ? JSON.parse(localStorage.getItem("product_type")) : "",
-    area: localStorage.getItem("area") ? JSON.parse(localStorage.getItem("area")) : "",
-    masterplan_id: localStorage.getItem("masterplan_id") ? JSON.parse(localStorage.getItem("masterplan_id")) : "",
-    zipcode: localStorage.getItem("zipcode") ? JSON.parse(localStorage.getItem("zipcode")) : "",
-    lotwidth: localStorage.getItem("lotwidth") ? JSON.parse(localStorage.getItem("lotwidth")) : "",
-    lotsize: localStorage.getItem("lotsize") ? JSON.parse(localStorage.getItem("lotsize")) : "",
-    age: localStorage.getItem("age") ? JSON.parse(localStorage.getItem("age")) : "",
-    single: localStorage.getItem("single") ? JSON.parse(localStorage.getItem("single")) : "",
+    from: localStorage.getItem("from_BasePrice") ? JSON.parse(localStorage.getItem("from_BasePrice")) : "",
+    to: localStorage.getItem("to_BasePrice") ? JSON.parse(localStorage.getItem("to_BasePrice")) : "",
+    builder_name: localStorage.getItem("builder_name_BasePrice") ? JSON.parse(localStorage.getItem("builder_name_BasePrice")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name_BasePrice") ? JSON.parse(localStorage.getItem("subdivision_name_BasePrice")) : "",
+    name: localStorage.getItem("product_name_BasePrice") ? JSON.parse(localStorage.getItem("product_name_BasePrice")) : "",
+    sqft: localStorage.getItem("sqft_BasePrice") ? JSON.parse(localStorage.getItem("sqft_BasePrice")) : "",
+    stories: localStorage.getItem("stories_BasePrice") ? JSON.parse(localStorage.getItem("stories_BasePrice")) : "",
+    bedroom: localStorage.getItem("bedroom_BasePrice") ? JSON.parse(localStorage.getItem("bedroom_BasePrice")) : "",
+    bathroom: localStorage.getItem("bathroom_BasePrice") ? JSON.parse(localStorage.getItem("bathroom_BasePrice")) : "",
+    garage: localStorage.getItem("garage_BasePrice") ? JSON.parse(localStorage.getItem("garage_BasePrice")) : "",
+    baseprice: localStorage.getItem("baseprice_BasePrice") ? JSON.parse(localStorage.getItem("baseprice_BasePrice")) : "",
+    product_type: localStorage.getItem("product_type_BasePrice") ? JSON.parse(localStorage.getItem("product_type_BasePrice")) : "",
+    area: localStorage.getItem("area_BasePrice") ? JSON.parse(localStorage.getItem("area_BasePrice")) : "",
+    masterplan_id: localStorage.getItem("masterplan_id_BasePrice") ? JSON.parse(localStorage.getItem("masterplan_id_BasePrice")) : "",
+    zipcode: localStorage.getItem("zipcode_BasePrice") ? JSON.parse(localStorage.getItem("zipcode_BasePrice")) : "",
+    lotwidth: localStorage.getItem("lotwidth_BasePrice") ? JSON.parse(localStorage.getItem("lotwidth_BasePrice")) : "",
+    lotsize: localStorage.getItem("lotsize_BasePrice") ? JSON.parse(localStorage.getItem("lotsize_BasePrice")) : "",
+    age: localStorage.getItem("age_BasePrice") ? JSON.parse(localStorage.getItem("age_BasePrice")) : "",
+    single: localStorage.getItem("single_BasePrice") ? JSON.parse(localStorage.getItem("single_BasePrice")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     price_per_sqft: ""
@@ -343,32 +343,32 @@ const PriceList = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter")) {
-      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+    if(localStorage.getItem("selectedBuilderNameByFilter_BasePrice")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_BasePrice"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter")) {
-      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+    if(localStorage.getItem("selectedSubdivisionNameByFilter_BasePrice")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_BasePrice"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter")) {
-      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter"));
+    if(localStorage.getItem("productTypeStatusByFilter_BasePrice")) {
+      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_BasePrice"));
       handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter")) {
-      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter"));
+    if(localStorage.getItem("selectedAreaByFilter_BasePrice")) {
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_BasePrice"));
       handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter")) {
-      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter"));
+    if(localStorage.getItem("selectedMasterPlanByFilter_BasePrice")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_BasePrice"));
       handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter")) {
-      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter"));
+    if(localStorage.getItem("selectedAgeByFilter_BasePrice")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_BasePrice"));
       handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter")) {
-      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter"));
+    if(localStorage.getItem("selectedSingleByFilter_BasePrice")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_BasePrice"));
       handleSelectSingleChange(selectedSingle);
     }
 }, []);
@@ -753,33 +753,33 @@ const PriceList = () => {
     setSelectedSingle([]);
     getpriceList(1, sortConfig, "");
     setManageFilterOffcanvas(false);
-    localStorage.removeItem("selectedBuilderNameByFilter");
-    localStorage.removeItem("selectedSubdivisionNameByFilter");
-    localStorage.removeItem("productTypeStatusByFilter");
-    localStorage.removeItem("selectedAreaByFilter");
-    localStorage.removeItem("selectedMasterPlanByFilter");
-    localStorage.removeItem("selectedAgeByFilter");
-    localStorage.removeItem("selectedSingleByFilter");
-    localStorage.removeItem("from");
-    localStorage.removeItem("to");
-    localStorage.removeItem("builder_name");
-    localStorage.removeItem("subdivision_name");
-    localStorage.removeItem("product_name");
-    localStorage.removeItem("sqft");
-    localStorage.removeItem("stories");
-    localStorage.removeItem("bedroom");
-    localStorage.removeItem("bathroom");
-    localStorage.removeItem("garage");
-    localStorage.removeItem("baseprice");
-    localStorage.removeItem("product_type");
-    localStorage.removeItem("area");
-    localStorage.removeItem("masterplan_id");
-    localStorage.removeItem("zipcode");
-    localStorage.removeItem("lotwidth");
-    localStorage.removeItem("lotsize");
-    localStorage.removeItem("age");
-    localStorage.removeItem("single");
-    localStorage.removeItem("firstTime");
+    localStorage.removeItem("selectedBuilderNameByFilter_BasePrice");
+    localStorage.removeItem("selectedSubdivisionNameByFilter_BasePrice");
+    localStorage.removeItem("productTypeStatusByFilter_BasePrice");
+    localStorage.removeItem("selectedAreaByFilter_BasePrice");
+    localStorage.removeItem("selectedMasterPlanByFilter_BasePrice");
+    localStorage.removeItem("selectedAgeByFilter_BasePrice");
+    localStorage.removeItem("selectedSingleByFilter_BasePrice");
+    localStorage.removeItem("from_BasePrice");
+    localStorage.removeItem("to_BasePrice");
+    localStorage.removeItem("builder_name_BasePrice");
+    localStorage.removeItem("subdivision_name_BasePrice");
+    localStorage.removeItem("product_name_BasePrice");
+    localStorage.removeItem("sqft_BasePrice");
+    localStorage.removeItem("stories_BasePrice");
+    localStorage.removeItem("bedroom_BasePrice");
+    localStorage.removeItem("bathroom_BasePrice");
+    localStorage.removeItem("garage_BasePrice");
+    localStorage.removeItem("baseprice_BasePrice");
+    localStorage.removeItem("product_type_BasePrice");
+    localStorage.removeItem("area_BasePrice");
+    localStorage.removeItem("masterplan_id_BasePrice");
+    localStorage.removeItem("zipcode_BasePrice");
+    localStorage.removeItem("lotwidth_BasePrice");
+    localStorage.removeItem("lotsize_BasePrice");
+    localStorage.removeItem("age_BasePrice");
+    localStorage.removeItem("single_BasePrice");
+    localStorage.removeItem("setBasePriceFilter");
   };
 
   const handleFilterDateFrom = (date) => {
@@ -917,32 +917,32 @@ const PriceList = () => {
         e.preventDefault();
         getpriceList(currentPage, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
-        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
-        localStorage.setItem("productTypeStatusByFilter", JSON.stringify(productTypeStatus));
-        localStorage.setItem("selectedAreaByFilter", JSON.stringify(selectedArea));
-        localStorage.setItem("selectedMasterPlanByFilter", JSON.stringify(selectedMasterPlan));
-        localStorage.setItem("selectedAgeByFilter", JSON.stringify(selectedAge));
-        localStorage.setItem("selectedSingleByFilter", JSON.stringify(selectedSingle));
-        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-        localStorage.setItem("product_name", JSON.stringify(filterQuery.name));
-        localStorage.setItem("sqft", JSON.stringify(filterQuery.sqft));
-        localStorage.setItem("stories", JSON.stringify(filterQuery.stories));
-        localStorage.setItem("bedroom", JSON.stringify(filterQuery.bedroom));
-        localStorage.setItem("bathroom", JSON.stringify(filterQuery.bathroom));
-        localStorage.setItem("garage", JSON.stringify(filterQuery.garage));
-        localStorage.setItem("baseprice", JSON.stringify(filterQuery.baseprice));
-        localStorage.setItem("product_type", JSON.stringify(filterQuery.product_type));
-        localStorage.setItem("area", JSON.stringify(filterQuery.area));
-        localStorage.setItem("masterplan_id", JSON.stringify(filterQuery.masterplan_id));
-        localStorage.setItem("zipcode", JSON.stringify(filterQuery.zipcode));
-        localStorage.setItem("lotwidth", JSON.stringify(filterQuery.lotwidth));
-        localStorage.setItem("lotsize", JSON.stringify(filterQuery.lotsize));
-        localStorage.setItem("age", JSON.stringify(filterQuery.age));
-        localStorage.setItem("single", JSON.stringify(filterQuery.single));
+        localStorage.setItem("selectedBuilderNameByFilter_BasePrice", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter_BasePrice", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("productTypeStatusByFilter_BasePrice", JSON.stringify(productTypeStatus));
+        localStorage.setItem("selectedAreaByFilter_BasePrice", JSON.stringify(selectedArea));
+        localStorage.setItem("selectedMasterPlanByFilter_BasePrice", JSON.stringify(selectedMasterPlan));
+        localStorage.setItem("selectedAgeByFilter_BasePrice", JSON.stringify(selectedAge));
+        localStorage.setItem("selectedSingleByFilter_BasePrice", JSON.stringify(selectedSingle));
+        localStorage.setItem("from_BasePrice", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to_BasePrice", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name_BasePrice", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name_BasePrice", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("product_name_BasePrice", JSON.stringify(filterQuery.name));
+        localStorage.setItem("sqft_BasePrice", JSON.stringify(filterQuery.sqft));
+        localStorage.setItem("stories_BasePrice", JSON.stringify(filterQuery.stories));
+        localStorage.setItem("bedroom_BasePrice", JSON.stringify(filterQuery.bedroom));
+        localStorage.setItem("bathroom_BasePrice", JSON.stringify(filterQuery.bathroom));
+        localStorage.setItem("garage_BasePrice", JSON.stringify(filterQuery.garage));
+        localStorage.setItem("baseprice_BasePrice", JSON.stringify(filterQuery.baseprice));
+        localStorage.setItem("product_type_BasePrice", JSON.stringify(filterQuery.product_type));
+        localStorage.setItem("area_BasePrice", JSON.stringify(filterQuery.area));
+        localStorage.setItem("masterplan_id_BasePrice", JSON.stringify(filterQuery.masterplan_id));
+        localStorage.setItem("zipcode_BasePrice", JSON.stringify(filterQuery.zipcode));
+        localStorage.setItem("lotwidth_BasePrice", JSON.stringify(filterQuery.lotwidth));
+        localStorage.setItem("lotsize_BasePrice", JSON.stringify(filterQuery.lotsize));
+        localStorage.setItem("age_BasePrice", JSON.stringify(filterQuery.age));
+        localStorage.setItem("single_BasePrice", JSON.stringify(filterQuery.single));
         localStorage.setItem("searchQueryByBasePricesFilter", JSON.stringify(searchQuery));
       } else {
         setShowPopup(true);

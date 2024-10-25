@@ -12,24 +12,24 @@ const FilterBuilder = () => {
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterQuery, setFilterQuery] = useState({
-        name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-        is_active: localStorage.getItem("is_active") ? JSON.parse(localStorage.getItem("is_active")) : "",
-        active_communities: localStorage.getItem("active_communities") ? JSON.parse(localStorage.getItem("active_communities")) : "",
-        company_type: localStorage.getItem("company_type") ? JSON.parse(localStorage.getItem("company_type")) : "",
+        name: localStorage.getItem("builder_name_Builder") ? JSON.parse(localStorage.getItem("builder_name_Builder")) : "",
+        is_active: localStorage.getItem("is_active_Builder") ? JSON.parse(localStorage.getItem("is_active_Builder")) : "",
+        active_communities: localStorage.getItem("active_communities_Builder") ? JSON.parse(localStorage.getItem("active_communities_Builder")) : "",
+        company_type: localStorage.getItem("company_type_Builder") ? JSON.parse(localStorage.getItem("company_type_Builder")) : "",
     });
 
 
     useEffect(() => {
-        if(localStorage.getItem("selectedBuilderNameByFilter")) {
-            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+        if(localStorage.getItem("selectedBuilderNameByFilterBuilder")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedStatusByBuilderFilter")) {
-          const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilter"));
+        if(localStorage.getItem("selectedStatusByBuilderFilterBuilder")) {
+          const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilterBuilder"));
           handleSelectStatusChange(selectedStatus);
         }
-        if(localStorage.getItem("selectedCompanyTypeByFilter")) {
-          const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilter"));
+        if(localStorage.getItem("selectedCompanyTypeByFilterBuilder")) {
+          const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilterBuilder"));
           handleSelectCompanyTypeChange(selectedCompanyType);
         }
     }, []);
@@ -75,19 +75,19 @@ const FilterBuilder = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("firstTime") == "false") {
+        if(localStorage.getItem("setBuilderFilter") == "true") {
             if((searchQuery == "") || (searchQuery == "&name=&is_active=&active_communities=&company_type=")){
                 return;
             } else {
                 navigate("/builderList");
-                localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-                localStorage.setItem("selectedStatusByBuilderFilter", JSON.stringify(selectedStatusByFilter));
-                localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyTypeByFilter));
-                localStorage.setItem("builder_name", JSON.stringify(filterQuery.name));
-                localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
-                localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
-                localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
-                localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+                localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedStatusByBuilderFilterBuilder", JSON.stringify(selectedStatusByFilter));
+                localStorage.setItem("selectedCompanyTypeByFilterBuilder", JSON.stringify(selectedCompanyTypeByFilter));
+                localStorage.setItem("builder_name_Builder", JSON.stringify(filterQuery.name));
+                localStorage.setItem("is_active_Builder", JSON.stringify(filterQuery.is_active));
+                localStorage.setItem("active_communities_Builder", JSON.stringify(filterQuery.active_communities));
+                localStorage.setItem("company_type_Builder", JSON.stringify(filterQuery.company_type));
+                localStorage.setItem("searchQueryByBuilderFilter_Builder", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
             }
         }
         
@@ -96,15 +96,15 @@ const FilterBuilder = () => {
     const HandleFilterForm = (e) => {
         e.preventDefault();
         navigate("/builderList");
-        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderNameByFilter));
-        localStorage.setItem("selectedStatusByBuilderFilter", JSON.stringify(selectedStatusByFilter));
-        localStorage.setItem("selectedCompanyTypeByFilter", JSON.stringify(selectedCompanyTypeByFilter));
-        localStorage.setItem("builder_name", JSON.stringify(filterQuery.name));
-        localStorage.setItem("is_active", JSON.stringify(filterQuery.is_active));
-        localStorage.setItem("active_communities", JSON.stringify(filterQuery.active_communities));
-        localStorage.setItem("company_type", JSON.stringify(filterQuery.company_type));
-        localStorage.setItem("searchQueryByBuilderFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
-        localStorage.setItem("firstTime", false);
+        localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(selectedBuilderNameByFilter));
+        localStorage.setItem("selectedStatusByBuilderFilterBuilder", JSON.stringify(selectedStatusByFilter));
+        localStorage.setItem("selectedCompanyTypeByFilterBuilder", JSON.stringify(selectedCompanyTypeByFilter));
+        localStorage.setItem("builder_name_Builder", JSON.stringify(filterQuery.name));
+        localStorage.setItem("is_active_Builder", JSON.stringify(filterQuery.is_active));
+        localStorage.setItem("active_communities_Builder", JSON.stringify(filterQuery.active_communities));
+        localStorage.setItem("company_type_Builder", JSON.stringify(filterQuery.company_type));
+        localStorage.setItem("searchQueryByBuilderFilter_Builder", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
+        localStorage.setItem("setBuilderFilter", true);
     };
 
     const handleSelectBuilderNameChange = (selectedItems) => {

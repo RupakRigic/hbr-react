@@ -59,20 +59,20 @@ const LandsaleList = () => {
   const [message, setMessage] = useState(false);
   const handlePopupClose = () => setShowPopup(false);
   const [filterQuery, setFilterQuery] = useState({
-    from: localStorage.getItem("from") ? JSON.parse(localStorage.getItem("from")) : "",
-    to: localStorage.getItem("to") ? JSON.parse(localStorage.getItem("to")) : "",
-    builder_name: localStorage.getItem("builder_name") ? JSON.parse(localStorage.getItem("builder_name")) : "",
-    subdivision_name: localStorage.getItem("subdivision_name") ? JSON.parse(localStorage.getItem("subdivision_name")) : "",
-    seller: localStorage.getItem("seller") ? JSON.parse(localStorage.getItem("seller")) : "",
-    buyer: localStorage.getItem("buyer") ? JSON.parse(localStorage.getItem("buyer")) : "",
-    location: localStorage.getItem("location") ? JSON.parse(localStorage.getItem("location")) : "",
-    notes: localStorage.getItem("notes") ? JSON.parse(localStorage.getItem("notes")) : "",
-    price: localStorage.getItem("price") ? JSON.parse(localStorage.getItem("price")) : "",
-    priceperunit: localStorage.getItem("priceperunit") ? JSON.parse(localStorage.getItem("priceperunit")) : "",
-    parcel: localStorage.getItem("parcel") ? JSON.parse(localStorage.getItem("parcel")) : "",
-    doc: localStorage.getItem("document") ? JSON.parse(localStorage.getItem("document")) : "",
-    noofunit: localStorage.getItem("noofunit") ? JSON.parse(localStorage.getItem("noofunit")) : "",
-    typeofunit: localStorage.getItem("typeofunit") ? JSON.parse(localStorage.getItem("typeofunit")) : "",
+    from: localStorage.getItem("from_LandSale") ? JSON.parse(localStorage.getItem("from_LandSale")) : "",
+    to: localStorage.getItem("to_LandSale") ? JSON.parse(localStorage.getItem("to_LandSale")) : "",
+    builder_name: localStorage.getItem("builder_name_LandSale") ? JSON.parse(localStorage.getItem("builder_name_LandSale")) : "",
+    subdivision_name: localStorage.getItem("subdivision_name_LandSale") ? JSON.parse(localStorage.getItem("subdivision_name_LandSale")) : "",
+    seller: localStorage.getItem("seller_LandSale") ? JSON.parse(localStorage.getItem("seller_LandSale")) : "",
+    buyer: localStorage.getItem("buyer_LandSale") ? JSON.parse(localStorage.getItem("buyer_LandSale")) : "",
+    location: localStorage.getItem("location_LandSale") ? JSON.parse(localStorage.getItem("location_LandSale")) : "",
+    notes: localStorage.getItem("notes_LandSale") ? JSON.parse(localStorage.getItem("notes_LandSale")) : "",
+    price: localStorage.getItem("price_LandSale") ? JSON.parse(localStorage.getItem("price_LandSale")) : "",
+    priceperunit: localStorage.getItem("priceperunit_LandSale") ? JSON.parse(localStorage.getItem("priceperunit_LandSale")) : "",
+    parcel: localStorage.getItem("parcel_LandSale") ? JSON.parse(localStorage.getItem("parcel_LandSale")) : "",
+    doc: localStorage.getItem("document_LandSale") ? JSON.parse(localStorage.getItem("document_LandSale")) : "",
+    noofunit: localStorage.getItem("noofunit_LandSale") ? JSON.parse(localStorage.getItem("noofunit_LandSale")) : "",
+    typeofunit: localStorage.getItem("typeofunit_LandSale") ? JSON.parse(localStorage.getItem("typeofunit_LandSale")) : "",
   });
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
@@ -97,12 +97,12 @@ const LandsaleList = () => {
   const [sortOrders, setSortOrders] = useState({});
 
   useEffect(() => {
-    if (localStorage.getItem("selectedBuilderNameByFilter")) {
-      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter"));
+    if (localStorage.getItem("selectedBuilderNameByFilter_LandSale")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_LandSale"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if (localStorage.getItem("selectedSubdivisionNameByFilter")) {
-      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter"));
+    if (localStorage.getItem("selectedSubdivisionNameByFilter_LandSale")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_LandSale"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
   }, []);
@@ -155,22 +155,22 @@ const LandsaleList = () => {
         console.log(555);
         getLandsaleList(currentPage, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
-        localStorage.setItem("selectedBuilderNameByFilter", JSON.stringify(selectedBuilderName));
-        localStorage.setItem("selectedSubdivisionNameByFilter", JSON.stringify(selectedSubdivisionName));
-        localStorage.setItem("from", JSON.stringify(filterQuery.from));
-        localStorage.setItem("to", JSON.stringify(filterQuery.to));
-        localStorage.setItem("builder_name", JSON.stringify(filterQuery.builder_name));
-        localStorage.setItem("subdivision_name", JSON.stringify(filterQuery.subdivision_name));
-        localStorage.setItem("seller", JSON.stringify(filterQuery.seller));
-        localStorage.setItem("buyer", JSON.stringify(filterQuery.buyer));
-        localStorage.setItem("location", JSON.stringify(filterQuery.location));
-        localStorage.setItem("notes", JSON.stringify(filterQuery.notes));
-        localStorage.setItem("price", JSON.stringify(filterQuery.price));
-        localStorage.setItem("priceperunit", JSON.stringify(filterQuery.priceperunit));
-        localStorage.setItem("parcel", JSON.stringify(filterQuery.parcel));
-        localStorage.setItem("document", JSON.stringify(filterQuery.doc));
-        localStorage.setItem("noofunit", JSON.stringify(filterQuery.noofunit));
-        localStorage.setItem("typeofunit", JSON.stringify(filterQuery.typeofunit));
+        localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderName));
+        localStorage.setItem("selectedSubdivisionNameByFilter_LandSale", JSON.stringify(selectedSubdivisionName));
+        localStorage.setItem("from_LandSale", JSON.stringify(filterQuery.from));
+        localStorage.setItem("to_LandSale", JSON.stringify(filterQuery.to));
+        localStorage.setItem("builder_name_LandSale", JSON.stringify(filterQuery.builder_name));
+        localStorage.setItem("subdivision_name_LandSale", JSON.stringify(filterQuery.subdivision_name));
+        localStorage.setItem("seller_LandSale", JSON.stringify(filterQuery.seller));
+        localStorage.setItem("buyer_LandSale", JSON.stringify(filterQuery.buyer));
+        localStorage.setItem("location_LandSale", JSON.stringify(filterQuery.location));
+        localStorage.setItem("notes_LandSale", JSON.stringify(filterQuery.notes));
+        localStorage.setItem("price_LandSale", JSON.stringify(filterQuery.price));
+        localStorage.setItem("priceperunit_LandSale", JSON.stringify(filterQuery.priceperunit));
+        localStorage.setItem("parcel_LandSale", JSON.stringify(filterQuery.parcel));
+        localStorage.setItem("document_LandSale", JSON.stringify(filterQuery.doc));
+        localStorage.setItem("noofunit_LandSale", JSON.stringify(filterQuery.noofunit));
+        localStorage.setItem("typeofunit_LandSale", JSON.stringify(filterQuery.typeofunit));
         localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
       } else {
         setShowPopup(true);
@@ -240,23 +240,23 @@ const LandsaleList = () => {
     setSelectedSubdivisionName([]);
     getLandsaleList(1, sortConfig, "");
     setManageFilterOffcanvas(false);
-    localStorage.removeItem("selectedBuilderNameByFilter");
-    localStorage.removeItem("selectedSubdivisionNameByFilter");
-    localStorage.removeItem("from");
-    localStorage.removeItem("to");
-    localStorage.removeItem("builder_name");
-    localStorage.removeItem("subdivision_name");
-    localStorage.removeItem("seller");
-    localStorage.removeItem("buyer");
-    localStorage.removeItem("location");
-    localStorage.removeItem("notes");
-    localStorage.removeItem("price");
-    localStorage.removeItem("priceperunit");
-    localStorage.removeItem("parcel");
-    localStorage.removeItem("document");
-    localStorage.removeItem("noofunit");
-    localStorage.removeItem("typeofunit");
-    localStorage.removeItem("firstTime");
+    localStorage.removeItem("selectedBuilderNameByFilter_LandSale");
+    localStorage.removeItem("selectedSubdivisionNameByFilter_LandSale");
+    localStorage.removeItem("from_LandSale");
+    localStorage.removeItem("to_LandSale");
+    localStorage.removeItem("builder_name_LandSale");
+    localStorage.removeItem("subdivision_name_LandSale");
+    localStorage.removeItem("seller_LandSale");
+    localStorage.removeItem("buyer_LandSale");
+    localStorage.removeItem("location_LandSale");
+    localStorage.removeItem("notes_LandSale");
+    localStorage.removeItem("price_LandSale");
+    localStorage.removeItem("priceperunit_LandSale");
+    localStorage.removeItem("parcel_LandSale");
+    localStorage.removeItem("document_LandSale");
+    localStorage.removeItem("noofunit_LandSale");
+    localStorage.removeItem("typeofunit_LandSale");
+    localStorage.removeItem("setLansSaleFilter");
   };
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
