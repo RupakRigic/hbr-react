@@ -10,6 +10,7 @@ const SubscriptionPlan = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [subscriptionList, setSubscriptionList] = useState([]);
+    const [isSubscribed, setIsSubscribed] = useState(localStorage.getItem("is_subscribed") ? JSON.parse(localStorage.getItem("is_subscribed")) : "");
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
@@ -65,8 +66,36 @@ const SubscriptionPlan = () => {
         }
     };
 
-    const handleOpenDialog = () => {
+    const handleBack = () => {
         navigate("/subscriptionlist");
+    };
+
+    const HandleCancelSubscription = async(Id) => {
+        setIsLoading(true);
+        try {
+            var userData = {
+                id: Id
+            }
+            const response = await AdminSubscriberService.subscribCancel(userData);
+            const responseData = await response.json();
+            if (responseData.status === true) {
+                window.open(responseData.url, '_blank');
+                setIsLoading(false);
+            } else {
+                swal(responseData.message).then((willDelete) => {
+                    if (willDelete) {
+                        GetSubscriptionList();
+                        setIsLoading(false);
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            if (error.name === "HTTPError") {
+                console.log(error.name);
+            }
+        }
     };
 
     return (
@@ -78,6 +107,21 @@ const SubscriptionPlan = () => {
             ) : (
                 <>
                     <h1>Choose Your Subscription Plan</h1>
+                    <div className="profile-detail d-flex">
+                        <div className="profile-info">
+                            <span style={{ color: "black" }}>Subscription Plan Name</span>&nbsp;
+                            <span style={{ color: "black" }}>Start to End Date</span>&nbsp;
+                            <span style={{ color: "black" }}>nilaop</span>
+                        </div>
+                        <div className="close-button">
+                            <button
+                                className="btn btn-primary"
+                                aria-label="Close"
+                                onClick={() => HandleCancelSubscription()}
+                                style={{ height: "30px", paddingTop: "5px" }}
+                            > Cancel Subscription</button>
+                        </div>
+                    </div>
                     <div className="card-container">
                         {subscriptionList.length > 0 && subscriptionList.map((data) => (
                             <div className="subscription-card">
@@ -94,11 +138,11 @@ const SubscriptionPlan = () => {
                             </div>
                         ))}
                     </div>
-                    <div style={{marginTop: "70px"}}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                    {isSubscribed == 1 && <div style={{marginTop: "30px"}}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleBack}>
                             Go Back
                         </button>
-                    </div>
+                    </div>}
                 </>
             )}
         </div>

@@ -36,6 +36,7 @@ function Login(props) {
         const data = await AdminUserService.login(email, password).json();
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
+        localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));
         const user = JSON.parse(localStorage.getItem("user"));
         console.log(user);
         if (user != "") {
@@ -261,7 +262,7 @@ function Login(props) {
           if (userRole == "Admin") {
             navigate("/dashboard");
           } else if (userRole == "Standard User" || userRole == "Data Uploader") {
-            navigate("/weekly-data");
+            navigate("/subscriptionlist");
           } else {
             navigate("/report");
           }

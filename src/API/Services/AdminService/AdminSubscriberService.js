@@ -5,4 +5,5 @@ export default {
     getSubscriptionList:()=> clientAuth.get(`subscription/subscription-list`),
     getSubscriptionPlanList:()=> clientAuth.get(`subscription/index`),
     subscribPaln: (userData) => clientAuth.post(`subscription/user-subscription`, { json: userData }),
+    subscribCancel: (Id) => clientAuth.post(`subscription/cancel-subscription/${Id}`),
 };

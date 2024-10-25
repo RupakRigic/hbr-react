@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 
 // import {MenuList} from './Menu';
 import {DataUploaderMenuList} from './DataUploaderMenu';
+import {DataUploaderSubscribeMenuList} from './DataUploaderMenu';
 
 import {useScrollPosition} from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
@@ -45,6 +46,9 @@ const UserSideBar = () => {
 		[hideOnScroll]
 	)
 
+  const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
+  
+  const UserMenuList = subscription === 1 ? DataUploaderSubscribeMenuList : DataUploaderMenuList;
  
   const handleMenuActive = status => {	
     setState({active : status});		
@@ -82,7 +86,7 @@ const UserSideBar = () => {
     >
         <div className="deznav-scroll">         
             <ul className="metismenu" id="menu">              
-              {DataUploaderMenuList.map((data, index)=>{
+              {UserMenuList.map((data, index)=>{
                 let menuClass = data.classsChange;
                   if(menuClass === "menu-title"){
                     return(

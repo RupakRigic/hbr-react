@@ -1,6 +1,6 @@
 import { SVGICON } from "../../constant/theme";
 
-export const DataUploaderMenuList = [
+export const DataUploaderSubscribeMenuList = [
     {
         title: 'Builders',
         // classsChange: 'mm-collapse',
@@ -19,4 +19,12 @@ export const DataUploaderMenuList = [
         to: '/subscriptionlist',
     },
 
+]
+
+export const DataUploaderMenuList = [
+    {
+        title: 'Subscription',
+        iconStyle: SVGICON.SubscribeData,
+        to: '/subscriptionlist',
+    }
 ]

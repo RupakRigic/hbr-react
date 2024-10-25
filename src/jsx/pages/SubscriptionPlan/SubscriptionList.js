@@ -34,8 +34,13 @@ const SubscriptionList = () => {
     };
 
     useEffect(() => {
+        const is_subscribed = JSON.parse(localStorage.getItem("is_subscribed"));
         if (localStorage.getItem("usertoken")) {
-            GetSubscriptionList();
+            if (is_subscribed == 1) {
+                GetSubscriptionList();
+            } else {
+                navigate("/subscriptionplan");
+            }
         } else {
             navigate("/");
         }

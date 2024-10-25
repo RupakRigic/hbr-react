@@ -9,6 +9,7 @@ const LogoutPage = () => {
     try {
       const data = await AdminUserService.logout().json();
       if (data.status == true) {
+        localStorage.removeItem("is_subscribed");
         // Builder
         localStorage.removeItem("selectedBuilderNameByFilterBuilder");
         localStorage.removeItem("selectedStatusByBuilderFilterBuilder");
