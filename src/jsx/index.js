@@ -52,6 +52,7 @@ import ArchiveData from "./pages/ArchiveData/ArchiveData";
 import SubscriberList from "./pages/Subscriber/SubscriberList";
 import SubscriptionPlan from "./pages/SubscriptionPlan/SubscriptionPlan";
 import ThankYouPage from "./pages/ThankYouPage";
+import SubscriptionList from "./pages/SubscriptionPlan/SubscriptionList";
 
 const allroutes = [
   // Dashboard
@@ -195,6 +196,11 @@ const allroutes = [
   {
     url: "/subscriptionplan",
     component: <SubscriptionPlan />,
+    allowedRoles: ["Data Uploader", "Standard User"],
+  },
+  {
+    url: "/subscriptionlist",
+    component: <SubscriptionList />,
     allowedRoles: ["Data Uploader", "Standard User"],
   },
   {

@@ -3,10 +3,10 @@ import React from 'react';
 const ThankYouPage = () => {
     const handleSubcriptionPlan = async () => {
         if (window.opener) {
-            window.opener.location.href = "/subscriptionplan";
+            window.opener.location.href = "/subscriptionlist";
             window.close();
         } else {
-            window.location.href = "/subscriptionplan";
+            window.location.href = "/subscriptionlist";
         }
     };
     return (

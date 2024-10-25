@@ -198,7 +198,7 @@ const SubscriberList = () => {
                               </tr>
                             ))) : (
                             <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
+                              <td colSpan="12" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>)}

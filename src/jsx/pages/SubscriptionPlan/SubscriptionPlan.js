@@ -4,14 +4,18 @@ import AdminSubscriberService from '../../../API/Services/AdminService/AdminSubs
 import ClipLoader from 'react-spinners/ClipLoader';
 import PriceComponent from '../../components/Price/PriceComponent';
 import swal from "sweetalert";
+import { useNavigate } from 'react-router-dom';
 
 const SubscriptionPlan = () => {
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [subscriptionList, setSubscriptionList] = useState([]);
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetSubscriptionList();
+        } else{
+            navigate("/");
         }
     }, []);
 
@@ -61,6 +65,10 @@ const SubscriptionPlan = () => {
         }
     };
 
+    const handleOpenDialog = () => {
+        navigate("/subscriptionlist");
+    };
+
     return (
         <div className="subscription-container">
             {isLoading ? (
@@ -86,7 +94,13 @@ const SubscriptionPlan = () => {
                             </div>
                         ))}
                     </div>
-                </>)}
+                    <div style={{marginTop: "70px"}}>
+                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}>
+                            Go Back
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

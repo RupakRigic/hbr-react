@@ -14,9 +14,9 @@ export const DataUploaderMenuList = [
         to: '/weekly-data',
     },
     {
-        title: 'Subscription Plan',
+        title: 'Subscription',
         iconStyle: SVGICON.SubscribeData,
-        to: '/subscriptionplan',
+        to: '/subscriptionlist',
     },
 
 ]
