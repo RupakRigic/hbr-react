@@ -4,6 +4,8 @@ import MainPagetitle from '../../layouts/MainPagetitle';
 import ClipLoader from 'react-spinners/ClipLoader';
 import AdminSubscriberService from '../../../API/Services/AdminService/AdminSubscriberService';
 import PriceComponent from '../../components/Price/PriceComponent';
+import swal from "sweetalert";
+import DateComponent from '../../components/date/DateFormat';
 
 const SubscriptionList = () => {
     const navigate = useNavigate();
@@ -70,6 +72,31 @@ const SubscriptionList = () => {
 
     const handleSubscribePLan = () => {
         navigate("/subscriptionplan");
+    };
+
+    const HandleCancelSubscriptionList = async(Id) => {
+        setIsLoading(true);
+        try {
+            const response = await AdminSubscriberService.subscribCancel(Id);
+            const responseData = await response.json();
+            if (responseData.status === true) {
+                GetSubscriptionList();
+                setIsLoading(false);
+            } else {
+                swal(responseData.message).then((willDelete) => {
+                    if (willDelete) {
+                        GetSubscriptionList();
+                        setIsLoading(false);
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            if (error.name === "HTTPError") {
+                console.log(error.name);
+            }
+        }
     };
 
     return (
@@ -199,6 +226,7 @@ const SubscriptionList = () => {
                                                         <th>Subscription Start</th>
                                                         <th>Subscription Renewed</th>
                                                         <th>Subscription Content</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -214,9 +242,28 @@ const SubscriptionList = () => {
                                                                 <td>{element.subscription_status}</td>
                                                                 <td>{<PriceComponent price={element.subscription_price} />}</td>
                                                                 <td>{element.payment_status}</td>
-                                                                <td>{element.subscription_start_at}</td>
-                                                                <td>{element.subscription_renewed_at}</td>
+                                                                <td><DateComponent date={element.subscription_start_at} /></td>
+                                                                <td><DateComponent date={element.subscription_renewed_at} /></td>
                                                                 <td>{element.subscription_content}</td>
+                                                                <td>
+                                                                    <Link
+                                                                        onClick={() =>
+                                                                            swal({
+                                                                                title: "Are you sure?",
+                                                                                icon: "warning",
+                                                                                buttons: true,
+                                                                                dangerMode: true,
+                                                                            }).then((willDelete) => {
+                                                                                if (willDelete) {
+                                                                                    HandleCancelSubscriptionList(element.id);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                        className="btn btn-danger shadow btn-xs sharp"
+                                                                    >
+                                                                        <i className="fa fa-trash"></i>
+                                                                    </Link>
+                                                                </td>
                                                             </tr>
                                                         ))) : (
                                                         <tr>

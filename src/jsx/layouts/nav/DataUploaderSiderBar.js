@@ -33,9 +33,10 @@ const UserSideBar = () => {
 	} = useContext(ThemeContext);
 
   const [state, setState] = useReducer(reducer, initialState);	
+  const [activePlan, setActivePlan] = useState(false);
 	useEffect(() => {
-			
-	}, []);
+    setActivePlan(localStorage.getItem("subscriptionActivePlan"))
+	}, [activePlan]);
  //For scroll
  	const [hideOnScroll, setHideOnScroll] = useState(true)
 	useScrollPosition(
@@ -48,7 +49,7 @@ const UserSideBar = () => {
 
   const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
   
-  const UserMenuList = subscription === 1 ? DataUploaderSubscribeMenuList : DataUploaderMenuList;
+  const UserMenuList = subscription == 1 ? DataUploaderSubscribeMenuList : DataUploaderMenuList;
  
   const handleMenuActive = status => {	
     setState({active : status});		
