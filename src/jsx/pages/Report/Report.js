@@ -274,6 +274,11 @@ const BuilderTable = () => {
       localStorage.setItem("end_date", endDate);
       localStorage.setItem("report_type", reportType);
 
+      const date = new Date(weekEndingDate);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}${month}${day}`;
 
       const reportdata = {
         type: reportType,
@@ -325,6 +330,11 @@ const BuilderTable = () => {
       localStorage.setItem("end_date", endDate);
       localStorage.setItem("report_type", reportType);
 
+      const date = new Date(weekEndingDate);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}${month}${day}`; // Format as YYYYMMDD
 
       const reportdata = {
         type: reportType,
@@ -361,7 +371,7 @@ const BuilderTable = () => {
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         // link.download = `report-${startDate}-${endDate}.xlsx`; // Save the file with .xlsx extension
-        link.download = `Weekly Traffic and Sales Watch-${weekEndingDate}.xlsx`; // Save the file with .xlsx extension
+        link.download = `WTSW ${formattedDate}.xlsx`; // Save the file with .xlsx extension
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -725,7 +735,7 @@ const BuilderTable = () => {
                   </TabList>
                 </Box>
                 <TabPanel value="1" className="p-0">
-                  <div className="card">
+                  <div className="card" style={{width: "600px"}}>
                     <div className="card-body p-0">
                       <div
                         id="employee-tbl_wrapper"
