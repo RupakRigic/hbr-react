@@ -738,12 +738,12 @@ const BuilderTable = () => {
                   <div className="card">
                     <div className="card-body p-0">
                       <div
-                        id="employee-tbl_wrapper"
+                        id="employee-tbl_wrapper report-table"
                         className="dataTables_wrapper no-footer table-responsive active-projects style-1 ItemsCheckboxSec shorting"
                       >
                         <table
                           id="empoloyees-tblwrapper"
-                          className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                          className="table ItemsCheckboxSec dataTable no-footer mb-0 report-table"
                         >
                           <thead>
                             <tr style={{ textAlign: "center" }}>
