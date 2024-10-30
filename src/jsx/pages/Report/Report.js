@@ -370,7 +370,6 @@ const BuilderTable = () => {
         // Create a link to download the file
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        // link.download = `report-${startDate}-${endDate}.xlsx`; // Save the file with .xlsx extension
         link.download = `WTSW ${formattedDate}.xlsx`; // Save the file with .xlsx extension
         document.body.appendChild(link);
         link.click();
@@ -541,6 +540,7 @@ const BuilderTable = () => {
     //  window.open(url);
     setPdfUrl(url);
   };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const formattedDate = date.toLocaleString();
@@ -735,7 +735,7 @@ const BuilderTable = () => {
                   </TabList>
                 </Box>
                 <TabPanel value="1" className="p-0">
-                  <div className="card" style={{width: "600px"}}>
+                  <div className="card">
                     <div className="card-body p-0">
                       <div
                         id="employee-tbl_wrapper"
