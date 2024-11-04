@@ -187,7 +187,7 @@ const ProductList = () => {
             mappedRow[header] = row.current_price_per_sqft;
             break;
           case "Product Website":
-            mappedRow[header] = row.subdivision.builder.website;
+            mappedRow[header] = row.subdivision.website;
             break;
           case "Product Type":
             mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
@@ -2135,7 +2135,7 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.current_price_per_sqft} /></td>
                                     }
                                     {column.id == "product Website" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.builder.website}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.website}</td>
                                     }
                                     {column.id == "product Type" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>

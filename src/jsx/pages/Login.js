@@ -42,6 +42,10 @@ function Login(props) {
         if (user != "") {
           const userRole = JSON.parse(localStorage.getItem("user")).role;
           console.log(userRole);
+          if(!userRole) {
+            alert(user.message);
+            return;
+          }
           // Builder
           localStorage.removeItem("selectedBuilderNameByFilterBuilder");
           localStorage.removeItem("selectedStatusByBuilderFilterBuilder");

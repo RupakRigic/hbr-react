@@ -487,7 +487,7 @@ const SubdivisionList = () => {
             mappedRow[header] = row.phone;
             break;
           case "Website":
-            mappedRow[header] = row.builder ? row.builder.website : '';
+            mappedRow[header] = row.builder ? row.website : '';
             break;
           case "Date Added":
             mappedRow[header] = row.dateadded;
@@ -5632,7 +5632,7 @@ const SubdivisionList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
                                     }
                                     {column.id == "website" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.website}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
                                     }
                                     {column.id == "date Added" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
@@ -6068,7 +6068,7 @@ const SubdivisionList = () => {
                             {SubdivisionDetails.name || "NA"}
                           </span><br />
                           <span className="fs-18">
-                            {SubdivisionDetails.builder?.website || "NA"}
+                            {SubdivisionDetails.website || "NA"}
                           </span><br />
 
                           <label className="fs-18" style={{ marginTop: "10px" }}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
