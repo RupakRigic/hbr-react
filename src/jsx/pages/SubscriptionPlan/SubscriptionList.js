@@ -37,9 +37,17 @@ const SubscriptionList = () => {
 
     useEffect(() => {
         const is_subscribed = JSON.parse(localStorage.getItem("is_subscribed"));
+        const subscription_end_at = JSON.parse(localStorage.getItem("subscription_end_at"));
+        
         if (localStorage.getItem("usertoken")) {
             if (is_subscribed == 1) {
-                GetSubscriptionList();
+                const subscriptionEndDate = new Date(subscription_end_at);
+                const currentDate = new Date();
+                if (currentDate >= subscriptionEndDate) { 
+                    navigate("/subscriptionplan");
+                } else {
+                    GetSubscriptionList();
+                }
             } else {
                 navigate("/subscriptionplan");
             }

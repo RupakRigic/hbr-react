@@ -37,6 +37,7 @@ function Login(props) {
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
         localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));
+        localStorage.setItem("subscription_end_at", JSON.stringify(data.subscription_end_at));
         const user = JSON.parse(localStorage.getItem("user"));
         console.log(user);
         if (user != "") {

@@ -48,8 +48,11 @@ const UserSideBar = () => {
 	)
 
   const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
+  const subscription_end_at = JSON.parse(localStorage.getItem("subscription_end_at"));
+  const subscriptionEndDate = new Date(subscription_end_at);
+  const currentDate = new Date();
   
-  const UserMenuList = subscription == 1 ? DataUploaderSubscribeMenuList : DataUploaderMenuList;
+  const UserMenuList = (subscription == 1 && currentDate <= subscriptionEndDate) ? DataUploaderSubscribeMenuList : DataUploaderMenuList;
  
   const handleMenuActive = status => {	
     setState({active : status});		

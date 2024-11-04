@@ -47,6 +47,16 @@ const SubscriptionPlan = () => {
 
     const GetActivePlanDetails = async() => {
         setIsLoading(true);
+        const subscription_end_at = JSON.parse(localStorage.getItem("subscription_end_at"));
+        const subscriptionEndDate = new Date(subscription_end_at);
+        const currentDate = new Date();
+        if (currentDate >= subscriptionEndDate) {
+            setActivePlan(false);
+            setIsSubscribed(0);
+            setIsLoading(false);
+            swal("No Active Subscription found");
+            return
+        }
         try {
             const response = await AdminSubscriberService.getActiveSubscriptionPlan();
             const responseData = await response.json();
@@ -176,7 +186,7 @@ const SubscriptionPlan = () => {
                             </div>
                         ))}
                     </div>
-                    {(isSubscribed == 1 || activeSubscriptionPlan?.id != null) && <div style={{marginTop: "30px"}}>
+                    {(isSubscribed == 1 || activeSubscriptionPlan?.id != null || activePlan) && <div style={{marginTop: "30px"}}>
                         <button className="btn btn-primary btn-sm me-1" onClick={handleBack}>
                             Go Back
                         </button>

@@ -22,6 +22,7 @@ const Header = ({ onNote }) => {
 			localStorage.removeItem('user')
 			localStorage.removeItem("usertoken");
 			localStorage.removeItem("is_subscribed");
+			localStorage.removeItem("subscription_end_at");
 			navigate('/');
 		}
 		window.addEventListener("scroll", () => {
