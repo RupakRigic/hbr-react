@@ -4,6 +4,7 @@ import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
+import Select from "react-select";
 
 const ClosingOffcanvas = forwardRef((props, ref) => {
     const navigate = useNavigate();
@@ -41,14 +42,14 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
     }, []);
 
     const handleSubdivisionCode = (code) => {
-        setSubdivisionCode(code.target.value);
+        setSubdivisionCode(code);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode,
+                "subdivision_id": SubdivisionCode.value,
                 "sellerleagal": event.target.sellerleagal.value,
                 "address": event.target.address.value,
                 "buyer": event.target.buyer.value,
@@ -95,16 +96,23 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Subdivision<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-                                        <Form.Select
+                                        <Select
+                                            options={SubdivisionList}
                                             onChange={handleSubdivisionCode}
+                                            getOptionValue={(option) => option.name}
+                                            getOptionLabel={(option) => option.label}
                                             value={SubdivisionCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Subdivision</option>
-                                            {SubdivisionList.map((element) => (
-                                                <option value={element.value}>{element.label}</option>
-                                            ))}
-                                        </Form.Select>
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    color: 'black'
+                                                }),
+                                            }}
+                                        />
                                     </Form.Group>
                                 </div>
                                 <div className="col-xl-6 mb-3">

@@ -30,8 +30,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     event.preventDefault();
     try {
       var userData = {
-        subdivision_id: SubdivisionCode,
-        product_code: event.target.product_code.value,
+        subdivision_id: SubdivisionCode.value,
         name: event.target.name.value,
         status: event.target.status.value,
         stories: event.target.stories.value ? event.target.stories.value : "",
@@ -96,24 +95,18 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                       getOptionValue={(option) => option.name}
                       getOptionLabel={(option) => option.label}
                       value={SubdivisionCode}
-                    ></Select>
+                      styles={{
+                        container: (provided) => ({
+                            ...provided,
+                            color: 'black'
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            color: 'black'
+                        }),
+                      }}
+                    />
                   </Form.Group>
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput2"
-                    className="form-label"
-                  >
-                    {" "}
-                    Product Code <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="product_code"
-                    className="form-control"
-                    id="exampleFormControlInput2"
-                    placeholder=""
-                  />
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
