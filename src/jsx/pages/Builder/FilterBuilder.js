@@ -173,10 +173,7 @@ const FilterBuilder = () => {
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-6 mt-3">
-                        <label className="form-label">
-                            BUILDER NAME:
-                            <span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">BUILDER NAME:</label>
                         <MultiSelect
                             name="name"
                             options={builderListDropDown}
@@ -186,10 +183,7 @@ const FilterBuilder = () => {
                         />
                     </div>
                     <div className="col-md-6 mt-3">
-                        <label className="form-label">
-                            ACTIVE:
-                            <span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">ACTIVE:</label>
                         <MultiSelect
                             name="is_active"
                             options={statusOptions}
@@ -199,10 +193,7 @@ const FilterBuilder = () => {
                         />
                     </div>
                     <div className="col-md-6 mt-3">
-                        <label className="form-label">
-                            ACTIVE COMMUNITIES:
-                            <span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">ACTIVE COMMUNITIES:</label>
                         <input
                             type="number"
                             value={filterQuery.active_communities}
@@ -212,10 +203,7 @@ const FilterBuilder = () => {
                         />
                     </div>
                     <div className="col-md-6 mt-3">
-                        <label className="form-label">
-                            COMPANY TYPE:
-                            <span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">COMPANY TYPE:</label>
                         <MultiSelect
                             name="company_type"
                             options={companyTypOptions}

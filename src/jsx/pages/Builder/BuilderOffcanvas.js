@@ -38,7 +38,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                "builder_code": event.target.code.value ? event.target.code.value : '',
+                // "builder_code": event.target.code.value ? event.target.code.value : '',
                 "name": event.target.name.value ? event.target.name.value : '',
                 "website": event.target.website.value ? event.target.website.value : '',
                 "phone": event.target.phone.value ? event.target.phone.value : '',
@@ -107,10 +107,10 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                <div className="col-xl-6 mb-3">
+                                {/* <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code <span className="text-danger">*</span></label>
                                     <input type="text" name="code" className="form-control" id="exampleFormControlInput1" placeholder="" />
-                                </div>
+                                </div> */}
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput2" placeholder="" />
