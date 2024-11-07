@@ -66,7 +66,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode.value,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
             }
             const data = await AdminLandsaleService.store(userData).json();
             if (data.status === true) {
@@ -107,10 +107,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={SubdivisionList}
-                                            onChange={handleSubdivisionCode}
-                                            getOptionValue={(option) => option.name}
-                                            getOptionLabel={(option) => option.label}
-                                            value={SubdivisionCode}
+                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                             styles={{
                                                 container: (provided) => ({
                                                     ...provided,

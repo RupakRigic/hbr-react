@@ -49,7 +49,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode.value,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
                 "parcel": event.target.parcel.value,
                 "contractor": event.target.contractor.value,
                 "description": event.target.description.value,
@@ -103,10 +103,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={SubdivisionList}
-                                            onChange={handleSubdivisionCode}
-                                            getOptionValue={(option) => option.name}
-                                            getOptionLabel={(option) => option.label}
-                                            value={SubdivisionCode}
+                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                             styles={{
                                                 container: (provided) => ({
                                                     ...provided,

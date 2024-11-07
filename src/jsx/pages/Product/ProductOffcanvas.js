@@ -30,7 +30,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     event.preventDefault();
     try {
       var userData = {
-        subdivision_id: SubdivisionCode.value,
+        subdivision_id: SubdivisionCode ? SubdivisionCode.value : '',
         name: event.target.name.value,
         status: event.target.status.value,
         stories: event.target.stories.value ? event.target.stories.value : "",
@@ -87,14 +87,11 @@ const ProductOffcanvas = forwardRef((props, ref) => {
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-xl-6 mb-3">
-                  <label className="form-label">Subdivision</label>
+                  <label className="form-label">Subdivision <span className="text-danger">*</span></label>
                   <Form.Group controlId="tournamentList">
                     <Select
                       options={SubdivisionList}
-                      onChange={handleSubdivisionCode}
-                      getOptionValue={(option) => option.name}
-                      getOptionLabel={(option) => option.label}
-                      value={SubdivisionCode}
+                      onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                       styles={{
                         container: (provided) => ({
                             ...provided,

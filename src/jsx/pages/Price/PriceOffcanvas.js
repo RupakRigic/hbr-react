@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
+import Select from "react-select";
 
 const ProductOffcanvas = forwardRef((props, ref) => {
+    const { productList } = props;
+
     const navigate = useNavigate();
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
@@ -22,14 +25,14 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     }, [props.productList]);
 
     const handleProductCode = (code) => {
-        setProductCode(code.target.value);
+        setProductCode(code);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             var userData = {
-                "product_id": ProductCode,
+                "product_id": ProductCode ? ProductCode.value : '',
                 "baseprice": event.target.baseprice.value,
                 "date": event.target.date.value,
             }
@@ -70,16 +73,21 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-4 mb-3">
                                     <label className="form-label">Product<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={handleProductCode}
-                                            value={ProductCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Product</option>
-                                            {ProductList.map((element) => (
-                                                <option value={element.value}>{element.label}</option>
-                                            ))}
-                                        </Form.Select>
+                                        <Select
+                                            options={productList}
+                                            onChange={(selectedOption) => handleProductCode(selectedOption)}
+                                            placeholder="Search and select a product..."
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    color: 'black'
+                                                }),
+                                            }}
+                                        />
                                     </Form.Group>
                                 </div>
                                 <div className="col-xl-6 mb-3">

@@ -49,7 +49,7 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode.value,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
                 "sellerleagal": event.target.sellerleagal.value,
                 "address": event.target.address.value,
                 "buyer": event.target.buyer.value,
@@ -98,10 +98,7 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={SubdivisionList}
-                                            onChange={handleSubdivisionCode}
-                                            getOptionValue={(option) => option.name}
-                                            getOptionLabel={(option) => option.label}
-                                            value={SubdivisionCode}
+                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                             styles={{
                                                 container: (provided) => ({
                                                     ...provided,

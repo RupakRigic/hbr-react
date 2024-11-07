@@ -106,8 +106,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                "builder_id": BuilderCode.value,
-                // "subdivision_code": event.target.subdivision_code.value,
+                "builder_id": BuilderCode ? BuilderCode.value : '',
                 "name": event.target.name.value,
                 "status": status,
                 "reporting": reporting,
