@@ -2292,7 +2292,8 @@ useEffect(() => {
                 <div className="d-flex" style={{ marginTop: "5px" }}>
                   <div className="fs-18" style={{ width: "300px" }}><span><b>STATUS:</b></span>&nbsp;<span>        {PriceDetails.product && PriceDetails.product.status === 1 && "Active"}
                     {PriceDetails.product.status === 0 && "Sold Out"}
-                    {PriceDetails.product.status === 2 && "Future"}</span></div>
+                    {PriceDetails.product.status === 2 && "Future"}
+                    {PriceDetails.product.status === 3 && "Closed"}</span></div>
                   <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={PriceDetails.baseprice} />
                   ) || "NA"}</span></div>
                 </div>

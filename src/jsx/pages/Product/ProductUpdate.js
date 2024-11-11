@@ -180,6 +180,7 @@ const ProductUpdate = () => {
                           <option selected={ProductList.status ==1 ? true : false }  value="1">Active</option>
                           <option  selected={ProductList.status ==0 ? true : false } value="0">Sold Out</option>
                           <option  selected={ProductList.status ==2 ? true : false } value="2">Future</option>
+                          <option  selected={ProductList.status ==3 ? true : false } value="3">Closed</option>
                         </select>
                       </div>
 

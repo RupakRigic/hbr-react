@@ -149,6 +149,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>
                     <option value="2">Future</option>
+                    <option value="3">Closed</option>
                   </select>{" "}
                 </div>
 

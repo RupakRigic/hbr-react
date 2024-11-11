@@ -242,7 +242,8 @@ const FilterProducts = () => {
     const statusOptions = [
         { value: "1", label: "Active" },
         { value: "0", label: "Sold Out" },
-        { value: "2", label: "Future" }
+        { value: "2", label: "Future" },
+        { value: "3", label: "Closed" }
     ];
 
     const ageOptions = [

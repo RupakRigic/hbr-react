@@ -154,7 +154,7 @@ const ProductList = () => {
       tableHeaders.forEach((header) => {
         switch (header) {
           case "Status":
-            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
+            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future") || (row.status === 3 && "Closed");
             break;
           case "Builder Name":
             mappedRow[header] = row.subdivision ? row.subdivision.builder.name : '';
@@ -986,7 +986,8 @@ const ProductList = () => {
   const statusOptions = [
     { value: "1", label: "Active" },
     { value: "0", label: "Sold Out" },
-    { value: "2", label: "Future" }
+    { value: "2", label: "Future" },
+    { value: "3", label: "Closed" }
   ];
 
   const handleSelectBuilderNameChange = (selectedItems) => {
@@ -2102,6 +2103,7 @@ const ProductList = () => {
                                         {element.status === 1 && "Active"}
                                         {element.status === 0 && "Sold Out"}
                                         {element.status === 2 && "Future"}
+                                        {element.status === 3 && "Closed"}
                                       </td>
                                     }
                                     {column.id == "builder Name" &&
@@ -2635,7 +2637,8 @@ const ProductList = () => {
                       <div className="d-flex" style={{ marginTop: "5px" }}>
                         <div className="fs-18" style={{ width: "300px" }}><span><b>STATUS:</b></span>&nbsp;<span>        {ProductDetails.status === 1 && "Active"}
                           {ProductDetails.status === 0 && "Sold Out"}
-                          {ProductDetails.status === 2 && "Future"}</span></div>
+                          {ProductDetails.status === 2 && "Future"}
+                          {ProductDetails.status === 3 && "Closed"}</span></div>
                         <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.latest_base_price} />
                         ) || "NA"}</span></div>
                       </div>
