@@ -30,17 +30,18 @@ const ProductOffcanvas = forwardRef((props, ref) => {
     event.preventDefault();
     try {
       var userData = {
-        subdivision_id: SubdivisionCode ? SubdivisionCode.value : '',
+        subdivision_id: SubdivisionCode?.value,
         name: event.target.name.value,
-        status: event.target.status.value,
         stories: event.target.stories.value ? event.target.stories.value : "",
+        status: event.target.status.value,
         garage: event.target.garage.value,
-        pricechange: event.target.pricechange.value,
+        pricechange: event.target.pricechange.value ? event.target.pricechange.value : "",
         bathroom: event.target.bathroom.value,
-        recentprice: event.target.recentprice.value,
+        recentprice: event.target.recentprice.value ? event.target.recentprice.value : "",
         bedroom: event.target.bedroom.value,
-        recentpricesqft: event.target.recentpricesqft.value,
+        recentpricesqft: event.target.recentpricesqft.value ? event.target.recentpricesqft.value : "",
         sqft: event.target.sqft.value,
+        website: event.target.website.value ? event.target.website.value : "",
       };
       const data = await AdminProductService.store(userData).json();
       if (data.status === true) {
@@ -126,7 +127,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput4"
                     className="form-label"
                   >
-                    Stories <span className="text-danger"></span>
+                    Stories
                   </label>
                   <input
                     type="number"
@@ -159,7 +160,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     className="form-label"
                   >
                     {" "}
-                    Garage <span className="text-danger">*</span>
+                    Garage
                   </label>
                   <input
                     type="number"
@@ -175,7 +176,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     className="form-label"
                   >
                     {" "}
-                    Price Change <span className="text-danger">*</span>
+                    Price Change
                   </label>
                   <input
                     type="number"
@@ -191,7 +192,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput10"
                     className="form-label"
                   >
-                    Bathroom<span className="text-danger">*</span>
+                    Bathroom
                   </label>
                   <input
                     type="number"
@@ -199,6 +200,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     className="form-control"
                     id="exampleFormControlInput10"
                     placeholder=""
+                    step="0.1"
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -206,7 +208,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput11"
                     className="form-label"
                   >
-                    Recent Price<span className="text-danger">*</span>
+                    Recent Price
                   </label>
                   <input
                     type="number"
@@ -221,7 +223,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput12"
                     className="form-label"
                   >
-                    Bedroom<span className="text-danger">*</span>
+                    Bedroom
                   </label>
                   <input
                     type="number"
@@ -237,7 +239,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput16"
                     className="form-label"
                   >
-                    Recent Price SQFT<span className="text-danger">*</span>
+                    Recent Price SQFT
                   </label>
                   <input
                     type="number"
@@ -252,11 +254,26 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput17"
                     className="form-label"
                   >
-                    SQFT<span className="text-danger">*</span>
+                    SQFT
                   </label>
                   <input
                     type="number"
                     name="sqft"
+                    className="form-control"
+                    id="exampleFormControlInput17"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-xl-6 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput17"
+                    className="form-label"
+                  >
+                    Website
+                  </label>
+                  <input
+                    type="text"
+                    name="website"
                     className="form-control"
                     id="exampleFormControlInput17"
                     placeholder=""

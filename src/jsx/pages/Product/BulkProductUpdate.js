@@ -40,6 +40,15 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }
   };
 
+  useEffect(() => {
+    if (SubdivisionList.length > 0 && ProductList != "") {
+      let initialSubdivisionId = SubdivisionList.find(
+        (subID) => subID.value === ProductList.subdivision_id
+      )
+      handleSubdivisionCode(initialSubdivisionId);
+    }
+  }, [SubdivisionList, ProductList]);
+
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
   };
@@ -59,7 +68,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         try {
           var userData = {
             subdivision_id: SubdivisionCode.value ? SubdivisionCode.value : ProductList.subdivision_id,
-            product_code: event.target.product_code.value,
             name: event.target.name.value,
             status: event.target.status.value,
             stories: event.target.stories.value,
@@ -91,7 +99,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         }
       }
     })
-  }
+  };
 
   return (
     <>
@@ -115,29 +123,20 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <Form.Group controlId="tournamentList">
                     <Select
                       options={SubdivisionList}
-                      onChange={handleSubdivisionCode}
-                      getOptionValue={(option) => option.name}
-                      getOptionLabel={(option) => option.label}
+                      onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                       value={SubdivisionCode}
-                    ></Select>
+                      styles={{
+                        container: (provided) => ({
+                            ...provided,
+                            color: 'black'
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            color: 'black'
+                        }),
+                      }}
+                    />
                   </Form.Group>
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput2"
-                    className="form-label"
-                  >
-                    {" "}
-                    Product Code
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue={ProductList ? ProductList.product_code : ""}
-                    name="product_code"
-                    className="form-control"
-                    id="exampleFormControlInput2"
-                    placeholder=""
-                  />
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
@@ -302,6 +301,22 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     name="sqft"
                     className="form-control"
                     id="exampleFormControlInput17"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-xl-6 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput18"
+                    className="form-label"
+                  >
+                    Website
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue={ProductList ? ProductList.website : ""}
+                    name="website"
+                    className="form-control"
+                    id="exampleFormControlInput18"
                     placeholder=""
                   />
                 </div>
