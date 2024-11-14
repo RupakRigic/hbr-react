@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
@@ -11,43 +11,14 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const [SubdivisionCode, setSubdivisionCode] = useState('');
   const [Error, setError] = useState('');
   const [addProduct, setAddProduct] = useState(false);
-  const [ProductList, SetProductList] = useState([]);
 
   useImperativeHandle(ref, () => ({
     showEmployeModal() {
       setAddProduct(true)
     }
   }));
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (selectedLandSales.length > 0) {
-      GetProductList(selectedLandSales[0]);
-    }
-  }, [selectedLandSales]);
-
-  const GetProductList = async (id) => {
-    try {
-      const response = await AdminProductService.show(id);
-      const responseData = await response.json();
-      SetProductList(responseData);
-    } catch (error) {
-      console.log(error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (SubdivisionList.length > 0 && ProductList != "") {
-      let initialSubdivisionId = SubdivisionList.find(
-        (subID) => subID.value === ProductList.subdivision_id
-      )
-      handleSubdivisionCode(initialSubdivisionId);
-    }
-  }, [SubdivisionList, ProductList]);
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -67,7 +38,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       if (willDelete) {
         try {
           var userData = {
-            subdivision_id: SubdivisionCode.value ? SubdivisionCode.value : ProductList.subdivision_id,
+            subdivision_id: SubdivisionCode ? SubdivisionCode.value : "",
             name: event.target.name.value,
             status: event.target.status.value,
             stories: event.target.stories.value,
@@ -124,15 +95,14 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <Select
                       options={SubdivisionList}
                       onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
-                      value={SubdivisionCode}
                       styles={{
                         container: (provided) => ({
-                            ...provided,
-                            color: 'black'
+                          ...provided,
+                          color: 'black'
                         }),
                         menu: (provided) => ({
-                            ...provided,
-                            color: 'black'
+                          ...provided,
+                          color: 'black'
                         }),
                       }}
                     />
@@ -148,7 +118,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="text"
-                    defaultValue={ProductList ? ProductList.name : ""}
                     name="name"
                     className="form-control"
                     id="exampleFormControlInput3"
@@ -164,7 +133,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.stories : ""}
                     name="stories"
                     className="form-control"
                     id="exampleFormControlInput4"
@@ -184,10 +152,10 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     name="status"
                   >
                     <option value="">All</option>
-                    <option selected={ProductList && ProductList.status == 1 ? true : false} value="1">Active</option>
-                    <option selected={ProductList && ProductList.status == 0 ? true : false} value="0">Sold Out</option>
-                    <option selected={ProductList && ProductList.status == 2 ? true : false} value="2">Future</option>
-                    <option selected={ProductList && ProductList.status == 3 ? true : false} value="3">Closed</option>
+                    <option value="1">Active</option>
+                    <option value="0">Sold Out</option>
+                    <option value="2">Future</option>
+                    <option value="3">Closed</option>
                   </select>
                 </div>
                 <div className="col-xl-6 mb-3">
@@ -200,7 +168,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.garage : ""}
                     name="garage"
                     className="form-control"
                     id="exampleFormControlInput6"
@@ -217,7 +184,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.pricechange : ""}
                     name="pricechange"
                     className="form-control"
                     id="exampleFormControlInput7"
@@ -233,7 +199,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.bathroom : ""}
                     name="bathroom"
                     className="form-control"
                     id="exampleFormControlInput10"
@@ -249,7 +214,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.recentprice : ""}
                     name="recentprice"
                     className="form-control"
                     id="exampleFormControlInput11"
@@ -265,7 +229,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.bedroom : ""}
                     name="bedroom"
                     className="form-control"
                     id="exampleFormControlInput12"
@@ -281,7 +244,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.recentpricesqft : ""}
                     name="recentpricesqft"
                     className="form-control"
                     id="exampleFormControlInput16"
@@ -297,7 +259,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="number"
-                    defaultValue={ProductList ? ProductList.sqft : ""}
                     name="sqft"
                     className="form-control"
                     id="exampleFormControlInput17"
@@ -313,7 +274,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </label>
                   <input
                     type="text"
-                    defaultValue={ProductList ? ProductList.website : ""}
                     name="website"
                     className="form-control"
                     id="exampleFormControlInput18"
