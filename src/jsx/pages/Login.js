@@ -14,7 +14,13 @@ function Login(props) {
   let errorsObj = { email: "", password: "" };
   const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   var d = new Date();
+
+
+  const handleRememberMeChange = () => {
+    setRememberMe((prevValue) => !prevValue); // Toggle the remember me value
+  };
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ function Login(props) {
       return;
     } else {
       try {
-        const data = await AdminUserService.login(email, password).json();
+        const data = await AdminUserService.login(email, password, rememberMe).json();
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
         localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));
@@ -387,6 +393,8 @@ function Login(props) {
                                     className="form-check-input"
                                     id="check1"
                                     name="example1"
+                                    checked={rememberMe}
+                                    onChange={handleRememberMeChange}
                                   />
                                   <label
                                     className="form-check-label"

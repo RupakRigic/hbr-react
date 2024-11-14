@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
 import LogoutPage from './Logout';
 
 import { IMAGES, SVGICON } from "../../constant/theme";
 import Logoutbtn from "./Logoutbtn";
+import ChangePasswordModal from "../../pages/ChangePasswordModal";
 
 
 
@@ -13,6 +14,11 @@ const Header = ({ onNote }) => {
 	const [headerFix, setheaderFix] = useState(false);
 	const navigate = useNavigate();
 	const [userData, setUserData] = useState('');
+	const [showModal, setShowModal] = useState(false);
+
+	const handleShowModal = () => setShowModal(true);
+	const handleCloseModal = () => setShowModal(false);
+
 	useEffect(() => {
 		if (localStorage.getItem('usertoken')) {
 			setUserData(JSON.parse(localStorage.getItem('user')))
@@ -63,6 +69,9 @@ const Header = ({ onNote }) => {
 
 										</div>
 									</Dropdown.Toggle>
+									<Dropdown.Menu style={{ width: '200px', height: '50px', overflowY: "hidden" }}>
+										<Dropdown.Item onClick={handleShowModal} style={{textAlign: "center", marginTop: "-12px", fontSize: "13px"}}>Change Password</Dropdown.Item>
+									</Dropdown.Menu>
 									{/* <Dropdown.Menu align="end">
 										<div className="card border-0 mb-0">
 											<div className="card-header py-2">
@@ -103,6 +112,7 @@ const Header = ({ onNote }) => {
 
 									</Dropdown.Menu> */}
 								</Dropdown>
+								<ChangePasswordModal show={showModal} handleClose={handleCloseModal} />
 							</li>
 						</ul>
 
