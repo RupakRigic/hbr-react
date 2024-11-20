@@ -53,6 +53,7 @@ import SubscriberList from "./pages/Subscriber/SubscriberList";
 import SubscriptionPlan from "./pages/SubscriptionPlan/SubscriptionPlan";
 import ThankYouPage from "./pages/ThankYouPage";
 import SubscriptionList from "./pages/SubscriptionPlan/SubscriptionList";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const allroutes = [
   // Dashboard
@@ -283,6 +284,7 @@ const Markup = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/page-error-404" element={<Error404 />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<MainLayout />}>
           {filteredRoutes.map((data, i) => (
             <Route
