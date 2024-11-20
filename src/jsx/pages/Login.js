@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-
+import swal from "sweetalert";
 import AdminUserService from "../../API/Services/AdminService/AdminUserService";
 import logo from "../../images/logo/hrb-logo.png";
 import LogoWhite from "../../images/logo/logofull-white.png";
@@ -290,12 +290,12 @@ function Login(props) {
   };
 
   const handlEmailClose = () => {
-    setForgotModelShow(false); 
+    setForgotModelShow(false);
     setEmailCorrect(false);
     setSendEmail("");
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
     // Validate email (for example, basic format check)
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!email || !emailRegex.test(email)) {
@@ -303,13 +303,18 @@ function Login(props) {
       return;
     }
 
-    // Call your backend API to send the reset password email
-    // Example:
-    // fetch('/api/send-reset-email', { method: 'POST', body: JSON.stringify({ email }) });
+    const userData = {
+      email: emailSend,
+    };
 
-    console.log('Sending email to:', email);
-    // Close modal after sending email (you can modify this based on your API response)
-    setForgotModelShow(false);
+    const response = await AdminUserService.forgot_password(userData).json();
+    if (response.status) {
+      swal(response.Message).then((willDelete) => {
+        if (willDelete) {
+          setForgotModelShow(false);
+        }
+      });
+    }
   };
 
   return (
