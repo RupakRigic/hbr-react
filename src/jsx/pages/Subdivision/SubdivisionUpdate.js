@@ -246,7 +246,7 @@ const SubdivisionUpdate = () => {
                       </div>
 
                       <div className="col-xl-6 mb-3">
-                        <label htmlFor="exampleFormControlInput3" className="form-label">Name</label>
+                        <label htmlFor="exampleFormControlInput3" className="form-label">Name <span className="text-danger">*</span></label>
                         <input
                           type="text"
                           defaultValue={Subdivision.name}
@@ -486,7 +486,7 @@ const SubdivisionUpdate = () => {
                       <div className="col-xl-6 mb-3">
                         <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                         <input
-                          type="number"
+                          type="text"
                           defaultValue={Subdivision.parcel}
                           name="parcel"
                           className="form-control"
