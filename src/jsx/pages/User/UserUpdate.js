@@ -228,14 +228,33 @@ const UserUpdate = () => {
 
   const copyToClipboard = () => {
     if (newPassword) {
-      navigator.clipboard.writeText(newPassword)
-        .then(() => setCopySuccess(true),
-          setTimeout(() => {
-            setCopySuccess(false);
-          }, 3000))
-        .catch(err => console.error("Failed to copy text: ", err));
+      const textArea = document.createElement("textarea");
+      textArea.value = newPassword; // Set the text to copy
+      textArea.style.position = "fixed"; // Avoid scrolling to the bottom of the page
+      textArea.style.left = "-9999px"; // Move it off-screen
+      document.body.appendChild(textArea);
+  
+      textArea.focus();
+      textArea.select();
+  
+      try {
+        const successful = document.execCommand("copy"); // Copy the text to clipboard
+        if (successful) {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 3000);
+        } else {
+          console.error("Failed to copy text using execCommand.");
+        }
+      } catch (err) {
+        console.error("Error copying text: ", err);
+      } finally {
+        document.body.removeChild(textArea); // Remove the temporary textarea
+      }
+    } else {
+      console.error("No text to copy.");
     }
   };
+  
 
 
   return (
