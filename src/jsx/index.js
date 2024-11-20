@@ -284,6 +284,7 @@ const Markup = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/page-error-404" element={<Error404 />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<MainLayout />}>
           {filteredRoutes.map((data, i) => (
@@ -296,7 +297,6 @@ const Markup = () => {
           ))}
         </Route>
         <Route path="*" element={<NotFound />} />
-        {userData?.role !== "Admin" && <Route path="/thank-you" element={<ThankYouPage />} />}
       </Routes>
       <ScrollToTop />
     </>
