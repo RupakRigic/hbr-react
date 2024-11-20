@@ -298,7 +298,7 @@ function Login(props) {
   const handleSendEmail = async () => {
     // Validate email (for example, basic format check)
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!email || !emailRegex.test(email)) {
+    if (!emailSend || !emailRegex.test(emailSend)) {
       setEmailCorrect(true);
       return;
     }
