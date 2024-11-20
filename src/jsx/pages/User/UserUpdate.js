@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, Form } from "react-router-dom";
 import Select from "react-select";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
@@ -7,6 +7,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import ClipLoader from "react-spinners/ClipLoader";
 import Modal from "react-bootstrap/Modal";
 import { Button } from 'react-bootstrap';
+import { FiRefreshCcw, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 
 const UserUpdate = () => {
   const [Error, setError] = useState("");
@@ -29,6 +30,11 @@ const UserUpdate = () => {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [company, setCompany] = useState("");
+
+  const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
 
   useEffect(() => {
     GetRoleList();
@@ -147,7 +153,8 @@ const UserUpdate = () => {
           "last_name": lastName,
           "email": email,
           "notes": notes,
-          "company": company
+          "company": company,
+          "password": newPassword
         }
         const data = await AdminUserRoleService.update(params.id, userData).json();
         if (data.status === true) {
@@ -206,6 +213,30 @@ const UserUpdate = () => {
   const HandlePopupDetailClick = (e) => {
     setShowPopup(true);
   };
+
+  const generatePassword = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    const passwordLength = 8;
+    let password = "";
+    for (let i = 0; i < passwordLength; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCopyToClipboardbtn(true);
+    return password;
+  };
+
+  const copyToClipboard = () => {
+    if (newPassword) {
+      navigator.clipboard.writeText(newPassword)
+        .then(() => setCopySuccess(true),
+          setTimeout(() => {
+            setCopySuccess(false);
+          }, 3000))
+        .catch(err => console.error("Failed to copy text: ", err));
+    }
+  };
+
 
   return (
     <Fragment>
@@ -289,6 +320,53 @@ const UserUpdate = () => {
                             onChange={(e) => setCompany(e.target.value)}
                           />
                         </div>
+
+                        <div className="col-xl-6 mb-3 position-relative">
+                          <label htmlFor="exampleFormControlInput7" className="form-label">
+                            Password
+                          </label>
+                          <div className="input-group">
+                            <input
+                              type={showNewPassword ? "text" : "password"}
+                              name="password"
+                              value={newPassword}
+                              className="form-control"
+                              id="exampleFormControlInput7"
+                              placeholder=""
+                              onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={() => setNewPassword(generatePassword())}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              <FiRefreshCcw />
+                            </button>
+                            {copyToClipboardbtn && <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={copyToClipboard}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              <FiCopy />
+                            </button>}
+                            <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                            </button>
+                          </div>
+                          {copySuccess && (
+                            <div style={{ color: 'green', marginTop: '5px' }}>
+                              Password copied to clipboard!
+                            </div>
+                          )}
+                        </div>
+
 
                         <div className="col-xl-6 mb-3">
                           <label className="form-label">Role</label>
