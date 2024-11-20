@@ -15,4 +15,5 @@ export default {
   logout: () => clientAuth.post("admin/session/logout"),
   change_password: (userData) => clientAuth.post(`admin/session/change-password`, { json: userData }),
   forgot_password: (userData) => clientAuth.post(`password/email`, { json: userData }),
+  reset_password: (resetData) => clientAuth.post(`reset-password`, { json: resetData }),
 };

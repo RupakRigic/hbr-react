@@ -1,46 +1,65 @@
-import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/logo/hrb-logo.png";
 import LogoWhite from "../../images/logo/logofull-white.png";
 import bg6 from "../../images/background/bg6.jpg";
-import axios from "axios";
+import swal from "sweetalert";
+import AdminUserService from "../../API/Services/AdminService/AdminUserService";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const ResetPasswordPage = (props) => {
     const [errors, setErrors] = useState("");
     const [message, setMessage] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [token, setToken] = useState("");
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const tokenFromUrl = queryParams.get("token");
+        if (tokenFromUrl) {
+            setToken(tokenFromUrl);  // Set the token to state
+        }
+    }, [location.search]);
 
     const handleReset = async (e) => {
         e.preventDefault();
-
-        // Check if the passwords match
+        setErrors("");
         if (newPassword !== confirmPassword) {
-            setErrors("Passwords do not match!");
+            setErrors("Password does not match!");
             return;
         }
 
         try {
-            // Make a POST request to the backend to reset the password
-            const response = await axios.post("/api/reset-password", {
-                newPassword,
-                confirmPassword
-            });
-
-            // Check if the response indicates success
-            if (response.data.success) {
-                setMessage("Password reset successful!");
-                setErrors("");
+            const resetData = {
+                token: token,
+                password: newPassword,
+                password_confirmation: confirmPassword,
+            };
+            const response = await AdminUserService.reset_password(resetData).json();
+            if (response.status) {
+                swal(response.Message).then((willDelete) => {
+                    if (willDelete) {
+                        navigate("/");
+                    }
+                });
             } else {
-                setMessage("");
-                setErrors("Failed to reset the password. Please try again.");
+                swal(response.Message).then((willDelete) => {
+                    if (willDelete) {
+                        navigate("/");
+                    }
+                });
             }
         } catch (err) {
             setMessage("");
             setErrors("An error occurred. Please try again.");
         }
     };
-
 
     return (
         <Fragment>
@@ -101,48 +120,61 @@ const ResetPasswordPage = (props) => {
                                                                     {props.successMessage}
                                                                 </div>
                                                             )}
-                                                            <form className=" dz-form pb-3" 
-                                                            // onSubmit={handleReset}
-                                                            >
+                                                            <form className=" dz-form pb-3" onSubmit={handleReset}>
                                                                 <h3 className="form-title m-t0">
                                                                     Reset Your Password
                                                                 </h3>
                                                                 <div className="dz-separator-outer m-b5">
                                                                     <div className="dz-separator bg-primary style-liner"></div>
                                                                 </div>
-                                                                <p className="text-danger">{errors.message} </p>
+                                                                <p className="text-danger">{errors} </p>
 
-                                                                <div className="form-group mb-3">
-                                                                    <label htmlFor="newPassword">
+                                                                <div className="input-group mb-3">
+                                                                    <label htmlFor="newPassword" className="form-label">
                                                                         New Password
                                                                     </label>
-                                                                    <input
-                                                                        type="password"
-                                                                        className="form-control"
-                                                                        value={newPassword}
-                                                                        onChange={(e) => setNewPassword(e.target.value)}
-                                                                    />
-                                                                    {errors.password && (
-                                                                        <div className="text-danger fs-12">
-                                                                            {errors.password}
-                                                                        </div>
-                                                                    )}
+                                                                    <div className="input-group">
+                                                                        <input
+                                                                            type={showNewPassword ? "text" : "password"}
+                                                                            className="form-control"
+                                                                            value={newPassword}
+                                                                            onChange={(e) => setNewPassword(e.target.value)}
+                                                                            placeholder="Enter new password"
+                                                                            aria-label="New Password"
+                                                                        />
+                                                                        <button
+                                                                            className="btn btn-outline-light"
+                                                                            type="button"
+                                                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                                                            style={{ borderColor: "#cccccc", padding: "0.375rem 0.75rem" }}
+                                                                        >
+                                                                            {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="form-group mb-3">
-                                                                    <label htmlFor="newPassword">
+
+                                                                <div className="input-group mb-3">
+                                                                    <label htmlFor="confirmPassword" className="form-label">
                                                                         Confirm Password
                                                                     </label>
-                                                                    <input
-                                                                        type="password"
-                                                                        className="form-control"
-                                                                        value={confirmPassword}
-                                                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                                                    />
-                                                                    {errors.password && (
-                                                                        <div className="text-danger fs-12">
-                                                                            {errors.password}
-                                                                        </div>
-                                                                    )}
+                                                                    <div className="input-group">
+                                                                        <input
+                                                                            type={showConfirmPassword ? "text" : "password"}
+                                                                            className="form-control"
+                                                                            value={confirmPassword}
+                                                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                                                            placeholder="Confirm your password"
+                                                                            aria-label="Confirm Password"
+                                                                        />
+                                                                        <button
+                                                                            className="btn btn-outline-light"
+                                                                            type="button"
+                                                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                                            style={{ borderColor: "#cccccc", padding: "0.375rem 0.75rem" }}
+                                                                        >
+                                                                            {showConfirmPassword ? <FiEye /> : <FiEyeOff />}
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                                 <div className="form-group text-left mb-5">
                                                                     <button
