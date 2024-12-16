@@ -343,35 +343,35 @@ const PriceList = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedBuilderNameByFilter_BasePrice")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_BasePrice"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedSubdivisionNameByFilter_BasePrice")) {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_BasePrice"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter_BasePrice")) {
+    if (localStorage.getItem("productTypeStatusByFilter_BasePrice")) {
       const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_BasePrice"));
       handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedAreaByFilter_BasePrice")) {
       const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_BasePrice"));
       handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedMasterPlanByFilter_BasePrice")) {
       const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_BasePrice"));
       handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedAgeByFilter_BasePrice")) {
       const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_BasePrice"));
       handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter_BasePrice")) {
+    if (localStorage.getItem("selectedSingleByFilter_BasePrice")) {
       const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_BasePrice"));
       handleSelectSingleChange(selectedSingle);
     }
-}, []);
+  }, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -429,7 +429,7 @@ const PriceList = () => {
   const applyFilters = () => {
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(AllProductListExport.length === 0) {
+    if (AllProductListExport.length === 0) {
       setPriceList(priceList);
       return;
     }
@@ -460,7 +460,7 @@ const PriceList = () => {
     };
 
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
-    
+
 
     if (isAnyFilterApplied) {
       setPriceList(filtered.slice(0, 100));
@@ -563,8 +563,8 @@ const PriceList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
       const response = await AdminPriceService.index(
-        pageNumber, 
-        sortConfigString, 
+        pageNumber,
+        sortConfigString,
         searchQuery
       );
       const responseData = await response.json();
@@ -572,7 +572,7 @@ const PriceList = () => {
       setPriceList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductListCount(responseData.total);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -663,7 +663,7 @@ const PriceList = () => {
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
-  
+
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -862,7 +862,7 @@ const PriceList = () => {
               }
             });
           } else {
-            if(responseData.message) {
+            if (responseData.message) {
               let message = responseData.message;
               setShow(false);
               swal(message).then((willDelete) => {
@@ -900,12 +900,12 @@ const PriceList = () => {
   const HandleFilterForm = (e) => {
     if (filterQuery.from == "" || filterQuery.to == "") {
       setShowPopup(true);
-      if(filterQuery.from == "" && filterQuery.to == "") {
-          setMessage("Please select from and to date.");
+      if (filterQuery.from == "" && filterQuery.to == "") {
+        setMessage("Please select from and to date.");
       } else if (filterQuery.from == "") {
-          setMessage("Please select from date.");
+        setMessage("Please select from date.");
       } else if (filterQuery.to == "") {
-          setMessage("Please select to date.");
+        setMessage("Please select to date.");
       }
       return;
     } else {
@@ -987,25 +987,25 @@ const PriceList = () => {
 
   const GetProductDropDownList = async () => {
     try {
-        const response = await AdminProductService.productDropDown();
-        const responseData = await response.json();
-        const formattedData = responseData.map((product) => ({
-            label: product.name,
-            value: product.id,
-        }));
-        setProductList(formattedData);
+      const response = await AdminProductService.productDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((product) => ({
+        label: product.name,
+        value: product.id,
+      }));
+      setProductList(formattedData);
     } catch (error) {
-        console.log("Error fetching builder list:", error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message);
-        }
+      console.log("Error fetching builder list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     GetProductDropDownList();
-}, []);
+  }, []);
 
   useEffect(() => {
     const mappedColumns = fieldList.map((data) => ({
@@ -1020,11 +1020,11 @@ useEffect(() => {
       .toLowerCase()
       .split(' ')
       .map((word, index) => {
-      if (index === 0) {
-        return word;
-      }
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }).join('');
+        if (index === 0) {
+          return word;
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }).join('');
   }
 
   const ageOptions = [
@@ -1163,38 +1163,38 @@ useEffect(() => {
   };
 
   const totalSumFields = (field) => {
-    if(field == "sqft") {
+    if (field == "sqft") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.sqft || 0);
       }, 0);
     }
-    if(field == "stories") {
+    if (field == "stories") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.stories || 0);
       }, 0);
     }
-    if(field == "bedroom") {
+    if (field == "bedroom") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.bedroom || 0);
       }, 0);
     }
-    if(field == "bathroom") {
+    if (field == "bathroom") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.bathroom || 0);
       }, 0);
     }
-    if(field == "garage") {
+    if (field == "garage") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.garage || 0);
       }, 0);
     }
-    if(field == "baseprice") {
+    if (field == "baseprice") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.baseprice || 0);
       }, 0);
     }
-    if(field == "price_per_sqft") {
-      if(filter){
+    if (field == "price_per_sqft") {
+      if (filter) {
         return priceList.reduce((sum, prices) => {
           return sum + (prices.price_per_sqft || 0);
         }, 0);
@@ -1204,12 +1204,12 @@ useEffect(() => {
         }, 0);
       }
     }
-    if(field == "lotwidth") {
+    if (field == "lotwidth") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.subdivision.lotwidth || 0);
       }, 0);
     }
-    if(field == "lotsize") {
+    if (field == "lotsize") {
       return AllProductListExport.reduce((sum, prices) => {
         return sum + (prices.product && prices.product.subdivision.lotsize || 0);
       }, 0);
@@ -1219,9 +1219,9 @@ useEffect(() => {
   const averageFields = (field) => {
     if (field == "price_per_sqft") {
       const sum = totalSumFields(field);
-      if(filter){
+      if (filter) {
         return sum / priceList.length;
-      } else{
+      } else {
         return sum / AllProductListExport.length;
       }
     } else {
@@ -1442,7 +1442,7 @@ useEffect(() => {
         setBasePriceResult(0);
         setPricePerSQFTResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1469,7 +1469,7 @@ useEffect(() => {
         setBasePriceResult(0);
         setPricePerSQFTResult(0);
         setLotWidthResult(0);
-  
+
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1630,111 +1630,149 @@ useEffect(() => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                        <div style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ? 
-                            <div class="spinner-border spinner-border-sm" role="status" /> 
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ? 
-                            <div class="spinner-border spinner-border-sm" role="status" /> 
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => setManageAccessOffcanvas(true)}
-                        >
-                          {" "}
-                          Field Access
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
-                        <input
-                          type="file"
-                          id="fileInput"
-                          style={{ display: "none" }}
-                          onChange={handleFileChange}
-                        />
 
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => product.current.showEmployeModal()}
-                        >
-                          + Add Base Price
-                        </Link>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => bulkPrice.current.showEmployeModal()}
-                        >
-                          Bulk Edit
-                        </Link>
-                        <button
-                          className="btn btn-danger btn-sm me-1"
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => selectedLandSales.length > 0 ? swal({
-                            title: "Are you sure?",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                          }).then((willDelete) => {
-                            if (willDelete) {
-                              handleBulkDelete(selectedLandSales);
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                        <div style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
                             }
-                          }) : ""}
-                        >
-                          Bulk Delete
-                        </button>
-                      </div>
-                    )}
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
+                          </Button>
+                          <input
+                            type="file"
+                            id="fileInput"
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                          />
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => product.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Base Price
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulkPrice.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            style={{ marginLeft: "3px" }}
+                            onClick={() => selectedLandSales.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedLandSales);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -1841,85 +1879,85 @@ useEffect(() => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "date" ? "date" :
-                                      column.id == "product Type" ? "product_type" :
-                                      column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
-                                      column.id == "squre Footage" ? "sqft" :
-                                      column.id == "bedrooms" ? "bedroom" :
-                                      column.id == "base Price" ? "baseprice" :
-                                      column.id == "price Per SQFT" ? "perSQFT" :
-                                      column.id == "lot Width" ? "lotwidth" :
-                                      column.id == "lot Size" ? "lotsize" :
-                                      column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "single" :
-                                      column.id == "__pkPriceID" ? "id" :
-                                      column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
-                                  ) && (
-                                    <span>
-                                      {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (
-                                          column.id == "date" ? "date" :
-                                          column.id == "product Type" ? "product_type" :
+                                        column.id == "product Type" ? "product_type" :
                                           column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
-                                          column.id == "squre Footage" ? "sqft" :
-                                          column.id == "bedrooms" ? "bedroom" :
-                                          column.id == "base Price" ? "baseprice" :
-                                          column.id == "price Per SQFT" ? "perSQFT" :
-                                          column.id == "lot Width" ? "lotwidth" :
-                                          column.id == "lot Size" ? "lotsize" :
-                                          column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "single" :
-                                          column.id == "__pkPriceID" ? "id" :
-                                          column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
-                                      ).direction === "asc" ? "↑" : "↓"}
-                                    </span>
-                                  )}
+                                            column.id == "zip Code" ? "zipcode" :
+                                              column.id == "squre Footage" ? "sqft" :
+                                                column.id == "bedrooms" ? "bedroom" :
+                                                  column.id == "base Price" ? "baseprice" :
+                                                    column.id == "price Per SQFT" ? "perSQFT" :
+                                                      column.id == "lot Width" ? "lotwidth" :
+                                                        column.id == "lot Size" ? "lotsize" :
+                                                          column.id == "age Restricted" ? "age" :
+                                                            column.id == "all Single Story" ? "single" :
+                                                              column.id == "__pkPriceID" ? "id" :
+                                                                column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
+                                  ) && (
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === (
+                                            column.id == "date" ? "date" :
+                                              column.id == "product Type" ? "product_type" :
+                                                column.id == "master Plan" ? "masterplan_id" :
+                                                  column.id == "zip Code" ? "zipcode" :
+                                                    column.id == "squre Footage" ? "sqft" :
+                                                      column.id == "bedrooms" ? "bedroom" :
+                                                        column.id == "base Price" ? "baseprice" :
+                                                          column.id == "price Per SQFT" ? "perSQFT" :
+                                                            column.id == "lot Width" ? "lotwidth" :
+                                                              column.id == "lot Size" ? "lotsize" :
+                                                                column.id == "age Restricted" ? "age" :
+                                                                  column.id == "all Single Story" ? "single" :
+                                                                    column.id == "__pkPriceID" ? "id" :
+                                                                      column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                      </span>
+                                    )}
                                 </strong>
 
-                                {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" && 
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && 
-                                  column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "__pkPriceID" && column.id !== "_fkProductID" && column.id !== "action" 
-                                ) && 
+                                {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" &&
+                                  column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "__pkPriceID" && column.id !== "_fkProductID" && column.id !== "action"
+                                ) &&
                                   (
                                     <>
-                                    <br />
-                                      <select className="custom-select" 
+                                      <br />
+                                      <select className="custom-select"
                                         value={
-                                          column.id == "squre Footage" ? squareFootageOption : 
-                                          column.id == "stories" ? storiesOption : 
-                                          column.id == "bedrooms" ? bedroomsOption : 
-                                          column.id == "bathroom" ? bathroomOption : 
-                                          column.id == "garage" ? garageOption : 
-                                          column.id == "base Price" ? basePriceOption : 
-                                          column.id == "price Per SQFT" ? pricePerSQFTOption : 
-                                          column.id == "lot Width" ? lotWidthOption : 
-                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "squre Footage" ? squareFootageOption :
+                                            column.id == "stories" ? storiesOption :
+                                              column.id == "bedrooms" ? bedroomsOption :
+                                                column.id == "bathroom" ? bathroomOption :
+                                                  column.id == "garage" ? garageOption :
+                                                    column.id == "base Price" ? basePriceOption :
+                                                      column.id == "price Per SQFT" ? pricePerSQFTOption :
+                                                        column.id == "lot Width" ? lotWidthOption :
+                                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
-                                        
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
+
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: '0px',
+                                          fontSize: "8px",
+                                          padding: " 0 5px 0",
+                                          height: "15px",
                                           color: "white",
-                                          appearance: "auto" 
+                                          appearance: "auto"
                                         }}
-                                        
+
                                         onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e, "stories") :
-                                          column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
-                                          column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
-                                          column.id == "garage" ? handleSelectChange(e, "garage") :
-                                          column.id == "base Price" ? handleSelectChange(e, "baseprice") :
-                                          column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                            column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
+                                              column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
+                                                column.id == "garage" ? handleSelectChange(e, "garage") :
+                                                  column.id == "base Price" ? handleSelectChange(e, "baseprice") :
+                                                    column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
+                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -2152,48 +2190,32 @@ useEffect(() => {
                   </div>
                 </div>
                 <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
-                      {productListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
+                    {productListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -2204,19 +2226,35 @@ useEffect(() => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2481,12 +2519,12 @@ useEffect(() => {
                     <label className="form-label">
                       ZIP CODE:{" "}
                     </label>
-                    <input 
-                      type="text" 
-                      name="zipcode" 
-                      value={filterQuery.zipcode} 
-                      className="form-control" 
-                      onChange={HandleFilter} 
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={filterQuery.zipcode}
+                      className="form-control"
+                      onChange={HandleFilter}
                       pattern="[0-9, ]*"
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
@@ -2685,7 +2723,7 @@ useEffect(() => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
@@ -2811,7 +2849,7 @@ useEffect(() => {
             className="btn-close"
             aria-label="Close"
             onClick={() => handlePopupClose()}
-           ></button>
+          ></button>
         </Modal.Header>
         <Modal.Body>{message}</Modal.Body>
         <Modal.Footer>
