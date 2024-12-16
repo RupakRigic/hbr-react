@@ -1667,7 +1667,7 @@ const ProductList = () => {
                       />
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2" style={{width: "100%"}}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex" style={{ marginTop: "10px" }}>
@@ -1706,7 +1706,7 @@ const ProductList = () => {
                           </button>
                         </div>
                       ) : (
-                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                        <div className="d-flex">
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa-solid fa-list" />&nbsp;

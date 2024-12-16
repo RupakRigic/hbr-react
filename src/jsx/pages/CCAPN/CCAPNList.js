@@ -106,7 +106,7 @@ const CCAPNList = () => {
 
     return queryString ? `&${queryString}` : "";
   };
-  
+
   const handleSelectBuilderNameChange = (e) => {
     setSelectedBuilderName(e);
     console.log(e.value);
@@ -285,7 +285,7 @@ const CCAPNList = () => {
           } else {
             currentChunk++;
             console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
-            
+
             document.getElementById("fileInput").value = null;
 
             if (response.data.failed_records > 0) {
@@ -442,42 +442,48 @@ const CCAPNList = () => {
                       </button>
                     </div>
 
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||
-                      SyestemUserRole == "Standard User" ? (
-                      ""
-                    ) : (
-                      <div className="d-flex justify-content-between">
-                        <div className="me-3">
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              variant="success"
-                              className="btn-sm"
-                              id="dropdown-basic"
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" ||
+                        SyestemUserRole == "Standard User" ? (
+                        ""
+                      ) : (
+                        <div className="d-flex justify-content-between">
+                          <div className="me-3">
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                variant="success"
+                                className="btn-sm"
+                                id="dropdown-basic"
+                              >
+                                <i className="fa fa-filter" />&nbsp;
+                                Filter
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
+                                <label className="form-label">Parcel :</label>
+                                <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
+
+                                <label className="form-label">Address :</label>
+                                <input type="search" name="address" className="form-control" onChange={HandleFilter} />
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                          <div>
+                            <Button
+                              className="btn-sm me-1"
+                              variant="secondary"
+                              onClick={handlBuilderClick}
                             >
-                              <i className="fa fa-filter"></i>
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
-                              <label className="form-label">Parcel :</label>
-                              <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
-
-                              <label className="form-label">Address :</label>
-                              <input type="search" name="address" className="form-control" onChange={HandleFilter} />
-                            </Dropdown.Menu>
-                          </Dropdown>
+                              <div style={{ fontSize: "11px" }}>
+                                <i className="fas fa-file-import" />&nbsp;
+                                Import
+                              </div>
+                            </Button>
+                          </div>
                         </div>
-                        <div>
-                          <Button
-                            className="btn-sm me-1"
-                            variant="secondary"
-                            onClick={handlBuilderClick}
-                          >
-                            Import
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -694,48 +700,32 @@ const CCAPNList = () => {
                   </div>
                 </div>
                 <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {fileListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {fileListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -746,19 +736,35 @@ const CCAPNList = () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
           </div>

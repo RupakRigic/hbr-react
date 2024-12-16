@@ -1348,7 +1348,7 @@ const PermitList = () => {
                       />
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2" style={{width: "100%"}}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex">
