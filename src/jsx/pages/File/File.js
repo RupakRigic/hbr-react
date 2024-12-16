@@ -15,29 +15,28 @@ import Modal from "react-bootstrap/Modal";
 
 const File = () => {
 
-  const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  }
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
-    const handleSortCheckboxChange = (e, key) => {
-      if (e.target.checked) {
-          setSelectedCheckboxes(prev => [...prev, key]);
-      } else {
-          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-      }
   };
-  
+
   const SyestemUserRole = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user")).role
-  : "";
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
 
   const handleRemoveSelected = () => {
-      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-      setSortConfig(newSortConfig);
-      setSelectedCheckboxes([]);
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
   };
   const [showSort, setShowSort] = useState(false);
- const handleSortClose = () => setShowSort(false);
+  const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [productList, setProductList] = useState([]);
@@ -50,7 +49,7 @@ const File = () => {
   const [sortConfigDirection, setSortConfigDirection] = useState('');
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
+  }, [sortConfig]);
 
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
@@ -75,7 +74,7 @@ const File = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
-  
+
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
   }, [fieldList]);
@@ -172,9 +171,9 @@ const File = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
 
-      const response = await AdminCSVFileService.index(currentPage,sortConfigString,searchQuery);
+      const response = await AdminCSVFileService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
-      
+
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
@@ -249,7 +248,7 @@ const File = () => {
 
   const requestSort = (key) => {
     let direction = 'asc';
-    
+
     const newSortConfig = [...sortConfig];
     const keyIndex = sortConfig.findIndex((item) => item.key === key);
     if (keyIndex !== -1) {
@@ -261,7 +260,7 @@ const File = () => {
     setSortConfig(newSortConfig);
     setSortConfigKey(newSortConfig[0].key);
     setSortConfigDirection(newSortConfig[0].direction);
-    getproductList(currentPage,sortConfig);
+    getproductList(currentPage, sortConfig);
   };
 
   // const sortedData = () => {
@@ -277,7 +276,7 @@ const File = () => {
   //   }
   //   return sorted;
   // };
-  
+
   const handleOpenDialog = () => {
     setDraggedColumns(columns);
     setOpenDialog(true);
@@ -351,12 +350,16 @@ const File = () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+
+                    <div className="mt-2" style={{ width: "100%" }}>
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div>
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                            {/* Set Columns Order */}
-                            <i className="fa-solid fa-list"></i>
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -364,109 +367,121 @@ const File = () => {
                             onClick={HandleSortDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
                           </Button>
                         </div>
                       ) : (
-                    <div>
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                        {/* Set Columns Order */}
-                        <i className="fa-solid fa-list"></i>
-                      </button>
-                    <Button
+                        <div>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
-                     </Button>
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => File.current.showEmployeModal()}
-                      >
-                        + Add File
-                      </Link>
-                    </div>
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => File.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add File
+                            </div>
+                          </Link>
+                        </div>
                       )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {fileListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {fileListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
                     </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -507,46 +522,47 @@ const File = () => {
                             productList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
                                 <td style={{ textAlign: "center" }}>{index + 1}</td>
-                                  {columns.map((column) => (
-                                    <>
-                                      {column.id == "title" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
-                                      }
-                                      {column.id == "download" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>
-                                          <a
-                                            href={
+                                {columns.map((column) => (
+                                  <>
+                                    {column.id == "title" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                    }
+                                    {column.id == "download" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <a
+                                          href={
                                             process.env.REACT_APP_IMAGE_URL +
                                             "Files/" +
                                             element.csv
-                                            }
-                                          >
-                                            Click Here
-                                          </a>
-                                        </td>
-                                      }
-                                      {column.id == "action" &&
-                                        <td key={column.id} style={{ textAlign: "center" }}>
-                                          <Link
-                                            onClick={() =>
-                                              swal({
+                                          }
+                                        >
+                                          Click Here
+                                        </a>
+                                      </td>
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
                                               title: "Are you sure?",
                                               icon: "warning",
                                               buttons: true,
                                               dangerMode: true,
-                                              }).then((willDelete) => {
+                                            }).then((willDelete) => {
                                               if (willDelete) {
                                                 handleDelete(element.id);
-                                              }})
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                        </td>
-                                      }
-                                    </>
-                                  ))}
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </td>
+                                    }
+                                  </>
+                                ))}
                               </tr>
                             ))
                           ) : (
@@ -562,73 +578,71 @@ const File = () => {
                   </div>
                 </div>
                 <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {fileListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {fileListCount} entries
                   </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
+                    >
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
+                          }
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
+
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -717,30 +731,30 @@ const File = () => {
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                      <span>{col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -750,7 +764,7 @@ const File = () => {
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>

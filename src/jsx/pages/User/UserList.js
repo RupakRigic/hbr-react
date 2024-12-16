@@ -20,32 +20,31 @@ import { MultiSelect } from "react-multi-select-component";
 
 const UserList = () => {
 
-  const HandleSortDetailClick = (e) =>
-    {
-        setShowSort(true);
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  }
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
     }
-    const handleSortCheckboxChange = (e, key) => {
-      if (e.target.checked) {
-          setSelectedCheckboxes(prev => [...prev, key]);
-      } else {
-          setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-      }
   };
   const SyestemUserRole = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user")).role
-  : "";
-  
+    ? JSON.parse(localStorage.getItem("user")).role
+    : "";
+
   const handleRemoveSelected = () => {
-      const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-      setSortConfig(newSortConfig);
-      setSelectedCheckboxes([]);
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
   };
   const [showSort, setShowSort] = useState(false);
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
-  console.log("userList",userList);
+  console.log("userList", userList);
   const [userListCount, setUserCount] = useState('');
   const [TotaluserListCount, setTotalUserCount] = useState('');
 
@@ -84,7 +83,7 @@ const UserList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  console.log("userselect",selectedUsers);
+  console.log("userselect", selectedUsers);
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
@@ -190,7 +189,7 @@ const UserList = () => {
   const [sortConfig, setSortConfig] = useState([]);
   useEffect(() => {
     setSelectedCheckboxes(sortConfig.map(col => col.key));
-}, [sortConfig]);
+  }, [sortConfig]);
 
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
@@ -221,7 +220,7 @@ const UserList = () => {
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
-      const response = await AdminUserRoleService.index(currentPage,sortConfigString,searchQuery);
+      const response = await AdminUserRoleService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
       setUserList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -392,7 +391,7 @@ const UserList = () => {
     { value: "Data Uploader", label: "Data Uploader" }
   ];
 
-  const handleSelectRoleChange  = (selectedItems) => {  
+  const handleSelectRoleChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     setSelectedValues(selectedValues);
     setSelectedRole(selectedItems);
@@ -407,7 +406,7 @@ const UserList = () => {
             <div className="card">
               <div className="card-body p-0">
                 <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
+                  <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">User List</h4>
                       <div
@@ -438,12 +437,15 @@ const UserList = () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" ||  SyestemUserRole == "Standard User" ? (
+                    <div className="mt-2" style={{ width: "100%" }}>
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex">
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                            {/* Set Columns Order */}
-                            <i className="fa-solid fa-list"></i>
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -451,33 +453,39 @@ const UserList = () => {
                             onClick={HandleSortDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
                           </Button>
                           <Dropdown>
-                          <Dropdown.Toggle
-                            variant="success"
-                            className="btn-sm"
-                            id="dropdown-basic"
-                            title="Filter"
-                          >
-                            <i className="fa fa-filter"></i>
-                          </Dropdown.Toggle>
+                            <Dropdown.Toggle
+                              variant="success"
+                              className="btn-sm"
+                              id="dropdown-basic"
+                              title="Filter"
+                            >
+                              <div style={{ fontSize: "11px" }}>
+                                <i className="fa fa-filter" />&nbsp;
+                                Filter
+                              </div>
+                            </Dropdown.Toggle>
 
-                          <Dropdown.Menu>
-                            <h5 className="">Filter Options</h5>
-                            <div className="border-top">
-                              <div className="mt-3 mb-3">
-                                <label className="form-label">
-                                  Role:
-                                </label>
-                                <MultiSelect
-                                  name="role"
-                                  options={roleOptions}
-                                  value={selectedRole}
-                                  onChange={handleSelectRoleChange }
-                                  placeholder={"Select Role"} 
-                                />
-                                {/* <select
+                            <Dropdown.Menu>
+                              <h5 className="">Filter Options</h5>
+                              <div className="border-top">
+                                <div className="mt-3 mb-3">
+                                  <label className="form-label">
+                                    Role:
+                                  </label>
+                                  <MultiSelect
+                                    name="role"
+                                    options={roleOptions}
+                                    value={selectedRole}
+                                    onChange={handleSelectRoleChange}
+                                    placeholder={"Select Role"}
+                                  />
+                                  {/* <select
                                   className="default-select form-control"
                                   value={filterQuery.role}
                                   name="role"
@@ -490,66 +498,65 @@ const UserList = () => {
                                     Data Uploader
                                   </option>
                                 </select> */}
+                                </div>
                               </div>
-                            </div>
-                            <div className="d-flex justify-content-end">
-                              <Button
-                                className="btn-sm"
-                                onClick={HandleCancelFilter}
-                                variant="secondary"
-                              >
-                                Reset
-                              </Button>
-                            </div>
-                          </Dropdown.Menu>
-                        </Dropdown>
+                              <div className="d-flex justify-content-end">
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>
+                              </div>
+                            </Dropdown.Menu>
+                          </Dropdown>
                         </div>
                       ) : (
-                    <div className="d-flex">
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                        {/* Set Columns Order */}
-                        <i className="fa-solid fa-list"></i>
-                      </button>
-                    <Button
+                        <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
-                     </Button>
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        {" "}
-                        Field Access
-                      </button>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="btn-sm"
-                          id="dropdown-basic"
-                          title="Filter"
-                        >
-                          <i className="fa fa-filter"></i>
-                        </Dropdown.Toggle>
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              variant="success"
+                              className="btn-sm btn-sm me-1"
+                              id="dropdown-basic"
+                              title="Filter"
+                            >
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
-                          <h5 className="">Filter Options</h5>
-                          <div className="border-top">
-                            <div className="mt-3 mb-3">
-                              <label className="form-label">
-                                Role:
-                              </label>
-                              <MultiSelect
-                                name="role"
-                                options={roleOptions}
-                                value={selectedRole}
-                                onChange={handleSelectRoleChange }
-                                placeholder={"Select Role"} 
-                              />
-                              {/* <select
+                            <Dropdown.Menu>
+                              <h5 className="">Filter Options</h5>
+                              <div className="border-top">
+                                <div className="mt-3 mb-3">
+                                  <label className="form-label">
+                                    Role:
+                                  </label>
+                                  <MultiSelect
+                                    name="role"
+                                    options={roleOptions}
+                                    value={selectedRole}
+                                    onChange={handleSelectRoleChange}
+                                    placeholder={"Select Role"}
+                                  />
+                                  {/* <select
                                 className="default-select form-control"
                                 value={filterQuery.role}
                                 name="role"
@@ -562,122 +569,138 @@ const UserList = () => {
                                   Data Uploader
                                 </option>
                               </select> */}
+                                </div>
+                              </div>
+                              <div className="d-flex justify-content-end">
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleCancelFilter}
+                                  variant="secondary"
+                                >
+                                  Reset
+                                </Button>
+                              </div>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
                             </div>
-                          </div>
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-sm"
-                              onClick={HandleCancelFilter}
-                              variant="secondary"
-                            >
-                              Reset
-                            </Button>
-                          </div>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => product.current.showEmployeModal()}
-                      >
-                        + Add User
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulkproduct.current.showEmployeModal()}
-                      >
-                        Bulk Edit
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{marginLeft: "3px"}}
-                        onClick={() => selectedUsers.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedUsers);
-                          }
-                        }) : ""}
-                      >
-                        Bulk Delete
-                      </button>
-                    </div>
+                          </button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm me-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => product.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add User
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm me-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulkproduct.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            onClick={() => selectedUsers.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedUsers);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
+                          </button>
+                        </div>
                       )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {userListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {userListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
                       >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
                               return (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
                                   {n}
                                 </Link>
                               );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
                             }
-                          })}
-                        </span>
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
 
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
                     </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -693,20 +716,20 @@ const UserList = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <input
-                              type="checkbox"
-                              style={{
-                                cursor: "pointer",
-                              }}
-                              checked={selectedUsers.length === userList.length}
-                              onChange={(e) =>
-                                e.target.checked
-                                  ? setSelectedUsers(userList.map((user) => user.id))
-                                  : setSelectedUsers([])
-                              }
-                            />
-                          </th>
+                            <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedUsers.length === userList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedUsers(userList.map((user) => user.id))
+                                    : setSelectedUsers([])
+                                }
+                              />
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -716,14 +739,14 @@ const UserList = () => {
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
-                                    ) ? (
-                                      <span>
-                                        {column.id != "action" && sortConfig.find(
-                                          (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
-                                          ).direction === "asc" ? "↑" : "↓"
-                                        }
-                                      </span>
-                                    ) : (
+                                  ) ? (
+                                    <span>
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
+                                      ).direction === "asc" ? "↑" : "↓"
+                                      }
+                                    </span>
+                                  ) : (
                                     column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
@@ -823,61 +846,61 @@ const UserList = () => {
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
-                                  {column.id == "name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
-                                  }
-                                  {column.id == "last Name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.last_name}</td>
-                                  }
-                                  {column.id == "email" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.email}</td>
-                                  }
-                                  {column.id == "role" &&
-                                  // <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length == 2 ? element.roles[0].name +" & "+ element.roles[1].name : element.roles.length == 1 ? element.roles[0].name : "NA"}</td>
-                                  }
-                                  {column.id == "company" && 
+                                    {column.id == "name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
+                                    }
+                                    {column.id == "last Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.last_name}</td>
+                                    }
+                                    {column.id == "email" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.email}</td>
+                                    }
+                                    {column.id == "role" &&
+                                      // <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length > 0 ? element.roles[0].name : "Admin"}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length == 2 ? element.roles[0].name + " & " + element.roles[1].name : element.roles.length == 1 ? element.roles[0].name : "NA"}</td>
+                                    }
+                                    {column.id == "company" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.company}</td>
-                                  }
-                                  {column.id == "notes" && 
+                                    }
+                                    {column.id == "notes" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
-                                  }
-                                  {column.id == "builder" && 
+                                    }
+                                    {column.id == "builder" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder.name : "NA"}</td>
-                                  }
-                                  {column.id == "action" && 
-                                    <td key={column.id} style={{ textAlign: "center" }}>
-                                      <div className="d-flex justify-content-center">
-                                        <Link
-                                          to={`/userupdate/${element.id}`}
-                                          className="btn btn-primary shadow btn-xs sharp me-1"
-                                        >
-                                          <i className="fas fa-pencil-alt"></i>
-                                        </Link>
-                                        {/* {element.roles.length > 0
+                                    }
+                                    {column.id == "action" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <div className="d-flex justify-content-center">
+                                          <Link
+                                            to={`/userupdate/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i className="fas fa-pencil-alt"></i>
+                                          </Link>
+                                          {/* {element.roles.length > 0
                                           ? element.roles.map((role) => ( */}
-                                            <Link
-                                              onClick={() =>
-                                                swal({
-                                                  title: "Are you sure?",
-                                                  icon: "warning",
-                                                  buttons: true,
-                                                  dangerMode: true,
-                                                }).then((willDelete) => {
-                                                  if (willDelete) {
-                                                    handleDelete(element.id);
-                                                  }
-                                                })
-                                              }
-                                              className="btn btn-danger shadow btn-xs sharp"
-                                            >
-                                              <i className="fa fa-trash"></i>
-                                            </Link>
+                                          <Link
+                                            onClick={() =>
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleDelete(element.id);
+                                                }
+                                              })
+                                            }
+                                            className="btn btn-danger shadow btn-xs sharp"
+                                          >
+                                            <i className="fa fa-trash"></i>
+                                          </Link>
                                           {/* ))
                                           : ""} */}
-                                      </div>
-                                    </td>
-                                  }
+                                        </div>
+                                      </td>
+                                    }
                                   </>
                                 ))}
                               </tr>
@@ -892,77 +915,75 @@ const UserList = () => {
                         </tbody>
                       </table>
                     )}
-     
+
                   </div>
                 </div>
                 <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                      <div className="dataTables_info">
-                        Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                        {userListCount} entries
-                      </div>
-                      <div
-                        className="dataTables_paginate paging_simple_numbers justify-content-center"
-                        id="example2_paginate"
-                      >
-                        <Link
-                          className="paginate_button previous disabled"
-                          to="#"
-                          onClick={prePage}
-                        >
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                        <span>
-                          {number.map((n, i) => {
-                            if (number.length > 4) {
-                              if (
-                                i === 0 ||
-                                i === number.length - 1 ||
-                                Math.abs(currentPage - n) <= 1 ||
-                                (i === 1 && n === 2) ||
-                                (i === number.length - 2 &&
-                                  n === number.length - 1)
-                              ) {
-                                return (
-                                  <Link
-                                    className={`paginate_button ${
-                                      currentPage === n ? "current" : ""
-                                    } `}
-                                    key={i}
-                                    onClick={() => changeCPage(n)}
-                                  >
-                                    {n}
-                                  </Link>
-                                );
-                              } else if (i === 1 || i === number.length - 2) {
-                                return <span key={i}>...</span>;
-                              } else {
-                                return null;
-                              }
-                            } else {
-                              return (
-                                <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            }
-                          })}
-                        </span>
-
-                        <Link
-                          className="paginate_button next"
-                          to="#"
-                          onClick={nextPage}
-                        >
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </div>
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {userListCount} entries
                   </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
+                    >
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
+                          }
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
+
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -993,7 +1014,7 @@ const UserList = () => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => {setShowOffcanvas(false);clearPriceDetails();}}
+            onClick={() => { setShowOffcanvas(false); clearPriceDetails(); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -1003,23 +1024,23 @@ const UserList = () => {
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
-        <div className="offcanvas-body">
-          <div className="container-fluid">
-              <div className="d-flex" style={{width: "100%", height: "10%"}}>
-                <div className="d-flex" style={{width: "50%"}}>
+          <div className="offcanvas-body">
+            <div className="container-fluid">
+              <div className="d-flex" style={{ width: "100%", height: "10%" }}>
+                <div className="d-flex" style={{ width: "50%" }}>
                   <div>
-                    <label className="fw-bold" style={{fontSize: "15px"}}>First Name:</label>
+                    <label className="fw-bold" style={{ fontSize: "15px" }}>First Name:</label>
                   </div>
-                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
-                    <span style={{marginLeft: "5px"}}>{UserDetails.name || "NA"}</span>
+                  <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
+                    <span style={{ marginLeft: "5px" }}>{UserDetails.name || "NA"}</span>
                   </div>
-                </div>          
-                <div className="d-flex" style={{width: "50%"}}>
+                </div>
+                <div className="d-flex" style={{ width: "50%" }}>
                   <div>
-                    <label className="fw-bold" style={{fontSize: "15px"}}>Role:</label>
+                    <label className="fw-bold" style={{ fontSize: "15px" }}>Role:</label>
                   </div>
-                  <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
-                    <span style={{marginLeft: "5px"}}>
+                  <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
+                    <span style={{ marginLeft: "5px" }}>
                       {UserDetails.roles.length > 0 ? (
                         UserDetails.roles.map((role) => (
                           <td key={role.id}>{role.name}</td>
@@ -1027,47 +1048,47 @@ const UserList = () => {
                       ) : (
                         <td>Admin</td>
                       )}
-                    </span>  
+                    </span>
                   </div>
-                </div>          
-              </div>
-              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
-                <div>
-                  <label className="fw-bold" style={{fontSize: "15px"}}>Last Name:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
-                  <span style={{marginLeft: "5px"}}>{UserDetails.last_name || "NA"}</span>
+              </div>
+              <div className="col-xl-4 mt-4 d-flex" style={{ width: "100%" }}>
+                <div>
+                  <label className="fw-bold" style={{ fontSize: "15px" }}>Last Name:</label>
+                </div>
+                <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
+                  <span style={{ marginLeft: "5px" }}>{UserDetails.last_name || "NA"}</span>
                 </div>
               </div>
 
-              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
+              <div className="col-xl-4 mt-4 d-flex" style={{ width: "100%" }}>
                 <div>
-                  <label className="fw-bold" style={{marginLeft: "35px", fontSize: "15px"}}>Email:</label>
+                  <label className="fw-bold" style={{ marginLeft: "35px", fontSize: "15px" }}>Email:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
-                  <span style={{marginLeft: "5px"}}>{UserDetails.email || "NA"}</span>
+                <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
+                  <span style={{ marginLeft: "5px" }}>{UserDetails.email || "NA"}</span>
                 </div>
               </div>
 
-              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
+              <div className="col-xl-4 mt-4 d-flex" style={{ width: "100%" }}>
                 <div>
-                  <label className="fw-bold" style={{fontSize: "15px", marginLeft: "5px"}}>Company:</label>
+                  <label className="fw-bold" style={{ fontSize: "15px", marginLeft: "5px" }}>Company:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px"}}>
-                  <span style={{marginLeft: "5px"}}>{UserDetails.company || "NA"}</span>
+                <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
+                  <span style={{ marginLeft: "5px" }}>{UserDetails.company || "NA"}</span>
                 </div>
               </div>
 
-              <div className="col-xl-4 mt-4 d-flex" style={{width: "100%"}}>
+              <div className="col-xl-4 mt-4 d-flex" style={{ width: "100%" }}>
                 <div>
-                  <label className="fw-bold" style={{fontSize: "15px", marginLeft: "30px"}}>Notes:</label>
+                  <label className="fw-bold" style={{ fontSize: "15px", marginLeft: "30px" }}>Notes:</label>
                 </div>
-                <div style={{fontSize: "15px", marginLeft: "10px", borderColor : "black", width: "250px", height: "250px"}}>
-                  <span style={{marginLeft: "5px"}}>{UserDetails.notes || "NA"}</span>
+                <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px", height: "250px" }}>
+                  <span style={{ marginLeft: "5px" }}>{UserDetails.notes || "NA"}</span>
                 </div>
               </div>
-          </div>
-        </div>)}
+            </div>
+          </div>)}
       </Offcanvas>
       <Offcanvas
         show={manageAccessOffcanvas}
@@ -1147,30 +1168,30 @@ const UserList = () => {
           <Modal.Title>Sorted Fields</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {sortConfig.length > 0 ? (
-                sortConfig.map((col) => (
-                    <div className="row" key={col.key}>
-                        <div className="col-md-6">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    name={col.key}
-                                    defaultChecked={true}
-                                    id={`checkbox-${col.key}`}
-                                    onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                                />
-                                <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                                <span>{col.key}</span>:<span>{col.direction}</span>
-                                    
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p>N/A</p>
-            )}
+          {sortConfig.length > 0 ? (
+            sortConfig.map((col) => (
+              <div className="row" key={col.key}>
+                <div className="col-md-6">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={col.key}
+                      defaultChecked={true}
+                      id={`checkbox-${col.key}`}
+                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
+                    />
+                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
+                      <span>{col.key}</span>:<span>{col.direction}</span>
+
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>N/A</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleSortClose}>
@@ -1180,7 +1201,7 @@ const UserList = () => {
             variant="primary"
             onClick={handleRemoveSelected}
           >
-           Clear Sort
+            Clear Sort
           </Button>
         </Modal.Footer>
       </Modal>
