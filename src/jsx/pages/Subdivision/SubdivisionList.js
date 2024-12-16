@@ -4940,14 +4940,14 @@ const SubdivisionList = () => {
                               <div style={{ fontSize: "11px" }}>
                                 <i class="fas fa-file-export" />&nbsp;
                                 Export
-                            </div>
+                              </div>
                             }
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;
-                                Filter
-                              </div>
+                              Filter
+                            </div>
                           </button>
                         </div>
                     ) : (
