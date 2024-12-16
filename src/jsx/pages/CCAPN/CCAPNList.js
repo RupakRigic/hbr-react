@@ -57,7 +57,7 @@ const CCAPNList = () => {
     } else {
       navigate("/");
     }
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const prePage = () => {
     if (currentPage !== 1) {
@@ -459,20 +459,13 @@ const CCAPNList = () => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
-
-                              <label className="form-label">
-                                Parcel :
-                              </label>
+                              <label className="form-label">Parcel :</label>
                               <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
 
-                              <label className="form-label">
-                                Address :
-                              </label>
+                              <label className="form-label">Address :</label>
                               <input type="search" name="address" className="form-control" onChange={HandleFilter} />
-
                             </Dropdown.Menu>
                           </Dropdown>
-
                         </div>
                         <div>
                           <Button
