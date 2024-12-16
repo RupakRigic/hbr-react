@@ -43,7 +43,7 @@ const SubdivisionList = () => {
 
   const addToBuilderList = () => {
     navigate('/google-map-locator', {
-      state: { 
+      state: {
         subdivisionList: AllBuilderListExport,
         subdivision: true
       },
@@ -775,7 +775,7 @@ const SubdivisionList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -793,54 +793,54 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
+    if (localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
       const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision"));
       handleSelectStatusChange(selectedStatus);
     }
-    if(localStorage.getItem("selectedReportingByFilter_Subdivision")) {
-        const selectedReporting = JSON.parse(localStorage.getItem("selectedReportingByFilter_Subdivision"));
-        handleSelectReportingChange(selectedReporting);
+    if (localStorage.getItem("selectedReportingByFilter_Subdivision")) {
+      const selectedReporting = JSON.parse(localStorage.getItem("selectedReportingByFilter_Subdivision"));
+      handleSelectReportingChange(selectedReporting);
     }
-    if(localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
-        const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Subdivision"));
-        handleSelectBuilderNameChange(selectedBuilderName);
+    if (localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
+      const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Subdivision"));
+      handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
-        const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Subdivision"));
-        handleSelectProductTypeChange(productTypeStatus);
+    if (localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
+      const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Subdivision"));
+      handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter_Subdivision")) {
-        const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
-        handleSelectAreaChange(selectedArea);
+    if (localStorage.getItem("selectedAreaByFilter_Subdivision")) {
+      const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
+      handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
-        const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
-        handleSelectMasterPlanChange(selectedMasterPlan);
+    if (localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
+      handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter_Subdivision")) {
-        const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Subdivision"));
-        handleSelectAgeChange(selectedAge);
+    if (localStorage.getItem("selectedAgeByFilter_Subdivision")) {
+      const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Subdivision"));
+      handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter_Subdivision")) {
-        const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Subdivision"));
-        handleSelectSingleChange(selectedSingle);
+    if (localStorage.getItem("selectedSingleByFilter_Subdivision")) {
+      const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Subdivision"));
+      handleSelectSingleChange(selectedSingle);
     }
-    if(localStorage.getItem("selectedGatedByFilter_Subdivision")) {
-        const selectedGated = JSON.parse(localStorage.getItem("selectedGatedByFilter_Subdivision"));
-        handleSelectGatedChange(selectedGated);
+    if (localStorage.getItem("selectedGatedByFilter_Subdivision")) {
+      const selectedGated = JSON.parse(localStorage.getItem("selectedGatedByFilter_Subdivision"));
+      handleSelectGatedChange(selectedGated);
     }
-    if(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision")) {
-        const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision"));
-        handleSelectJurisdictionChange(selectedJurisdicition);
+    if (localStorage.getItem("selectedJurisdicitionByFilter_Subdivision")) {
+      const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision"));
+      handleSelectJurisdictionChange(selectedJurisdicition);
     }
-    if(localStorage.getItem("seletctedGasProviderByFilter_Subdivision")) {
-        const seletctedGasProvider = JSON.parse(localStorage.getItem("seletctedGasProviderByFilter_Subdivision"));
-        handleGasProviderChange(seletctedGasProvider);
+    if (localStorage.getItem("seletctedGasProviderByFilter_Subdivision")) {
+      const seletctedGasProvider = JSON.parse(localStorage.getItem("seletctedGasProviderByFilter_Subdivision"));
+      handleGasProviderChange(seletctedGasProvider);
     }
   }, []);
 
   useEffect(() => {
-    setSearchQuery(filterString());    
+    setSearchQuery(filterString());
   }, [filterQuery]);
 
   useEffect(() => {
@@ -1292,7 +1292,7 @@ const SubdivisionList = () => {
               }
             });
           } else {
-            if(responseData.message) {
+            if (responseData.message) {
               let message = responseData.message;
               setShow(false);
               swal(message).then((willDelete) => {
@@ -1372,7 +1372,7 @@ const SubdivisionList = () => {
   const applyFilters = () => {
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(AllBuilderListExport.length === 0) {
+    if (AllBuilderListExport.length === 0) {
       setBuilderList(BuilderList)
       return;
     }
@@ -1514,8 +1514,8 @@ const SubdivisionList = () => {
   };
 
   const totalSumFields = (field) => {
-    if(field == "totallots") {
-      if(filter){
+    if (field == "totallots") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.totallots || 0);
         }, 0);
@@ -1525,8 +1525,8 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "lotwidth") {
-      if(filter){
+    if (field == "lotwidth") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.lotwidth || 0);
         }, 0);
@@ -1536,8 +1536,8 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "lotsize") {
-      if(filter){
+    if (field == "lotsize") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.lotsize || 0);
         }, 0);
@@ -1547,16 +1547,16 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "hoafee") {
+    if (field == "hoafee") {
       const parseHoafee = (value) => {
-        if (value != "" ) {
+        if (value != "") {
           let HOAFee = value.replace(/[$,]/g, '');
           return parseFloat(HOAFee) || 0;
         } else {
           return 0;
         }
       };
-      if(filter){
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + parseHoafee(builder.hoafee);
         }, 0);
@@ -1566,8 +1566,8 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "masterplanfee") {
-      if(filter){
+    if (field == "masterplanfee") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.masterplanfee || 0);
         }, 0);
@@ -1577,8 +1577,8 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "total_closings") {
-      if(filter){
+    if (field == "total_closings") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_closings || 0);
         }, 0);
@@ -1588,298 +1588,298 @@ const SubdivisionList = () => {
         }, 0);
       }
     }
-    if(field == "total_permits") {
-      if(filter){
+    if (field == "total_permits") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_permits || 0);
-        }, 0);  
+        }, 0);
       } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.total_permits || 0);
         }, 0);
       }
     }
-    if(field == "total_net_sales") {
-      if(filter){
+    if (field == "total_net_sales") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_net_sales || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.total_net_sales || 0);
         }, 0);
       }
     }
-    if(field == "months_open") {
-      if(filter){
+    if (field == "months_open") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.months_open || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.months_open || 0);
         }, 0);
       }
     }
-    if(field == "latest_lots_released") {
-      if(filter){
+    if (field == "latest_lots_released") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.latest_lots_released || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.latest_lots_released || 0);
         }, 0);
       }
     }
-    if(field == "latest_standing_inventory") {
-      if(filter){
+    if (field == "latest_standing_inventory") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.latest_standing_inventory || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.latest_standing_inventory || 0);
         }, 0);
       }
     }
-    if(field == "unsold_lots") {
-      if(filter){
+    if (field == "unsold_lots") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.unsold_lots || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.unsold_lots || 0);
         }, 0);
       }
     }
-    if(field == "avg_sqft_all") {
-      if(filter){
+    if (field == "avg_sqft_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_sqft_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_sqft_all || 0);
         }, 0);
       }
     }
-    if(field == "avg_sqft_active") {
-      if(filter){
+    if (field == "avg_sqft_active") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_sqft_active || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_sqft_active || 0);
         }, 0);
       }
     }
-    if(field == "avg_base_price_all") {
-      if(filter){
+    if (field == "avg_base_price_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_base_price_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_base_price_all || 0);
         }, 0);
       }
     }
-    if(field == "avg_base_price_active") {
-      if(filter){
+    if (field == "avg_base_price_active") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_base_price_active || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_base_price_active || 0);
         }, 0);
       }
     }
-    if(field == "min_sqft_all") {
-      if(filter){
+    if (field == "min_sqft_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.min_sqft_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.min_sqft_all || 0);
         }, 0);
       }
     }
-    if(field == "max_sqft_all") {
-      if(filter){
+    if (field == "max_sqft_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.max_sqft_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.max_sqft_all || 0);
         }, 0);
       }
     }
-    if(field == "min_base_price_all") {
-      if(filter){
+    if (field == "min_base_price_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.min_base_price_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.min_base_price_all || 0);
         }, 0);
       }
     }
-    if(field == "min_sqft_active") {
-      if(filter){
+    if (field == "min_sqft_active") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.min_sqft_active || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.min_sqft_active || 0);
         }, 0);
       }
     }
-    if(field == "max_base_price_all") {
-      if(filter){
+    if (field == "max_base_price_all") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.max_base_price_all || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.max_base_price_all || 0);
         }, 0);
       }
     }
-    if(field == "max_sqft_active") {
-      if(filter){
+    if (field == "max_sqft_active") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.max_sqft_active || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.max_sqft_active || 0);
         }, 0);
       }
     }
-    if(field == "avg_net_traffic_per_month_this_year") {
-      if(filter){
+    if (field == "avg_net_traffic_per_month_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_net_traffic_per_month_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_net_traffic_per_month_this_year || 0);
         }, 0);
       }
     }
-    if(field == "avg_net_sales_per_month_this_year") {
-      if(filter){
+    if (field == "avg_net_sales_per_month_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_this_year || 0);
         }, 0);
       }
     }
-    if(field == "avg_closings_per_month_this_year") {
-      if(filter){
+    if (field == "avg_closings_per_month_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_closings_per_month_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_closings_per_month_this_year || 0);
         }, 0);
       }
     }
-    if(field == "avg_net_sales_per_month_since_open") {
-      if(filter){
+    if (field == "avg_net_sales_per_month_since_open") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_since_open || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_since_open || 0);
         }, 0);
       }
     }
-    if(field == "avg_net_sales_per_month_last_three_months") {
-      if(filter){
+    if (field == "avg_net_sales_per_month_last_three_months") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_last_three_months || 0);
         }, 0);
       }
     }
-    if(field == "month_net_sold") {
-      if(filter){
+    if (field == "month_net_sold") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.month_net_sold || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.month_net_sold || 0);
         }, 0);
       }
     }
-    if(field == "year_net_sold") {
-      if(filter){
+    if (field == "year_net_sold") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.year_net_sold || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.year_net_sold || 0);
         }, 0);
       }
     }
-    if(field == "avg_closing_price") {
-      if(filter){
+    if (field == "avg_closing_price") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_closing_price || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.avg_closing_price || 0);
         }, 0);
       }
     }
-    if(field == "permit_this_year") {
-      if(filter){
+    if (field == "permit_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.permit_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.permit_this_year || 0);
         }, 0);
       }
     }
-    if(field == "median_closing_price_since_open") {
-      if(filter){
+    if (field == "median_closing_price_since_open") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_since_open || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_since_open || 0);
         }, 0);
       }
     }
-    if(field == "median_closing_price_this_year") {
-      if(filter){
+    if (field == "median_closing_price_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_this_year || 0);
         }, 0);
@@ -1889,9 +1889,9 @@ const SubdivisionList = () => {
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    if(filter){
+    if (filter) {
       return sum / BuilderList.length;
-    } else{
+    } else {
       return sum / AllBuilderListExport.length;
     }
   };
@@ -4689,7 +4689,7 @@ const SubdivisionList = () => {
   const handleDownloadReport = async (e, id) => {
     e.preventDefault();
     setLoadingReportId(id);
-  
+
     const reportdata = {
       type: "Subdivision Analysis Report",
       start_date: startDate,
@@ -4728,7 +4728,7 @@ const SubdivisionList = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action' && field !== 'Total Closings' 
+      .filter((field) => field !== 'Action' && field !== 'Total Closings'
         && field !== 'Total Permits' && field !== 'Total Net Sales'
         && field !== 'Months Open' && field !== 'Latest Traffic/Sales Data'
         && field !== 'Latest Lots Released' && field !== 'Latest Standing Inventory'
@@ -4911,160 +4911,184 @@ const SubdivisionList = () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                        <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                      </div>
+
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                        <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                            </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                                Filter
+                              </div>
+                          </button>
+                        </div>
                     ) : (
-                      <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-
-                        <Button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => !excelLoading ? addToBuilderList() : ""}
-                        >
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i className="fa fa-map-marker" aria-hidden="true"></i>
-                          }
-                        </Button>
-
-                        <button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => setManageAccessOffcanvas(true)}
-                        >
-                          {" "}
-                          Field Access
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => subdivision.current.showEmployeModal()}
-                        >
-                          + Add Subdivision
-                        </Link>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => bulkSubdivision.current.showEmployeModal()}
-                        >
-                          Bulk Edit
-                        </Link>
-                        <button
-                          className="btn btn-danger btn-sm me-1"
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => selectedLandSales.length > 0 ? swal({
-                            title: "Are you sure?",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                          }).then((willDelete) => {
-                            if (willDelete) {
-                              handleBulkDelete(selectedLandSales);
-                            }
-                          }) : ""}
-                        >
-                          Bulk Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {BuilderListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
-                    >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
+                    <div className="d-flex">
+                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa-solid fa-list"></i>&nbsp;
+                          Columns Order
+                        </div>
+                      </button>
+                      <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={HandleSortingPopupDetailClick}
+                        title="Sorted Fields"
                       >
-                        <i className="fa-solid fa-angle-left" />
+                        <div style={{ fontSize: "11px" }}>
+                          <i class="fa-solid fa-sort"></i>&nbsp;
+                          Sort
+                        </div>
+                      </Button>
+                      <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                        {excelLoading ?
+                          <div class="spinner-border spinner-border-sm" role="status" />
+                          :
+                          <div style={{ fontSize: "11px" }}>
+                            <i class="fas fa-file-export" />&nbsp;
+                            Export
+                          </div>
+                        }
+                      </button>
+                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-filter" />&nbsp;
+                          Filter
+                        </div>
+                      </button>
+                      <Button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => !excelLoading ? addToBuilderList() : ""}
+                      >
+                        {excelLoading ?
+                          <div class="spinner-border spinner-border-sm" role="status" />
+                          :
+                          <div style={{ fontSize: "11px" }}>
+                            <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                            Map
+                          </div>
+                        }
+                      </Button>
+                      <button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={() => setManageAccessOffcanvas(true)}
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-shield" />&nbsp;
+                          Field Access
+                        </div>
+                      </button>
+                      <Button
+                        className="btn-sm me-1"
+                        variant="secondary"
+                        onClick={handlBuilderClick}
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fas fa-file-import" />&nbsp;
+                          Import
+                        </div>
+                      </Button>
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => subdivision.current.showEmployeModal()}
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-plus" />&nbsp;
+                          Add Subdivision
+                        </div>
                       </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <Link
+                        to={"#"}
+                        className="btn btn-primary btn-sm ms-1"
+                        data-bs-toggle="offcanvas"
+                        onClick={() => bulkSubdivision.current.showEmployeModal()}
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-pencil" />&nbsp;
+                          Bulk Edit
+                        </div>
+                      </Link>
+                      <button
+                        className="btn btn-danger btn-sm me-1"
+                        style={{ marginLeft: "3px" }}
+                        onClick={() => selectedLandSales.length > 0 ? swal({
+                          title: "Are you sure?",
+                          icon: "warning",
+                          buttons: true,
+                          dangerMode: true,
+                        }).then((willDelete) => {
+                          if (willDelete) {
+                            handleBulkDelete(selectedLandSales);
+                          }
+                        }) : ""}
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-trash" />&nbsp;
+                          Bulk Delete
+                        </div>
+                      </button>
+                    </div>
+                      )}
+                  </div>
+                </div>
+                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {BuilderListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
+                    >
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -5075,807 +5099,823 @@ const SubdivisionList = () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
-                  <div
-                    id="employee-tbl_wrapper"
-                    className="dataTables_wrapper no-footer"
-                  >
-                    {isLoading ? (
-                      <div className="d-flex justify-content-center align-items-center mb-5">
-                        <ClipLoader color="#4474fc" />
-                      </div>
-                    ) : (
-                      <table
-                        id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0 subdivion-table"
-                      >
-                        <thead>
-                          <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <input
-                                type="checkbox"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                checked={selectedLandSales.length === BuilderList.length}
-                                onChange={(e) =>
-                                  e.target.checked
-                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
-                                    : setSelectedLandSales([])
-                                }
-                              />
-                            </th>
-                            <th>
-                              <strong> No.</strong>
-                            </th>
-                            {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} 
-                              // onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
-                              //   column.id == "builder" ? "builderName" :
-                              //   column.id == "product Type" ? "product_type" :
-                              //   column.id == "master Plan" ? "masterplan_id" :
-                              //   column.id == "total Lots" ? "totallots" :
-                              //   column.id == "lot Width" ? "lotwidth" :
-                              //   column.id == "lot Size" ? "lotsize" :
-                              //   column.id == "age Restricted" ? "age" :
-                              //   column.id == "all Single Story" ? "single" :
-                              //   column.id == "latitude" ? "lat" :
-                              //   column.id == "longitude" ? "lng" :
-                              //   column.id == "gas Provider" ? "gasprovider" :
-                              //   column.id == "hOA Fee" ? "hoafee" :
-                              //   column.id == "master Plan Fee" ? "masterplanfee" :
-                              //   column.id == "parcel Group" ? "parcel" :
-                              //   column.id == "date Added" ? "created_at" :
-                              //   column.id == "__pkSubID" ? "subdivision_code" :
-                              //   column.id == "_fkBuilderID" ? "builder_code" :
-                              //   column.id == "total Closings" ? "total_closings" :
-                              //   column.id == "total Permits" ? "total_permits" :
-                              //   column.id == "total Net Sales" ? "total_net_sales" :
-                              //   column.id == "months Open" ? "months_open" :
-                              //   column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
-                              //   column.id == "latest Lots Released" ? "latest_lots_released" :
-                              //   column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
-                              //   column.id == "unsold Lots" ? "unsold_lots" :
-                              //   column.id == "avg Sqft All" ? "avg_sqft_all" :
-                              //   column.id == "avg Sqft Active" ? "avg_sqft_active" :
-                              //   column.id == "avg Base Price All" ? "avg_base_price_all" :
-                              //   column.id == "avg Base Price Active" ? "avg_base_price_active" :
-                              //   column.id == "min Sqft All" ? "min_sqft_all" :
-                              //   column.id == "max Sqft All" ? "max_sqft_all" :
-                              //   column.id == "max Sqft Active" ? "max_sqft_active_current" :
-                              //   column.id == "min Base Price All" ? "min_base_price_all" :
-                              //   column.id == "min Sqft Active" ? "min_sqft_active_current" :
-                              //   column.id == "max Base Price All" ? "max_base_price_all" :
-                              //   column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
-                              //   column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                              //   column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                              //   column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
-                              //   column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
-                              //   column.id == "max Week Ending" ? "max_week_ending" :
-                              //   column.id == "min Week Ending" ? "min_week_ending" :
-                              //   column.id == "sqft Group" ? "sqft_group" :
-                              //   column.id == "price Group" ? "price_group" :
-                              //   column.id == "month Net Sold" ? "month_net_sold" :
-                              //   column.id == "year Net Sold" ? "year_net_sold" :
-                              //   column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
-                              >
-                                <strong>
+                </div>
+                <div
+                  id="employee-tbl_wrapper"
+                  className="dataTables_wrapper no-footer"
+                >
+                  {isLoading ? (
+                    <div className="d-flex justify-content-center align-items-center mb-5">
+                      <ClipLoader color="#4474fc" />
+                    </div>
+                  ) : (
+                    <table
+                      id="empoloyees-tblwrapper"
+                      className="table ItemsCheckboxSec dataTable no-footer mb-0 subdivion-table"
+                    >
+                      <thead>
+                        <tr style={{ textAlign: "center" }}>
+                          <th>
+                            <input
+                              type="checkbox"
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              checked={selectedLandSales.length === BuilderList.length}
+                              onChange={(e) =>
+                                e.target.checked
+                                  ? setSelectedLandSales(BuilderList.map((user) => user.id))
+                                  : setSelectedLandSales([])
+                              }
+                            />
+                          </th>
+                          <th>
+                            <strong> No.</strong>
+                          </th>
+                          {columns.map((column) => (
+                            <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
+                            // onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
+                            //   column.id == "builder" ? "builderName" :
+                            //   column.id == "product Type" ? "product_type" :
+                            //   column.id == "master Plan" ? "masterplan_id" :
+                            //   column.id == "total Lots" ? "totallots" :
+                            //   column.id == "lot Width" ? "lotwidth" :
+                            //   column.id == "lot Size" ? "lotsize" :
+                            //   column.id == "age Restricted" ? "age" :
+                            //   column.id == "all Single Story" ? "single" :
+                            //   column.id == "latitude" ? "lat" :
+                            //   column.id == "longitude" ? "lng" :
+                            //   column.id == "gas Provider" ? "gasprovider" :
+                            //   column.id == "hOA Fee" ? "hoafee" :
+                            //   column.id == "master Plan Fee" ? "masterplanfee" :
+                            //   column.id == "parcel Group" ? "parcel" :
+                            //   column.id == "date Added" ? "created_at" :
+                            //   column.id == "__pkSubID" ? "subdivision_code" :
+                            //   column.id == "_fkBuilderID" ? "builder_code" :
+                            //   column.id == "total Closings" ? "total_closings" :
+                            //   column.id == "total Permits" ? "total_permits" :
+                            //   column.id == "total Net Sales" ? "total_net_sales" :
+                            //   column.id == "months Open" ? "months_open" :
+                            //   column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
+                            //   column.id == "latest Lots Released" ? "latest_lots_released" :
+                            //   column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
+                            //   column.id == "unsold Lots" ? "unsold_lots" :
+                            //   column.id == "avg Sqft All" ? "avg_sqft_all" :
+                            //   column.id == "avg Sqft Active" ? "avg_sqft_active" :
+                            //   column.id == "avg Base Price All" ? "avg_base_price_all" :
+                            //   column.id == "avg Base Price Active" ? "avg_base_price_active" :
+                            //   column.id == "min Sqft All" ? "min_sqft_all" :
+                            //   column.id == "max Sqft All" ? "max_sqft_all" :
+                            //   column.id == "max Sqft Active" ? "max_sqft_active_current" :
+                            //   column.id == "min Base Price All" ? "min_base_price_all" :
+                            //   column.id == "min Sqft Active" ? "min_sqft_active_current" :
+                            //   column.id == "max Base Price All" ? "max_base_price_all" :
+                            //   column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
+                            //   column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
+                            //   column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
+                            //   column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
+                            //   column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
+                            //   column.id == "max Week Ending" ? "max_week_ending" :
+                            //   column.id == "min Week Ending" ? "min_week_ending" :
+                            //   column.id == "sqft Group" ? "sqft_group" :
+                            //   column.id == "price Group" ? "price_group" :
+                            //   column.id == "month Net Sold" ? "month_net_sold" :
+                            //   column.id == "year Net Sold" ? "year_net_sold" :
+                            //   column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
+                            >
+                              <strong>
 
-                                  {column.label}
-                                  {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === (
-                                      column.id == "builder" ? "builderName" :
+                                {column.label}
+                                {column.id != "action" && sortConfig.some(
+                                  (item) => item.key === (
+                                    column.id == "builder" ? "builderName" :
                                       column.id == "product Type" ? "product_type" :
-                                      column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
-                                      column.id == "total Lots" ? "totallots" :
-                                      column.id == "lot Width" ? "lotwidth" :
-                                      column.id == "lot Size" ? "lotsize" :
-                                      column.id == "age Restricted" ? "age" :
-                                      column.id == "all SingleStory" ? "single" :
-                                      column.id == "cross Streets" ? "location" :
-                                      column.id == "latitude" ? "lat" :
-                                      column.id == "longitude" ? "lng" :
-                                      column.id == "gas Provider" ? "gasprovider" :
-                                      column.id == "hOA Fee" ? "hoafee" :
-                                      column.id == "master Plan Fee" ? "masterplanfee" :
-                                      column.id == "parcel Group" ? "parcel" :
-                                      column.id == "date Added" ? "dateadded" :
-                                      column.id == "__pkSubID" ? "subdivision_code" :
-                                      column.id == "_fkBuilderID" ? "builder_code" :
-                                      column.id == "open Since" ? "opensince" : toCamelCase(column.id))
-                                    ) && (
+                                        column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
+                                            column.id == "total Lots" ? "totallots" :
+                                              column.id == "lot Width" ? "lotwidth" :
+                                                column.id == "lot Size" ? "lotsize" :
+                                                  column.id == "age Restricted" ? "age" :
+                                                    column.id == "all SingleStory" ? "single" :
+                                                      column.id == "cross Streets" ? "location" :
+                                                        column.id == "latitude" ? "lat" :
+                                                          column.id == "longitude" ? "lng" :
+                                                            column.id == "gas Provider" ? "gasprovider" :
+                                                              column.id == "hOA Fee" ? "hoafee" :
+                                                                column.id == "master Plan Fee" ? "masterplanfee" :
+                                                                  column.id == "parcel Group" ? "parcel" :
+                                                                    column.id == "date Added" ? "dateadded" :
+                                                                      column.id == "__pkSubID" ? "subdivision_code" :
+                                                                        column.id == "_fkBuilderID" ? "builder_code" :
+                                                                          column.id == "open Since" ? "opensince" : toCamelCase(column.id))
+                                ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
                                           column.id == "builder" ? "builderName" :
-                                          column.id == "product Type" ? "product_type" :
-                                          column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
-                                          column.id == "total Lots" ? "totallots" :
-                                          column.id == "lot Width" ? "lotwidth" :
-                                          column.id == "lot Size" ? "lotsize" :
-                                          column.id == "age Restricted" ? "age" :
-                                          column.id == "all SingleStory" ? "single" :
-                                          column.id == "cross Streets" ? "location" :
-                                          column.id == "latitude" ? "lat" :
-                                          column.id == "longitude" ? "lng" :
-                                          column.id == "gas Provider" ? "gasprovider" :
-                                          column.id == "hOA Fee" ? "hoafee" :
-                                          column.id == "master Plan Fee" ? "masterplanfee" :
-                                          column.id == "parcel Group" ? "parcel" :
-                                          column.id == "date Added" ? "dateadded" :
-                                          column.id == "__pkSubID" ? "subdivision_code" :
-                                          column.id == "_fkBuilderID" ? "builder_code" :
-                                          column.id == "open Since" ? "opensince" : toCamelCase(column.id))
-                                        ).direction === "asc" ? "↑" : "↓"}
-                                      </span>
-                                    ) 
+                                            column.id == "product Type" ? "product_type" :
+                                              column.id == "master Plan" ? "masterplan_id" :
+                                                column.id == "zip Code" ? "zipcode" :
+                                                  column.id == "total Lots" ? "totallots" :
+                                                    column.id == "lot Width" ? "lotwidth" :
+                                                      column.id == "lot Size" ? "lotsize" :
+                                                        column.id == "age Restricted" ? "age" :
+                                                          column.id == "all SingleStory" ? "single" :
+                                                            column.id == "cross Streets" ? "location" :
+                                                              column.id == "latitude" ? "lat" :
+                                                                column.id == "longitude" ? "lng" :
+                                                                  column.id == "gas Provider" ? "gasprovider" :
+                                                                    column.id == "hOA Fee" ? "hoafee" :
+                                                                      column.id == "master Plan Fee" ? "masterplanfee" :
+                                                                        column.id == "parcel Group" ? "parcel" :
+                                                                          column.id == "date Added" ? "dateadded" :
+                                                                            column.id == "__pkSubID" ? "subdivision_code" :
+                                                                              column.id == "_fkBuilderID" ? "builder_code" :
+                                                                                column.id == "open Since" ? "opensince" : toCamelCase(column.id))
+                                      ).direction === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  )
                                   //   : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
                                   // )
-                                  }
-                                </strong>
+                                }
+                              </strong>
 
-                                {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && 
-                                  column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" && 
-                                  column.id !== "latitude" && column.id !== "longitude" && column.id !== "gas Provider" && column.id !== "parcel Group" && column.id !== "phone" &&
-                                  column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
-                                  column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
-                                ) && (
-                                    <>
+                              {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
+                                column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" &&
+                                column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" &&
+                                column.id !== "latitude" && column.id !== "longitude" && column.id !== "gas Provider" && column.id !== "parcel Group" && column.id !== "phone" &&
+                                column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
+                                column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
+                              ) && (
+                                  <>
                                     <br />
-                                      <select className="custom-select" value={column.id == "total Lots" ? totalLotsOption : column.id == "lot Width" ? lotWidthOption :
-                                        column.id == "lot Size" ? lotSizeOption : column.id == "master Plan Fee" ? masterPlanFeeOption : 
+                                    <select className="custom-select" value={column.id == "total Lots" ? totalLotsOption : column.id == "lot Width" ? lotWidthOption :
+                                      column.id == "lot Size" ? lotSizeOption : column.id == "master Plan Fee" ? masterPlanFeeOption :
                                         column.id == "hOA Fee" ? hOAFeeOption : column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption :
-                                        column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
-                                        column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
-                                        column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
-                                        column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
-                                        column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
-                                        column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption :
-                                        column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
-                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption :
-                                        column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
-                                        column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
-                                        column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
-                                        column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
-                                        column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
-                                        
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
-                                          color: "white",
-                                          appearance: "auto" 
-                                        }}
-                                        
-                                        onChange={(e) => column.id == "total Lots" ? handleSelectChange(e, "totallots") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
+                                            column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
+                                              column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
+                                                column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
+                                                  column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
+                                                    column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption :
+                                                      column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
+                                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption :
+                                                          column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
+                                                            column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
+                                                              column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
+                                                                column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
+                                                                  column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
+
+                                      style={{
+                                        cursor: "pointer",
+                                        marginLeft: '0px',
+                                        fontSize: "8px",
+                                        padding: " 0 5px 0",
+                                        height: "15px",
+                                        color: "white",
+                                        appearance: "auto"
+                                      }}
+
+                                      onChange={(e) => column.id == "total Lots" ? handleSelectChange(e, "totallots") :
+                                        column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
                                           column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                          column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
-                                          column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
-                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                          column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                          column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
-                                          column.id == "months Open" ? handleSelectChange(e, "months_open") :
-                                          column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
-                                          column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
-                                          column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
-                                          column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
-                                          column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
-                                          column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
-                                          column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
-                                          column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
-                                          column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
-                                          column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
-                                          column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
-                                          column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
-                                          column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
-                                          column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
-                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                          column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
-                                          column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
-                                          column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
-                                          column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
-                                          column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
-                                          column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
-                                          column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
-                                          column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
-                                        }
-                                      >
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
-                                      </select>
-                                      <br />
-                                    </>
-                                  )}
-                              </th>
+                                            column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
+                                              column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
+                                                column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                                  column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                                    column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
+                                                      column.id == "months Open" ? handleSelectChange(e, "months_open") :
+                                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
+                                                          column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
+                                                            column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
+                                                              column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
+                                                                column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
+                                                                  column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
+                                                                    column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
+                                                                      column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
+                                                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
+                                                                          column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
+                                                                            column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
+                                                                              column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
+                                                                                column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
+                                                                                  column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
+                                                                                    column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                                                                      column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                                                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
+                                                                                          column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
+                                                                                            column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
+                                                                                              column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
+                                                                                                column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
+                                                                                                  column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
+                                                                                                    column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
+                                                                                                      column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
+                                      }
+                                    >
+                                      <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                      <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                      <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
+                                    </select>
+                                    <br />
+                                  </>
+                                )}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody style={{ textAlign: "center" }}>
+                        {!excelLoading &&
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            {columns.map((column) => (
+                              <>
+                                {column.id == "status" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "reporting" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "builder" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "name" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "product Type" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "area" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "master Plan" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "zip Code" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Lots" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalLotsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "lot Width" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                }
+                                {column.id == "lot Size" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                }
+                                {column.id == "zoning" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "age Restricted" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "all Single Story" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gated" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "cross Streets" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "juridiction" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "longitude" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "gas Provider" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "hOA Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{hOAFeeResult.toFixed(2)}</td>
+                                }
+                                {column.id == "master Plan Fee" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{masterPlanFeeResult.toFixed(2)}</td>
+                                }
+                                {column.id == "parcel Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "phone" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "website" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "date Added" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "__pkSubID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "_fkBuilderID" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "total Closings" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalClosingsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "total Permits" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalPermitsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "total Net Sales" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{totalNetSalesResult.toFixed(2)}</td>
+                                }
+                                {column.id == "months Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{monthsOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "latest Traffic/Sales Data" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "latest Lots Released" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{latestLotsReleasedResult.toFixed(2)}</td>
+                                }
+                                {column.id == "latest Standing Inventory" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{latestStandingInventoryResult.toFixed(2)}</td>
+                                }
+                                {column.id == "unsold Lots" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{unsoldLotsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Base Price Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Sqft All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "min Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{minSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Base Price All" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxBasePriceAllResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Sqft Active" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{maxSqftActiveResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Traffic Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Closings Per Month This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month Since Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "avg Net Sales Per Month Last 3 Months" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
+                                }
+                                {column.id == "max Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "min Week Ending" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "sqft Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "price Group" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "month Net Sold" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{monthNetSoldResult.toFixed(2)}</td>
+                                }
+                                {column.id == "year Net Sold" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{yearNetSoldResult.toFixed(2)}</td>
+                                }
+                                {column.id == "open Since" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                                {column.id == "avg Closing Price" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{avgClosingPriceResult.toFixed(2)}</td>
+                                }
+                                {column.id == "permits This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "median Closing Price Since Open" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceSinceOpenResult.toFixed(2)}</td>
+                                }
+                                {column.id == "median Closing Price This Year" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
+                                }
+                                {column.id == "action" &&
+                                  <td key={column.id} style={{ textAlign: "center" }}></td>
+                                }
+                              </>
                             ))}
-                          </tr>
-                        </thead>
-                        <tbody style={{ textAlign: "center" }}>
-                          {!excelLoading &&
-                            <tr>
-                              <td></td>
-                              <td></td>
+                          </tr>}
+                        {BuilderList !== null && BuilderList.length > 0 ? (
+                          BuilderList.map((element, index) => (
+                            <tr
+                              onClick={(e) => {
+                                if (e.target.type === "checkbox") {
+                                  return;
+                                } else if (e.target.className === "btn btn-danger shadow btn-xs sharp" || e.target.className === "fa fa-trash") {
+                                  return;
+                                } else if (e.target.className === "btn btn-primary shadow btn-xs sharp me-1" || e.target.className === "fas fa-pencil-alt") {
+                                  return;
+                                } else if (e.target.className === "btn btn-primary shadow btn-xs sharp" || e.target.className === "fa fa-file-text") {
+                                  return;
+                                } else {
+                                  handleRowClick(element.id);
+                                }
+                              }}
+                              style={{
+                                textAlign: "center",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedLandSales.includes(element.id)}
+                                  onChange={(e) => handleEditCheckboxChange(e, element.id)}
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </td>
+                              <td>{index + 1}</td>
                               {columns.map((column) => (
                                 <>
                                   {column.id == "status" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.status === 1 && "Active"}
+                                      {element.status === 0 && "Sold Out"}
+                                      {element.status === 2 && "Future"}
+                                    </td>
                                   }
                                   {column.id == "reporting" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.reporting === 1 && "Yes"}
+                                      {element.reporting === 0 && "No"}
+                                    </td>
                                   }
                                   {column.id == "builder" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.name}</td>
                                   }
                                   {column.id == "name" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
                                   }
                                   {column.id == "product Type" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
                                   }
                                   {column.id == "area" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
                                   }
                                   {column.id == "master Plan" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                   }
                                   {column.id == "zip Code" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                   }
                                   {column.id == "total Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{totalLotsResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.totallots}</td>
                                   }
                                   {column.id == "lot Width" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{lotWidthResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
                                   }
                                   {column.id == "lot Size" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{lotSizeResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
                                   }
                                   {column.id == "zoning" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
                                   }
                                   {column.id == "age Restricted" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.age === 1 && "Yes"}
+                                      {element.age === 0 && "No"}
+                                    </td>
                                   }
                                   {column.id == "all Single Story" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.single === 1 && "Yes"}
+                                      {element.single === 0 && "No"}
+                                    </td>
                                   }
                                   {column.id == "gated" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      {element.gated === 1 && "Yes"}
+                                      {element.gated === 0 && "No"}
+                                    </td>
                                   }
                                   {column.id == "cross Streets" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
                                   }
                                   {column.id == "juridiction" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
                                   }
                                   {column.id == "latitude" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
                                   }
                                   {column.id == "longitude" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
                                   }
                                   {column.id == "gas Provider" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.gasprovider}</td>
                                   }
                                   {column.id == "hOA Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{hOAFeeResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
                                   }
                                   {column.id == "master Plan Fee" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{masterPlanFeeResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
                                   }
                                   {column.id == "parcel Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
                                   }
                                   {column.id == "phone" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
                                   }
                                   {column.id == "website" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
                                   }
                                   {column.id == "date Added" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
                                   }
                                   {column.id == "__pkSubID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
                                   }
                                   {column.id == "_fkBuilderID" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
                                   }
                                   {column.id == "total Closings" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{totalClosingsResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
                                   }
                                   {column.id == "total Permits" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{totalPermitsResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
                                   }
                                   {column.id == "total Net Sales" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{totalNetSalesResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
                                   }
                                   {column.id == "months Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{monthsOpenResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.months_open}</td>
                                   }
                                   {column.id == "latest Traffic/Sales Data" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.latest_traffic_data} /></td>
                                   }
                                   {column.id == "latest Lots Released" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{latestLotsReleasedResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_lots_released}</td>
                                   }
                                   {column.id == "latest Standing Inventory" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{latestStandingInventoryResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.latest_standing_inventory}</td>
                                   }
                                   {column.id == "unsold Lots" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{unsoldLotsResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.unsold_lots}</td>
                                   }
                                   {column.id == "avg Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_all}</td>
                                   }
                                   {column.id == "avg Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_active}</td>
                                   }
                                   {column.id == "avg Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
                                   }
                                   {column.id == "avg Base Price Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgBasePriceActiveResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
                                   }
                                   {column.id == "min Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{minSqftAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_all}</td>
                                   }
                                   {column.id == "max Sqft All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{maxSqftAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_all}</td>
                                   }
                                   {column.id == "min Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{minBasePriceAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
                                   }
                                   {column.id == "min Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{minSqftActiveResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_active}</td>
                                   }
                                   {column.id == "max Base Price All" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{maxBasePriceAllResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
                                   }
                                   {column.id == "max Sqft Active" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{maxSqftActiveResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
                                   }
                                   {column.id == "avg Traffic Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetTrafficPerMonthThisYearResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
                                   }
                                   {column.id == "avg Net Sales Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthThisYearResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
                                   }
                                   {column.id == "avg Closings Per Month This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgClosingsPerMonthThisYearResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
                                   }
                                   {column.id == "avg Net Sales Per Month Since Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthSinceOpenResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_since_open}</td>
                                   }
                                   {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgNetSalesPerMonthLastThreeMonthsResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_last_three_months}</td>
                                   }
                                   {column.id == "max Week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
                                   }
                                   {column.id == "min Week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
                                   }
                                   {column.id == "sqft Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
                                   }
                                   {column.id == "price Group" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.price_group.group}</td>
                                   }
                                   {column.id == "month Net Sold" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{monthNetSoldResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
                                   }
                                   {column.id == "year Net Sold" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{yearNetSoldResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
                                   }
                                   {column.id == "open Since" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince} /></td>
                                   }
                                   {column.id == "avg Closing Price" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{avgClosingPriceResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price} /></td>
                                   }
                                   {column.id == "permits This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
                                   }
                                   {column.id == "median Closing Price Since Open" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceSinceOpenResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open} /></td>
                                   }
                                   {column.id == "median Closing Price This Year" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{medianClosingPriceThisYearResult.toFixed(2)}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year} /></td>
                                   }
+
                                   {column.id == "action" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>
+                                      <div>
+                                        <Link
+                                          to={`/subdivisionUpdate/${element.id}`}
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                        >
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </Link>
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+
+                                        <Link
+                                          className="btn btn-primary shadow btn-xs sharp"
+                                          style={{ marginLeft: "4px" }}
+                                          onClick={(e) => handleDownloadReport(e, element.id)}
+                                          key={element.id}
+                                        >
+                                          {loadingReportId === element.id ? (
+                                            <div class="spinner-border spinner-border-sm" role="status" style={{ marginTop: "1px" }} />
+                                          ) : (
+                                            <i class="fa fa-file-text" aria-hidden="true"></i>
+                                          )}
+                                        </Link>
+                                      </div>
+                                    </td>
                                   }
                                 </>
                               ))}
-                            </tr>}
-                          {BuilderList !== null && BuilderList.length > 0 ? (
-                            BuilderList.map((element, index) => (
-                              <tr
-                                onClick={(e) => {
-                                  if (e.target.type === "checkbox") {
-                                    return;
-                                  } else if (e.target.className === "btn btn-danger shadow btn-xs sharp" || e.target.className === "fa fa-trash") {
-                                    return;
-                                  } else if (e.target.className === "btn btn-primary shadow btn-xs sharp me-1" || e.target.className === "fas fa-pencil-alt") {
-                                    return;
-                                  } else if (e.target.className === "btn btn-primary shadow btn-xs sharp" || e.target.className === "fa fa-file-text") {
-                                    return;
-                                  } else {
-                                    handleRowClick(element.id);
-                                  }
-                                }}
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <td>
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedLandSales.includes(element.id)}
-                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
-                                    style={{
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </td>
-                                <td>{index + 1}</td>
-                                {columns.map((column) => (
-                                  <>
-                                    {column.id == "status" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.status === 1 && "Active"}
-                                        {element.status === 0 && "Sold Out"}
-                                        {element.status === 2 && "Future"}
-                                      </td>
-                                    }
-                                    {column.id == "reporting" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.reporting === 1 && "Yes"}
-                                        {element.reporting === 0 && "No"}
-                                      </td>
-                                    }
-                                    {column.id == "builder" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.name}</td>
-                                    }
-                                    {column.id == "name" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
-                                    }
-                                    {column.id == "product Type" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
-                                    }
-                                    {column.id == "area" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
-                                    }
-                                    {column.id == "master Plan" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
-                                    }
-                                    {column.id == "zip Code" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
-                                    }
-                                    {column.id == "total Lots" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.totallots}</td>
-                                    }
-                                    {column.id == "lot Width" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
-                                    }
-                                    {column.id == "lot Size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
-                                    }
-                                    {column.id == "zoning" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
-                                    }
-                                    {column.id == "age Restricted" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.age === 1 && "Yes"}
-                                        {element.age === 0 && "No"}
-                                      </td>
-                                    }
-                                    {column.id == "all Single Story" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.single === 1 && "Yes"}
-                                        {element.single === 0 && "No"}
-                                      </td>
-                                    }
-                                    {column.id == "gated" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.gated === 1 && "Yes"}
-                                        {element.gated === 0 && "No"}
-                                      </td>
-                                    }
-                                    {column.id == "cross Streets" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
-                                    }
-                                    {column.id == "juridiction" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
-                                    }
-                                    {column.id == "latitude" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
-                                    }
-                                    {column.id == "longitude" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
-                                    }
-                                    {column.id == "gas Provider" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.gasprovider}</td>
-                                    }
-                                    {column.id == "hOA Fee" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.hoafee}</td>
-                                    }
-                                    {column.id == "master Plan Fee" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplanfee}</td>
-                                    }
-                                    {column.id == "parcel Group" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
-                                    }
-                                    {column.id == "phone" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
-                                    }
-                                    {column.id == "website" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
-                                    }
-                                    {column.id == "date Added" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.dateadded} /></td>
-                                    }
-                                    {column.id == "__pkSubID" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
-                                    }
-                                    {column.id == "_fkBuilderID" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder.builder_code}</td>
-                                    }
-                                    {column.id == "total Closings" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_closings}</td>
-                                    }
-                                    {column.id == "total Permits" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_permits}</td>
-                                    }
-                                    {column.id == "total Net Sales" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.total_net_sales}</td>
-                                    }
-                                    {column.id == "months Open" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.months_open}</td>
-                                    }
-                                    {column.id == "latest Traffic/Sales Data" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.latest_traffic_data} /></td>
-                                    }
-                                    {column.id == "latest Lots Released" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_lots_released}</td>
-                                    }
-                                    {column.id == "latest Standing Inventory" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_standing_inventory}</td>
-                                    }
-                                    {column.id == "unsold Lots" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.unsold_lots}</td>
-                                    }
-                                    {column.id == "avg Sqft All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_all}</td>
-                                    }
-                                    {column.id == "avg Sqft Active" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_sqft_active}</td>
-                                    }
-                                    {column.id == "avg Base Price All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_all} /> || "NA"}</td>
-                                    }
-                                    {column.id == "avg Base Price Active" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.avg_base_price_active} /> || "NA"}</td>
-                                    }
-                                    {column.id == "min Sqft All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_all}</td>
-                                    }
-                                    {column.id == "max Sqft All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_all}</td>
-                                    }
-                                    {column.id == "min Base Price All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.min_base_price_all} /> || "NA"}</td>
-                                    }
-                                    {column.id == "min Sqft Active" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.min_sqft_active}</td>
-                                    }
-                                    {column.id == "max Base Price All" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.max_base_price_all} /> || "NA"}</td>
-                                    }
-                                    {column.id == "max Sqft Active" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.max_sqft_active}</td>
-                                    }
-                                    {column.id == "avg Traffic Per Month This Year" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_traffic_per_month_this_year}</td>
-                                    }
-                                    {column.id == "avg Net Sales Per Month This Year" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_this_year}</td>
-                                    }
-                                    {column.id == "avg Closings Per Month This Year" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_closings_per_month_this_year}</td>
-                                    }
-                                    {column.id == "avg Net Sales Per Month Since Open" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_since_open}</td>
-                                    }
-                                    {column.id == "avg Net Sales Per Month Last 3 Months" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.avg_net_sales_per_month_last_three_months}</td>
-                                    }
-                                    {column.id == "max Week Ending" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.max_week_ending} /> || "NA"}</td>
-                                    }
-                                    {column.id == "min Week Ending" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{<DateComponent date={element.min_week_ending} /> || "NA"}</td>
-                                    }
-                                    {column.id == "sqft Group" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sqft_group}</td>
-                                    }
-                                    {column.id == "price Group" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_group.group}</td>
-                                    }
-                                    {column.id == "month Net Sold" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.month_net_sold}</td>
-                                    }
-                                    {column.id == "year Net Sold" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.year_net_sold}</td>
-                                    }
-                                    {column.id == "open Since" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}> <DateComponent date={element.opensince} /></td>
-                                    }
-                                    {column.id == "avg Closing Price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.avg_closing_price} /></td>
-                                    }
-                                    {column.id == "permits This Year" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.permit_this_year}</td>
-                                    }
-                                    {column.id == "median Closing Price Since Open" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}> <PriceComponent price={element.median_closing_price_since_open} /></td>
-                                    }
-                                    {column.id == "median Closing Price This Year" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.median_closing_price_this_year} /></td>
-                                    }
-
-                                    {column.id == "action" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>
-                                        <div>
-                                          <Link
-                                            to={`/subdivisionUpdate/${element.id}`}
-                                            className="btn btn-primary shadow btn-xs sharp me-1"
-                                          >
-                                            <i className="fas fa-pencil-alt"></i>
-                                          </Link>
-                                          <Link
-                                            onClick={() =>
-                                              swal({
-                                                title: "Are you sure?",
-                                                icon: "warning",
-                                                buttons: true,
-                                                dangerMode: true,
-                                              }).then((willDelete) => {
-                                                if (willDelete) {
-                                                  handleDelete(element.id);
-                                                }
-                                              })
-                                            }
-                                            className="btn btn-danger shadow btn-xs sharp"
-                                          >
-                                            <i className="fa fa-trash"></i>
-                                          </Link>
-                                          
-                                            <Link 
-                                              className="btn btn-primary shadow btn-xs sharp" 
-                                              style={{marginLeft: "4px"}}
-                                              onClick={(e) => handleDownloadReport(e, element.id)}
-                                              key={element.id}
-                                            >
-                                              {loadingReportId === element.id ? (
-                                                <div class="spinner-border spinner-border-sm" role="status" style={{marginTop: "1px"}} />
-                                                ) : (
-                                                <i class="fa fa-file-text" aria-hidden="true"></i>
-                                              )}
-                                            </Link>
-                                        </div>
-                                      </td>
-                                    }
-                                  </>
-                                ))}
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="15" style={{ textAlign: "center" }}>
-                                No data found
-                              </td>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                  
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="15" style={{ textAlign: "center" }}>
+                              No data found
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
-                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {BuilderListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
-                    >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
-                            return (
-                              <Link
-                                className={`paginate_button ${currentPage === n ? "current" : ""
-                                  } `}
-                                key={i}
-                                onClick={() => changeCPage(n)}
-                              >
-                                {n}
-                              </Link>
-                            );
-                          }
-                        })}
-                      </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
-                  </div>
+              </div>
+              <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                <div className="dataTables_info">
+                  Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                  {BuilderListCount} entries
+                </div>
+                <div
+                  className="dataTables_paginate paging_simple_numbers justify-content-center"
+                  id="example2_paginate"
+                >
+                  <Link
+                    className="paginate_button previous disabled"
+                    to="#"
+                    onClick={prePage}
+                  >
+                    <i className="fa-solid fa-angle-left" />
+                  </Link>
+                  <span>
+                    {number.map((n, i) => {
+                      if (number.length > 4) {
+                        if (
+                          i === 0 ||
+                          i === number.length - 1 ||
+                          Math.abs(currentPage - n) <= 1 ||
+                          (i === 1 && n === 2) ||
+                          (i === number.length - 2 &&
+                            n === number.length - 1)
+                        ) {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        } else if (i === 1 || i === number.length - 2) {
+                          return <span key={i}>...</span>;
+                        } else {
+                          return null;
+                        }
+                      } else {
+                        return (
+                          <Link
+                            className={`paginate_button ${currentPage === n ? "current" : ""
+                              } `}
+                            key={i}
+                            onClick={() => changeCPage(n)}
+                          >
+                            {n}
+                          </Link>
+                        );
+                      }
+                    })}
+                  </span>
+
+                  <Link
+                    className="paginate_button next"
+                    to="#"
+                    onClick={nextPage}
+                  >
+                    <i className="fa-solid fa-angle-right" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div >
       <SubdivisionOffcanvas
         ref={subdivision}
         Title="Add Subdivision"
@@ -5914,7 +5954,7 @@ const SubdivisionList = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Sorting */}
+  {/* Sorting */ }
       <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
         <Modal.Header handleSortingPopupClose>
           <Modal.Title>Sorted Fields</Modal.Title>
@@ -6812,15 +6852,15 @@ const SubdivisionList = () => {
                     <label className="form-label">
                       ZIP CODE:{" "}
                     </label>
-                    <input 
-                      type="text" 
-                      name="zipcode" 
-                      value={filterQuery.zipcode} 
-                      className="form-control" 
-                      onChange={HandleFilter} 
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={filterQuery.zipcode}
+                      className="form-control"
+                      onChange={HandleFilter}
                       pattern="[0-9, ]*"
                       onInput={(e) => {
-                          e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
+                        e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
                       }}
                     />
                   </div>
