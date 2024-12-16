@@ -1500,12 +1500,16 @@ const ClosingList = () => {
                           </button>
                           <Button
                             className="btn btn-primary btn-sm me-1"
-                            onClick={addToBuilderList}
+                            onClick={() => !excelLoading ? addToBuilderList : ""}
                           >
-                            <div style={{ fontSize: "11px" }}>
-                              <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
-                              Map
-                            </div>
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                                Map
+                              </div>
+                            }
                           </Button>
                           <button
                             className="btn btn-primary btn-sm me-1"

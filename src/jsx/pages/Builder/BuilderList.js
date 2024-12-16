@@ -1917,13 +1917,15 @@ const BuilderTable = () => {
                       />
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2" style={{width: "100%"}}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex">
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                            <i className="fa-solid fa-list"></i>&nbsp;
-                            Columns Order
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -1931,29 +1933,35 @@ const BuilderTable = () => {
                             onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>&nbsp;
-                            Sort
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
                           </Button>
                           <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             {excelLoading ?
                               <div class="spinner-border spinner-border-sm" role="status" />
                               :
-                              <>
+                              <div style={{ fontSize: "11px" }}>
                                 <i class="fas fa-file-export" />&nbsp;
                                 Export
-                              </>
+                              </div>
                             }
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                            <i className="fa fa-filter" />&nbsp;
-                            Filter
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
                           </button>
                         </div>
                       ) : (
                         <div className="d-flex">
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                            <i className="fa-solid fa-list"></i>&nbsp;
-                            Columns Order
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -1961,37 +1969,45 @@ const BuilderTable = () => {
                             onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>&nbsp;
-                            Sort
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
                           </Button>
                           <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             {excelLoading ?
                               <div class="spinner-border spinner-border-sm" role="status" />
                               :
-                              <>
+                              <div style={{ fontSize: "11px" }}>
                                 <i class="fas fa-file-export" />&nbsp;
                                 Export
-                              </>
+                              </div>
                             }
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                            <i className="fa fa-filter" />&nbsp;
-                            Filter
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
                           </button>
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
                           >
-                            <i className="fa fa-shield" />&nbsp;
-                            Field Access
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
                           </button>
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={handlBuilderClick}
                           >
-                            <i className="fas fa-file-import" />&nbsp;
-                            Import
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
                           </Button>
                           <Link
                             to={"#"}
@@ -1999,8 +2015,10 @@ const BuilderTable = () => {
                             data-bs-toggle="offcanvas"
                             onClick={() => builder.current.showEmployeModal()}
                           >
-                            <i className="fa fa-plus" />&nbsp;
-                            Add Builder
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Builder
+                            </div>
                           </Link>
                           <Link
                             to={"#"}
@@ -2008,8 +2026,10 @@ const BuilderTable = () => {
                             data-bs-toggle="offcanvas"
                             onClick={() => bulkBuilder.current.showEmployeModal()}
                           >
-                            <i className="fa fa-pencil" />&nbsp;
-                            Bulk Edit
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
                           </Link>
                           <button
                             className="btn btn-danger btn-sm me-1"
@@ -2025,8 +2045,10 @@ const BuilderTable = () => {
                               }
                             }) : ""}
                           >
-                            <i className="fa fa-trash" />&nbsp;
-                            Bulk Delete
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
                           </button>
                         </div>
                       )}

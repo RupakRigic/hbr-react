@@ -709,7 +709,7 @@ const LandsaleList = () => {
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          
+
           if (responseData.failed_records > 0) {
             let message = responseData.message;
             const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
@@ -1030,112 +1030,156 @@ const LandsaleList = () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                      <div style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
 
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <Button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={addToBuilderList}
-                        >
-                          <i className="fa fa-map-marker" aria-hidden="true"></i>
-                        </Button>
-                        <button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => setManageAccessOffcanvas(true)}
-                        >
-                          {" "}
-                          Field Access
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => landsale.current.showEmployeModal()}
-                        >
-                          + Add Land Sale
-                        </Link>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => bulklandsale.current.showEmployeModal()}
-                        >
-                          Bulk Edit
-                        </Link>
-                        <button
-                          className="btn btn-danger btn-sm me-1"
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => selectedLandSales.length > 0 ? swal({
-                            title: "Are you sure?",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                          }).then((willDelete) => {
-                            if (willDelete) {
-                              handleBulkDelete(selectedLandSales);
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                        <div style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
                             }
-                          }) : ""}
-                        >
-                          Bulk Delete
-                        </button>
-                      </div>
-                    )}
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                          <Button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => !excelLoading ? addToBuilderList : ""}
+                          >
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                                Map
+                              </div>
+                            }
+                          </Button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
+                          </Button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => landsale.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Land Sale
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulklandsale.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            style={{ marginLeft: "3px" }}
+                            onClick={() => selectedLandSales.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedLandSales);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -1244,21 +1288,21 @@ const LandsaleList = () => {
                                     (item) => item.key === (
                                       column.id == "size MS" ? "typeofunit" :
                                         column.id == "size" ? "noofunit" :
-                                        column.id == "zip Code" ? "zip" :
-                                          toCamelCase(column.id))
+                                          column.id == "zip Code" ? "zip" :
+                                            toCamelCase(column.id))
                                   ) && (
-                                    <span>
-                                      {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (
-                                          column.id == "size MS" ? "typeofunit" :
-                                            column.id == "size" ? "noofunit" :
-                                            column.id == "zip Code" ? "zip" :
-                                              toCamelCase(column.id))
-                                      ).direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === (
+                                            column.id == "size MS" ? "typeofunit" :
+                                              column.id == "size" ? "noofunit" :
+                                                column.id == "zip Code" ? "zip" :
+                                                  toCamelCase(column.id))
+                                        ).direction === "asc"
+                                          ? "↑"
+                                          : "↓"}
+                                      </span>
+                                    )}
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
@@ -1472,49 +1516,33 @@ const LandsaleList = () => {
                     )}
                   </div>
                 </div>
-                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {landSaleListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {landSaleListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -1525,22 +1553,38 @@ const LandsaleList = () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>
