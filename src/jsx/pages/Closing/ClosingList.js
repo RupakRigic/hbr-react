@@ -130,43 +130,43 @@ const ClosingList = () => {
   const [sortOrders, setSortOrders] = useState({});
 
   useEffect(() => {
-    if(localStorage.getItem("seletctedClosingTypeByFilter_Closing")) {
+    if (localStorage.getItem("seletctedClosingTypeByFilter_Closing")) {
       const seletctedClosingType = JSON.parse(localStorage.getItem("seletctedClosingTypeByFilter_Closing"));
       handleSelectClosingTypeChange(seletctedClosingType);
     }
-    if(localStorage.getItem("selectedBuilderNameByFilter_Closing")) {
+    if (localStorage.getItem("selectedBuilderNameByFilter_Closing")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Closing"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter_Closing")) {
+    if (localStorage.getItem("selectedSubdivisionNameByFilter_Closing")) {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Closing"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if(localStorage.getItem("seletctedLenderByFilter_Closing")) {
+    if (localStorage.getItem("seletctedLenderByFilter_Closing")) {
       const seletctedLender = JSON.parse(localStorage.getItem("seletctedLenderByFilter_Closing"));
       handleSelectLenderChange(seletctedLender);
     }
-    if(localStorage.getItem("productTypeStatusByFilter_Closing")) {
+    if (localStorage.getItem("productTypeStatusByFilter_Closing")) {
       const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Closing"));
       handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter_Closing")) {
+    if (localStorage.getItem("selectedAreaByFilter_Closing")) {
       const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Closing"));
       handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter_Closing")) {
+    if (localStorage.getItem("selectedMasterPlanByFilter_Closing")) {
       const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Closing"));
       handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter_Closing")) {
+    if (localStorage.getItem("selectedAgeByFilter_Closing")) {
       const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Closing"));
       handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter_Closing")) {
+    if (localStorage.getItem("selectedSingleByFilter_Closing")) {
       const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Closing"));
       handleSelectSingleChange(selectedSingle);
     }
-}, []);
+  }, []);
 
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
@@ -205,12 +205,12 @@ const ClosingList = () => {
   const HandleFilterForm = (e) => {
     if (filterQuery.from == "" || filterQuery.to == "") {
       setShowPopup(true);
-      if(filterQuery.from == "" && filterQuery.to == "") {
-          setMessage("Please select from and to date.");
+      if (filterQuery.from == "" && filterQuery.to == "") {
+        setMessage("Please select from and to date.");
       } else if (filterQuery.from == "") {
-          setMessage("Please select from date.");
+        setMessage("Please select from date.");
       } else if (filterQuery.to == "") {
-          setMessage("Please select to date.");
+        setMessage("Please select to date.");
       }
       return;
     } else {
@@ -631,8 +631,8 @@ const ClosingList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
       const response = await AdminClosingService.index(
-        currentPage, 
-        sortConfigString, 
+        currentPage,
+        sortConfigString,
         searchQuery
       );
       const responseData = await response.json();
@@ -640,7 +640,7 @@ const ClosingList = () => {
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -727,7 +727,7 @@ const ClosingList = () => {
           document.getElementById("fileInput").value = null;
           console.log(responseData);
           setLoading(false);
-          
+
           if (responseData.failed_records > 0) {
             let message = responseData.message;
             const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
@@ -901,56 +901,56 @@ const ClosingList = () => {
 
   const GetBuilderDropDownList = async () => {
     try {
-        const response = await AdminBuilderService.builderDropDown();
-        const responseData = await response.json();
-        const formattedData = responseData.map((builder) => ({
-            label: builder.name,
-            value: builder.id,
-        }));
-        setBuilderDropDown(formattedData);
+      const response = await AdminBuilderService.builderDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderDropDown(formattedData);
     } catch (error) {
-        console.log("Error fetching builder list:", error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            console.log(errorJson);
-        }
+      console.log("Error fetching builder list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        console.log(errorJson);
+      }
     }
-};
+  };
 
-const GetSubdivisionDropDownList = async () => {
+  const GetSubdivisionDropDownList = async () => {
     try {
-        const response = await AdminSubdevisionService.subdivisionDropDown();
-        const responseData = await response.json();
-        const formattedData = responseData.data.map((subdivision) => ({
-            label: subdivision.name,
-            value: subdivision.id,
-        }));
-        SetSubdivisionList(formattedData);
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData);
     } catch (error) {
-        console.log("Error fetching subdivision list:", error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message);
-        }
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
     }
-};
+  };
 
-const GetLenderList = async () => {
-  try {
+  const GetLenderList = async () => {
+    try {
       let response = await AdminClosingService.lender()
       let responseData = await response.json()
       const formattedData = responseData.map((lender) => ({
         label: lender.lender,
         value: lender.lender,
-      }));  
-     setLenderList(formattedData)
-  } catch (error) {
+      }));
+      setLenderList(formattedData)
+    } catch (error) {
       if (error.name === 'HTTPError') {
-          const errorJson = await error.response.json();
-          console.log(errorJson.message);
+        const errorJson = await error.response.json();
+        console.log(errorJson.message);
       }
-  }
-};
+    }
+  };
 
   useEffect(() => {
     GetBuilderDropDownList();
@@ -1144,30 +1144,30 @@ const GetLenderList = async () => {
     let subdivisionList = ClosingList.map((data) => data.subdivision)
 
     navigate('/google-map-locator', {
-      state: { 
-        subdivisionList: subdivisionList ,
+      state: {
+        subdivisionList: subdivisionList,
         closings: true
       },
     });
   };
 
   const totalSumFields = (field) => {
-    if(field == "closingprice") {
+    if (field == "closingprice") {
       return AllClosingListExport.reduce((sum, closings) => {
         return sum + (closings.closingprice || 0);
       }, 0);
     }
-    if(field == "loanamount") {
+    if (field == "loanamount") {
       return AllClosingListExport.reduce((sum, closings) => {
         return sum + (closings.loanamount || 0);
       }, 0);
     }
-    if(field == "lotwidth") {
+    if (field == "lotwidth") {
       return AllClosingListExport.reduce((sum, closings) => {
         return sum + (closings.subdivision && closings.subdivision.lotwidth || 0);
       }, 0);
     }
-    if(field == "lotsize") {
+    if (field == "lotsize") {
       return AllClosingListExport.reduce((sum, closings) => {
         return sum + (closings.subdivision && closings.subdivision.lotsize || 0);
       }, 0);
@@ -1205,11 +1205,11 @@ const GetLenderList = async () => {
         setClosingPriceOption("");
         setLotWidthOption("");
         setLotSizeOption("");
-  
+
         setClosingPriceResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setLoanAmountResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1222,11 +1222,11 @@ const GetLenderList = async () => {
         setClosingPriceOption("");
         setLoanAmountOption("");
         setLotSizeOption("");
-  
+
         setClosingPriceResult(0);
         setLoanAmountResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1239,11 +1239,11 @@ const GetLenderList = async () => {
         setClosingPriceOption("");
         setLoanAmountOption("");
         setLotWidthOption("");
-  
+
         setClosingPriceResult(0);
         setLoanAmountResult(0);
         setLotWidthResult(0);
-  
+
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1410,10 +1410,10 @@ const GetLenderList = async () => {
                         aria-label="Basic example"
                       >
                         {SyestemUserRole == "Admin" &&
-                        <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
-                          {" "}
-                          Update with CCAPNs
-                        </button>}
+                          <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
+                            {" "}
+                            Update with CCAPNs
+                          </button>}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}
@@ -1424,111 +1424,152 @@ const GetLenderList = async () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                        <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <Button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={addToBuilderList}
-                        >
-                          <i className="fa fa-map-marker" aria-hidden="true"></i>
-                        </Button>
 
-                        <button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => setManageAccessOffcanvas(true)}
-                        >
-                          {" "}
-                          Field Access
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => closingsale.current.showEmployeModal()}
-                        >
-                          + Add Closing
-                        </Link>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => bulkClosing.current.showEmployeModal()}
-                        >
-                          Bulk Edit
-                        </Link>
-                        <button
-                          className="btn btn-danger btn-sm me-1"
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => selectedLandSales.length > 0 ? swal({
-                            title: "Are you sure?",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                          }).then((willDelete) => {
-                            if (willDelete) {
-                              handleBulkDelete(selectedLandSales);
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
                             }
-                          }) : ""}
-                        >
-                          Bulk Delete
-                        </button>
-                      </div>
-                    )}
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                          <Button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={addToBuilderList}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                              Map
+                            </div>
+                          </Button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
+                          </Button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => closingsale.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Closing
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulkClosing.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            style={{ marginLeft: "3px" }}
+                            onClick={() => selectedLandSales.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedLandSales);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -1633,85 +1674,85 @@ const GetLenderList = async () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "closing Type" ? "closing_type" :
-                                      column.id == "closing Price" ? "closingprice" :
-                                      column.id == "parcel Number" ? "parcel" :
-                                      column.id == "sub Legal Name" ? "sublegal_name" :
-                                      column.id == "seller Legal Name" ? "sellerleagal" :
-                                      column.id == "buyer Name" ? "buyer" :
-                                      column.id == "doc" ? "document" :
-                                      column.id == "product Type" ? "product_type" :
-                                      column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
-                                      column.id == "lot Width" ? "lotwidth" :
-                                      column.id == "lot Size" ? "lotsize" :
-                                      column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "single" :
-                                      column.id == "date Added" ? "dateadded" :
-                                      column.id == "__pkRecordID" ? "id" :
-                                      column.id == "_fkSubID" ? "subdivision_code" :
-                                      column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
-                                  ) && (
-                                    <span>
-                                      {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (
-                                          column.id == "closing Type" ? "closing_type" :
-                                          column.id == "closing Price" ? "closingprice" :
+                                        column.id == "closing Price" ? "closingprice" :
                                           column.id == "parcel Number" ? "parcel" :
-                                          column.id == "sub Legal Name" ? "sublegal_name" :
-                                          column.id == "seller Legal Name" ? "sellerleagal" :
-                                          column.id == "buyer Name" ? "buyer" :
-                                          column.id == "doc" ? "document" :
-                                          column.id == "product Type" ? "product_type" :
-                                          column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
-                                          column.id == "lot Width" ? "lotwidth" :
-                                          column.id == "lot Size" ? "lotsize" :
-                                          column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "single" :
-                                          column.id == "date Added" ? "dateadded" :
-                                          column.id == "__pkRecordID" ? "id" :
-                                          column.id == "_fkSubID" ? "subdivision_code" :
-                                          column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
-                                      ).direction === "asc" ? "↑" : "↓"}
-                                    </span>
-                                  )}
+                                            column.id == "sub Legal Name" ? "sublegal_name" :
+                                              column.id == "seller Legal Name" ? "sellerleagal" :
+                                                column.id == "buyer Name" ? "buyer" :
+                                                  column.id == "doc" ? "document" :
+                                                    column.id == "product Type" ? "product_type" :
+                                                      column.id == "master Plan" ? "masterplan_id" :
+                                                        column.id == "zip Code" ? "zipcode" :
+                                                          column.id == "lot Width" ? "lotwidth" :
+                                                            column.id == "lot Size" ? "lotsize" :
+                                                              column.id == "age Restricted" ? "age" :
+                                                                column.id == "all Single Story" ? "single" :
+                                                                  column.id == "date Added" ? "dateadded" :
+                                                                    column.id == "__pkRecordID" ? "id" :
+                                                                      column.id == "_fkSubID" ? "subdivision_code" :
+                                                                        column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                  ) && (
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === (
+                                            column.id == "closing Type" ? "closing_type" :
+                                              column.id == "closing Price" ? "closingprice" :
+                                                column.id == "parcel Number" ? "parcel" :
+                                                  column.id == "sub Legal Name" ? "sublegal_name" :
+                                                    column.id == "seller Legal Name" ? "sellerleagal" :
+                                                      column.id == "buyer Name" ? "buyer" :
+                                                        column.id == "doc" ? "document" :
+                                                          column.id == "product Type" ? "product_type" :
+                                                            column.id == "master Plan" ? "masterplan_id" :
+                                                              column.id == "zip Code" ? "zipcode" :
+                                                                column.id == "lot Width" ? "lotwidth" :
+                                                                  column.id == "lot Size" ? "lotsize" :
+                                                                    column.id == "age Restricted" ? "age" :
+                                                                      column.id == "all Single Story" ? "single" :
+                                                                        column.id == "date Added" ? "dateadded" :
+                                                                          column.id == "__pkRecordID" ? "id" :
+                                                                            column.id == "_fkSubID" ? "subdivision_code" :
+                                                                              column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                      </span>
+                                    )}
                                 </strong>
 
-                                {(!excelLoading) && (column.id !== "closing Type" && column.id !== "closing Date" && column.id !== "doc" && 
-                                  column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address" && column.id !== "parcel Number" && 
+                                {(!excelLoading) && (column.id !== "closing Type" && column.id !== "closing Date" && column.id !== "doc" &&
+                                  column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address" && column.id !== "parcel Number" &&
                                   column.id !== "sub Legal Name" && column.id !== "seller Legal Name" && column.id !== "buyer Name" && column.id !== "lender" && column.id !== "type" &&
                                   column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
-                                ) && 
+                                ) &&
                                   (
                                     <>
-                                    <br />
-                                      <select className="custom-select" 
+                                      <br />
+                                      <select className="custom-select"
                                         value={
-                                          column.id == "closing Price" ? closingPriceOption : 
-                                          column.id == "loan Amount" ? loanAmountOption : 
-                                          column.id == "lot Width" ? lotWidthOption : 
-                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "closing Price" ? closingPriceOption :
+                                            column.id == "loan Amount" ? loanAmountOption :
+                                              column.id == "lot Width" ? lotWidthOption :
+                                                column.id == "lot Size" ? lotSizeOption : ""
                                         }
-                                        
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
+
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: '0px',
+                                          fontSize: "8px",
+                                          padding: " 0 5px 0",
+                                          height: "15px",
                                           color: "white",
-                                          appearance: "auto" 
+                                          appearance: "auto"
                                         }}
-                                        
+
                                         onChange={(e) => column.id == "closing Price" ? handleSelectChange(e, "closingprice") :
                                           column.id == "loan Amount" ? handleSelectChange(e, "loanamount") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                            column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                              column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -1967,49 +2008,33 @@ const GetLenderList = async () => {
                     )}
                   </div>
                 </div>
-                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {closingListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {closingListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -2020,19 +2045,35 @@ const GetLenderList = async () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2247,7 +2288,7 @@ const GetLenderList = async () => {
             <div className="">
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
-                <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-3">
                     <label className="form-label">From:{" "}
                       <span className="text-danger">*</span>
                     </label>
@@ -2381,12 +2422,12 @@ const GetLenderList = async () => {
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">ZIP CODE:{" "}</label>
-                    <input 
-                      type="text" 
-                      name="zipcode" 
-                      value={filterQuery.zipcode} 
-                      className="form-control" 
-                      onChange={HandleFilter} 
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={filterQuery.zipcode}
+                      className="form-control"
+                      onChange={HandleFilter}
                       pattern="[0-9, ]*"
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
@@ -2586,7 +2627,7 @@ const GetLenderList = async () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
