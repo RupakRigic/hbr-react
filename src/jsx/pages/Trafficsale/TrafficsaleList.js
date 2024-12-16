@@ -166,35 +166,35 @@ const TrafficsaleList = () => {
   }
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedBuilderNameByFilter_TrafficSale")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_TrafficSale"));
       handleSelectBuilderNameChange(selectedBuilderName);
     }
-    if(localStorage.getItem("selectedSubdivisionNameByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedSubdivisionNameByFilter_TrafficSale")) {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_TrafficSale"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
-    if(localStorage.getItem("productTypeStatusByFilter_TrafficSale")) {
+    if (localStorage.getItem("productTypeStatusByFilter_TrafficSale")) {
       const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_TrafficSale"));
       handleSelectProductTypeChange(productTypeStatus);
     }
-    if(localStorage.getItem("selectedAreaByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedAreaByFilter_TrafficSale")) {
       const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_TrafficSale"));
       handleSelectAreaChange(selectedArea);
     }
-    if(localStorage.getItem("selectedMasterPlanByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedMasterPlanByFilter_TrafficSale")) {
       const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_TrafficSale"));
       handleSelectMasterPlanChange(selectedMasterPlan);
     }
-    if(localStorage.getItem("selectedAgeByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedAgeByFilter_TrafficSale")) {
       const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_TrafficSale"));
       handleSelectAgeChange(selectedAge);
     }
-    if(localStorage.getItem("selectedSingleByFilter_TrafficSale")) {
+    if (localStorage.getItem("selectedSingleByFilter_TrafficSale")) {
       const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_TrafficSale"));
       handleSelectSingleChange(selectedSingle);
     }
-}, []);
+  }, []);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -225,12 +225,12 @@ const TrafficsaleList = () => {
   const HandleFilterForm = (e) => {
     if (filterQuery.from == "" || filterQuery.to == "") {
       setShowPopup(true);
-      if(filterQuery.from == "" && filterQuery.to == "") {
-          setMessage("Please select from and to date.");
+      if (filterQuery.from == "" && filterQuery.to == "") {
+        setMessage("Please select from and to date.");
       } else if (filterQuery.from == "") {
-          setMessage("Please select from date.");
+        setMessage("Please select from date.");
       } else if (filterQuery.to == "") {
-          setMessage("Please select to date.");
+        setMessage("Please select to date.");
       }
       return;
     } else {
@@ -664,8 +664,8 @@ const TrafficsaleList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
       const response = await AdminTrafficsaleService.index(
-        currentPage, 
-        sortConfigString, 
+        currentPage,
+        sortConfigString,
         searchQuery
       );
       const responseData = await response.json();
@@ -673,7 +673,7 @@ const TrafficsaleList = () => {
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setTrafficListCount(responseData.total);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -942,39 +942,39 @@ const TrafficsaleList = () => {
 
   const GetBuilderDropDownList = async () => {
     try {
-        const response = await AdminBuilderService.builderDropDown();
-        const responseData = await response.json();
-        const formattedData = responseData.map((builder) => ({
-            label: builder.name,
-            value: builder.id,
-        }));
-        setBuilderDropDown(formattedData);
+      const response = await AdminBuilderService.builderDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderDropDown(formattedData);
     } catch (error) {
-        console.log("Error fetching builder list:", error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            console.log(errorJson);
-        }
+      console.log("Error fetching builder list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        console.log(errorJson);
+      }
     }
-};
+  };
 
-const GetSubdivisionDropDownList = async () => {
+  const GetSubdivisionDropDownList = async () => {
     try {
-        const response = await AdminSubdevisionService.subdivisionDropDown();
-        const responseData = await response.json();
-        const formattedData = responseData.data.map((subdivision) => ({
-            label: subdivision.name,
-            value: subdivision.id,
-        }));
-        SetSubdivisionList(formattedData);
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData);
     } catch (error) {
-        console.log("Error fetching subdivision list:", error);
-        if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message);
-        }
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
     }
-};
+  };
 
   useEffect(() => {
     GetBuilderDropDownList();
@@ -1064,7 +1064,7 @@ const GetSubdivisionDropDownList = async () => {
               }
             });
           } else {
-            if(responseData.message) {
+            if (responseData.message) {
               let message = responseData.message;
               setShow(false);
               swal(message).then((willDelete) => {
@@ -1137,13 +1137,13 @@ const GetSubdivisionDropDownList = async () => {
   };
 
   const totalSumFields = (field) => {
-    if(field == "weeklytraffic") {
+    if (field == "weeklytraffic") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.weeklytraffic || 0);
       }, 0);
     }
-    if(field == "grosssales") {
-      if(filter){
+    if (field == "grosssales") {
+      if (filter) {
         return trafficsaleList.reduce((sum, traficSales) => {
           return sum + (traficSales.grosssales || 0);
         }, 0);
@@ -1153,37 +1153,37 @@ const GetSubdivisionDropDownList = async () => {
         }, 0);
       }
     }
-    if(field == "cancelations") {
+    if (field == "cancelations") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.cancelations || 0);
       }, 0);
     }
-    if(field == "netsales") {
+    if (field == "netsales") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.netsales || 0);
       }, 0);
     }
-    if(field == "totallots") {
+    if (field == "totallots") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.subdivision && traficSales.subdivision.totallots || 0);
       }, 0);
     }
-    if(field == "lotreleased") {
+    if (field == "lotreleased") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.lotreleased || 0);
       }, 0);
     }
-    if(field == "unsoldinventory") {
+    if (field == "unsoldinventory") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.unsoldinventory || 0);
       }, 0);
     }
-    if(field == "lotwidth") {
+    if (field == "lotwidth") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.subdivision && traficSales.subdivision.lotwidth || 0);
       }, 0);
     }
-    if(field == "lotsize") {
+    if (field == "lotsize") {
       return AllTrafficListExport.reduce((sum, traficSales) => {
         return sum + (traficSales.subdivision && traficSales.subdivision.lotsize || 0);
       }, 0);
@@ -1192,10 +1192,10 @@ const GetSubdivisionDropDownList = async () => {
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    if(field == "grosssales") {
-      if(filter){
+    if (field == "grosssales") {
+      if (filter) {
         return sum / trafficsaleList.length;
-      } else{
+      } else {
         return sum / AllTrafficListExport.length;
       }
     } else {
@@ -1254,7 +1254,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setWeeklyGrossSalesResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1281,7 +1281,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setWeeklyCancellationsResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1308,7 +1308,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setWeeklyNetSalesResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1335,7 +1335,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setTotalLotsResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1362,7 +1362,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setWeeklyLotsReleaseForSaleResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1389,7 +1389,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyLotsReleaseForSaleResult(0);
         setLotWidthResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setWeeklyUnsoldStandingInventoryResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1416,7 +1416,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyLotsReleaseForSaleResult(0);
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotSizeResult(0);
-  
+
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1443,7 +1443,7 @@ const GetSubdivisionDropDownList = async () => {
         setWeeklyLotsReleaseForSaleResult(0);
         setWeeklyUnsoldStandingInventoryResult(0);
         setLotWidthResult(0);
-  
+
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1522,7 +1522,7 @@ const GetSubdivisionDropDownList = async () => {
         if (value === '_fkSubID') {
           value = 'subdivision_code';
         }
-        
+
         return {
           value: value,
           label: field,
@@ -1628,105 +1628,143 @@ const GetSubdivisionDropDownList = async () => {
                         handleColumnOrderChange={handleColumnOrderChange}
                       />
                     </div>
-                    {SyestemUserRole == "Data Uploader" ||
-                      SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                        <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="d-flex" style={{ marginTop: "10px" }}>
-                        <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                          {/* Set Columns Order */}
-                          <i className="fa-solid fa-list"></i>
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={HandleSortingPopupDetailClick}
-                          title="Sorted Fields"
-                        >
-                          <i class="fa-solid fa-sort"></i>
-                        </Button>
-                        <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                          {excelLoading ?
-                            <div class="spinner-border spinner-border-sm" role="status" />
-                            :
-                            <i class="fas fa-file-excel" />
-                          }
-                        </button>
 
-                        <button
-                          className="btn btn-primary btn-sm me-1"
-                          onClick={() => setManageAccessOffcanvas(true)}
-                        >
-                          {" "}
-                          Field Access
-                        </button>
-                        <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                          <i className="fa fa-filter" />
-                        </button>
-                        <Button
-                          className="btn-sm me-1"
-                          variant="secondary"
-                          onClick={handlBuilderClick}
-                        >
-                          Import
-                        </Button>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => trafficsale.current.showEmployeModal()}
-                        >
-                          + Add Weekly Traffic & Sale
-                        </Link>
-                        <Link
-                          to={"#"}
-                          className="btn btn-primary btn-sm ms-1"
-                          data-bs-toggle="offcanvas"
-                          onClick={() => bulkTrafficsale.current.showEmployeModal()}
-                        >
-                          Bulk Edit
-                        </Link>
-                        <button
-                          className="btn btn-danger btn-sm me-1"
-                          style={{ marginLeft: "3px" }}
-                          onClick={() => selectedLandSales.length > 0 ? swal({
-                            title: "Are you sure?",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                          }).then((willDelete) => {
-                            if (willDelete) {
-                              handleBulkDelete(selectedLandSales);
+                    <div className="mt-2">
+                      {SyestemUserRole == "Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list" />&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort" />&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
                             }
-                          }) : ""}
-                        >
-                          Bulk Delete
-                        </button>
-                      </div>
-                    )}
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="d-flex" style={{ marginTop: "10px" }}>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
+                          </Button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => trafficsale.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Weekly Traffic & Sale
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulkTrafficsale.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Bulk Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            style={{ marginLeft: "3px" }}
+                            onClick={() => selectedLandSales.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedLandSales);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Bulk Delete
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
@@ -1832,97 +1870,97 @@ const GetSubdivisionDropDownList = async () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "week Ending" ? "weekending" :
-                                      column.id == "weekly Traffic" ? "weeklytraffic" :
-                                      column.id == "weekly Gross Sales" ? "grosssales" :
-                                      column.id == "weekly Cancellations" ? "cancelations" :
-                                      column.id == "weekly Net Sales" ? "netsales" :
-                                      column.id == "total Lots" ? "totallots" :
-                                      column.id == "weekly Lots Release For Sale" ? "lotreleased" :
-                                      column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
-                                      column.id == "product Type" ? "product_type" :
-                                      column.id == "area" ? "area" :
-                                      column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
-                                      column.id == "lot Width" ? "lotwidth" :
-                                      column.id == "lot Size" ? "lotsize" :
-                                      column.id == "zoning" ? "zoning" :
-                                      column.id == "age Restricted" ? "age" :
-                                      column.id == "all Single Story" ? "single" :
-                                      column.id == "date Added" ? "created_at" :
-                                      column.id == "__pkRecordID" ? "id" :
-                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
-                                  ) && (
-                                    <span>
-                                      {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (column.id == "week Ending" ? "weekending" :
-                                          column.id == "weekly Traffic" ? "weeklytraffic" :
+                                        column.id == "weekly Traffic" ? "weeklytraffic" :
                                           column.id == "weekly Gross Sales" ? "grosssales" :
-                                          column.id == "weekly Cancellations" ? "cancelations" :
-                                          column.id == "weekly Net Sales" ? "netsales" :
-                                          column.id == "total Lots" ? "totallots" :
-                                          column.id == "weekly Lots Release For Sale" ? "lotreleased" :
-                                          column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
-                                          column.id == "product Type" ? "product_type" :
-                                          column.id == "area" ? "area" :
-                                          column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
-                                          column.id == "lot Width" ? "lotwidth" :
-                                          column.id == "lot Size" ? "lotsize" :
-                                          column.id == "zoning" ? "zoning" :
-                                          column.id == "age Restricted" ? "age" :
-                                          column.id == "all Single Story" ? "single" :
-                                          column.id == "date Added" ? "created_at" :
-                                          column.id == "__pkRecordID" ? "id" :
-                                          column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
-                                      ).direction === "asc" ? "↑" : "↓"}
-                                    </span>
-                                  )}
+                                            column.id == "weekly Cancellations" ? "cancelations" :
+                                              column.id == "weekly Net Sales" ? "netsales" :
+                                                column.id == "total Lots" ? "totallots" :
+                                                  column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                                    column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
+                                                      column.id == "product Type" ? "product_type" :
+                                                        column.id == "area" ? "area" :
+                                                          column.id == "master Plan" ? "masterplan_id" :
+                                                            column.id == "zip Code" ? "zipcode" :
+                                                              column.id == "lot Width" ? "lotwidth" :
+                                                                column.id == "lot Size" ? "lotsize" :
+                                                                  column.id == "zoning" ? "zoning" :
+                                                                    column.id == "age Restricted" ? "age" :
+                                                                      column.id == "all Single Story" ? "single" :
+                                                                        column.id == "date Added" ? "created_at" :
+                                                                          column.id == "__pkRecordID" ? "id" :
+                                                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                  ) && (
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === (column.id == "week Ending" ? "weekending" :
+                                            column.id == "weekly Traffic" ? "weeklytraffic" :
+                                              column.id == "weekly Gross Sales" ? "grosssales" :
+                                                column.id == "weekly Cancellations" ? "cancelations" :
+                                                  column.id == "weekly Net Sales" ? "netsales" :
+                                                    column.id == "total Lots" ? "totallots" :
+                                                      column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                                        column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
+                                                          column.id == "product Type" ? "product_type" :
+                                                            column.id == "area" ? "area" :
+                                                              column.id == "master Plan" ? "masterplan_id" :
+                                                                column.id == "zip Code" ? "zipcode" :
+                                                                  column.id == "lot Width" ? "lotwidth" :
+                                                                    column.id == "lot Size" ? "lotsize" :
+                                                                      column.id == "zoning" ? "zoning" :
+                                                                        column.id == "age Restricted" ? "age" :
+                                                                          column.id == "all Single Story" ? "single" :
+                                                                            column.id == "date Added" ? "created_at" :
+                                                                              column.id == "__pkRecordID" ? "id" :
+                                                                                column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                      </span>
+                                    )}
                                 </strong>
 
-                                {(!excelLoading) && (column.id !== "week Ending" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Type" && 
-                                  column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" && 
+                                {(!excelLoading) && (column.id !== "week Ending" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Type" &&
+                                  column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
-                                ) && 
+                                ) &&
                                   (
                                     <>
-                                    <br />
-                                      <select className="custom-select" 
+                                      <br />
+                                      <select className="custom-select"
                                         value={
-                                          column.id == "weekly Traffic" ? weeklyTrafficOption : 
-                                          column.id == "weekly Gross Sales" ? weeklyGrossSalesOption : 
-                                          column.id == "weekly Cancellations" ? weeklyCancellationsOption : 
-                                          column.id == "weekly Net Sales" ? weeklyNetSalesOption : 
-                                          column.id == "total Lots" ? totalLotsOption : 
-                                          column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption : 
-                                          column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption : 
-                                          column.id == "lot Width" ? lotWidthOption : 
-                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "weekly Traffic" ? weeklyTrafficOption :
+                                            column.id == "weekly Gross Sales" ? weeklyGrossSalesOption :
+                                              column.id == "weekly Cancellations" ? weeklyCancellationsOption :
+                                                column.id == "weekly Net Sales" ? weeklyNetSalesOption :
+                                                  column.id == "total Lots" ? totalLotsOption :
+                                                    column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption :
+                                                      column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption :
+                                                        column.id == "lot Width" ? lotWidthOption :
+                                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
-                                        
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
+
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: '0px',
+                                          fontSize: "8px",
+                                          padding: " 0 5px 0",
+                                          height: "15px",
                                           color: "white",
-                                          appearance: "auto" 
+                                          appearance: "auto"
                                         }}
-                                        
+
                                         onChange={(e) => column.id == "weekly Traffic" ? handleSelectChange(e, "weeklytraffic") :
                                           column.id == "weekly Gross Sales" ? handleSelectChange(e, "grosssales") :
-                                          column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
-                                          column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
-                                          column.id == "total Lots" ? handleSelectChange(e, "totallots") :
-                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
-                                          column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                            column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
+                                              column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
+                                                column.id == "total Lots" ? handleSelectChange(e, "totallots") :
+                                                  column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
+                                                    column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
+                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -2164,49 +2202,33 @@ const GetSubdivisionDropDownList = async () => {
                     )}
                   </div>
                 </div>
-                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {trafficListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {trafficListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -2217,19 +2239,35 @@ const GetSubdivisionDropDownList = async () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2577,12 +2615,12 @@ const GetSubdivisionDropDownList = async () => {
                     <label className="form-label">
                       ZIP CODE:{" "}
                     </label>
-                    <input 
-                      type="text" 
-                      name="zipcode" 
-                      value={filterQuery.zipcode} 
-                      className="form-control" 
-                      onChange={HandleFilter} 
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={filterQuery.zipcode}
+                      className="form-control"
+                      onChange={HandleFilter}
                       pattern="[0-9, ]*"
                       onInput={(e) => {
                         e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
@@ -2758,7 +2796,7 @@ const GetSubdivisionDropDownList = async () => {
                           onChange={(e) => handleSortingCheckboxChange(e, field)}
                           style={{ marginRight: '0.2rem', cursor: "pointer" }}
                         />
-                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{cursor: "pointer" , width: "150px"}}>
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ cursor: "pointer", width: "150px" }}>
                           {isChecked && <span>{fieldOrder}. </span>}
                           {field.label}
                         </label>
@@ -2806,7 +2844,7 @@ const GetSubdivisionDropDownList = async () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortingPopupClose} style={{marginRight: "10px"}}>Close</Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
