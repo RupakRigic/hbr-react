@@ -6437,7 +6437,7 @@ const SubdivisionList = () => {
                               <thead>
                                 <tr style={{ textAlign: "center" }}>
                                   <th>No.</th>
-                                  <th>Seller Leagal</th>
+                                  <th>Seller Legal</th>
                                   <th>Address</th>
                                   <th>Buyer</th>
                                   <th>Closing Date</th>

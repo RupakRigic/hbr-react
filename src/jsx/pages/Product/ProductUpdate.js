@@ -119,7 +119,7 @@ const ProductUpdate = () => {
                 <h4 className="card-title">Edit Product</h4>
               </div>
               {isLoading ? (
-                <div className="d-flex justify-content-center align-items-center mt-5">
+                <div className="d-flex justify-content-center align-items-center mt-5 h-50">
                   <ClipLoader color="#4474fc" />
                 </div>
               ) : (
