@@ -121,6 +121,37 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
+                    htmlFor="exampleFormControlInput5"
+                    className="form-label"
+                  >
+                    {" "}
+                    Status <span className="text-danger">*</span>
+                  </label>
+                  <select className="default-select form-control" name="status">
+                    <option value="">All</option>
+                    <option value="1">Active</option>
+                    <option value="0">Sold Out</option>
+                    <option value="2">Future</option>
+                    <option value="3">Closed</option>
+                  </select>{" "}
+                </div>
+                <div className="col-xl-6 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput17"
+                    className="form-label"
+                  >
+                    SQFT
+                  </label>
+                  <input
+                    type="number"
+                    name="sqft"
+                    className="form-control"
+                    id="exampleFormControlInput17"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-xl-6 mb-3">
+                  <label
                     htmlFor="exampleFormControlInput4"
                     className="form-label"
                   >
@@ -136,34 +167,16 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput5"
+                    htmlFor="exampleFormControlInput12"
                     className="form-label"
                   >
-                    {" "}
-                    Status <span className="text-danger">*</span>
-                  </label>
-                  <select className="default-select form-control" name="status">
-                    <option value="">All</option>
-                    <option value="1">Active</option>
-                    <option value="0">Sold Out</option>
-                    <option value="2">Future</option>
-                    <option value="3">Closed</option>
-                  </select>{" "}
-                </div>
-
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput6"
-                    className="form-label"
-                  >
-                    {" "}
-                    Garage <span className="text-danger">*</span>
+                    Bedroom
                   </label>
                   <input
                     type="number"
-                    name="garage"
+                    name="bedroom"
                     className="form-control"
-                    id="exampleFormControlInput6"
+                    id="exampleFormControlInput12"
                     placeholder=""
                   />
                 </div>
@@ -172,7 +185,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     htmlFor="exampleFormControlInput10"
                     className="form-label"
                   >
-                    Bathroom <span className="text-danger">*</span>
+                    Bathroom
                   </label>
                   <input
                     type="number"
@@ -185,31 +198,16 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput12"
+                    htmlFor="exampleFormControlInput6"
                     className="form-label"
                   >
-                    Bedroom <span className="text-danger">*</span>
+                    Garage
                   </label>
                   <input
                     type="number"
-                    name="bedroom"
+                    name="garage"
                     className="form-control"
-                    id="exampleFormControlInput12"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput17"
-                    className="form-label"
-                  >
-                    SQFT
-                  </label>
-                  <input
-                    type="number"
-                    name="sqft"
-                    className="form-control"
-                    id="exampleFormControlInput17"
+                    id="exampleFormControlInput6"
                     placeholder=""
                   />
                 </div>

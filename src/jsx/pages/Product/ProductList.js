@@ -2222,9 +2222,11 @@ const ProductList = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
-                                No data found
-                              </td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td>No data found</td>
+                              <td colSpan="25"></td>
                             </tr>
                           )}
                         </tbody>

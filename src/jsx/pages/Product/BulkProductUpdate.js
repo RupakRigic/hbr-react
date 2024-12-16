@@ -41,14 +41,12 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             subdivision_id: SubdivisionCode ? SubdivisionCode.value : "",
             name: event.target.name.value,
             status: event.target.status.value,
-            stories: event.target.stories.value,
-            garage: event.target.garage.value,
-            pricechange: event.target.pricechange.value,
-            bathroom: event.target.bathroom.value,
-            recentprice: event.target.recentprice.value,
-            bedroom: event.target.bedroom.value,
-            recentpricesqft: event.target.recentpricesqft.value,
             sqft: event.target.sqft.value,
+            stories: event.target.stories.value,
+            bedroom: event.target.bedroom.value,
+            bathroom: event.target.bathroom.value,
+            garage: event.target.garage.value,
+            website: event.target.website.value
           };
 
           const data = await AdminProductService.bulkupdate(selectedLandSales, userData).json();
@@ -126,21 +124,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Stories <span className="text-danger"></span>
-                  </label>
-                  <input
-                    type="number"
-                    name="stories"
-                    className="form-control"
-                    id="exampleFormControlInput4"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
                     htmlFor="exampleFormControlInput5"
                     className="form-label"
                   >
@@ -160,63 +143,31 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput6"
+                    htmlFor="exampleFormControlInput17"
                     className="form-label"
                   >
-                    {" "}
-                    Garage
+                    SQFT
                   </label>
                   <input
                     type="number"
-                    name="garage"
+                    name="sqft"
                     className="form-control"
-                    id="exampleFormControlInput6"
+                    id="exampleFormControlInput17"
                     placeholder=""
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput7"
+                    htmlFor="exampleFormControlInput4"
                     className="form-label"
                   >
-                    {" "}
-                    Price Change
+                    Stories <span className="text-danger"></span>
                   </label>
                   <input
                     type="number"
-                    name="pricechange"
+                    name="stories"
                     className="form-control"
-                    id="exampleFormControlInput7"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput10"
-                    className="form-label"
-                  >
-                    Bathroom
-                  </label>
-                  <input
-                    type="number"
-                    name="bathroom"
-                    className="form-control"
-                    id="exampleFormControlInput10"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput11"
-                    className="form-label"
-                  >
-                    Recent Price
-                  </label>
-                  <input
-                    type="number"
-                    name="recentprice"
-                    className="form-control"
-                    id="exampleFormControlInput11"
+                    id="exampleFormControlInput4"
                     placeholder=""
                   />
                 </div>
@@ -237,31 +188,33 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput16"
+                    htmlFor="exampleFormControlInput10"
                     className="form-label"
                   >
-                    Recent Price SQFT
+                    Bathroom
                   </label>
                   <input
                     type="number"
-                    name="recentpricesqft"
+                    name="bathroom"
                     className="form-control"
-                    id="exampleFormControlInput16"
+                    id="exampleFormControlInput10"
                     placeholder=""
+                    step="0.1"
                   />
                 </div>
                 <div className="col-xl-6 mb-3">
                   <label
-                    htmlFor="exampleFormControlInput17"
+                    htmlFor="exampleFormControlInput6"
                     className="form-label"
                   >
-                    SQFT
+                    {" "}
+                    Garage
                   </label>
                   <input
                     type="number"
-                    name="sqft"
+                    name="garage"
                     className="form-control"
-                    id="exampleFormControlInput17"
+                    id="exampleFormControlInput6"
                     placeholder=""
                   />
                 </div>
