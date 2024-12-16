@@ -140,7 +140,7 @@
                             className="form-label"
                             >
                             {" "}
-                            Date <span className="text-danger"></span>
+                            Date
                             </label>
                             <input
                             type="date"

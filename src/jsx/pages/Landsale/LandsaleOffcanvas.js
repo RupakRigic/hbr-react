@@ -103,7 +103,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Subdivision<span className="text-danger"></span></label>
+                                    <label className="form-label">Subdivision</label>
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={SubdivisionList}
@@ -139,54 +139,54 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel </label>
                                     <input type="number" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Price <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Price </label>
                                     <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput10" className="form-label">Type of Unit<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput10" className="form-label">Type of Unit</label>
                                     <input type="text" name='typeofunit' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit</label>
                                     <input type="number" name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput12" className="form-label">No. Of Unit<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput12" className="form-label">No. Of Unit</label>
                                     <input type="number" name='noofunit' className="form-control" id="exampleFormControlInput12" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput16" className="form-label">Notes<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput16" className="form-label">Notes</label>
                                     <input type="text" name='notes' className="form-control" id="exampleFormControlInput16" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Doc<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Doc</label>
                                     <input type="text" name='doc' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zoning<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zoning</label>
                                     <input type="text" name='zoning' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Latitude<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Latitude</label>
                                     <input type="text" name='lat' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Longitude <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Longitude </label>
                                     <input type="text" name='lng' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Area <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Area </label>
                                     <input type="text" name='area' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
                                     <input type="number" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>

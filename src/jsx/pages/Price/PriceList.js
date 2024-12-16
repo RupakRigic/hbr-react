@@ -2402,57 +2402,48 @@ useEffect(() => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PRODUCT NAME :{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SQUARE FOOTAGE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       STORIES:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BEDROOMS:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BATH ROOMS:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       GARAGE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BASE PRICE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       PRODUCT TYPE:{" "}
-                      <span className="text-danger"></span>
-
                     </label>
                     <MultiSelect
                       name="product_type"
@@ -2465,7 +2456,6 @@ useEffect(() => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       AREA:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="area"
@@ -2478,7 +2468,6 @@ useEffect(() => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       MASTERPLAN:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="masterplan_id"
@@ -2491,7 +2480,6 @@ useEffect(() => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       ZIP CODE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input 
                       type="text" 
@@ -2508,14 +2496,12 @@ useEffect(() => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT WIDTH:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT SIZE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                   </div>
@@ -2771,7 +2757,7 @@ useEffect(() => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"

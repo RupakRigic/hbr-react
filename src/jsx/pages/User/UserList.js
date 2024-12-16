@@ -468,7 +468,7 @@ const UserList = () => {
                             <div className="border-top">
                               <div className="mt-3 mb-3">
                                 <label className="form-label">
-                                  Role: <span className="text-danger"></span>
+                                  Role:
                                 </label>
                                 <MultiSelect
                                   name="role"
@@ -540,7 +540,7 @@ const UserList = () => {
                           <div className="border-top">
                             <div className="mt-3 mb-3">
                               <label className="form-label">
-                                Role: <span className="text-danger"></span>
+                                Role:
                               </label>
                               <MultiSelect
                                 name="role"
@@ -1091,7 +1091,7 @@ const UserList = () => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"

@@ -95,7 +95,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                     <input type="number" name='baseprice' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput9" className="form-label"> Date <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
                                     <input type="date" name='date' className="form-control" id="exampleFormControlInput9" placeholder="" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>

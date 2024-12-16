@@ -136,11 +136,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <textarea rows="2" name='address' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput4" className="form-label">Buyer Name<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput4" className="form-label">Buyer Name</label>
                                     <input type="text" name='buyer' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label">Lender<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Lender</label>
                                     <input type="text" name='lender' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
@@ -156,7 +156,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <input type="number" name='loanamount' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput10" className="form-label">Document<span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput10" className="form-label">Document</label>
                                     <input type="text" name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">

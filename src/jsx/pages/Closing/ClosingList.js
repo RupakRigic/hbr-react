@@ -2177,7 +2177,7 @@ const GetLenderList = async () => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"

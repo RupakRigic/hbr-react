@@ -2201,7 +2201,7 @@ const GetSubdivisionDropDownList = async () => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"
@@ -2300,7 +2300,6 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BUILDER NAME:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
@@ -2315,7 +2314,6 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SUBDIVISION NAME:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
@@ -2330,56 +2328,48 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       ADDRESS NUMBER:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="address2" value={filterQuery.address2} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       ADDRESS NAME:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="address1" value={filterQuery.address1} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PARCEL NUMBER:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.parcel} name="parcel" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SQUARE FOOTAGE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input type="text" value={filterQuery.sqft} name="sqft" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       LOT NUMBER:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotnumber} name="lotnumber" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PERMIT NUMBER:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.permitnumber} name="permitnumber" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 ">
                     <label className="form-label">
                       PLAN:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.plan} name="plan" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       PRODUCT TYPE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="product_type"
@@ -2392,7 +2382,6 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       AREA:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="area"
@@ -2405,7 +2394,6 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       MASTERPLAN:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="masterplan_id"
@@ -2418,7 +2406,6 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       ZIP CODE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input 
                       type="text" 
@@ -2435,14 +2422,12 @@ const GetSubdivisionDropDownList = async () => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT WIDTH:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT SIZE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                   </div>

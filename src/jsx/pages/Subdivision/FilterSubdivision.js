@@ -507,7 +507,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             STATUS:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <MultiSelect
                             name="status"
@@ -520,7 +519,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             REPORTING:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <MultiSelect
                             name="reporting"
@@ -533,14 +531,12 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             NAME :{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             BUILDER NAME :{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <Form.Group controlId="tournamentList">
                             <MultiSelect
@@ -553,7 +549,7 @@ const FilterSubdivision = () => {
                         </Form.Group>
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:<span className="text-danger"></span></label>
+                        <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:</label>
                         <MultiSelect
                             name="product_type"
                             options={productTypeOptions}
@@ -565,7 +561,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             AREA:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <MultiSelect
                             name="area"
@@ -578,7 +573,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             MASTER PLAN:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <MultiSelect
                             name="masterplan_id"
@@ -591,7 +585,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             ZIP CODE:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <input 
                             type="text" 
@@ -608,14 +601,12 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             LOT WIDTH:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
                         <label className="form-label">
                             LOT SIZE:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                     </div>
@@ -664,7 +655,6 @@ const FilterSubdivision = () => {
                     <div className="col-md-3 mt-3 mb-3">
                         <label className="form-label">
                             GAS PROVIDER:{" "}
-                            <span className="text-danger"></span>
                         </label>
                         <MultiSelect
                             name="gasprovider"

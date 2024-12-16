@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
@@ -62,11 +62,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             const responseData = await response.json();
 
             const formattedOptions = responseData
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map(element => ({
-                value: element.id,
-                label: element.name
-              }));
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(element => ({
+                    value: element.id,
+                    label: element.name
+                }));
             setOptions(formattedOptions);
 
             const builderId = localStorage.getItem('builderId');
@@ -110,10 +110,10 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "name": event.target.name.value,
                 "status": status,
                 "reporting": reporting,
-                "product_type":productType,
+                "product_type": productType,
                 "phone": event.target.phone.value ? event.target.phone.value : '',
                 "opensince": event.target.opensince.value ? event.target.opensince.value : '',
-                "age":age,
+                "age": age,
                 "single": single,
                 "firstpermitdate": '',
                 "masterplan_id": masterplan,
@@ -142,6 +142,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 "dateadded": '',
                 "zoning": event.target.zoning.value ? event.target.zoning.value : '',
                 "gasprovider": event.target.gasprovider.value ? event.target.gasprovider.value : '',
+                "website": event.target.website.value ? event.target.website.value : '',
             }
             const data = await AdminSubdevisionService.store(userData).json();
             if (data.status === true) {
@@ -164,7 +165,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             }
         }
     };
-    
+
     return (
         <>
             <Offcanvas show={addSubdivision} onHide={setAddSubdivision} className="offcanvas-end customeoff" placement='end'>
@@ -184,25 +185,25 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     <label className="form-label">Builder Code <span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
                                         <Select
-                                          options={options}
-                                          value={BuilderCode}
-                                          onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                                          styles={{
-                                            container: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                            menu: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                        }}
+                                            options={options}
+                                            value={BuilderCode}
+                                            onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                            }}
                                         ></Select>
                                     </Form.Group>
                                 </div>
-                                
+
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput3" className="form-label"> Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
@@ -222,41 +223,41 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="">Select Reporting</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>             
-                                 </div>
+                                    </select>
+                                </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label">Product Type</label>
                                     <select className="default-select form-control" onChange={handleProductType} >
                                         <option value="">Select Product Type</option>
-                                         <option value="DET">DET</option>
+                                        <option value="DET">DET</option>
                                         <option value="ATT">ATT</option>
                                         <option value="HR">HR</option>
                                         <option value="AC">AC</option>
-                                    </select>                                
-                                    </div>
+                                    </select>
+                                </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput7" className="form-label">Phone</label>
                                     <input
-                                      type="tel"
-                                      name="phone"
-                                      className="form-control"
-                                      id="exampleFormControlInput7"
-                                      placeholder=""
-                                      maxLength="12"
-                                      onInput={(e) => {
-                                        let input = e.target.value.replace(/\D/g, '');
-                                        if (input.length > 0) {
-                                          input = input.substring(0, 10);
-                                          if (input.length > 3 && input.length <= 6) {
-                                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
-                                          } else if (input.length > 6) {
-                                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
-                                          } else {
-                                            input = input;
-                                          }
-                                        }
-                                        e.target.value = input;
-                                      }}
+                                        type="tel"
+                                        name="phone"
+                                        className="form-control"
+                                        id="exampleFormControlInput7"
+                                        placeholder=""
+                                        maxLength="12"
+                                        onInput={(e) => {
+                                            let input = e.target.value.replace(/\D/g, '');
+                                            if (input.length > 0) {
+                                                input = input.substring(0, 10);
+                                                if (input.length > 3 && input.length <= 6) {
+                                                    input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
+                                                } else if (input.length > 6) {
+                                                    input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
+                                                } else {
+                                                    input = input;
+                                                }
+                                            }
+                                            e.target.value = input;
+                                        }}
                                     />
                                 </div>
                                 <div className="col-xl-6 mb-3">
@@ -266,10 +267,10 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Age Restricted</label>
                                     <select className="default-select form-control" name="" onChange={handleAge} >
-                                    <option value="">Select age Restricted</option>
+                                        <option value="">Select age Restricted</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>                               
+                                    </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story</label>
@@ -277,8 +278,8 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="">Select Story</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>         
-                                 </div>
+                                    </select>
+                                </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
                                     <select className="default-select form-control" name="" onChange={handleMasterPlan} >
@@ -326,7 +327,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="VILLAGES AT TULE SPRING">VILLAGES AT TULE SPRINGS</option>
                                         <option value="VISTA VERDE">VISTA VERDE</option>
                                         <option value="WESTON HILLS">WESTON HILLS</option>
-                                    </select>  
+                                    </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput11" className="form-label">Latitude</label>
@@ -352,8 +353,8 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="P">P</option>
                                         <option value="SO">SO</option>
                                         <option value="SW">SW</option>
-                                    </select>                              
-                                 </div>
+                                    </select>
+                                </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
                                     <select className="default-select form-control" name="" onChange={handleJurisdiction} >
@@ -380,7 +381,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                         <option value="Mesquite">Mesquite</option>
                                         <option value="NLV">NLV</option>
                                         <option value="NYE">NYE</option>
-                                    </select>                            
+                                    </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
@@ -408,14 +409,14 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
-                                    <select className="default-select form-control" 
-                                    onChange={handleGate} 
-                                    value={gate}
-                                    > 
+                                    <select className="default-select form-control"
+                                        onChange={handleGate}
+                                        value={gate}
+                                    >
                                         <option value="">Select Gate</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
-                                    </select>                               
+                                    </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee</label>
@@ -429,61 +430,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider</label>
                                     <input type='text' name='gasprovider' className="form-control" id="exampleFormControlInput35" />
                                 </div>
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Subdivision Code <span className="text-danger">*</span></label>
-                                    <input type="text" name='subdivision_code' className="form-control" id="exampleFormControlInput2" placeholder="" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
-                                    <input type="date" name='firstpermitdate' className="form-control" id="exampleFormControlInput9" placeholder="" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput19" className="form-label">Unsold Lots</label>
-                                    <input type='number' name='unsoldlots' className="form-control" id="exampleFormControlInput19" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput20" className="form-label">Lots Released</label>
-                                    <input type='number' name='lotreleased' className="form-control" id="exampleFormControlInput20" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput22" className="form-label">Stading Inventory</label>
-                                    <input type='number' name='stadinginventory' className="form-control" id="exampleFormControlInput22" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput24" className="form-label">Permits</label>
-                                    <input type='number' name='permits' className="form-control" id="exampleFormControlInput24" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput25" className="form-label">Net Sales</label>
-                                    <input type='number' name='netsales' className="form-control" id="exampleFormControlInput25" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput26" className="form-label">Closing</label>
-                                    <input type='number' name='closing' className="form-control" id="exampleFormControlInput26" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput27" className="form-label">Months Open</label>
-                                    <input type='number' name='monthsopen' className="form-control" id="exampleFormControlInput27" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput29" className="form-label">Sqft Group</label>
-                                    <input type='text' name='sqftgroup' className="form-control" id="exampleFormControlInput29" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput30" className="form-label">Dollar Group</label>
-                                    <input type='text' name='dollargroup' className="form-control" id="exampleFormControlInput30" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput32" className="form-label">Last weekly Data</label>
-                                    <input type='date' name='lastweeklydata' className="form-control" id="exampleFormControlInput32" />
-                                </div> */}
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput33" className="form-label">Date Added</label>
-                                    <input type='date' name='dateadded' className="form-control" id="exampleFormControlInput33" />
-                                </div> */}
-                                
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput36" className="form-label">Website</label>
+                                    <input type="text" name='website' className="form-control" id="exampleFormControlInput36" placeholder="" />
+                                </div>
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>

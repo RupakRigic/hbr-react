@@ -123,62 +123,62 @@ const PermitUpdate = () => {
 
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Parcel <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput2" className="form-label">Parcel</label>
                                                 <input type="text" defaultValue={PermitList.parcel} name='parcel' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Contractor <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput3" className="form-label">Contractor</label>
                                                 <input type="text" defaultValue={PermitList.contractor} name='contractor' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput4" className="form-label">Description <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput4" className="form-label">Description</label>
                                                 <input type="text" defaultValue={PermitList.description} name='description' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Date <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Date</label>
                                                 <input type="date" defaultValue={PermitList.date} name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput6" className="form-label"> Date Added <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput6" className="form-label">Date Added</label>
                                                 <input type="date" defaultValue={PermitList.dateadded} name='dateadded' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Number <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput7" className="form-label">Lot Number</label>
                                                 <input type="number" defaultValue={PermitList.lotnumber} name='lotnumber' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput10" className="form-label">Owner<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput10" className="form-label">Owner</label>
                                                 <input type="text" defaultValue={PermitList.owner} name='owner' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput11" className="form-label">Plan<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput11" className="form-label">Plan</label>
                                                 <input type="text" name='plan' defaultValue={PermitList.plan} className="form-control" id="exampleFormControlInput11" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput12" className="form-label">SQFT<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput12" className="form-label">SQFT</label>
                                                 <input type="number" defaultValue={PermitList.sqft} name='sqft' className="form-control" id="exampleFormControlInput12" placeholder="" />
                                             </div>
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput16" className="form-label">Value<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput16" className="form-label">Value</label>
                                                 <input type="number" defaultValue={PermitList.value} name='value' className="form-control" id="exampleFormControlInput16" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput17" className="form-label">Permit Number<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput17" className="form-label">Permit Number</label>
                                                 <input type="text" defaultValue={PermitList.permitnumber} name='permitnumber' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Address 1 <span className="text-danger"></span></label>
+                                                <label className="form-label">Address 1</label>
                                                 <textarea rows="2" defaultValue={PermitList.address1} name='address1' className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Address 2 <span className="text-danger"></span></label>
+                                                <label className="form-label">Address 2</label>
                                                 <textarea rows="2" defaultValue={PermitList.address2} name='address2' className="form-control"></textarea>
                                             </div>
 

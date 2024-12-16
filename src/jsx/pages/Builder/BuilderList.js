@@ -3025,7 +3025,7 @@ const BuilderTable = () => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"
@@ -3146,7 +3146,6 @@ const BuilderTable = () => {
                   <div className="col-md-4 mt-3">
                     <label className="form-label">
                       BUILDER NAME:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
@@ -3161,7 +3160,6 @@ const BuilderTable = () => {
                   <div className="col-md-4 mt-3">
                     <label className="form-label">
                       ACTIVE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="is_active"
@@ -3174,7 +3172,6 @@ const BuilderTable = () => {
                   <div className="col-md-4 mt-3">
                     <label className="form-label">
                       ACTIVE COMMUNITIES :{" "}
-                      <span className="text-danger"></span>
                     </label>
 
                     <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control" onChange={HandleFilter} />
@@ -3182,7 +3179,6 @@ const BuilderTable = () => {
                   <div className="col-md-4 mt-3">
                     <label className="form-label">
                       COMPANY TYPE:{" "}
-                      <span className="text-danger"></span>
                     </label>
 
                     <MultiSelect

@@ -161,11 +161,11 @@ const BuilderUpdate = () => {
                                                 <input type="text" name='name' defaultValue={Builder.name} className="form-control" id="exampleFormControlInput2" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Website <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Website </label>
                                                 <input type="text" name='website' defaultValue={Builder.website} className="form-control" id="exampleFormControlInput3" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput4" className="form-label">Mobile <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput4" className="form-label">Mobile </label>
                                                 <input
                                                   type="tel"
                                                   defaultValue={Builder.phone}
@@ -191,12 +191,12 @@ const BuilderUpdate = () => {
                                                 />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Fax <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Fax </label>
                                                 <input type="text" name='fax' defaultValue={Builder.fax} className="form-control" id="exampleFormControlInput5" placeholder="" />
                                             </div>
 
                                             <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Is Active <span className="text-danger"></span></label>
+                                                <label className="form-label">Is Active </label>
 
                                                 <Select
                                                     options={isActiveData}
@@ -208,19 +208,19 @@ const BuilderUpdate = () => {
                                             </div>
 
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Office Address 1 <span className="text-danger"></span></label>
+                                                <label className="form-label">Office Address 1 </label>
                                                 <textarea rows="2" name='officeaddress1' defaultValue={Builder.officeaddress1} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Office Address 2 <span className="text-danger"></span></label>
+                                                <label className="form-label">Office Address 2 </label>
                                                 <textarea rows="2" name='officeaddress2' defaultValue={Builder.officeaddress2} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput6" className="form-label"> City <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput6" className="form-label"> City </label>
                                                 <input type="text" name='city' defaultValue={Builder.city} className="form-control" id="exampleFormControlInput6" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Zipcode <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Zipcode </label>
                                                 <input type="text" name='zipcode' defaultValue={Builder.zipcode} className="form-control" id="exampleFormControlInput7" placeholder="" />
                                             </div>
 
@@ -244,45 +244,45 @@ const BuilderUpdate = () => {
                                             </div>
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput10" className="form-label">Stock Market<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput10" className="form-label">Stock Market</label>
                                                 <input type="text" name='stock_market' defaultValue={Builder.stock_market} className="form-control" id="exampleFormControlInput10" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput11" className="form-label">Current Division President<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput11" className="form-label">Current Division President</label>
                                                 <input type="text" name='current_division_president' defaultValue={Builder.current_division_president} className="form-control" id="exampleFormControlInput11" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput12" className="form-label">Stock Symbol<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput12" className="form-label">Stock Symbol</label>
                                                 <input type="text" name='stock_symbol' defaultValue={Builder.stock_symbol} className="form-control" id="exampleFormControlInput12" placeholder="" />
                                             </div>
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput16" className="form-label">Coporate Officeaddress City<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput16" className="form-label">Coporate Officeaddress City</label>
                                                 <input type="text" name='coporate_officeaddress_city' defaultValue={Builder.coporate_officeaddress_city} className="form-control" id="exampleFormControlInput16" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput17" className="form-label">Coporate Officeaddress Zipcode<span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput17" className="form-label">Coporate Officeaddress Zipcode</label>
                                                 <input type="text" name='coporate_officeaddress_zipcode' defaultValue={Builder.coporate_officeaddress_zipcode} className="form-control" id="exampleFormControlInput17" placeholder="" />
                                             </div>
 
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Current Land Aquisitions <span className="text-danger"></span></label>
+                                                <label className="form-label">Current Land Aquisitions </label>
                                                 <textarea rows="2" name='current_land_aquisitions' defaultValue={Builder.current_land_aquisitions} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Coporate Officeaddress  1 <span className="text-danger"></span></label>
+                                                <label className="form-label">Coporate Officeaddress  1 </label>
                                                 <textarea rows="2" name='coporate_officeaddress_1' defaultValue={Builder.coporate_officeaddress_1} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">Coporate Officeaddress  2 <span className="text-danger"></span></label>
+                                                <label className="form-label">Coporate Officeaddress  2 </label>
                                                 <textarea rows="2" name='coporate_officeaddress_2' defaultValue={Builder.coporate_officeaddress_2} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">coporate_officeaddress_lat<span className="text-danger"></span></label>
+                                                <label className="form-label">coporate_officeaddress_lat</label>
                                                 <textarea rows="2" name='coporate_officeaddress_lat' defaultValue={Builder.coporate_officeaddress_lat} className="form-control"></textarea>
                                             </div>
                                             <div className="col-xl-12 mb-3">
-                                                <label className="form-label">coporate_officeaddress_lng<span className="text-danger"></span></label>
+                                                <label className="form-label">coporate_officeaddress_lng</label>
                                                 <textarea rows="2" name='coporate_officeaddress_lng' defaultValue={Builder.coporate_officeaddress_lng} className="form-control"></textarea>
                                             </div>
                                             <p className='text-danger fs-12'>{Error}</p>

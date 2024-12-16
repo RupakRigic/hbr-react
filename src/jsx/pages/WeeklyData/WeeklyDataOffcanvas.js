@@ -131,16 +131,16 @@ const WeeklyDataOffcanvas = forwardRef((props, ref) => {
                                     <input type="number" name='gross_sales' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Cancelations <span className="text-danger">*</span></label>
                                     <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Current Lots Released <span className="text-danger"></span></label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">Current Lots Released</label>
                                     <input type="number" name='current_lots_released' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Current Un Sold Standing Inventory<span className="text-danger"></span></label>
+                                    <label className="form-label">Current Un Sold Standing Inventory</label>
                                     <input type="number" name='current_un_sold_standing_inventory' className="form-control" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>

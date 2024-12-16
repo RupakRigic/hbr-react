@@ -162,7 +162,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <input type="number" defaultValue={TrafficsaleList.unsoldinventory} name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Status<span className="text-danger"></span></label>
+                                    <label className="form-label">Status</label>
                                     <Select
                                         options={isActiveData}
                                         className=" react-select-container"

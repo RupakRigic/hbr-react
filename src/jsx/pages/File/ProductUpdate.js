@@ -133,7 +133,7 @@ const ProductUpdate = () => {
                                                 <input type="text" defaultValue={ProductList.name} name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput4" className="form-label">Stories <span className="text-danger"></span></label>
+                                                <label htmlFor="exampleFormControlInput4" className="form-label">Stories</label>
                                                 <input type="number" defaultValue={ProductList.stories} name='stories' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">

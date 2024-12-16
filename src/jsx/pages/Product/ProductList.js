@@ -2374,7 +2374,6 @@ const ProductList = () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PLAN STATUS:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <MultiSelect
                       name="status"
@@ -2399,7 +2398,6 @@ const ProductList = () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SUBDIVISION NAME:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
@@ -2414,77 +2412,66 @@ const ProductList = () => {
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PRODUCT NAME :{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       SQUARE FOOTAGE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       STORIES:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BEDROOMS:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       BATH ROOMS:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       GARAGE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       CURRENT BASE PRICE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input type="text" value={filterQuery.current_base_price} name="current_base_price" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       PRODUCT TYPE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
                       AREA:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 ">
                     <label className="form-label">
                       MASTER PLAN:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       ZIP CODE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input 
                       type="text" 
@@ -2501,14 +2488,12 @@ const ProductList = () => {
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT WIDTH:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">
                       LOT SIZE:{" "}
-                      <span className="text-danger"></span>
                     </label>
                     <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                   </div>
@@ -2768,7 +2753,7 @@ const ProductList = () => {
         <div className="offcanvas-body">
           <div className="container-fluid">
             <label className="form-label">
-              Select Role: <span className="text-danger"></span>
+              Select Role:
             </label>
             <select
               className="default-select form-control"

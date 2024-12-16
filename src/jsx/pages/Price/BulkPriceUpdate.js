@@ -125,7 +125,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                                         className="form-label"
                                     >
                                         {" "}
-                                        Date <span className="text-danger"></span>
+                                        Date
                                     </label>
                                     <input
                                         type="date"
