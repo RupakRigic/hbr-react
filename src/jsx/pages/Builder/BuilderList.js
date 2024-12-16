@@ -509,7 +509,7 @@ const BuilderTable = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderListCount(responseData.total);
       setIsLoading(false);
-      if(responseData.total > 100) {
+      if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
         setExcelLoading(false);
@@ -527,23 +527,23 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    if(localStorage.getItem("selectedBuilderNameByFilterBuilder")) {
+    if (localStorage.getItem("selectedBuilderNameByFilterBuilder")) {
       if (localStorage.getItem("UpdateBuilderName") && localStorage.getItem("UpdateID")) {
         const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
         const id = JSON.parse(localStorage.getItem("UpdateID"));
         const UpdateID = Array.isArray(id) ? id : [id];
         const UpdateBuilderName = JSON.parse(localStorage.getItem("UpdateBuilderName"));
-        handleSelectBuilderNameChange(selectedBuilderName,"", UpdateID, UpdateBuilderName);
+        handleSelectBuilderNameChange(selectedBuilderName, "", UpdateID, UpdateBuilderName);
       } else {
         const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
         handleSelectBuilderNameChange(selectedBuilderName);
       }
     }
-    if(localStorage.getItem("selectedStatusByBuilderFilterBuilder")) {
+    if (localStorage.getItem("selectedStatusByBuilderFilterBuilder")) {
       const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByBuilderFilterBuilder"));
       handleSelectStatusChange(selectedStatus);
     }
-    if(localStorage.getItem("selectedCompanyTypeByFilterBuilder")) {
+    if (localStorage.getItem("selectedCompanyTypeByFilterBuilder")) {
       const selectedCompanyType = JSON.parse(localStorage.getItem("selectedCompanyTypeByFilterBuilder"));
       handleSelectCompanyTypeChange(selectedCompanyType);
     }
@@ -555,13 +555,13 @@ const BuilderTable = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      if(!manageFilterOffcanvas) {
+      if (!manageFilterOffcanvas) {
         getbuilderlist(currentPage, sortConfig, searchQuery);
       }
     } else {
       navigate("/");
     }
-  }, [currentPage,searchQuery]);
+  }, [currentPage, searchQuery]);
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -646,11 +646,11 @@ const BuilderTable = () => {
     try {
       let responseData = await AdminBuilderService.destroy(id).json();
       if (responseData.status === true) {
-        if(id) {
+        if (id) {
           const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
           const ID = Array.isArray(id) ? id : [id];
           console.log(ID);
-          
+
           handleSelectBuilderNameChange(selectedBuilderName, ID);
         }
         getbuilderlist(currentPage, sortConfig, searchQuery);
@@ -668,7 +668,7 @@ const BuilderTable = () => {
     try {
       let responseData = await AdminBuilderService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        if(id) {
+        if (id) {
           const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
           handleSelectBuilderNameChange(selectedBuilderName, id);
         }
@@ -917,7 +917,7 @@ const BuilderTable = () => {
               }
             });
           } else {
-            if(responseData.message) {
+            if (responseData.message) {
               let message = responseData.message;
               setShow(false);
               swal(message).then((willDelete) => {
@@ -1024,7 +1024,7 @@ const BuilderTable = () => {
   const applyFilters = () => {
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if(AllBuilderListExport.length === 0) {
+    if (AllBuilderListExport.length === 0) {
       setBuilderList(BuilderList);
       return;
     }
@@ -1066,7 +1066,7 @@ const BuilderTable = () => {
     filtered = applyNumberFilter(filtered, filterQueryCalculation.median_closing_price_this_year, 'median_closing_price_this_year');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.total_net_sales, 'total_net_sales');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_first_closing, 'date_of_first_closing');
-    filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_latest_closing, 'date_of_latest_closing');    
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_latest_closing, 'date_of_latest_closing');
 
     if (isAnyFilterApplied) {
       setBuilderList(filtered.slice(0, 100));
@@ -1123,8 +1123,8 @@ const BuilderTable = () => {
   };
 
   const totalSumFields = (field) => {
-    if(field == "active_communities") {
-      if(filter){
+    if (field == "active_communities") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.active_communities || 0);
         }, 0);
@@ -1134,8 +1134,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "closing_this_year") {
-      if(filter){
+    if (field == "closing_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.closing_this_year || 0);
         }, 0);
@@ -1145,30 +1145,30 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "permits_this_year") {
-      if(filter){
+    if (field == "permits_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.permits_this_year || 0);
         }, 0);
-      } else{
+      } else {
         return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.permits_this_year || 0);
         }, 0);
       }
     }
-    if(field == "net_sales_this_year") {
-      if(filter){
+    if (field == "net_sales_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.net_sales_this_year || 0);
         }, 0);
       } else {
-          return AllBuilderListExport.reduce((sum, builder) => {
+        return AllBuilderListExport.reduce((sum, builder) => {
           return sum + (builder.net_sales_this_year || 0);
         }, 0);
       }
     }
-    if(field == "current_avg_base_Price") {
-      if(filter){
+    if (field == "current_avg_base_Price") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.current_avg_base_Price || 0);
         }, 0);
@@ -1178,8 +1178,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "median_closing_price_this_year") {
-      if(filter){
+    if (field == "median_closing_price_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_this_year || 0);
         }, 0);
@@ -1189,8 +1189,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "median_closing_price_last_year") {
-      if(filter){
+    if (field == "median_closing_price_last_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.median_closing_price_last_year || 0);
         }, 0);
@@ -1200,8 +1200,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "avg_net_sales_per_month_this_year") {
-      if(filter){
+    if (field == "avg_net_sales_per_month_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_net_sales_per_month_this_year || 0);
         }, 0);
@@ -1211,8 +1211,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "avg_closings_per_month_this_year") {
-      if(filter){
+    if (field == "avg_closings_per_month_this_year") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.avg_closings_per_month_this_year || 0);
         }, 0);
@@ -1222,8 +1222,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "total_closings") {
-      if(filter){
+    if (field == "total_closings") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_closings || 0);
         }, 0);
@@ -1233,8 +1233,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "total_permits") {
-      if(filter){
+    if (field == "total_permits") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_permits || 0);
         }, 0);
@@ -1244,8 +1244,8 @@ const BuilderTable = () => {
         }, 0);
       }
     }
-    if(field == "total_net_sales") {
-      if(filter){
+    if (field == "total_net_sales") {
+      if (filter) {
         return BuilderList.reduce((sum, builder) => {
           return sum + (builder.total_net_sales || 0);
         }, 0);
@@ -1259,7 +1259,7 @@ const BuilderTable = () => {
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    if(filter){
+    if (filter) {
       return sum / BuilderList.length;
     } else {
       return sum / AllBuilderListExport.length;
@@ -1665,7 +1665,7 @@ const BuilderTable = () => {
   };
 
   const handleSelectBuilderNameChange = (selectedItems, ID, UpdateID, UpdateBuilderName) => {
-    if(ID && Array.isArray(ID)){
+    if (ID && Array.isArray(ID)) {
       const newValues = selectedItems.filter(item => !ID.includes(item.value));
       localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(newValues));
       const selectedValues = newValues.map(item => item.value);
@@ -1755,11 +1755,11 @@ const BuilderTable = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action' && field !== 'logo' 
-        && field !== 'Active Communities' && field !== 'Closing This Year' 
-        && field !== 'Permits This Year' && field !== 'Net Sales this year' 
-        && field !== 'Current Avg Base Price' && field !== 'Median Closing Price This Year' 
-        && field !== 'Median Closing Price Last Year' && field !== 'Avg Net Sales Per Month This Year' 
+      .filter((field) => field !== 'Action' && field !== 'logo'
+        && field !== 'Active Communities' && field !== 'Closing This Year'
+        && field !== 'Permits This Year' && field !== 'Net Sales this year'
+        && field !== 'Current Avg Base Price' && field !== 'Median Closing Price This Year'
+        && field !== 'Median Closing Price Last Year' && field !== 'Avg Net Sales Per Month This Year'
         && field !== 'Avg Closings Per Month This Year' && field !== 'Total Closings' && field !== 'Total Permits'
         && field !== 'Total Net Sales' && field !== 'Date Of First Closing' && field !== 'Date Of Latest Closing')
       .map((field) => {
@@ -1917,13 +1917,13 @@ const BuilderTable = () => {
                       />
                     </div>
 
-                    <div className="mt-3">
+                    <div className="mt-2">
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
-                          <div className="d-flex">
-                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}  title="Column Order">
-                            {/* Set Columns Order */}
-                            <i className="fa-solid fa-list"></i>
+                        <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <i className="fa-solid fa-list"></i>&nbsp;
+                            Columns Order
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -1931,24 +1931,29 @@ const BuilderTable = () => {
                             onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
+                            <i class="fa-solid fa-sort"></i>&nbsp;
+                            Sort
                           </Button>
                           <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             {excelLoading ?
                               <div class="spinner-border spinner-border-sm" role="status" />
                               :
-                              <i class="fas fa-file-excel" />
+                              <>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </>
                             }
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                            <i className="fa fa-filter" />
+                            <i className="fa fa-filter" />&nbsp;
+                            Filter
                           </button>
                         </div>
                       ) : (
                         <div className="d-flex">
-                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog}  title="Column Order">
-                            {/* Set Columns Order */}
-                            <i className="fa-solid fa-list"></i>
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <i className="fa-solid fa-list"></i>&nbsp;
+                            Columns Order
                           </button>
                           <Button
                             className="btn-sm me-1"
@@ -1956,30 +1961,36 @@ const BuilderTable = () => {
                             onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
-                            <i class="fa-solid fa-sort"></i>
+                            <i class="fa-solid fa-sort"></i>&nbsp;
+                            Sort
                           </Button>
                           <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             {excelLoading ?
                               <div class="spinner-border spinner-border-sm" role="status" />
                               :
-                              <i class="fas fa-file-excel" />
+                              <>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </>
                             }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <i className="fa fa-filter" />&nbsp;
+                            Filter
                           </button>
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
                           >
-                            {" "}
+                            <i className="fa fa-shield" />&nbsp;
                             Field Access
-                          </button>
-                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                            <i className="fa fa-filter" />
                           </button>
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={handlBuilderClick}
                           >
+                            <i className="fas fa-file-import" />&nbsp;
                             Import
                           </Button>
                           <Link
@@ -1988,7 +1999,8 @@ const BuilderTable = () => {
                             data-bs-toggle="offcanvas"
                             onClick={() => builder.current.showEmployeModal()}
                           >
-                            + Add Builder
+                            <i className="fa fa-plus" />&nbsp;
+                            Add Builder
                           </Link>
                           <Link
                             to={"#"}
@@ -1996,6 +2008,7 @@ const BuilderTable = () => {
                             data-bs-toggle="offcanvas"
                             onClick={() => bulkBuilder.current.showEmployeModal()}
                           >
+                            <i className="fa fa-pencil" />&nbsp;
                             Bulk Edit
                           </Link>
                           <button
@@ -2012,6 +2025,7 @@ const BuilderTable = () => {
                               }
                             }) : ""}
                           >
+                            <i className="fa fa-trash" />&nbsp;
                             Bulk Delete
                           </button>
                         </div>
@@ -2117,7 +2131,7 @@ const BuilderTable = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} 
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
                               // onClick={(e) => (column.id == "action" || column.id == "logo") ? "" : e.target.type !== "select-one" ? requestSort(
                               //   column.id == "active Communities" ? "active_communities" :
                               //     column.id == "closing This Year" ? "closing_this_year" :
@@ -2133,52 +2147,52 @@ const BuilderTable = () => {
                               //     column.id == "total Net Sales" ? "total_net_sales" :
                               //     column.id == "date Of First Closing" ? "date_of_first_closing" :
                               //     column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id)) : ""}
-                                >
+                              >
                                 <strong>
                                   {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "__pkBuilderID" ? "builder_code" :
-                                      column.id == "office Address 1" ? "officeaddress1" :
-                                      column.id == "office Address State" ? "officeaddress2" :
-                                      column.id == "company Type" ? "company_type" :
-                                      column.id == "active" ? "is_active" :
-                                      column.id == "stock Market" ? "stock_market" :
-                                      column.id == "current Division President" ? "current_division_president" :
-                                      column.id == "stock Symbol" ? "stock_symbol" :
-                                      column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                      column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
-                                      column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                      column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                      column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                      column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
-                                      column.id == "email Address" ? "email_address" : toCamelCase(column.id))
-                                  ) && (
-                                    <span>
-                                      {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (
-                                          column.id == "__pkBuilderID" ? "builder_code" :
-                                          column.id == "office Address 1" ? "officeaddress1" :
+                                        column.id == "office Address 1" ? "officeaddress1" :
                                           column.id == "office Address State" ? "officeaddress2" :
-                                          column.id == "company Type" ? "company_type" :
-                                          column.id == "active" ? "is_active" :
-                                          column.id == "stock Market" ? "stock_market" :
-                                          column.id == "current Division President" ? "current_division_president" :
-                                          column.id == "stock Symbol" ? "stock_symbol" :
-                                          column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                          column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
-                                          column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                          column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                          column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                          column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                          column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
-                                          column.id == "email Address" ? "email_address" : toCamelCase(column.id))
-                                      ).direction === "asc" ? "↑" : "↓"}
-                                    </span>
-                                  ) 
-                                //   : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>
-                                // )
+                                            column.id == "company Type" ? "company_type" :
+                                              column.id == "active" ? "is_active" :
+                                                column.id == "stock Market" ? "stock_market" :
+                                                  column.id == "current Division President" ? "current_division_president" :
+                                                    column.id == "stock Symbol" ? "stock_symbol" :
+                                                      column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                                        column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                                          column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                                            column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                                              column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                                                column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                                                  column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                                                    column.id == "email Address" ? "email_address" : toCamelCase(column.id))
+                                  ) && (
+                                      <span>
+                                        {column.id != "action" && sortConfig.find(
+                                          (item) => item.key === (
+                                            column.id == "__pkBuilderID" ? "builder_code" :
+                                              column.id == "office Address 1" ? "officeaddress1" :
+                                                column.id == "office Address State" ? "officeaddress2" :
+                                                  column.id == "company Type" ? "company_type" :
+                                                    column.id == "active" ? "is_active" :
+                                                      column.id == "stock Market" ? "stock_market" :
+                                                        column.id == "current Division President" ? "current_division_president" :
+                                                          column.id == "stock Symbol" ? "stock_symbol" :
+                                                            column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                                              column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                                                column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                                                  column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                                                    column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                                                        column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                                                          column.id == "email Address" ? "email_address" : toCamelCase(column.id))
+                                        ).direction === "asc" ? "↑" : "↓"}
+                                      </span>
+                                    )
+                                    //   : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>
+                                    // )
                                   }
                                 </strong>
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "email Address" && column.id !== "__pkBuilderID" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
@@ -2188,37 +2202,37 @@ const BuilderTable = () => {
                                   column.id !== "coporate Office Address latitude" && column.id !== "coporate Office Address longitude" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
                                 ) && (
                                     <>
-                                    <br />
+                                      <br />
                                       <select className="custom-select" value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption :
                                         column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales this year" ? netSalesThisYearOption :
-                                        column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
-                                        column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
-                                        column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
-                                        column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""}
-                                        style={{ 
-                                          cursor: "pointer", 
-                                          marginLeft: '0px', 
-                                          fontSize: "8px", 
-                                          padding: " 0 5px 0", 
-                                          height: "15px", 
+                                          column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
+                                            column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
+                                              column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
+                                                column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""}
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: '0px',
+                                          fontSize: "8px",
+                                          padding: " 0 5px 0",
+                                          height: "15px",
                                           color: "white",
-                                          appearance: "auto" 
+                                          appearance: "auto"
                                         }}
                                         onChange={(e) => column.id == "active Communities" ? handleSelectChange(e, "active_communities") :
                                           column.id == "closing This Year" ? handleSelectChange(e, "closing_this_year") :
-                                          column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
-                                          column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
-                                          column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
-                                          column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
-                                          column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
-                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                          column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                          column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
-                                        <option style={{color: "black", fontSize: "10px"}} value="" disabled>CALCULATION</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="sum">Sum</option>
-                                        <option style={{color: "black", fontSize: "10px"}} value="avg">Avg</option>
+                                            column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
+                                              column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
+                                                column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
+                                                  column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
+                                                    column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
+                                                      column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                                            column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                                              column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
+                                        <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
                                       </select>
                                       <br />
                                     </>
@@ -2523,7 +2537,7 @@ const BuilderTable = () => {
                                               <i className="fas fa-pencil-alt"></i>
                                             </Link>
                                             <Link
-                                              onClick={() => 
+                                              onClick={() =>
                                                 swal({
                                                   title: "Are you sure?",
                                                   icon: "warning",
@@ -2560,48 +2574,32 @@ const BuilderTable = () => {
                   </div>
                 </div>
                 <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                    <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                      {BuilderListCount} entries
-                    </div>
-                    <div
-                      className="dataTables_paginate paging_simple_numbers justify-content-center"
-                      id="example2_paginate"
+                  <div className="dataTables_info">
+                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                    {BuilderListCount} entries
+                  </div>
+                  <div
+                    className="dataTables_paginate paging_simple_numbers justify-content-center"
+                    id="example2_paginate"
+                  >
+                    <Link
+                      className="paginate_button previous disabled"
+                      to="#"
+                      onClick={prePage}
                     >
-                      <Link
-                        className="paginate_button previous disabled"
-                        to="#"
-                        onClick={prePage}
-                      >
-                        <i className="fa-solid fa-angle-left" />
-                      </Link>
-                      <span>
-                        {number.map((n, i) => {
-                          if (number.length > 4) {
-                            if (
-                              i === 0 ||
-                              i === number.length - 1 ||
-                              Math.abs(currentPage - n) <= 1 ||
-                              (i === 1 && n === 2) ||
-                              (i === number.length - 2 &&
-                                n === number.length - 1)
-                            ) {
-                              return (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              );
-                            } else if (i === 1 || i === number.length - 2) {
-                              return <span key={i}>...</span>;
-                            } else {
-                              return null;
-                            }
-                          } else {
+                      <i className="fa-solid fa-angle-left" />
+                    </Link>
+                    <span>
+                      {number.map((n, i) => {
+                        if (number.length > 4) {
+                          if (
+                            i === 0 ||
+                            i === number.length - 1 ||
+                            Math.abs(currentPage - n) <= 1 ||
+                            (i === 1 && n === 2) ||
+                            (i === number.length - 2 &&
+                              n === number.length - 1)
+                          ) {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -2612,19 +2610,35 @@ const BuilderTable = () => {
                                 {n}
                               </Link>
                             );
+                          } else if (i === 1 || i === number.length - 2) {
+                            return <span key={i}>...</span>;
+                          } else {
+                            return null;
                           }
-                        })}
-                      </span>
+                        } else {
+                          return (
+                            <Link
+                              className={`paginate_button ${currentPage === n ? "current" : ""
+                                } `}
+                              key={i}
+                              onClick={() => changeCPage(n)}
+                            >
+                              {n}
+                            </Link>
+                          );
+                        }
+                      })}
+                    </span>
 
-                      <Link
-                        className="paginate_button next"
-                        to="#"
-                        onClick={nextPage}
-                      >
-                        <i className="fa-solid fa-angle-right" />
-                      </Link>
-                    </div>
+                    <Link
+                      className="paginate_button next"
+                      to="#"
+                      onClick={nextPage}
+                    >
+                      <i className="fa-solid fa-angle-right" />
+                    </Link>
                   </div>
+                </div>
               </div>
             </div>
           </div>
@@ -3057,54 +3071,54 @@ const BuilderTable = () => {
                             htmlFor={`flexCheckDefault${index}`}
                           >
                             {element.field_name === "builder_code"
-                            ? "__pkBuilderID"
-                            : element.field_name === "name"
-                            ? "Builder Name"
-                            : element.field_name === "builder_code"
-                            ? "Builder Code"
-                            : element.field_name === "logo"
-                            ? "Logo"
-                            : element.field_name === "phone"
-                            ? "LV Office Phone"
-                            : element.field_name === "fax"
-                            ? "Fax"
-                            : element.field_name === "officeaddress1"
-                            ? "LV Office Address"
-                            : element.field_name === "city"
-                            ? "LV Office City"
-                            : element.field_name === "zipcode"
-                            ? "LV Office Zip"
-                            : element.field_name === "company_type"
-                            ? "Company Type"
-                            : element.field_name === "is_active"
-                            ? "Status"
-                            : element.field_name === "stock_market"
-                            ? "Stock Market"
-                            : element.field_name ===
-                            "current_division_president"
-                            ? "Current Division President"
-                            : element.field_name === "stock_symbol"
-                            ? "Stock Symbol "
-                            : element.field_name ===
-                            "current_land_aquisitions"
-                            ? "Current Land Acquisitions"
-                            : element.field_name ===
-                            "coporate_officeaddress_1"
-                            ? "Corporate Office Address"
-                            : element.field_name ===
-                            "coporate_officeaddress_2"
-                            ? "Corporate Office State"
-                            : element.field_name ===
-                            "coporate_officeaddress_city"
-                            ? "Corporate Office City"
-                            : element.field_name ===
-                            "coporate_officeaddress_zipcode"
-                            ? "Corporate Office Zip"
-                            : element.field_name === "officeaddress2"
-                            ? "Address 2"
-                            : element.field_name === "created_at"
-                            ? "Date Added"
-                            : element.field_name}
+                              ? "__pkBuilderID"
+                              : element.field_name === "name"
+                                ? "Builder Name"
+                                : element.field_name === "builder_code"
+                                  ? "Builder Code"
+                                  : element.field_name === "logo"
+                                    ? "Logo"
+                                    : element.field_name === "phone"
+                                      ? "LV Office Phone"
+                                      : element.field_name === "fax"
+                                        ? "Fax"
+                                        : element.field_name === "officeaddress1"
+                                          ? "LV Office Address"
+                                          : element.field_name === "city"
+                                            ? "LV Office City"
+                                            : element.field_name === "zipcode"
+                                              ? "LV Office Zip"
+                                              : element.field_name === "company_type"
+                                                ? "Company Type"
+                                                : element.field_name === "is_active"
+                                                  ? "Status"
+                                                  : element.field_name === "stock_market"
+                                                    ? "Stock Market"
+                                                    : element.field_name ===
+                                                      "current_division_president"
+                                                      ? "Current Division President"
+                                                      : element.field_name === "stock_symbol"
+                                                        ? "Stock Symbol "
+                                                        : element.field_name ===
+                                                          "current_land_aquisitions"
+                                                          ? "Current Land Acquisitions"
+                                                          : element.field_name ===
+                                                            "coporate_officeaddress_1"
+                                                            ? "Corporate Office Address"
+                                                            : element.field_name ===
+                                                              "coporate_officeaddress_2"
+                                                              ? "Corporate Office State"
+                                                              : element.field_name ===
+                                                                "coporate_officeaddress_city"
+                                                                ? "Corporate Office City"
+                                                                : element.field_name ===
+                                                                  "coporate_officeaddress_zipcode"
+                                                                  ? "Corporate Office Zip"
+                                                                  : element.field_name === "officeaddress2"
+                                                                    ? "Address 2"
+                                                                    : element.field_name === "created_at"
+                                                                      ? "Date Added"
+                                                                      : element.field_name}
                           </label>
                         </div>
                       </div>
