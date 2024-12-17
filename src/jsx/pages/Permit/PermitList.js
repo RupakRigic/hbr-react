@@ -845,15 +845,19 @@ const PermitList = () => {
         document.getElementById("fileInput").value = null;
         setLoading(false);
         if (response.data.failed_records > 0) {
-          console.log(response);
-          let message = response.data.message;
+          let message = [];
           const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
-          message += ' Problematic Record Rows: ' + problematicRows + '.';
-          message += '. Record Imported: ' + response.data.successful_records;
-          message += '. Failed Record Count: ' + response.data.failed_records;
-          message += '. Last Row: ' + response.data.last_processed_row;
+          const problematicRowsError = response.data.failed_records_details.map(detail => detail.error).join(', ');
+          message += '\nRecord Imported: ' + response.data.successful_records + '.';
+          message += '\nFailed Record Count: ' + response.data.failed_records + '.';
+          message += '\nProblematic Record Rows: ' + problematicRows + '.';
+          message += '\nErrors: ' + problematicRowsError + '.';
+          message += '\nLast Row: ' + response.data.last_processed_row + '.';
           setShow(false);
-          swal(message).then((willDelete) => {
+          swal({
+            title: response.data.message,
+            text: message,
+          }).then((willDelete) => {
             if (willDelete) {
               getPermitList(currentPage, sortConfig, searchQuery);
             }
@@ -1348,7 +1352,7 @@ const PermitList = () => {
                       />
                     </div>
 
-                    <div className="mt-2" style={{width: "100%"}}>
+                    <div className="mt-2" style={{ width: "100%" }}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex">

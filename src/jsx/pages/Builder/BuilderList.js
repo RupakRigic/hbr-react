@@ -903,15 +903,19 @@ const BuilderTable = () => {
           document.getElementById("fileInput").value = null;
           setLoading(false);
           if (responseData.failed_records > 0) {
-            console.log(responseData);
-            let message = responseData.message;
+            let message = [];
             const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
-            message += ' Problematic Record Rows: ' + problematicRows + '.';
-            message += '. Record Imported: ' + responseData.successful_records;
-            message += '. Failed Record Count: ' + responseData.failed_records;
-            message += '. Last Row: ' + responseData.last_processed_row;
+            const problematicRowsError = responseData.failed_records_details.map(detail => detail.error).join(', ');
+            message += '\nRecord Imported: ' + responseData.successful_records;
+            message += '\nFailed Record Count: ' + responseData.failed_records;
+            message += '\nProblematic Record Rows: ' + problematicRows + '.';
+            message += '\nErrors: ' + problematicRowsError + '.';
+            message += '\nLast Row: ' + responseData.last_processed_row;
             setShow(false);
-            swal(message).then((willDelete) => {
+            swal({
+              title: responseData.message,
+              text: message,
+            }).then((willDelete) => {
               if (willDelete) {
                 getbuilderlist(currentPage, sortConfig, searchQuery);
               }

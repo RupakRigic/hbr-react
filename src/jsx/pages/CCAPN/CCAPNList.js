@@ -289,16 +289,21 @@ const CCAPNList = () => {
             document.getElementById("fileInput").value = null;
 
             if (response.data.failed_records > 0) {
-              let message = response.data.message;
-              const problematicRows = response.data.failed_records_details.map((detail) => detail.error).join(", ");
-              message += " Problematic Record Rows: " + problematicRows + ".";
-              message += ". Record Imported: " + response.data.successful_records;
-              message += ". Failed Record Count: " + response.data.failed_records;
-              message += ". Last Row: " + response.data.last_processed_row;
+              let message = [];
+              const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
+              const problematicRowsError = response.data.failed_records_details.map(detail => detail.error).join(', ');
+              message += '\nRecord Imported: ' + response.data.successful_records + '.';
+              message += '\nFailed Record Count: ' + response.data.failed_records + '.';
+              message += '\nProblematic Record Rows: ' + problematicRows + '.';
+              message += '\nErrors: ' + problematicRowsError + '.';
+              message += '\nLast Row: ' + response.data.last_processed_row + '.';
               setSelectedFile("");
               setIsLoading(false);
               setShow(false);
-              swal(message).then((willDelete) => {
+              swal({
+                title: response.data.message,
+                text: message,
+              }).then((willDelete) => {
                 if (willDelete) {
                   GetCCAPNList(currentPage, sortConfig, searchQuery);
                 }
