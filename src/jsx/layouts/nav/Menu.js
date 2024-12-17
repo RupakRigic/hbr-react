@@ -81,6 +81,11 @@ export const MenuList = [
         to: '/userlist',
     },
     {
+        title: 'User Analytics',
+        iconStyle: SVGICON.UserAnalytics,
+        to: '/useranalytics',
+    },
+    {
         title: 'Data Reporting',
         iconStyle: SVGICON.GridDots,
         to: '/weekly-data',

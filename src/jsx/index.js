@@ -54,6 +54,7 @@ import SubscriptionPlan from "./pages/SubscriptionPlan/SubscriptionPlan";
 import ThankYouPage from "./pages/ThankYouPage";
 import SubscriptionList from "./pages/SubscriptionPlan/SubscriptionList";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import UserAnalyticsList from "./pages/UserAnalytics/UserAnalyticsList";
 
 const allroutes = [
   // Dashboard
@@ -104,6 +105,10 @@ const allroutes = [
   },
   { url: "/userlist", 
     component: <UserListList />, 
+    allowedRoles: ["Admin","Standard User"] 
+  },
+  { url: "/useranalytics", 
+    component: <UserAnalyticsList />, 
     allowedRoles: ["Admin","Standard User"] 
   },
   {
