@@ -877,8 +877,12 @@ const UserList = () => {
                                           >
                                             <i className="fas fa-pencil-alt"></i>
                                           </Link>
-                                          {/* {element.roles.length > 0
-                                          ? element.roles.map((role) => ( */}
+                                          <Link
+                                            to={`/useranalytics/${element.id}`}
+                                            className="btn btn-primary shadow btn-xs sharp me-1"
+                                          >
+                                            <i class="fa-regular fa-eye"></i>
+                                          </Link>
                                           <Link
                                             onClick={() =>
                                               swal({
@@ -896,8 +900,7 @@ const UserList = () => {
                                           >
                                             <i className="fa fa-trash"></i>
                                           </Link>
-                                          {/* ))
-                                          : ""} */}
+                                          
                                         </div>
                                       </td>
                                     }

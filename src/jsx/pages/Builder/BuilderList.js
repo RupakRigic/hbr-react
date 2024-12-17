@@ -21,6 +21,7 @@ import BulkBuilderUpdate from "./BulkBuilderUpdate";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { MultiSelect } from "react-multi-select-component";
 import '../../pages/Subdivision/subdivisionList.css';
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const BuilderTable = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
@@ -1891,11 +1892,7 @@ const BuilderTable = () => {
 
   return (
     <>
-      {/* <MainPagetitle
-        mainTitle="Builders"
-        pageTitle="Builders"
-        parentTitle="Home"
-      /> */}
+      <MainPagetitle mainTitle="Builders" pageTitle="Builders" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">

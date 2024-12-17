@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import swal from "sweetalert";
 import Select from "react-select";
+import MainPagetitle from "../../layouts/MainPagetitle";
 const BuilderUpdate = () => {
     const [file, setFile] = useState('');
     const [isActive, setIsActive] = useState('');
@@ -136,7 +137,7 @@ const BuilderUpdate = () => {
     }
     return (
         <Fragment>
-
+            <MainPagetitle mainTitle="Edit Builder" pageTitle="Edit Builder" parentTitle="Builders" link="/builderList" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">

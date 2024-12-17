@@ -6,6 +6,7 @@ import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsa
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import Select from "react-select";
+import MainPagetitle from "../../layouts/MainPagetitle";
 const LandsaleUpdate = () => {
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [Error, setError] = useState('');
@@ -102,7 +103,7 @@ const LandsaleUpdate = () => {
     }
     return (
         <Fragment>
-
+            <MainPagetitle mainTitle="Edit Landsale" pageTitle="Edit Landsale" parentTitle="Land Sales" link="/landsalelist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">

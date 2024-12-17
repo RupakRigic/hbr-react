@@ -5,6 +5,7 @@
     import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
     import AdminPriceService from "../../../API/Services/AdminService/AdminPriceService";
     import swal from "sweetalert";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
     const PriceUpdate = () => {
     const [Error, setError] = useState("");
@@ -87,6 +88,7 @@
     };
     return (
         <Fragment>
+        <MainPagetitle mainTitle="Edit Base Price" pageTitle="Edit Base Price" parentTitle="Base Prices" link="/priceList" />
         <div className="container-fluid">
             <div className="row">
             <div className="col-lg-12">

@@ -107,7 +107,7 @@ const allroutes = [
     component: <UserListList />, 
     allowedRoles: ["Admin","Standard User"] 
   },
-  { url: "/useranalytics", 
+  { url: "/useranalytics/:id", 
     component: <UserAnalyticsList />, 
     allowedRoles: ["Admin","Standard User"] 
   },

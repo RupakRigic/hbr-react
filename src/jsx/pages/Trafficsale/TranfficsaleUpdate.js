@@ -5,6 +5,7 @@ import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTra
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import Select from "react-select";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const TrafficsaleUpdate = () => {
     const [SubdivisionCode, setSubdivisionCode] = useState('');
@@ -106,6 +107,7 @@ const TrafficsaleUpdate = () => {
 
     return (
         <Fragment>
+            <MainPagetitle mainTitle="Edit Weekly Traffic & sale" pageTitle="Edit Weekly Traffic & sale" parentTitle="Weekly Traffic & sales" link="/trafficsalelist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">

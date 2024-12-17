@@ -6,6 +6,7 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import swal from "sweetalert";
 import Select from "react-select";
 import ClipLoader from "react-spinners/ClipLoader";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const SubdivisionUpdate = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -203,6 +204,7 @@ const SubdivisionUpdate = () => {
 
   return (
     <Fragment>
+      <MainPagetitle mainTitle="Edit Subdivision" pageTitle="Edit Subdivision" parentTitle="Subdivisions" link="/subdivisionlist" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">

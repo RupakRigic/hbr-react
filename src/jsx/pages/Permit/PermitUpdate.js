@@ -6,6 +6,7 @@ import AdminPermitService from '../../../API/Services/AdminService/AdminPermitSe
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import Select from "react-select";
+import MainPagetitle from "../../layouts/MainPagetitle";
 const PermitUpdate = () => {
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [Error, setError] = useState('');
@@ -96,7 +97,7 @@ const PermitUpdate = () => {
     }
     return (
         <Fragment>
-
+            <MainPagetitle mainTitle="Edit Permit" pageTitle="Edit Permit" parentTitle="Permits" link="/permitlist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">

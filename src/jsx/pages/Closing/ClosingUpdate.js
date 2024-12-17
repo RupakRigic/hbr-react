@@ -6,6 +6,7 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import swal from "sweetalert";
 import Select from "react-select";
 import ClipLoader from "react-spinners/ClipLoader";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const ClosingUpdate = () => {
     const [SubdivisionCode, setSubdivisionCode] = useState('');
@@ -88,6 +89,7 @@ const ClosingUpdate = () => {
 
     return (
         <Fragment>
+            <MainPagetitle mainTitle="Edit Closing" pageTitle="Edit Closing" parentTitle="Closings" link="/closingsalelist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">

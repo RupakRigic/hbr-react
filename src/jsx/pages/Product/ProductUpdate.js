@@ -6,6 +6,7 @@ import AdminProductService from "../../../API/Services/AdminService/AdminProduct
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import ClipLoader from "react-spinners/ClipLoader";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const ProductUpdate = () => {
   const [SubdivisionCode, setSubdivisionCode] = useState([]);
@@ -111,6 +112,7 @@ const ProductUpdate = () => {
 
   return (
     <Fragment>
+      <MainPagetitle mainTitle="Edit Product" pageTitle="Edit Product" parentTitle="Products" link="/productlist" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">

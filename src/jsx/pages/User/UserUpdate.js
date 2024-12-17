@@ -8,6 +8,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Modal from "react-bootstrap/Modal";
 import { Button } from 'react-bootstrap';
 import { FiRefreshCcw, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
+import MainPagetitle from "../../layouts/MainPagetitle";
 
 const UserUpdate = () => {
   const [Error, setError] = useState("");
@@ -259,6 +260,7 @@ const UserUpdate = () => {
 
   return (
     <Fragment>
+      <MainPagetitle mainTitle="Edit User" pageTitle="Edit User" parentTitle="Users" link="/userlist" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">
