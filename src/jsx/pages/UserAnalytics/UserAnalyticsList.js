@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import AdminUserRoleService from '../../../API/Services/AdminService/AdminUserRoleService';
+import MainPagetitle from '../../layouts/MainPagetitle';
 
 const UserAnalyticsList = () => {
     const navigate = useNavigate();
@@ -41,6 +42,7 @@ const UserAnalyticsList = () => {
 
     return (
         <Fragment>
+            <MainPagetitle mainTitle="User Analytics List" pageTitle="User Analytics List" parentTitle="Users" link="/userlist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-xl-12">
