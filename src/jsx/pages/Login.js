@@ -277,9 +277,9 @@ function Login(props) {
           if (userRole == "Admin") {
             navigate("/dashboard");
           } else if (userRole == "Standard User" || userRole == "Data Uploader") {
-            navigate("/subscriptionlist");
+            navigate("/dashboard");
           } else {
-            navigate("/report");
+            navigate("/subscriptionlist");
           }
         }
       } catch (error) {

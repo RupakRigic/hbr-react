@@ -493,13 +493,13 @@ const TrafficsaleList = () => {
           case "Subdivision Name":
             return row.subdivision?.name || '';
           case "Weekly Traffic":
-            return row.weeklytraffic || '';
+            return row.weeklytraffic || 0;
           case "Weekly Gross Sales":
-            return row.grosssales || '';
+            return row.grosssales || 0;
           case "Weekly Cancellations":
-            return row.cancelations || '';
+            return row.cancelations || 0;
           case "Weekly Net Sales":
-            return row.netsales || '';
+            return row.netsales || 0;
           case "Total Lots":
             return row.subdivision?.totallots || '';
           case "Weekly Lots Release For Sale":

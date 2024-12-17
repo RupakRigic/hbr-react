@@ -218,7 +218,7 @@ const SubscriptionPlan = () => {
                         {activePlan &&
                             <div className="profile-detail d-flex">
                                 <div className="profile-info">
-                                    <div style={{ color: "black" }}>You have subscribed <b>{activeSubscriptionPlan.subscription.title}</b></div>&nbsp;
+                                    <div style={{ color: "black" }}>You have subscribed <b>{activeSubscriptionPlan?.subscription?.title}</b></div>&nbsp;
                                     <div style={{ color: "black" }}>, Active till <b><DateComponent date={activeSubscriptionPlan.subscription_end_at} /></b></div>&nbsp;
                                     {activeSubscriptionPlan.subscription_cancelled_at != null && <div style={{ color: "black" }}>You have intiated request to cancel this plan. It will be cancelled on - <b><DateComponent date={activeSubscriptionPlan.subscription_cancelled_at} /></b></div>}
                                 </div>
@@ -234,13 +234,25 @@ const SubscriptionPlan = () => {
                         <div className="card-container">
                             {subscriptionList.length > 0 && subscriptionList.map((data) => (
                                 <div className="subscription-card" key={data.price_id}>
-                                    <h2>{data.title}</h2>
-                                    <h4 style={{ color: "black", fontWeight: "bold" }}>Price: <PriceComponent price={data.price} />/month</h4>
+                                    <h2 style={{ textAlign: "left" }}>{data.title}</h2>
+                                    <h4 style={{ color: "black", fontWeight: "bold", textAlign: "left" }}>Price: <PriceComponent price={data.price} />/month</h4>
                                     <div className="features">
                                         <ul>
                                             {data.content.split(',').map((item, index) => (
-                                                <li key={index} style={{ color: "black" }}>
-                                                    {item.trim()}
+                                                <li key={index} style={{ color: "black", textAlign: "left" }}>
+                                                    <div className='d-flex'>
+                                                        <div>
+                                                            <i
+                                                                className="fa-solid fa-check"
+                                                                style={{
+                                                                    color: "green",
+                                                                    fontSize: "12px",
+                                                                    marginRight: "8px"
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div>{item.trim()}</div>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
