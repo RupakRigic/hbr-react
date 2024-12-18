@@ -131,9 +131,9 @@ const SubscriptionList = () => {
                                                         border: "none"
                                                     }} 
                                                     onClick={handleSubscribePLan} 
-                                                    title="Subscribe Plan"
+                                                    title="Subscription Plan"
                                                 >
-                                                    Subscribe Plan
+                                                    Subscription Plan
                                                 </button>
                                             </div> 
                                             : (
@@ -245,10 +245,10 @@ const SubscriptionList = () => {
                                                                 <td>{element.user_name}</td>
                                                                 <td>{element.user_last_name}</td>
                                                                 <td>{element.user_email}</td>
-                                                                <td>{element.subscription_title}</td>
-                                                                <td>{element.subscription_type}</td>
+                                                                <td>{element.subscription.title}</td>
+                                                                <td>{element.subscription.type}</td>
                                                                 <td>{element.subscription_status}</td>
-                                                                <td>{<PriceComponent price={element.subscription_price} />}</td>
+                                                                <td>{<PriceComponent price={element.price} />}</td>
                                                                 <td>{element.payment_status}</td>
                                                                 <td><DateComponent date={element.subscription_start_at} /></td>
                                                                 <td><DateComponent date={element.subscription_renewed_at} /></td>

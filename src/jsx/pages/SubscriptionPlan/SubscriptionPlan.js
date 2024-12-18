@@ -271,9 +271,14 @@ const SubscriptionPlan = () => {
 
             {/* Modal */}
             {showModal &&
-                <Modal show={showModal} onHide={() => setShowModal(!showModal)}>
-                    <Modal.Header closeButton>
+                <Modal show={showModal} onHide={() => setShowModal(true)}>
+                    <Modal.Header>
                         <Modal.Title>Choose Data Types</Modal.Title>
+                        <button
+                            className="btn-close"
+                            aria-label="Close"
+                            onClick={() => setShowModal(false)}
+                        ></button>
                     </Modal.Header>
                     <Modal.Body>
                         {dataTypeLimitMessage && <div style={{ color: "red", padding: "5px" }}>{dataTypeLimitMessage}</div>}
