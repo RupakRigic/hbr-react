@@ -737,7 +737,8 @@ const RechartJs = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("subscription_data_types")) {
+    debugger
+    if (localStorage.getItem("subscription_data_types") != "undefined") {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
 
       const customMappings = {
@@ -780,6 +781,15 @@ const RechartJs = () => {
         };
       });
 
+      setDataTypeOption(transformedData);
+    } else {
+      const transformedData = [
+        { value: 'New-Home-Traffic-Sales', label: 'New Home Traffic & Sales' },
+        { value: 'New-Home-Prices', label: 'New Home Prices' },
+        { value: 'New-Home-Closings', label: 'New Home Closings' },
+        { value: 'New-Home-Permits', label: 'New Home Permits' },
+        // { value: 'Land-Sales', label: 'Land Sales' }
+      ];
       setDataTypeOption(transformedData);
     }
   }, []);

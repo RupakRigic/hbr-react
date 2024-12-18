@@ -142,7 +142,7 @@ const BuilderTable = () => {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("subscription_data_types")) {
+    if (localStorage.getItem("subscription_data_types") != "undefined") {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
       const reports = subscription_data_types?.reports;
 
@@ -179,6 +179,23 @@ const BuilderTable = () => {
 
         setReportOption(sortedReportList);
       }
+    } else {
+      const desiredOrder = [
+        {value: 'List of Active New Home Builders', label: 'List of Active New Home Builders'},
+        {value: 'Active Adult Activity Report', label: 'Active Adult Activity Report'},
+        {value: 'Annual Report', label: 'Annual Report'},
+        {value: 'Area Summaries Report', label: 'Area Summaries Report'},
+        {value: 'Closings Report (PDF)', label: 'Closings Report (PDF)'},
+        {value: 'Closings Report (XLS)', label: 'Closings Report (XLS)'},
+        {value: 'LV Quarterly Traffic and Sales Summary', label: 'LV Quarterly Traffic and Sales Summary'},
+        {value: 'Market Share Analysis Report', label: 'Market Share Analysis Report'},
+        {value: 'Permits Rankings Report', label: 'Permits Rankings Report'},
+        {value: 'Subdivision Analysis Report', label: 'Subdivision Analysis Report'},
+        {value: 'Las Vegas Land Report', label: 'Las Vegas Land Report'},
+        {value: 'Weekly Traffic and Sales Watch (PDF)', label: 'Weekly Traffic and Sales Watch (PDF)'},
+        {value: 'Weekly Traffic and Sales Watch (XLS)', label: 'Weekly Traffic and Sales Watch (XLS)'},
+      ];
+      setReportOption(desiredOrder);
     }
   }, []);
 
