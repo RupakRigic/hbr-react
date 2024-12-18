@@ -38,16 +38,14 @@ const UserSideBar = () => {
   const [userMenuList, setUserMenuList] = useState([]);
 
   useEffect(() => {
-    if (localStorage.getItem("is_subscribed")) {
+    if (JSON.parse(localStorage.getItem("is_subscribed")) == 1) {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
       if (subscription_data_types) {
         const titles = subscription_data_types?.data?.map(module => module.title);
         setSubscriptionDataTypes(titles);
       }
-      if(JSON.parse(localStorage.getItem("is_subscribed")) == 1){
-        setActivePlan(true);
-        localStorage.setItem("subscriptionActivePlan", true);
-      }
+      setActivePlan(true);
+      localStorage.setItem("subscriptionActivePlan", true);
     }
   }, [activePlan]);
 
@@ -96,6 +94,8 @@ const UserSideBar = () => {
 
         setUserMenuList(sortedMenuList);
       }
+    } else {
+      setUserMenuList(DataUploaderMenuList);
     }
   }, [subscriptionDataTypes]);
 

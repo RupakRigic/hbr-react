@@ -276,7 +276,12 @@ function Login(props) {
           if (userRole == "Admin") {
             navigate("/dashboard");
           } else if (userRole == "Standard User" || userRole == "Data Uploader") {
-            navigate("/dashboard");
+            const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
+            if(subscription == 1) {
+              navigate("/dashboard");
+            } else {
+              navigate("/subscriptionplan");
+            }
           } else {
             navigate("/subscriptionlist");
           }

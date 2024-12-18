@@ -130,7 +130,7 @@ const SubscriptionPlan = () => {
         try {
             let DataType = selectedOptions.map(option => String(option.value))
             var userData = {
-                plan_price_id: planID,
+                plan_id: planID,
                 seats: numberOfSeat,
                 data_types: DataType
             }
