@@ -15,6 +15,7 @@ const RechartJs = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [type, setType] = useState("");
+  const [dataTypeOption, setDataTypeOption] = useState([]);
 
   const [graph1Title, setgraph1Title] = useState("");
   const [graph2Title, setgraph2Title] = useState("");
@@ -37,27 +38,27 @@ const RechartJs = () => {
 
   const isValidDate = (date) => {
     return date instanceof Date && !isNaN(date);
-};
+  };
 
-const handleFilterDateFrom = (date) => {
+  const handleFilterDateFrom = (date) => {
     if (isValidDate(date)) {
-        setStartDate(date);
+      setStartDate(date);
     } else {
-        setStartDate(null);
+      setStartDate(null);
     }
-};
+  };
 
-const handleFilterDateTo = (date) => {
-  if (isValidDate(date)) {
+  const handleFilterDateTo = (date) => {
+    if (isValidDate(date)) {
       setEndDate(date);
-  } else {
+    } else {
       setEndDate(null);
-  }
-};
+    }
+  };
 
-const parseDate = (date) => {
-  return date ? new Date(date) : null;
-};
+  const parseDate = (date) => {
+    return date ? new Date(date) : null;
+  };
 
   const [BuyerTrafficData, setBuyerTrafficdata] = useState({
     defaultFontFamily: "Poppins",
@@ -377,11 +378,11 @@ const parseDate = (date) => {
   };
 
   const getchartList = async (type, startDate, endDate) => {
-    if(type == "" || startDate == null || endDate == null){
+    if (type == "" || startDate == null || endDate == null) {
       return;
     }
-  const formattedStartDate = formatDate(startDate);
-  const formattedEndDate = formatDate(endDate);
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
     try {
       let responseData = await AdminWeeklyDataService.getstatistics(type, formattedStartDate, formattedEndDate).json();
       console.log(responseData);
@@ -419,7 +420,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minBuyerValue != 0 ? minBuyerValue-(minBuyerValue*50/100) : adjustedMinBuyerValue,
+            min: minBuyerValue != 0 ? minBuyerValue - (minBuyerValue * 50 / 100) : adjustedMinBuyerValue,
             suggestedMax: suggestedBuyerMax,
             ticks: {
               beginAtZero: true,
@@ -476,7 +477,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: minNetSaleValue != 0 ? minNetSaleValue-(minNetSaleValue*50/100) : adjustedMinNetSaleValue,
+            min: minNetSaleValue != 0 ? minNetSaleValue - (minNetSaleValue * 50 / 100) : adjustedMinNetSaleValue,
             suggestedMax: suggestedNetSaleMax,
             ticks: {
               beginAtZero: true,
@@ -534,14 +535,14 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: cancelationMinValue != 0 ? cancelationMinValue.toFixed(0) - (cancelationMinValue*50/100).toFixed(0) : adjustedCancelationMinValue,
+            min: cancelationMinValue != 0 ? cancelationMinValue.toFixed(0) - (cancelationMinValue * 50 / 100).toFixed(0) : adjustedCancelationMinValue,
             suggestedMax: suggestedcancelationMax,
             ticks: {
               beginAtZero: true,
               padding: 0,
               autoSkip: false,
               // Format the y-axis labels to append the "%" sign
-              callback: function(value) {
+              callback: function (value) {
                 return graph3Title === "Cancellation %" ? value + '%' : value;
               },
             },
@@ -559,7 +560,7 @@ const parseDate = (date) => {
           },
         },
       });
-      
+
       const filteredStandingData = Object.entries(
         responseData["standing_inventory"]
       ).filter(([key, value]) => key !== "status");
@@ -593,7 +594,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: StandingValueMinValue != 0 ? StandingValueMinValue - (StandingValueMinValue*50/100) : adjustedStandingValueMinValue,
+            min: StandingValueMinValue != 0 ? StandingValueMinValue - (StandingValueMinValue * 50 / 100) : adjustedStandingValueMinValue,
             suggestedMax: suggestedStandingValueMax,
             ticks: {
               beginAtZero: true,
@@ -650,7 +651,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: NetSaleSubWiseMinValue != 0 ? NetSaleSubWiseMinValue-(NetSaleSubWiseMinValue*50/100) : adjustedNetSaleSubWiseMinValue,
+            min: NetSaleSubWiseMinValue != 0 ? NetSaleSubWiseMinValue - (NetSaleSubWiseMinValue * 50 / 100) : adjustedNetSaleSubWiseMinValue,
             suggestedMax: suggestedNetSaleSubWiseMax,
             ticks: {
               beginAtZero: true,
@@ -706,7 +707,7 @@ const parseDate = (date) => {
         },
         scales: {
           y: {
-            min: ActiveSubMin != 0 ? ActiveSubMin-(ActiveSubMin*50/100) : adjustedActiveSubMin,
+            min: ActiveSubMin != 0 ? ActiveSubMin - (ActiveSubMin * 50 / 100) : adjustedActiveSubMin,
             suggestedMax: suggestedActiveSubMax,
             ticks: {
               beginAtZero: true,
@@ -735,13 +736,53 @@ const parseDate = (date) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (localStorage.getItem("usertoken")) {
-  //     getchartList();
-  //   } else {
-  //     navigate("/");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (localStorage.getItem("subscription_data_types")) {
+      const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
+
+      const customMappings = {
+        "Weekly Traffic & Sales": "New Home Traffic & Sales",
+        "Product Pricing": "New Home Prices"
+      };
+
+      const transformedData = subscription_data_types.flatMap(item => {
+        if (item.title === "Weekly Traffic & Sales + Product Pricing") {
+          return [
+            {
+              label: customMappings["Weekly Traffic & Sales"],
+              value: customMappings["Weekly Traffic & Sales"]
+                .replace(/ /g, "-")
+                .replace(/[^a-zA-Z0-9-]/g, "")
+                .replace(/-+/g, "-")
+                .toLowerCase()
+                .replace(/\b\w/g, char => char.toUpperCase())
+            },
+            {
+              label: customMappings["Product Pricing"],
+              value: customMappings["Product Pricing"]
+                .replace(/ /g, "-")
+                .replace(/[^a-zA-Z0-9-]/g, "")
+                .replace(/-+/g, "-")
+                .toLowerCase()
+                .replace(/\b\w/g, char => char.toUpperCase())
+            }
+          ];
+        }
+
+        return {
+          label: item.title,
+          value: item.title
+            .replace(/ /g, "-")
+            .replace(/[^a-zA-Z0-9-]/g, "")
+            .replace(/-+/g, "-")
+            .toLowerCase()
+            .replace(/\b\w/g, char => char.toUpperCase())
+        };
+      });
+
+      setDataTypeOption(transformedData);
+    }
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -761,66 +802,33 @@ const parseDate = (date) => {
                 <label className="form-label">Data Type:</label>
                 <select className="default-select form-control" onChange={handleChange}>
                   <option value="">Select Data Type</option>
-                  <option value="New-Home-Traffic-Sales">New Home Traffic & Sales</option>
-                  <option value="New-Home-Prices">New Home Prices</option>
-                  <option value="New-Home-Closings">New Home Closings</option>
-                  <option value="New-Home-Permits">New Home Permits</option>
-                  {/* <option value="Resales">Resales</option> */}
+                  {dataTypeOption?.map((data) => (
+                    <option value={data.value}>{data.label}</option>
+                  ))}
                 </select>
               </div>
-              {/* <div className="col-md-3 mt-4">
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="success"
-                    className="btn-md"
-                    id="dropdown-basic"
-                  >
-                    <i className="fa fa-filter"></i>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu style={{ width: "200px", overflow: "unset" }}>
-                    <label htmlFor="start_date">From:</label>
-                    <DatePicker
-                      name="from"
-                      className="form-control"
-                      selected={parseDate(startDate)}
-                      onChange={handleFilterDateFrom}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                    <label htmlFor="end_date">To:</label>
-                    <DatePicker
-                      name="to"
-                      className="form-control"
-                      selected={parseDate(endDate)}
-                      onChange={handleFilterDateTo}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div> */}
               <div className="col-md-3">
-                  <label htmlFor="start_date">From:</label>
-                    <DatePicker
-                      name="from"
-                      className="form-control"
-                      selected={parseDate(startDate)}
-                      onChange={handleFilterDateFrom}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                </div>
+                <label htmlFor="start_date">From:</label>
+                <DatePicker
+                  name="from"
+                  className="form-control"
+                  selected={parseDate(startDate)}
+                  onChange={handleFilterDateFrom}
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="mm/dd/yyyy"
+                />
+              </div>
               <div className="col-md-3">
                 <label htmlFor="end_date">To:</label>
-                    <DatePicker
-                      name="to"
-                      className="form-control"
-                      selected={parseDate(endDate)}
-                      onChange={handleFilterDateTo}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                </div>
+                <DatePicker
+                  name="to"
+                  className="form-control"
+                  selected={parseDate(endDate)}
+                  onChange={handleFilterDateTo}
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="mm/dd/yyyy"
+                />
+              </div>
             </div>
           </Box>
           <Row>
@@ -874,11 +882,11 @@ const parseDate = (date) => {
                   <h4 className="card-title">{graph4Title}</h4>
                 </Card.Header>
                 <Card.Body>
-                  {graph4Title === 'Median Closing Price By Area'||graph4Title === 'New Home Closings By Area' || graph4Title === 'New Home Permits By Area'? (
-                  <BarChart1 data={StandingData} options={StandingOption} />
-) : (
-  <LineChart1 data={StandingData} options={StandingOption} />
-)}
+                  {graph4Title === 'Median Closing Price By Area' || graph4Title === 'New Home Closings By Area' || graph4Title === 'New Home Permits By Area' ? (
+                    <BarChart1 data={StandingData} options={StandingOption} />
+                  ) : (
+                    <LineChart1 data={StandingData} options={StandingOption} />
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -905,14 +913,14 @@ const parseDate = (date) => {
                   <h4 className="card-title">{graph6Title}</h4>
                 </Card.Header>
                 <Card.Body>
-                                    {graph6Title === 'Average Base Asking Price By Area' ? (
-                  <BarChart1 data={ActiveSubData} options={ActiveSubOption} />
-) : (
-  <LineChart1
-  data={ActiveSubData}
-  options={ActiveSubOption}
-/>
-)}
+                  {graph6Title === 'Average Base Asking Price By Area' ? (
+                    <BarChart1 data={ActiveSubData} options={ActiveSubOption} />
+                  ) : (
+                    <LineChart1
+                      data={ActiveSubData}
+                      options={ActiveSubOption}
+                    />
+                  )}
                 </Card.Body>
               </Card>
             </Col>
