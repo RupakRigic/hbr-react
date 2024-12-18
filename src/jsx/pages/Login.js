@@ -48,11 +48,10 @@ function Login(props) {
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
         localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));
         localStorage.setItem("subscription_end_at", JSON.stringify(data.subscription_end_at));
+        localStorage.setItem("subscription_data_types", JSON.stringify(data?.data_types?.subscription_data_types));
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log(user);
         if (user != "") {
           const userRole = JSON.parse(localStorage.getItem("user")).role;
-          console.log(userRole);
           if (!userRole) {
             alert(user.message);
             return;

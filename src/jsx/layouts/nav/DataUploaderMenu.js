@@ -1,26 +1,6 @@
 import { SVGICON } from "../../constant/theme";
 
-export const DataUploaderSubscribeMenuList = [
-    {
-        title: 'Builders',
-        iconStyle: SVGICON.Pages,
-        to: '/builderList',
-
-    },
-    {
-        title: 'Weekly Data',
-        iconStyle: SVGICON.GridDots,
-        to: '/weekly-data',
-    },
-    {
-        title: 'Subscription',
-        iconStyle: SVGICON.SubscribeData,
-        to: '/subscriptionlist',
-    },
-
-]
-
-export const DataUploaderMenuList = [
+export const CommanDataType = [
     {
         title: 'Dashboard',
         iconStyle: SVGICON.HomeSvg,
@@ -38,22 +18,6 @@ export const DataUploaderMenuList = [
         to: '/filtersubdivision',
     },
     {
-        title: 'Products',
-        iconStyle: SVGICON.CoreHr,
-        to: '/filterproducts',
-    },
-    {
-        title: 'Weekly Traffic & Sales',
-        iconStyle: SVGICON.GridDots,
-        to: '/filterweeklytrafficandsales',
-    },
-    {
-        title: 'Base Prices',
-        iconStyle: SVGICON.Pages,
-        to: '/filterbaseprice',
-
-    },
-    {
         title: 'Reports',
         iconStyle: SVGICON.GridDots,
         to: '/report',
@@ -68,4 +32,55 @@ export const DataUploaderMenuList = [
         iconStyle: SVGICON.SubscribeData,
         to: '/subscriptionlist',
     }
-]
+];
+
+export const WeeklyTrafficAndSales_ProductPricing = [
+    {
+        title: 'Products',
+        iconStyle: SVGICON.CoreHr,
+        to: '/filterproducts',
+    },
+    {
+        title: 'Weekly Traffic & Sales',
+        iconStyle: SVGICON.GridDots,
+        to: '/filterweeklytrafficandsales',
+    },
+    {
+        title: 'Base Prices',
+        iconStyle: SVGICON.Pages,
+        to: '/filterbaseprice',
+
+    }
+];
+
+export const NewHomeClosings = [
+    {
+        title: 'Closings',
+        iconStyle: SVGICON.CoreHr,
+        to: '/filterclosings',
+    }
+];
+
+export const NewHomePermits = [
+    {
+        title: 'Permits',
+        iconStyle: SVGICON.Performance,
+        to: '/filterpermits',
+    }
+];
+
+export const LandSales = [
+    {
+        title: 'Land Sales',
+        iconStyle: SVGICON.ProjectsSidbar,
+        to: '/filterlandsales',
+    },
+];
+
+export const DataUploaderMenuList = [
+    {
+        title: 'Subscription',
+        iconStyle: SVGICON.SubscribeData,
+        to: '/subscriptionlist',
+    }
+];
