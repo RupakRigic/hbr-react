@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
-import RechartJs from "../../components/charts/rechart";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import "./Report.css";
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
@@ -16,14 +15,13 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { Hidden } from "@mui/material";
 import ClipLoader from "react-spinners/ClipLoader";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 
 const BuilderTable = () => {
-  
+
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
   const [weekEndDates, setWeekEndDates] = useState([]);
@@ -55,7 +53,7 @@ const BuilderTable = () => {
     }
   }
   const [show, setShow] = useState(false);
-  
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [weekEndingDate, setWeekEndingDate] = useState("");
@@ -78,7 +76,7 @@ const BuilderTable = () => {
   console.log(startDate);
   console.log(endDate);
 
-  const   handleFilterDateFrom = (date) => {
+  const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
       console.log(formattedDate)
@@ -98,7 +96,7 @@ const BuilderTable = () => {
       setEndDate(formattedDate)
 
     } else {
-    
+
       setEndDate('')
     }
   };
@@ -116,14 +114,14 @@ const BuilderTable = () => {
 
     return parsedDate;
   };
-  
+
   const [message, setMessage] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alert, setAlert] = useState(false);
   const [selectYear, setSelectYear] = useState("");
   const [selectQuarter, setSelectQuarter] = useState("");
   const [uploadReportType, setUploadReportType] = useState("List of Active New Home Builders");
-  console.log(uploadReportType);
+  console.log("SelectedReport:", uploadReportType);
   const [pdfData, setPdfData] = useState();
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -133,6 +131,7 @@ const BuilderTable = () => {
   const [selectedEndDate, setSelectedEndDate] = useState();
   const [selectedFile, setSelectedFile] = useState('');
   const [selectedFileError, setSelectedFileError] = useState("");
+  const [reportOption, setReportOption] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -141,6 +140,49 @@ const BuilderTable = () => {
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem("subscription_data_types")) {
+      const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
+      const reports = subscription_data_types?.reports;
+
+      if (Array.isArray(reports)) {
+        const formattedReports = reports.reduce((acc, reportObject) => {
+          Object.values(reportObject).forEach(report => {
+            acc.push({
+              value: report.title,
+              label: report.title
+            });
+          });
+          return acc;
+        }, []);
+
+        const desiredOrder = [
+          'List of Active New Home Builders',
+          'Active Adult Activity Report',
+          'Annual Report',
+          'Area Summaries Report',
+          'Closings Report (PDF)',
+          'Closings Report (XLS)',
+          'LV Quarterly Traffic and Sales Summary',
+          'Market Share Analysis Report',
+          'Permits Rankings Report',
+          'Subdivision Analysis Report',
+          'Las Vegas Land Report',
+          'Weekly Traffic and Sales Watch (PDF)',
+          'Weekly Traffic and Sales Watch (XLS)'
+        ];
+
+        const sortedReportList = Array.from(formattedReports).sort((a, b) => {
+          return desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title);
+        });
+
+        setReportOption(sortedReportList);
+      }
+    }
+  }, []);
+
+
   const handleSelectChange = (event) => {
     setSelectedEndDate(event.target.value);
     localStorage.setItem("enddate", event.target.value);
@@ -185,7 +227,6 @@ const BuilderTable = () => {
       const response = await AdminReportService.weekending_date_list();
       const responseData = await response.json();
       setWeekEndingDateList(responseData);
-      console.log(responseData);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -205,7 +246,7 @@ const BuilderTable = () => {
   }, []);
 
   const handlePreview = async (e) => {
-    if(reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") {
+    if (reportType == "Closings Report (PDF)" || reportType == "Closings Report (XLS)" || reportType == "Market Share Analysis Report") {
       let start_Date = moment(startDate);
       let end_Date = moment(endDate);
       let days = end_Date.diff(start_Date, 'days', true);
@@ -216,8 +257,8 @@ const BuilderTable = () => {
         localStorage.setItem("start_date", startDate);
         localStorage.setItem("end_date", endDate);
         localStorage.setItem("report_type", reportType);
-  
-  
+
+
         const reportdata = {
           type: reportType,
           start_date: startDate,
@@ -225,10 +266,10 @@ const BuilderTable = () => {
         };
         const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
         try {
-        const response = await axios.post(
-          // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
-          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
-  
+          const response = await axios.post(
+            // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+            `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+
             reportdata,
             {
               responseType: "arraybuffer",
@@ -262,7 +303,7 @@ const BuilderTable = () => {
         setAlertMessage("Please select 12 month Period for your report.");
         return;
       }
-    } else if (reportType == "Weekly Traffic and Sales Watch(PDF)") {
+    } else if (reportType == "Weekly Traffic and Sales Watch (PDF)") {
       if (weekEndingDate == "") {
         setAlert(true);
         setAlertMessage("Please select week ending date");
@@ -286,9 +327,9 @@ const BuilderTable = () => {
       };
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
       try {
-      const response = await axios.post(
-        // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+        const response = await axios.post(
+          // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
 
           reportdata,
           {
@@ -318,7 +359,7 @@ const BuilderTable = () => {
         }
         setError("Something went wrong");
       }
-    } else if (reportType == "Weekly Traffic and Sales Watch(XLS)") {
+    } else if (reportType == "Weekly Traffic and Sales Watch (XLS)") {
       if (weekEndingDate == "") {
         setAlert(true);
         setAlertMessage("Please select week ending date");
@@ -342,8 +383,8 @@ const BuilderTable = () => {
       };
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
       try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+        const response = await axios.post(
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
           reportdata,
           {
             responseType: "arraybuffer",
@@ -366,7 +407,7 @@ const BuilderTable = () => {
         setIsLoading(false);
         // Create a new Blob for XLS file
         const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        
+
         // Create a link to download the file
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
@@ -382,7 +423,7 @@ const BuilderTable = () => {
         }
         setError("Something went wrong");
       }
-    } else if (reportType == "LV Quartley Traffic and Sales Summary") {
+    } else if (reportType == "LV Quarterly Traffic and Sales Summary") {
       if (selectYear == "" || selectQuarter == "") {
         setAlert(true);
         setAlertMessage("Please select year and quarter");
@@ -401,9 +442,9 @@ const BuilderTable = () => {
       };
       const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
       try {
-      const response = await axios.post(
-        // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+        const response = await axios.post(
+          // "https://hbrapi.rigicgspl.com/api/admin/report/export-reports",
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
 
           reportdata,
           {
@@ -446,7 +487,7 @@ const BuilderTable = () => {
       localStorage.setItem("end_date", endDate);
       localStorage.setItem("report_type", reportType);
 
-        const reportdata = {
+      const reportdata = {
         type: reportType,
         start_date: formattedToday,
         end_date: formattedToday,
@@ -457,7 +498,7 @@ const BuilderTable = () => {
 
       try {
         const response = await axios.post(
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
           reportdata,
           {
             responseType: "arraybuffer",
@@ -492,7 +533,7 @@ const BuilderTable = () => {
       localStorage.setItem("end_date", endDate);
       localStorage.setItem("report_type", reportType);
 
-        const reportdata = {
+      const reportdata = {
         type: reportType,
         start_date: startDate,
         end_date: endDate,
@@ -502,7 +543,7 @@ const BuilderTable = () => {
 
       try {
         const response = await axios.post(
-        `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+          `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
           reportdata,
           {
             responseType: "arraybuffer",
@@ -595,8 +636,8 @@ const BuilderTable = () => {
       fileReader.readAsDataURL(file)
 
       fileReader.onload = () => {
-          var image = fileReader.result
-          setSelectedFile(image);
+        var image = fileReader.result
+        setSelectedFile(image);
       }
 
       setSelectedFileError("")
@@ -609,40 +650,39 @@ const BuilderTable = () => {
   const handleUploadClick = () => {
     document.getElementById("fileInput").click();
   };
-  const handleUploadFile = async  () =>{
+  const handleUploadFile = async () => {
 
-    if(!selectedFile)
-    {
+    if (!selectedFile) {
       setSelectedFileError('Please select Report file.')
 
       return false;
     }
     const inputData = {
-      pdf_file :  selectedFile ? selectedFile.split(',')[1] : "",
-      type:uploadReportType
+      pdf_file: selectedFile ? selectedFile.split(',')[1] : "",
+      type: uploadReportType
     };
-      try {
-        let responseData = await AdminReportService.uploadReport(inputData).json();
-        swal("Report Saved Succesfully").then((willDelete) => {
-          if (willDelete) {
-            navigate("/report");
-          }
-        });
-        getreportlist();
-      } catch (error) {
-        console.log(error);
-        if (error.name === "HTTPError") {
-          const errorJson = error.response.json();
-          setError(errorJson.message);
+    try {
+      let responseData = await AdminReportService.uploadReport(inputData).json();
+      swal("Report Saved Succesfully").then((willDelete) => {
+        if (willDelete) {
+          navigate("/report");
         }
+      });
+      getreportlist();
+    } catch (error) {
+      console.log(error);
+      if (error.name === "HTTPError") {
+        const errorJson = error.response.json();
+        setError(errorJson.message);
       }
+    }
 
   }
 
   const handleReportType = (e) => {
     setReportType(e.target.value);
     setAlert(false);
-    if(e.target.value == "Closing Report(PDF)" || e.target.value == "Market Share Analysis Report") {
+    if (e.target.value == "Closings Report (PDF)" || e.target.value == "Market Share Analysis Report") {
       setMessage("Choose a 12 month Period for your report.");
     }
   }
@@ -659,19 +699,19 @@ const BuilderTable = () => {
   const GetBuilderlist = async () => {
     setIsLoading(true);
     try {
-        const response = await AdminBuilderService.all_builder_list();
-        const responseData = await response.json();
-        setIsLoading(false);
-        setBuilderList(responseData);
-  
+      const response = await AdminBuilderService.all_builder_list();
+      const responseData = await response.json();
+      setIsLoading(false);
+      setBuilderList(responseData);
+
     } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-        if (error.name === 'HTTPError') {
-            const errorJson = await error.response.json();
-  
-            setError(errorJson.message)
-        }
+      console.log(error);
+      setIsLoading(false);
+      if (error.name === 'HTTPError') {
+        const errorJson = await error.response.json();
+
+        setError(errorJson.message)
+      }
     }
     setIsLoading(false);
   };
@@ -681,11 +721,11 @@ const BuilderTable = () => {
       const response = await AdminReportService.Subdivisionbybuilderid(builderId);
       const responseData = await response.json();
       const formattedData = responseData.data
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((subdivision) => ({
-        label: subdivision.name,
-        value: subdivision.id,
-      }));
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((subdivision) => ({
+          label: subdivision.name,
+          value: subdivision.id,
+        }));
       setSubdivisionList(formattedData);
       setIsLoading(false);
     } catch (error) {
@@ -698,11 +738,11 @@ const BuilderTable = () => {
   };
 
   const BuilderOptions = BuilderList
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map(element => ({
-    value: element.id,
-    label: element.name
-  }));
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(element => ({
+      value: element.id,
+      label: element.name
+    }));
 
   const handleBuilderCode = (code) => {
     setBuilderCode(code.value);
@@ -786,7 +826,7 @@ const BuilderTable = () => {
                                     >
                                       {element.report_type.length > 20
                                         ? element.report_type.substring(0, 20) +
-                                          "...   "
+                                        "...   "
                                         : element.report_type}
                                     </a>
                                   </td>
@@ -843,9 +883,8 @@ const BuilderTable = () => {
                             <span>
                               {number.map((n, i) => (
                                 <Link
-                                  className={`paginate_button ${
-                                    currentPage === n ? "current" : ""
-                                  } `}
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
                                   key={i}
                                   onClick={() => changeCPage(n)}
                                 >
@@ -887,21 +926,22 @@ const BuilderTable = () => {
                                   value={uploadReportType}
                                   className="form-control-select"
                                 >
-                                  <option>List of Active New Home Builders</option>
+                                  {reportOption?.map((data) => (
+                                    <option>{data.label}</option>
+                                  ))}
+                                  {/* <option>List of Active New Home Builders</option>
                                   <option>Active Adult Activity Report</option>
                                   <option>Annual Report</option>
                                   <option>Area Summaries Report</option>
-                                  <option>Closing Report(PDF) </option>
-                                  <option>Closing Report(XLS) </option>
-                                  <option>
-                                    LV Quartley Traffic and Sales Summary
-                                  </option>
+                                  <option>Closings Report (PDF)</option>
+                                  <option>Closings Report (XLS)</option>
+                                  <option>LV Quarterly Traffic and Sales Summary</option>
                                   <option>Market Share Analysis Report</option>
                                   <option>Permits Rankings Report</option>
                                   <option>Subdivision Analysis Report</option>
-                                  <option>The Las vegas land Report</option>
-                                  <option>Weekly Traffic and Sales Watch(PDF)</option>
-                                  <option>Weekly Traffic and Sales Watch(XLS)</option>
+                                  <option>Las Vegas Land Report</option>
+                                  <option>Weekly Traffic and Sales Watch (PDF)</option>
+                                  <option>Weekly Traffic and Sales Watch (XLS)</option> */}
                                 </select>
                               </div>
                               <div className="col-md-3 ms-4 sm-m-0">
@@ -957,7 +997,7 @@ const BuilderTable = () => {
                         </div>
                         <div className="dataTables_wrapper no-footer">
                           <div className="row">
-                          <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+                            <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                               <span className="col-md-6">
                                 <div className="ms-4">Select Report</div>
                               </span>
@@ -967,28 +1007,29 @@ const BuilderTable = () => {
                                 value={reportType}
                                 className="form-control-select"
                               >
-                                <option>List of Active New Home Builders</option>
+                                {reportOption?.map((data) => (
+                                  <option>{data.label}</option>
+                                ))}
+                                {/* <option>List of Active New Home Builders</option>
                                 <option>Annual Report</option>
                                 <option>Active Adult Activity Report</option>
                                 <option>Area Summaries Report</option>
-                                <option>Closing Report(PDF) </option>
-                                <option>Closing Report(XLS) </option>
-                                <option>
-                                  LV Quartley Traffic and Sales Summary
-                                </option>
+                                <option>Closings Report (PDF)</option>
+                                <option>Closings Report (XLS)</option>
+                                <option>LV Quarterly Traffic and Sales Summary</option>
                                 <option>Market Share Analysis Report</option>
                                 <option>Permits Rankings Report</option>
                                 <option>Subdivision Analysis Report</option>
-                                <option>The Las vegas land Report</option>
-                                <option>Weekly Traffic and Sales Watch(PDF)</option>
-                                <option>Weekly Traffic and Sales Watch(XLS)</option>
+                                <option>Las Vegas Land Report</option>
+                                <option>Weekly Traffic and Sales Watch (PDF)</option>
+                                <option>Weekly Traffic and Sales Watch (XLS)</option> */}
                               </select>
                             </div>
 
-                            <div className="col-md-12" style={{marginTop: "10px"}}>
+                            <div className="col-md-12" style={{ marginTop: "10px" }}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
-                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ?  message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
+                                  {(reportType == "Closings Report (PDF)" || reportType == "Market Share Analysis Report") ? message : reportType == "LV Quarterly Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
                                 </p>
                               </div>
                             </div>
@@ -997,16 +1038,16 @@ const BuilderTable = () => {
                           <div className="row">
                             <div className="col-md-7 d-flex align-items-center flex-column-mobile">
                               <div className="col-md-5">
-                                {reportType == "Subdivision Analysis Report" ? 
+                                {reportType == "Subdivision Analysis Report" ?
                                   <div className="ms-4 sm-m-0">Select Builder & Subdivision</div>
-                                  : 
-                                  (reportType == "List of Active New Home Builders" ? 
-                                    <div className="ms-4 sm-m-0"></div>
                                   :
-                                  <div className="ms-4 sm-m-0">Select Period</div>)
+                                  (reportType == "List of Active New Home Builders" ?
+                                    <div className="ms-4 sm-m-0"></div>
+                                    :
+                                    <div className="ms-4 sm-m-0">Select Period</div>)
                                 }
                               </div>
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="me-2 mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch (PDF)" && reportType != "Weekly Traffic and Sales Watch (XLS)" && reportType != "LV Quarterly Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="me-2 mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -1014,71 +1055,71 @@ const BuilderTable = () => {
                                   value={startDate}
                                 /> */}
 
-                          <DatePicker
-                            name="from"
-                            className="form-control"
-                            selected={ parseDate(startDate)}
-                            onChange={handleFilterDateFrom}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                          />
+                                <DatePicker
+                                  name="from"
+                                  className="form-control"
+                                  selected={parseDate(startDate)}
+                                  onChange={handleFilterDateFrom}
+                                  dateFormat="MM/dd/yyyy"
+                                  placeholderText="mm/dd/yyyy"
+                                />
 
                               </div>}
 
-                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch (PDF)" && reportType != "Weekly Traffic and Sales Watch (XLS)" && reportType != "LV Quarterly Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
                                   value={endDate}
                                   onChange={(e) => setEndDate(e.target.value)}
                                 /> */}
-                              <DatePicker
-                              name="to"
-                              className="form-control"
-                              selected={parseDate(endDate)}
-                              onChange={handleFilterDateTo}
-                              dateFormat="MM/dd/yyyy"
-                              placeholderText="mm/dd/yyyy"
-                            />
+                                <DatePicker
+                                  name="to"
+                                  className="form-control"
+                                  selected={parseDate(endDate)}
+                                  onChange={handleFilterDateTo}
+                                  dateFormat="MM/dd/yyyy"
+                                  placeholderText="mm/dd/yyyy"
+                                />
                               </div>}
-                              
-                              {(reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+
+                              {(reportType == "Weekly Traffic and Sales Watch (PDF)" || reportType == "Weekly Traffic and Sales Watch (XLS)") && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                                 <Select
                                   options={options}
                                   onChange={(selectedOption) => handleWeekEndingDate(selectedOption)}
                                   placeholder="Select Date"
                                   styles={{
                                     container: (provided) => ({
-                                        ...provided,
-                                        width: '100%',
-                                        color: 'black'
+                                      ...provided,
+                                      width: '100%',
+                                      color: 'black'
                                     }),
                                     menu: (provided) => ({
-                                        ...provided,
-                                        width: '180px',
-                                        color: 'black'
+                                      ...provided,
+                                      width: '180px',
+                                      color: 'black'
                                     }),
-                                }}
+                                  }}
                                 />
                               </div>}
 
-                              {reportType === "LV Quartley Traffic and Sales Summary" && (
+                              {reportType === "LV Quarterly Traffic and Sales Summary" && (
                                 <div className="d-flex align-items-center">
-                                  <div className="me-2 mb-2" style={{width: "100px"}}>
-                                    <select id="yearSelect" className="form-select" style={{backgroundColor: "white", height: "35px", color: "black"}} onChange={(e) => setSelectYear(e.target.value)}>
+                                  <div className="me-2 mb-2" style={{ width: "100px" }}>
+                                    <select id="yearSelect" className="form-select" style={{ backgroundColor: "white", height: "35px", color: "black" }} onChange={(e) => setSelectYear(e.target.value)}>
                                       <option value="">Select Year</option>
                                       {Array.from({ length: 15 }, (_, i) => {
                                         const year = new Date().getFullYear() - i;
                                         return (
-                                          <option key={year} value={year} style={{width: "0px", color: "black"}}>
+                                          <option key={year} value={year} style={{ width: "0px", color: "black" }}>
                                             {year}
                                           </option>
                                         );
                                       })}
                                     </select>
                                   </div>
-                                  <div className="mb-2" style={{width: "150px", marginLeft: "10px"}}>
-                                    <select id="quarterSelect" className="form-select" style={{backgroundColor: "white", height: "35px", color: "black"}} onChange={(e) => setSelectQuarter(e.target.value)}>
+                                  <div className="mb-2" style={{ width: "150px", marginLeft: "10px" }}>
+                                    <select id="quarterSelect" className="form-select" style={{ backgroundColor: "white", height: "35px", color: "black" }} onChange={(e) => setSelectQuarter(e.target.value)}>
                                       <option value="">Select Quarter</option>
                                       <option value="Q1">Q1 - Jan to Mar</option>
                                       <option value="Q2">Q2 - Apr to Jun</option>
@@ -1089,61 +1130,61 @@ const BuilderTable = () => {
                                 </div>
                               )}
 
-                              {reportType == "Subdivision Analysis Report" && ( 
+                              {reportType == "Subdivision Analysis Report" && (
                                 <div div className="d-flex justify-content-center">
-                                <div style={{width: "155px", marginLeft: "20px"}}>
-                                  <Select
-                                    options={BuilderOptions}
-                                    onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                                    placeholder="Select Builder"
-                                    styles={{
-                                      container: (provided) => ({
+                                  <div style={{ width: "155px", marginLeft: "20px" }}>
+                                    <Select
+                                      options={BuilderOptions}
+                                      onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                      placeholder="Select Builder"
+                                      styles={{
+                                        container: (provided) => ({
                                           ...provided,
                                           width: '100%',
                                           color: 'black'
-                                      }),
-                                      menu: (provided) => ({
+                                        }),
+                                        menu: (provided) => ({
                                           ...provided,
                                           width: '100%',
                                           color: 'black'
-                                      }),
-                                    }}
-                                  />
-                                </div>
+                                        }),
+                                      }}
+                                    />
+                                  </div>
 
-                                <div style={{width: "200px", marginLeft: "10px"}}>
-                                  <Select
-                                    options={SubdivisionList}
-                                    onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
-                                    placeholder="Select Subdivision"
-                                    styles={{
-                                      container: (provided) => ({
+                                  <div style={{ width: "200px", marginLeft: "10px" }}>
+                                    <Select
+                                      options={SubdivisionList}
+                                      onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                      placeholder="Select Subdivision"
+                                      styles={{
+                                        container: (provided) => ({
                                           ...provided,
                                           width: '100%',
                                           color: 'black'
-                                      }),
-                                      menu: (provided) => ({
+                                        }),
+                                        menu: (provided) => ({
                                           ...provided,
                                           width: '100%',
                                           color: 'black'
-                                      }),
-                                    }}
-                                  />
-                                </div>
+                                        }),
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               )}
 
                             </div>
-                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)" || reportType == "Subdivision Analysis Report") && <div className="col-md-12" style={{marginTop: "10px", color: "red"}}>
+                            {alert && (reportType == "Closings Report (PDF)" || reportType == "Closings Report (XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quarterly Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch (PDF)" || reportType == "Weekly Traffic and Sales Watch (XLS)" || reportType == "Subdivision Analysis Report") && <div className="col-md-12" style={{ marginTop: "10px", color: "red" }}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
                                   {alertMessage}
                                 </p>
                               </div>
                             </div>}
-                            
+
                           </div>
-                          <div className="col-md-7 d-flex justify-content-center" style={{marginLeft: "320px", marginTop: "20px"}}>
+                          <div className="col-md-7 d-flex justify-content-center" style={{ marginLeft: "320px", marginTop: "20px" }}>
                             <div className="ms-4 mb-4">
                               <a
                                 onClick={handlePreview}
@@ -1162,15 +1203,15 @@ const BuilderTable = () => {
             </Box>
           </div>
           <div className="col-xl-6 mt-5">
-          {isLoading ? (
-              <div className="d-flex justify-content-center align-items-center mb-5" style={{marginTop: "35%"}}>
-                  <ClipLoader color="#4474fc" />
+            {isLoading ? (
+              <div className="d-flex justify-content-center align-items-center mb-5" style={{ marginTop: "35%" }}>
+                <ClipLoader color="#4474fc" />
               </div>
-          ) : (!isLoading && Error !== "" ? (
-            <div style={{textAlign: "center",marginTop: "30%", fontSize: "60px", color: "black"}}>
-              <i class="bi bi-exclamation-octagon" />
-            </div>
-          ) : (
+            ) : (!isLoading && Error !== "" ? (
+              <div style={{ textAlign: "center", marginTop: "30%", fontSize: "60px", color: "black" }}>
+                <i class="bi bi-exclamation-octagon" />
+              </div>
+            ) : (
               <embed
                 src={pdfUrl}
                 type="application/pdf"

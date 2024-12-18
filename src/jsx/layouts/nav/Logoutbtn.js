@@ -11,6 +11,8 @@ const LogoutPage = () => {
       if (data.status == true) {
         localStorage.removeItem("is_subscribed");
         localStorage.removeItem("subscription_end_at");
+        localStorage.removeItem("subscriptionActivePlan");
+        localStorage.removeItem("subscription_data_types");
         // Builder
         localStorage.removeItem("selectedBuilderNameByFilterBuilder");
         localStorage.removeItem("selectedStatusByBuilderFilterBuilder");

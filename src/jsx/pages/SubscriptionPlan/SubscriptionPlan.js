@@ -25,8 +25,7 @@ const SubscriptionPlan = () => {
     const [numberOfSeat, setNumberOfSeat] = useState("");
     const [dataTypeLimit, setDataTypeLimit] = useState("");
     const [dataTypeLimitMessage, setDataTypeLimitMessage] = useState("");
-    const [priceID, setPriceID] = useState("");
-    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [planID, setPlanID] = useState("");
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
@@ -119,9 +118,9 @@ const SubscriptionPlan = () => {
         }
     };
 
-    const handleSubcriptionPlan = (price_id, login_limit, data_type_limit) => {
+    const handleSubcriptionPlan = (id, login_limit, data_type_limit) => {
         setShowModal(!showModal);
-        setPriceID(price_id);
+        setPlanID(id);
         setNumberOfSeat(login_limit);
         setDataTypeLimit(data_type_limit);
     };
@@ -131,7 +130,7 @@ const SubscriptionPlan = () => {
         try {
             let DataType = selectedOptions.map(option => String(option.value))
             var userData = {
-                plan_price_id: priceID,
+                plan_price_id: planID,
                 seats: numberOfSeat,
                 data_types: DataType
             }
@@ -233,7 +232,7 @@ const SubscriptionPlan = () => {
                             </div>}
                         <div className="card-container">
                             {subscriptionList.length > 0 && subscriptionList.map((data) => (
-                                <div className="subscription-card" key={data.price_id}>
+                                <div className="subscription-card" key={data.id}>
                                     <h2 style={{ textAlign: "left" }}>{data.title}</h2>
                                     <h4 style={{ color: "black", fontWeight: "bold", textAlign: "left" }}>Price: <PriceComponent price={data.price} />/month</h4>
                                     <div className="features">
@@ -257,7 +256,7 @@ const SubscriptionPlan = () => {
                                             ))}
                                         </ul>
                                     </div>
-                                    <button className='subscribe-btn' style={{ marginTop: "10px" }} onClick={() => handleSubcriptionPlan(data.price_id, data.login_limit, data.data_type_limit)}>Subscribe</button>
+                                    <button className='subscribe-btn' style={{ marginTop: "10px" }} onClick={() => handleSubcriptionPlan(data.id, data.login_limit, data.data_type_limit)}>Subscribe</button>
                                 </div>
                             ))}
                         </div>

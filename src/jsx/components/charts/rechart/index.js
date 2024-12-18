@@ -745,7 +745,7 @@ const RechartJs = () => {
         "Product Pricing": "New Home Prices"
       };
 
-      const transformedData = subscription_data_types.flatMap(item => {
+      const transformedData = subscription_data_types?.data?.flatMap(item => {
         if (item.title === "Weekly Traffic & Sales + Product Pricing") {
           return [
             {

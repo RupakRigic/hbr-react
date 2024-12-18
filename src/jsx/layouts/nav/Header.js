@@ -29,6 +29,8 @@ const Header = ({ onNote }) => {
 			localStorage.removeItem("usertoken");
 			localStorage.removeItem("is_subscribed");
 			localStorage.removeItem("subscription_end_at");
+			localStorage.removeItem("subscriptionActivePlan");
+			localStorage.removeItem("subscription_data_types");
 			navigate('/');
 		}
 		window.addEventListener("scroll", () => {

@@ -38,13 +38,16 @@ const UserSideBar = () => {
   const [userMenuList, setUserMenuList] = useState([]);
 
   useEffect(() => {
-    if (localStorage.getItem("subscriptionActivePlan")) {
+    if (localStorage.getItem("is_subscribed")) {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
       if (subscription_data_types) {
-        const titles = subscription_data_types?.map(module => module.title);
+        const titles = subscription_data_types?.data?.map(module => module.title);
         setSubscriptionDataTypes(titles);
       }
-      setActivePlan(localStorage.getItem("subscriptionActivePlan"));
+      if(JSON.parse(localStorage.getItem("is_subscribed")) == 1){
+        setActivePlan(true);
+        localStorage.setItem("subscriptionActivePlan", true);
+      }
     }
   }, [activePlan]);
 
@@ -55,7 +58,7 @@ const UserSideBar = () => {
       const subscriptionEndDate = new Date(subscription_end_at);
       const currentDate = new Date();
 
-      if (subscription === 1 && currentDate <= subscriptionEndDate) {
+      if (subscription == 1 && currentDate <= subscriptionEndDate) {
         const mergedMenuList = new Set(CommanDataType);
 
         subscriptionDataTypes.forEach((type) => {
@@ -94,7 +97,7 @@ const UserSideBar = () => {
         setUserMenuList(sortedMenuList);
       }
     }
-  }, [activePlan]);
+  }, [subscriptionDataTypes]);
 
   useScrollPosition(
     ({ prevPos, currPos }) => {
