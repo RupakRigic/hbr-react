@@ -2180,10 +2180,10 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.garage}</td>
                                     }
                                     {column.id == "current Base Price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_base_price != null ? <PriceComponent price={element.latest_base_price} /> : ""}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_base_price != "" ? <PriceComponent price={element.latest_base_price} /> : ""}</td>
                                     }
                                     {column.id == "current Price Per SQFT" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.current_price_per_sqft != null ? <PriceComponent price={element.current_price_per_sqft} /> : "" }</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.current_price_per_sqft != "" ? <PriceComponent price={element.current_price_per_sqft} /> : "" }</td>
                                     }
                                     {column.id == "product Website" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
@@ -2231,10 +2231,10 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
                                     }
                                     {column.id == "price Change Since Open" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_since_open != null ? element.price_changes_since_open + '%' : ""}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_since_open != "" ? element.price_changes_since_open + '%' : ""}</td>
                                     }
                                     {column.id == "price Change Last 12 Months" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_last_12_Month != null ?  element.price_changes_last_12_Month + '%' : ""}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_last_12_Month != "" ?  element.price_changes_last_12_Month + '%' : ""}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
