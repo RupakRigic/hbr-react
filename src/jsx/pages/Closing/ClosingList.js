@@ -749,9 +749,15 @@ const ClosingList = () => {
             });
           } else {
             if (responseData.message) {
-              let message = responseData.message;
+              let message = [];
+              const updatedRows = responseData.updated_records_details.map(detail => detail.row).join(', ');
+              message += '\nUpdated Record Count: ' + responseData.updated_records_count;
+              message += '\nUpdated Record Rows: ' + updatedRows + '.';
               setShow(false);
-              swal(message).then((willDelete) => {
+              swal({
+                title: responseData.message,
+                text: message,
+              }).then((willDelete) => {
                 if (willDelete) {
                   getClosingList(currentPage, sortConfig, searchQuery);
                 }

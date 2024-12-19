@@ -844,6 +844,7 @@ const PermitList = () => {
         setSelectedFile(null);
         document.getElementById("fileInput").value = null;
         setLoading(false);
+        
         if (response.data.failed_records > 0) {
           let message = [];
           const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
@@ -864,9 +865,15 @@ const PermitList = () => {
           });
         } else {
           if (response.data.message) {
-            let message = response.data.message;
+            let message = [];
+            const updatedRows = response.data.updated_records_details.map(detail => detail.row).join(', ');
+            message += '\nUpdated Record Count: ' + response.data.updated_records_count;
+            message += '\nUpdated Record Rows: ' + updatedRows + '.';
             setShow(false);
-            swal(message).then((willDelete) => {
+            swal({
+              title: response.data.message,
+              text: message,
+            }).then((willDelete) => {
               if (willDelete) {
                 getPermitList(currentPage, sortConfig, searchQuery);
               }
