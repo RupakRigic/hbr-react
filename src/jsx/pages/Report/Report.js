@@ -162,15 +162,15 @@ const BuilderTable = () => {
           'Active Adult Activity Report',
           'Annual Report',
           'Area Summaries Report',
-          'Closings Report (PDF)',
-          'Closings Report (XLS)',
-          'LV Quarterly Traffic and Sales Summary',
+          'Closing Report(PDF)',
+          'Closing Report(XLS)',
+          'LV Quartley Traffic and Sales Summary',
           'Market Share Analysis Report',
           'Permits Rankings Report',
           'Subdivision Analysis Report',
-          'Las Vegas Land Report',
-          'Weekly Traffic and Sales Watch (PDF)',
-          'Weekly Traffic and Sales Watch (XLS)'
+          'The Las vegas land Report',
+          'Weekly Traffic and Sales Watch(PDF)',
+          'Weekly Traffic and Sales Watch(XLS)'
         ];
 
         const sortedReportList = Array.from(formattedReports).sort((a, b) => {
@@ -185,15 +185,15 @@ const BuilderTable = () => {
         {value: 'Active Adult Activity Report', label: 'Active Adult Activity Report'},
         {value: 'Annual Report', label: 'Annual Report'},
         {value: 'Area Summaries Report', label: 'Area Summaries Report'},
-        {value: 'Closings Report (PDF)', label: 'Closings Report (PDF)'},
-        {value: 'Closings Report (XLS)', label: 'Closings Report (XLS)'},
-        {value: 'LV Quarterly Traffic and Sales Summary', label: 'LV Quarterly Traffic and Sales Summary'},
+        {value: 'Closing Report(PDF)', label: 'Closing Report(PDF)'},
+        {value: 'Closing Report(XLS)', label: 'Closing Report(XLS)'},
+        {value: 'LV Quartley Traffic and Sales Summary', label: 'LV Quartley Traffic and Sales Summary'},
         {value: 'Market Share Analysis Report', label: 'Market Share Analysis Report'},
         {value: 'Permits Rankings Report', label: 'Permits Rankings Report'},
         {value: 'Subdivision Analysis Report', label: 'Subdivision Analysis Report'},
-        {value: 'Las Vegas Land Report', label: 'Las Vegas Land Report'},
-        {value: 'Weekly Traffic and Sales Watch (PDF)', label: 'Weekly Traffic and Sales Watch (PDF)'},
-        {value: 'Weekly Traffic and Sales Watch (XLS)', label: 'Weekly Traffic and Sales Watch (XLS)'},
+        {value: 'The Las vegas land Report', label: 'The Las vegas land Report'},
+        {value: 'Weekly Traffic and Sales Watch(PDF)', label: 'Weekly Traffic and Sales Watch(PDF)'},
+        {value: 'Weekly Traffic and Sales Watch(XLS)', label: 'Weekly Traffic and Sales Watch(XLS)'},
       ];
       setReportOption(desiredOrder);
     }
@@ -263,7 +263,7 @@ const BuilderTable = () => {
   }, []);
 
   const handlePreview = async (e) => {
-    if (reportType == "Closings Report (PDF)" || reportType == "Closings Report (XLS)" || reportType == "Market Share Analysis Report") {
+    if (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") {
       let start_Date = moment(startDate);
       let end_Date = moment(endDate);
       let days = end_Date.diff(start_Date, 'days', true);
@@ -320,7 +320,7 @@ const BuilderTable = () => {
         setAlertMessage("Please select 12 month Period for your report.");
         return;
       }
-    } else if (reportType == "Weekly Traffic and Sales Watch (PDF)") {
+    } else if (reportType == "Weekly Traffic and Sales Watch(PDF)") {
       if (weekEndingDate == "") {
         setAlert(true);
         setAlertMessage("Please select week ending date");
@@ -376,7 +376,7 @@ const BuilderTable = () => {
         }
         setError("Something went wrong");
       }
-    } else if (reportType == "Weekly Traffic and Sales Watch (XLS)") {
+    } else if (reportType == "Weekly Traffic and Sales Watch(XLS)") {
       if (weekEndingDate == "") {
         setAlert(true);
         setAlertMessage("Please select week ending date");
@@ -440,7 +440,7 @@ const BuilderTable = () => {
         }
         setError("Something went wrong");
       }
-    } else if (reportType == "LV Quarterly Traffic and Sales Summary") {
+    } else if (reportType == "LV Quartley Traffic and Sales Summary") {
       if (selectYear == "" || selectQuarter == "") {
         setAlert(true);
         setAlertMessage("Please select year and quarter");
@@ -699,7 +699,7 @@ const BuilderTable = () => {
   const handleReportType = (e) => {
     setReportType(e.target.value);
     setAlert(false);
-    if (e.target.value == "Closings Report (PDF)" || e.target.value == "Market Share Analysis Report") {
+    if (e.target.value == "Closing Report(PDF)" || e.target.value == "Market Share Analysis Report") {
       setMessage("Choose a 12 month Period for your report.");
     }
   }
@@ -950,15 +950,15 @@ const BuilderTable = () => {
                                   <option>Active Adult Activity Report</option>
                                   <option>Annual Report</option>
                                   <option>Area Summaries Report</option>
-                                  <option>Closings Report (PDF)</option>
-                                  <option>Closings Report (XLS)</option>
-                                  <option>LV Quarterly Traffic and Sales Summary</option>
+                                  <option>Closing Report(PDF)</option>
+                                  <option>Closing Report(XLS)</option>
+                                  <option>LV Quartley Traffic and Sales Summary</option>
                                   <option>Market Share Analysis Report</option>
                                   <option>Permits Rankings Report</option>
                                   <option>Subdivision Analysis Report</option>
-                                  <option>Las Vegas Land Report</option>
-                                  <option>Weekly Traffic and Sales Watch (PDF)</option>
-                                  <option>Weekly Traffic and Sales Watch (XLS)</option> */}
+                                  <option>The Las vegas land Report</option>
+                                  <option>Weekly Traffic and Sales Watch(PDF)</option>
+                                  <option>Weekly Traffic and Sales Watch(XLS)</option> */}
                                 </select>
                               </div>
                               <div className="col-md-3 ms-4 sm-m-0">
@@ -1031,22 +1031,22 @@ const BuilderTable = () => {
                                 <option>Annual Report</option>
                                 <option>Active Adult Activity Report</option>
                                 <option>Area Summaries Report</option>
-                                <option>Closings Report (PDF)</option>
-                                <option>Closings Report (XLS)</option>
-                                <option>LV Quarterly Traffic and Sales Summary</option>
+                                <option>Closing Report(PDF)</option>
+                                <option>Closing Report(XLS)</option>
+                                <option>LV Quartley Traffic and Sales Summary</option>
                                 <option>Market Share Analysis Report</option>
                                 <option>Permits Rankings Report</option>
                                 <option>Subdivision Analysis Report</option>
-                                <option>Las Vegas Land Report</option>
-                                <option>Weekly Traffic and Sales Watch (PDF)</option>
-                                <option>Weekly Traffic and Sales Watch (XLS)</option> */}
+                                <option>The Las vegas land Report</option>
+                                <option>Weekly Traffic and Sales Watch(PDF)</option>
+                                <option>Weekly Traffic and Sales Watch(XLS)</option> */}
                               </select>
                             </div>
 
                             <div className="col-md-12" style={{ marginTop: "10px" }}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
-                                  {(reportType == "Closings Report (PDF)" || reportType == "Market Share Analysis Report") ? message : reportType == "LV Quarterly Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
+                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ? message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
                                 </p>
                               </div>
                             </div>
@@ -1064,7 +1064,7 @@ const BuilderTable = () => {
                                     <div className="ms-4 sm-m-0">Select Period</div>)
                                 }
                               </div>
-                              {(reportType != "Weekly Traffic and Sales Watch (PDF)" && reportType != "Weekly Traffic and Sales Watch (XLS)" && reportType != "LV Quarterly Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="me-2 mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="me-2 mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -1083,7 +1083,7 @@ const BuilderTable = () => {
 
                               </div>}
 
-                              {(reportType != "Weekly Traffic and Sales Watch (PDF)" && reportType != "Weekly Traffic and Sales Watch (XLS)" && reportType != "LV Quarterly Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="mb-2">
+                              {(reportType != "Weekly Traffic and Sales Watch(PDF)" && reportType != "Weekly Traffic and Sales Watch(XLS)" && reportType != "LV Quartley Traffic and Sales Summary" && reportType != "Subdivision Analysis Report" && reportType != "List of Active New Home Builders") && <div className="mb-2">
                                 {/* <input
                                   type="date"
                                   className="form-control"
@@ -1100,7 +1100,7 @@ const BuilderTable = () => {
                                 />
                               </div>}
 
-                              {(reportType == "Weekly Traffic and Sales Watch (PDF)" || reportType == "Weekly Traffic and Sales Watch (XLS)") && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
+                              {(reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)") && <div className="mb-2 col-md-7 d-flex align-items-center flex-column-mobile">
                                 <Select
                                   options={options}
                                   onChange={(selectedOption) => handleWeekEndingDate(selectedOption)}
@@ -1120,7 +1120,7 @@ const BuilderTable = () => {
                                 />
                               </div>}
 
-                              {reportType === "LV Quarterly Traffic and Sales Summary" && (
+                              {reportType === "LV Quartley Traffic and Sales Summary" && (
                                 <div className="d-flex align-items-center">
                                   <div className="me-2 mb-2" style={{ width: "100px" }}>
                                     <select id="yearSelect" className="form-select" style={{ backgroundColor: "white", height: "35px", color: "black" }} onChange={(e) => setSelectYear(e.target.value)}>
@@ -1192,7 +1192,7 @@ const BuilderTable = () => {
                               )}
 
                             </div>
-                            {alert && (reportType == "Closings Report (PDF)" || reportType == "Closings Report (XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quarterly Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch (PDF)" || reportType == "Weekly Traffic and Sales Watch (XLS)" || reportType == "Subdivision Analysis Report") && <div className="col-md-12" style={{ marginTop: "10px", color: "red" }}>
+                            {alert && (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report" || reportType == "LV Quartley Traffic and Sales Summary" || reportType == "Weekly Traffic and Sales Watch(PDF)" || reportType == "Weekly Traffic and Sales Watch(XLS)" || reportType == "Subdivision Analysis Report") && <div className="col-md-12" style={{ marginTop: "10px", color: "red" }}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
                                   {alertMessage}

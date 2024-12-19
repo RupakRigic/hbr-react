@@ -737,7 +737,6 @@ const RechartJs = () => {
   };
 
   useEffect(() => {
-    debugger
     if (localStorage.getItem("subscription_data_types") != "undefined") {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
 

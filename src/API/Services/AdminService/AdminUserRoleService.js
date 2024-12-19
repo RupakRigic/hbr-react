@@ -12,5 +12,6 @@ export default {
     bulkupdate: (id, userData) => clientAuth.put(`admin/user/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/user/bulkdestroy/${id}`),
     checkBuilderForCompany: (userData) => clientAuth.post(`admin/user/check-company-builder`, { json: userData }),
-    useranalytics: (id) => clientAuth.get(`admin/user/user-login-activity/${id}`),
+    userloginanalytics: (id) => clientAuth.get(`admin/user/user-login-activity/${id}`),
+    userlogoutnanalytics: (id) => clientAuth.get(`admin/user/user-logout-activity/${id}`),
 };
