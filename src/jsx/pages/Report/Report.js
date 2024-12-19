@@ -146,7 +146,7 @@ const BuilderTable = () => {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
       const subscription_plan = JSON.parse(localStorage.getItem("subscription_plan"));
       const reports = subscription_data_types?.reports;
-
+  
       if (Array.isArray(reports)) {
         const formattedReports = reports.reduce((acc, reportObject) => {
           Object.values(reportObject).forEach(report => {
@@ -157,15 +157,35 @@ const BuilderTable = () => {
           });
           return acc;
         }, []);
-
+  
         if (subscription_plan === "Enterprise") {
           formattedReports.push({
             value: "Subdivision Analysis Report",
             label: "Subdivision Analysis Report"
           });
         }
+  
+        const desiredOrder = [
+          'List of Active New Home Builders',
+          'Active Adult Activity Report',
+          'Annual Report',
+          'Area Summaries Report',
+          'Closing Report(PDF)',
+          'Closing Report(XLS)',
+          'LV Quartley Traffic and Sales Summary',
+          'Market Share Analysis Report',
+          'Permits Rankings Report',
+          'Subdivision Analysis Report',
+          'The Las vegas land Report',
+          'Weekly Traffic and Sales Watch(PDF)',
+          'Weekly Traffic and Sales Watch(XLS)'
+        ];
 
-        setReportOption(formattedReports);
+        const filteredReports = desiredOrder.map(title => 
+          formattedReports.find(report => report.value === title)
+        ).filter(report => report !== undefined);
+
+        setReportOption(filteredReports);
       }
     } else {
       const desiredOrder = [
@@ -185,7 +205,7 @@ const BuilderTable = () => {
       ];
       setReportOption(desiredOrder);
     }
-  }, []);
+  }, []);  
 
 
   const handleSelectChange = (event) => {
