@@ -144,6 +144,7 @@ const BuilderTable = () => {
   useEffect(() => {
     if (localStorage.getItem("subscription_data_types") != "undefined") {
       const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
+      const subscription_plan = JSON.parse(localStorage.getItem("subscription_plan"));
       const reports = subscription_data_types?.reports;
 
       if (Array.isArray(reports)) {
@@ -157,43 +158,30 @@ const BuilderTable = () => {
           return acc;
         }, []);
 
-        const desiredOrder = [
-          'List of Active New Home Builders',
-          'Active Adult Activity Report',
-          'Annual Report',
-          'Area Summaries Report',
-          'Closing Report(PDF)',
-          'Closing Report(XLS)',
-          'LV Quartley Traffic and Sales Summary',
-          'Market Share Analysis Report',
-          'Permits Rankings Report',
-          'Subdivision Analysis Report',
-          'The Las vegas land Report',
-          'Weekly Traffic and Sales Watch(PDF)',
-          'Weekly Traffic and Sales Watch(XLS)'
-        ];
+        if (subscription_plan === "Enterprise") {
+          formattedReports.push({
+            value: "Subdivision Analysis Report",
+            label: "Subdivision Analysis Report"
+          });
+        }
 
-        const sortedReportList = Array.from(formattedReports).sort((a, b) => {
-          return desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title);
-        });
-
-        setReportOption(sortedReportList);
+        setReportOption(formattedReports);
       }
     } else {
       const desiredOrder = [
-        {value: 'List of Active New Home Builders', label: 'List of Active New Home Builders'},
-        {value: 'Active Adult Activity Report', label: 'Active Adult Activity Report'},
-        {value: 'Annual Report', label: 'Annual Report'},
-        {value: 'Area Summaries Report', label: 'Area Summaries Report'},
-        {value: 'Closing Report(PDF)', label: 'Closing Report(PDF)'},
-        {value: 'Closing Report(XLS)', label: 'Closing Report(XLS)'},
-        {value: 'LV Quartley Traffic and Sales Summary', label: 'LV Quartley Traffic and Sales Summary'},
-        {value: 'Market Share Analysis Report', label: 'Market Share Analysis Report'},
-        {value: 'Permits Rankings Report', label: 'Permits Rankings Report'},
-        {value: 'Subdivision Analysis Report', label: 'Subdivision Analysis Report'},
-        {value: 'The Las vegas land Report', label: 'The Las vegas land Report'},
-        {value: 'Weekly Traffic and Sales Watch(PDF)', label: 'Weekly Traffic and Sales Watch(PDF)'},
-        {value: 'Weekly Traffic and Sales Watch(XLS)', label: 'Weekly Traffic and Sales Watch(XLS)'},
+        { value: 'List of Active New Home Builders', label: 'List of Active New Home Builders' },
+        { value: 'Active Adult Activity Report', label: 'Active Adult Activity Report' },
+        { value: 'Annual Report', label: 'Annual Report' },
+        { value: 'Area Summaries Report', label: 'Area Summaries Report' },
+        { value: 'Closing Report(PDF)', label: 'Closing Report(PDF)' },
+        { value: 'Closing Report(XLS)', label: 'Closing Report(XLS)' },
+        { value: 'LV Quartley Traffic and Sales Summary', label: 'LV Quartley Traffic and Sales Summary' },
+        { value: 'Market Share Analysis Report', label: 'Market Share Analysis Report' },
+        { value: 'Permits Rankings Report', label: 'Permits Rankings Report' },
+        { value: 'Subdivision Analysis Report', label: 'Subdivision Analysis Report' },
+        { value: 'The Las vegas land Report', label: 'The Las vegas land Report' },
+        { value: 'Weekly Traffic and Sales Watch(PDF)', label: 'Weekly Traffic and Sales Watch(PDF)' },
+        { value: 'Weekly Traffic and Sales Watch(XLS)', label: 'Weekly Traffic and Sales Watch(XLS)' },
       ];
       setReportOption(desiredOrder);
     }
