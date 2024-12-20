@@ -278,7 +278,7 @@ function Login(props) {
             navigate("/dashboard");
           } else if (userRole == "Standard User" || userRole == "Data Uploader") {
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
-            if(subscription == 1) {
+            if (subscription == 1) {
               navigate("/dashboard");
             } else {
               navigate("/subscriptionplan");
@@ -300,11 +300,20 @@ function Login(props) {
     setSendEmail("");
   };
 
-  const handleSendEmail = async () => {
-    // Validate email (for example, basic format check)
+  const handleEmailSend = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailSend || !emailRegex.test(emailSend)) {
+    if (!email || !emailRegex.test(email)) {
+      setSendEmail(email);
       setEmailCorrect(true);
+      return;
+    } else {
+      setSendEmail(email);
+      setEmailCorrect(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (emailCorrect) {
       return;
     }
 
@@ -495,7 +504,7 @@ function Login(props) {
       </div>
 
       {/* Reset Password */}
-      <Modal show={forgotModelShow} onHide={() => setForgotModelShow(false)}>
+      <Modal show={forgotModelShow} onHide={() => setForgotModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Forgot Password</Modal.Title>
@@ -513,7 +522,7 @@ function Login(props) {
                   type="email"
                   placeholder="Enter your email"
                   value={emailSend}
-                  onChange={(e) => setSendEmail(e.target.value)} // Set email state
+                  onChange={(e) => handleEmailSend(e.target.value)}
                 />
                 {emailCorrect && (
                   <div style={{ color: 'red', marginTop: '5px' }}>
