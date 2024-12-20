@@ -412,6 +412,7 @@ const CCAPNList = () => {
                                 ...provided,
                                 color: 'black',
                                 width: '200px',
+                                zIndex: 999
                               }),
                             }}
                           />
@@ -434,6 +435,7 @@ const CCAPNList = () => {
                                 ...provided,
                                 color: 'black',
                                 width: '200px',
+                                zIndex: 999
                               }),
                             }}
                           />

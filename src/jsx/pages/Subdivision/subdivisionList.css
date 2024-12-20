@@ -107,9 +107,9 @@ div#employee-tbl_wrapper table tr td:nth-child(4) {
 div#employee-tbl_wrapper table tr th {
     z-index: 1;
 }
-.content-body .container-fluid .row .shorting {
+/* .content-body .container-fluid .row .shorting {
   height: auto !important;
-}
+} */
 .dataTables_info {
   padding-left: 20px;
 }
