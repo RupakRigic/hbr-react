@@ -216,12 +216,19 @@ const SubscriptionPlan = () => {
                         <h1>Choose Your Subscription Plan</h1>
                         {activePlan &&
                             <div className="profile-detail d-flex">
-                                <div className="profile-info">
-                                    <div style={{ color: "black" }}>You have subscribed <b>{activeSubscriptionPlan?.subscription?.title}</b></div>&nbsp;
-                                    <div style={{ color: "black" }}>, Active till <b><DateComponent date={activeSubscriptionPlan.subscription_end_at} /></b></div>&nbsp;
-                                    {activeSubscriptionPlan.subscription_cancelled_at != null && <div style={{ color: "black" }}>You have intiated request to cancel this plan. It will be cancelled on - <b><DateComponent date={activeSubscriptionPlan.subscription_cancelled_at} /></b></div>}
-                                </div>
-                                {activeSubscriptionPlan.subscription_cancelled_at == null && <div className="close-button">
+                                {activeSubscriptionPlan.subscription_status == "active" ? 
+                                    <div className="profile-info">
+                                        <div style={{ color: "black" }}>You have subscribed <b>{activeSubscriptionPlan?.subscription?.title}</b></div>&nbsp;
+                                        <div style={{ color: "black" }}>, Active till <b><DateComponent date={activeSubscriptionPlan.subscription_end_at} /></b></div>&nbsp;
+                                        {activeSubscriptionPlan.subscription_cancelled_at != null && <div style={{ color: "black" }}>You have intiated request to cancel this plan. It will be cancelled on - <b><DateComponent date={activeSubscriptionPlan.subscription_cancelled_at} /></b></div>}
+                                    </div>
+                                    : 
+                                    <div className="profile-info">
+                                        <div style={{ color: "black" }}><b>Your subscription has been created but it is still in progress. Please check after a while or contact to administrator.</b></div>&nbsp;
+                                    </div>
+                                }
+                                
+                                {activeSubscriptionPlan.subscription_cancelled_at == null && activeSubscriptionPlan.subscription_status == "active" && <div className="close-button">
                                     <button
                                         className="btn btn-primary"
                                         aria-label="Close"

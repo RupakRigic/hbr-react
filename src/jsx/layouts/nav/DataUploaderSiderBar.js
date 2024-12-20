@@ -39,13 +39,15 @@ const UserSideBar = () => {
 
   useEffect(() => {
     if (JSON.parse(localStorage.getItem("is_subscribed")) == 1) {
-      const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
-      if (subscription_data_types) {
-        const titles = subscription_data_types?.data?.map(module => module.title);
-        setSubscriptionDataTypes(titles);
+      if(localStorage.getItem("subscription_data_types") != "undefined"){
+        const subscription_data_types = JSON.parse(localStorage.getItem("subscription_data_types"));
+        if (subscription_data_types) {
+          const titles = subscription_data_types?.data?.map(module => module.title);
+          setSubscriptionDataTypes(titles);
+        }
+        setActivePlan(true);
+        localStorage.setItem("subscriptionActivePlan", true);
       }
-      setActivePlan(true);
-      localStorage.setItem("subscriptionActivePlan", true);
     }
   }, [activePlan]);
 
