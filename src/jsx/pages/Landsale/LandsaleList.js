@@ -602,7 +602,7 @@ const LandsaleList = () => {
     const totalPages = Math.ceil(landSaleListCount / recordsPage);
     let allData = LandsaleList;
     for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
+      // await delay(1000);
       const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
       const pageData = await pageResponse.json();
       allData = allData.concat(pageData.data);

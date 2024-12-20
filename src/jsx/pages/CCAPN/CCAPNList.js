@@ -36,9 +36,6 @@ const CCAPNList = () => {
   const number = [...Array(npage + 1).keys()].slice(1);
   const navigate = useNavigate();
   const [ccapnList, setCCAPNList] = useState([]);
-  const [AllBuilderListExport, setAllBuilderExport] = useState([]);
-  const [excelLoading, setExcelLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState([]);
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
@@ -53,7 +50,7 @@ const CCAPNList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage, sortConfig, searchQuery);
+      GetCCAPNList(currentPage, searchQuery);
     } else {
       navigate("/");
     }
@@ -155,10 +152,6 @@ const CCAPNList = () => {
     ? JSON.parse(localStorage.getItem("user")).role
     : "";
 
-  const stringifySortConfig = (sortConfig) => {
-    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
-  };
-
   const getbuilderDoplist = async () => {
     try {
       const response = await AdminBuilderService.builderDropDown();
@@ -186,30 +179,17 @@ const CCAPNList = () => {
     }
   };
 
-  const GetCCAPNList = async (pageNumber, sortConfig, searchQuery) => {
+  const GetCCAPNList = async (pageNumber, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
     try {
-      let sortConfigString = "";
-      if (sortConfig !== null) {
-        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
-      const response = await AdminCCAPNService.index(
-        pageNumber,
-        searchQuery,
-        sortConfigString
-      );
+      
+      const response = await AdminCCAPNService.index(pageNumber, searchQuery);
       const responseData = await response.json();
       setIsLoading(false);
       setCCAPNList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
-      if (responseData.total > 100) {
-        // FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
-      } else {
-        setExcelLoading(false);
-        setAllBuilderExport(responseData.data);
-      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -219,22 +199,6 @@ const CCAPNList = () => {
       }
     }
     setIsLoading(false);
-  };
-
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-  const FetchAllPages = async (searchQuery, sortConfig, CCAPNList, ccapnListCount) => {
-    const totalPages = Math.ceil(ccapnListCount / recordsPage);
-    let allData = CCAPNList;
-
-    for (let page = 2; page <= totalPages; page++) {
-      await delay(1000);
-      const pageResponse = await AdminCCAPNService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
-    }
-    setAllBuilderExport(allData);
-    setExcelLoading(false);
   };
 
   const handlBuilderClick = (e) => {
@@ -305,7 +269,7 @@ const CCAPNList = () => {
                 text: message,
               }).then((willDelete) => {
                 if (willDelete) {
-                  GetCCAPNList(currentPage, sortConfig, searchQuery);
+                  GetCCAPNList(currentPage, searchQuery);
                 }
               });
             } else {
@@ -316,7 +280,7 @@ const CCAPNList = () => {
                 setShow(false);
                 swal(message).then((willDelete) => {
                   if (willDelete) {
-                    GetCCAPNList(currentPage, sortConfig, searchQuery);
+                    GetCCAPNList(currentPage, searchQuery);
                   }
                 });
               }
@@ -366,7 +330,7 @@ const CCAPNList = () => {
             swal("Ccapn Updated Succesfully").then((willDelete) => {
               if (willDelete) {
                 navigate("/ccapn");
-                GetCCAPNList(currentPage, sortConfig, searchQuery);
+                GetCCAPNList(currentPage, searchQuery);
               }
             });
           }
