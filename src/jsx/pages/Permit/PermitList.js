@@ -21,6 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import moment from 'moment';
 import '../../pages/Subdivision/subdivisionList.css';
+import Swal from "sweetalert2";
 
 const PermitList = () => {
   const [excelLoading, setExcelLoading] = useState(true);
@@ -35,6 +36,9 @@ const PermitList = () => {
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
+  const [selectCheckBox, setSelectCheckBox] = useState(false);
+  const [samePage, setSamePage] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
   const [AllPermitListExport, setAllPermitListExport] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -74,6 +78,7 @@ const PermitList = () => {
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
 
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -697,7 +702,6 @@ const PermitList = () => {
       const response = await AdminPermitService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
@@ -717,17 +721,19 @@ const PermitList = () => {
 
   function prePage() {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
   };
 
   function changeCPage(id) {
     setCurrentPage(id);
-    console.log(id);
+    setPageChange(true);
   };
 
   function nextPage() {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
   };
@@ -754,15 +760,19 @@ const PermitList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setPageChange(false);
       setPermitList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
-      console.log(permitList);
       setPermitListCount(responseData.total);
       if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        }
       } else {
         setExcelLoading(false);
-        setAllPermitListExport(responseData.data);
+        if(!pageChange){
+          setAllPermitListExport(responseData.data);
+        }
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -1331,6 +1341,50 @@ const PermitList = () => {
     }
   };
 
+  const handleMainCheckboxChange = (e) => {
+    setSamePage(currentPage);
+    if (e.target.checked) {
+      Swal.fire({
+        title: "Select Records",
+        html: `
+          <div style="text-align: left;">
+            <label>
+              <input type="radio" name="selection" value="visible" checked />
+              Select visible records
+            </label>
+            <br />
+            <label>
+              <input type="radio" name="selection" value="all" />
+              Select all records
+            </label>
+          </div>
+        `,
+        confirmButtonText: "Apply",
+        showCancelButton: false,
+        preConfirm: () => {
+          const selectedOption = document.querySelector('input[name="selection"]:checked').value;
+          return selectedOption;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const selectedOption = result.value;
+          if (selectedOption === "visible") {
+            setIsSelectAll(false);
+            setSelectCheckBox(true);
+            setSelectedLandSales(permitList.map((user) => user.id));
+          } else if (selectedOption === "all") {
+            setIsSelectAll(true);
+            setSelectCheckBox(true);
+            setSelectedLandSales(AllPermitListExport.map((user) => user.id));
+          }
+        }
+      });
+    } else {
+      setSelectCheckBox(false);
+      setSelectedLandSales([]);
+    }
+  };
+
   return (
     <>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -1483,7 +1537,7 @@ const PermitList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                              Edit
                             </div>
                           </Link>
                           <button
@@ -1498,11 +1552,16 @@ const PermitList = () => {
                               if (willDelete) {
                                 handleBulkDelete(selectedLandSales);
                               }
-                            }) : ""}
+                            }) : swal({
+                              title: "No record selected.",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            })}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                              Delete
                             </div>
                           </button>
                         </div>
@@ -1591,18 +1650,12 @@ const PermitList = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>
-                              <input
-                                type="checkbox"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                checked={selectedLandSales.length === permitList.length}
-                                onChange={(e) =>
-                                  e.target.checked
-                                    ? setSelectedLandSales(permitList.map((user) => user.id))
-                                    : setSelectedLandSales([])
-                                }
-                              />
+                                <input
+                                  type="checkbox"
+                                  style={{ cursor: "pointer" }}
+                                  checked={(currentPage == samePage || isSelectAll) ? selectCheckBox : ""}
+                                  onClick={(e) => handleMainCheckboxChange(e)}
+                                />
                             </th>
                             <th>
                               <strong>No.</strong>
@@ -1614,43 +1667,43 @@ const PermitList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "address Number" ? "address2" :
-                                        column.id == "address Name" ? "address1" :
-                                          column.id == "parcel Number" ? "parcel" :
-                                            column.id == "squre Footage" ? "sqft" :
-                                              column.id == "lot Number" ? "lotnumber" :
-                                                column.id == "permit Number" ? "permitnumber" :
-                                                  column.id == "sub Legal Name" ? "sublegal_name" :
-                                                    column.id == "product Type" ? "product_type" :
-                                                      column.id == "master Plan" ? "masterplan_id" :
-                                                        column.id == "zip Code" ? "zipcode" :
-                                                          column.id == "lot Width" ? "lotwidth" :
-                                                            column.id == "lot Size" ? "lotsize" :
-                                                              column.id == "age Restricted" ? "age" :
-                                                                column.id == "all Single Story" ? "single" :
-                                                                  column.id == "date Added" ? "created_at" :
-                                                                    column.id == "__pkPermitID" ? "id" :
-                                                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                      column.id == "address Name" ? "address1" :
+                                      column.id == "parcel Number" ? "parcel" :
+                                      column.id == "squre Footage" ? "sqft" :
+                                      column.id == "lot Number" ? "lotnumber" :
+                                      column.id == "permit Number" ? "permitnumber" :
+                                      column.id == "sub Legal Name" ? "sublegal_name" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "__pkPermitID" ? "id" :
+                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "address Number" ? "address2" :
-                                              column.id == "address Name" ? "address1" :
-                                                column.id == "parcel Number" ? "parcel" :
-                                                  column.id == "squre Footage" ? "sqft" :
-                                                    column.id == "lot Number" ? "lotnumber" :
-                                                      column.id == "permit Number" ? "permitnumber" :
-                                                        column.id == "sub Legal Name" ? "sublegal_name" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "master Plan" ? "masterplan_id" :
-                                                              column.id == "zip Code" ? "zipcode" :
-                                                                column.id == "lot Width" ? "lotwidth" :
-                                                                  column.id == "lot Size" ? "lotsize" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "created_at" :
-                                                                          column.id == "__pkPermitID" ? "id" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                            column.id == "address Name" ? "address1" :
+                                            column.id == "parcel Number" ? "parcel" :
+                                            column.id == "squre Footage" ? "sqft" :
+                                            column.id == "lot Number" ? "lotnumber" :
+                                            column.id == "permit Number" ? "permitnumber" :
+                                            column.id == "sub Legal Name" ? "sublegal_name" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "created_at" :
+                                            column.id == "__pkPermitID" ? "id" :
+                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1668,9 +1721,9 @@ const PermitList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "squre Footage" ? squareFootageOption :
-                                            column.id == "value" ? valueOption :
-                                              column.id == "lot Width" ? lotWidthOption :
-                                                column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "value" ? valueOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
 
                                         style={{
@@ -1685,8 +1738,8 @@ const PermitList = () => {
 
                                         onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
                                           column.id == "value" ? handleSelectChange(e, "value") :
-                                            column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                              column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2189,11 +2242,11 @@ const PermitList = () => {
             <div className="container-fluid">
               <div style={{ marginTop: "10px" }}>
                 <span className="fw-bold" style={{ fontSize: "22px" }}>
-                  {PermitDetails.subdivision.builder?.name || "NA"}
+                  {PermitDetails?.subdivision?.builder?.name || "NA"}
                 </span><br />
                 <span className="fw-bold" style={{ fontSize: "40px" }}>
                   {PermitDetails.subdivision !== null && PermitDetails.subdivision.name !== undefined
-                    ? PermitDetails.subdivision.name
+                    ? PermitDetails?.subdivision?.name
                     : "NA"
                   }
                 </span><br />
