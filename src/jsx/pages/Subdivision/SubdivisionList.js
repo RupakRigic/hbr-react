@@ -717,6 +717,7 @@ const SubdivisionList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
+  const [subdivisionID, setSubdivisionID] = useState();
   // const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
 
   // useEffect(() => {
@@ -904,6 +905,7 @@ const SubdivisionList = () => {
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);
     setIsFormLoading(true);
+    setSubdivisionID(id);
     try {
       let responseData = await AdminSubdevisionService.show(id).json();
       setSubdivisionDetails(responseData);
@@ -4690,15 +4692,17 @@ const SubdivisionList = () => {
     return new Date(year, month - 1, day);
   };
 
-  const handleDownloadReport = async (e, id) => {
-    e.preventDefault();
-    setLoadingReportId(id);
+  const handleDownloadReport = async () => {
+    if(loadingReportId === subdivisionID){
+      return;
+    }
+    setLoadingReportId(subdivisionID);
 
     const reportdata = {
       type: "Subdivision Analysis Report",
       start_date: startDate,
       end_date: endDate,
-      id: id
+      id: subdivisionID
     };
 
     const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
@@ -4718,7 +4722,7 @@ const SubdivisionList = () => {
       const blob = new Blob([response.data], { type: "application/pdf" });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = `report-${startDate}-${endDate}.pdf`;
+      link.download = `SAR-${startDate}-${endDate}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -4916,7 +4920,7 @@ const SubdivisionList = () => {
                       />
                     </div>
 
-                    <div className="mt-2" style={{width: "100%"}}>
+                    <div className="mt-2" style={{ width: "100%" }}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex">
@@ -4954,145 +4958,161 @@ const SubdivisionList = () => {
                             </div>
                           </button>
                         </div>
-                    ) : (
-                    <div className="d-flex">
-                      <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa-solid fa-list"></i>&nbsp;
-                          Columns Order
+                      ) : (
+                        <div className="d-flex">
+                          <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa-solid fa-list"></i>&nbsp;
+                              Columns Order
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={HandleSortingPopupDetailClick}
+                            title="Sorted Fields"
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              Sort
+                            </div>
+                          </Button>
+                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                Export
+                              </div>
+                            }
+                          </button>
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
+                          <Button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => !excelLoading ? addToBuilderList() : ""}
+                          >
+                            {excelLoading ?
+                              <div class="spinner-border spinner-border-sm" role="status" />
+                              :
+                              <div style={{ fontSize: "11px" }}>
+                                <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                                Map
+                              </div>
+                            }
+                          </Button>
+                          <button
+                            className="btn btn-primary btn-sm me-1"
+                            onClick={() => setManageAccessOffcanvas(true)}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-shield" />&nbsp;
+                              Field Access
+                            </div>
+                          </button>
+                          <Button
+                            className="btn-sm me-1"
+                            variant="secondary"
+                            onClick={handlBuilderClick}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fas fa-file-import" />&nbsp;
+                              Import
+                            </div>
+                          </Button>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => subdivision.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-plus" />&nbsp;
+                              Add Subdivision
+                            </div>
+                          </Link>
+                          <Link
+                            to={"#"}
+                            className="btn btn-primary btn-sm ms-1"
+                            data-bs-toggle="offcanvas"
+                            onClick={() => bulkSubdivision.current.showEmployeModal()}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-pencil" />&nbsp;
+                              Edit
+                            </div>
+                          </Link>
+                          <button
+                            className="btn btn-danger btn-sm me-1"
+                            style={{ marginLeft: "3px" }}
+                            onClick={() => selectedLandSales.length > 0 ? swal({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              buttons: true,
+                              dangerMode: true,
+                            }).then((willDelete) => {
+                              if (willDelete) {
+                                handleBulkDelete(selectedLandSales);
+                              }
+                            }) : ""}
+                          >
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-trash" />&nbsp;
+                              Delete
+                            </div>
+                          </button>
                         </div>
-                      </button>
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={HandleSortingPopupDetailClick}
-                        title="Sorted Fields"
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i class="fa-solid fa-sort"></i>&nbsp;
-                          Sort
-                        </div>
-                      </Button>
-                      <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                        {excelLoading ?
-                          <div class="spinner-border spinner-border-sm" role="status" />
-                          :
-                          <div style={{ fontSize: "11px" }}>
-                            <i class="fas fa-file-export" />&nbsp;
-                            Export
-                          </div>
-                        }
-                      </button>
-                      <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-filter" />&nbsp;
-                          Filter
-                        </div>
-                      </button>
-                      <Button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => !excelLoading ? addToBuilderList() : ""}
-                      >
-                        {excelLoading ?
-                          <div class="spinner-border spinner-border-sm" role="status" />
-                          :
-                          <div style={{ fontSize: "11px" }}>
-                            <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
-                            Map
-                          </div>
-                        }
-                      </Button>
-                      <button
-                        className="btn btn-primary btn-sm me-1"
-                        onClick={() => setManageAccessOffcanvas(true)}
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-shield" />&nbsp;
-                          Field Access
-                        </div>
-                      </button>
-                      <Button
-                        className="btn-sm me-1"
-                        variant="secondary"
-                        onClick={handlBuilderClick}
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fas fa-file-import" />&nbsp;
-                          Import
-                        </div>
-                      </Button>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => subdivision.current.showEmployeModal()}
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-plus" />&nbsp;
-                          Add Subdivision
-                        </div>
-                      </Link>
-                      <Link
-                        to={"#"}
-                        className="btn btn-primary btn-sm ms-1"
-                        data-bs-toggle="offcanvas"
-                        onClick={() => bulkSubdivision.current.showEmployeModal()}
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-pencil" />&nbsp;
-                          Bulk Edit
-                        </div>
-                      </Link>
-                      <button
-                        className="btn btn-danger btn-sm me-1"
-                        style={{ marginLeft: "3px" }}
-                        onClick={() => selectedLandSales.length > 0 ? swal({
-                          title: "Are you sure?",
-                          icon: "warning",
-                          buttons: true,
-                          dangerMode: true,
-                        }).then((willDelete) => {
-                          if (willDelete) {
-                            handleBulkDelete(selectedLandSales);
-                          }
-                        }) : ""}
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-trash" />&nbsp;
-                          Bulk Delete
-                        </div>
-                      </button>
-                    </div>
                       )}
+                    </div>
                   </div>
-                </div>
-                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                  <div className="dataTables_info">
-                    Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
-                    {BuilderListCount} entries
-                  </div>
-                  <div
-                    className="dataTables_paginate paging_simple_numbers justify-content-center"
-                    id="example2_paginate"
-                  >
-                    <Link
-                      className="paginate_button previous disabled"
-                      to="#"
-                      onClick={prePage}
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {BuilderListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
                     >
-                      <i className="fa-solid fa-angle-left" />
-                    </Link>
-                    <span>
-                      {number.map((n, i) => {
-                        if (number.length > 4) {
-                          if (
-                            i === 0 ||
-                            i === number.length - 1 ||
-                            Math.abs(currentPage - n) <= 1 ||
-                            (i === 1 && n === 2) ||
-                            (i === number.length - 2 &&
-                              n === number.length - 1)
-                          ) {
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
+                      >
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
+                              return (
+                                <Link
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
+                            }
+                          } else {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -5103,69 +5123,53 @@ const SubdivisionList = () => {
                                 {n}
                               </Link>
                             );
-                          } else if (i === 1 || i === number.length - 2) {
-                            return <span key={i}>...</span>;
-                          } else {
-                            return null;
                           }
-                        } else {
-                          return (
-                            <Link
-                              className={`paginate_button ${currentPage === n ? "current" : ""
-                                } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          );
-                        }
-                      })}
-                    </span>
+                        })}
+                      </span>
 
-                    <Link
-                      className="paginate_button next"
-                      to="#"
-                      onClick={nextPage}
-                    >
-                      <i className="fa-solid fa-angle-right" />
-                    </Link>
-                  </div>
-                </div>
-                <div
-                  id="employee-tbl_wrapper"
-                  className="dataTables_wrapper no-footer"
-                >
-                  {isLoading ? (
-                    <div className="d-flex justify-content-center align-items-center mb-5">
-                      <ClipLoader color="#4474fc" />
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
                     </div>
-                  ) : (
-                    <table
-                      id="empoloyees-tblwrapper"
-                      className="table ItemsCheckboxSec dataTable no-footer mb-0 subdivion-table"
-                    >
-                      <thead>
-                        <tr style={{ textAlign: "center" }}>
-                          <th>
-                            <input
-                              type="checkbox"
-                              style={{
-                                cursor: "pointer",
-                              }}
-                              checked={selectedLandSales.length === BuilderList.length}
-                              onChange={(e) =>
-                                e.target.checked
-                                  ? setSelectedLandSales(BuilderList.map((user) => user.id))
-                                  : setSelectedLandSales([])
-                              }
-                            />
-                          </th>
-                          <th>
-                            <strong> No.</strong>
-                          </th>
-                          {columns.map((column) => (
-                            <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
+                  </div>
+                  <div
+                    id="employee-tbl_wrapper"
+                    className="dataTables_wrapper no-footer"
+                  >
+                    {isLoading ? (
+                      <div className="d-flex justify-content-center align-items-center mb-5">
+                        <ClipLoader color="#4474fc" />
+                      </div>
+                    ) : (
+                      <table
+                        id="empoloyees-tblwrapper"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 subdivion-table"
+                      >
+                        <thead>
+                          <tr style={{ textAlign: "center" }}>
+                            <th>
+                              <input
+                                type="checkbox"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                checked={selectedLandSales.length === BuilderList.length}
+                                onChange={(e) =>
+                                  e.target.checked
+                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
+                                    : setSelectedLandSales([])
+                                }
+                              />
+                            </th>
+                            <th>
+                              <strong> No.</strong>
+                            </th>
+                            {columns.map((column) => (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
                             // onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
                             //   column.id == "builder" ? "builderName" :
                             //   column.id == "product Type" ? "product_type" :
@@ -5221,49 +5225,49 @@ const SubdivisionList = () => {
                                 {column.id != "action" && sortConfig.some(
                                   (item) => item.key === (
                                     column.id == "builder" ? "builderName" :
-                                      column.id == "product Type" ? "product_type" :
-                                        column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
-                                            column.id == "total Lots" ? "totallots" :
-                                              column.id == "lot Width" ? "lotwidth" :
-                                                column.id == "lot Size" ? "lotsize" :
-                                                  column.id == "age Restricted" ? "age" :
-                                                    column.id == "all SingleStory" ? "single" :
-                                                      column.id == "cross Streets" ? "location" :
-                                                        column.id == "latitude" ? "lat" :
-                                                          column.id == "longitude" ? "lng" :
-                                                            column.id == "gas Provider" ? "gasprovider" :
-                                                              column.id == "hOA Fee" ? "hoafee" :
-                                                                column.id == "master Plan Fee" ? "masterplanfee" :
-                                                                  column.id == "parcel Group" ? "parcel" :
-                                                                    column.id == "date Added" ? "dateadded" :
-                                                                      column.id == "__pkSubID" ? "subdivision_code" :
-                                                                        column.id == "_fkBuilderID" ? "builder_code" :
-                                                                          column.id == "open Since" ? "opensince" : toCamelCase(column.id))
+                                    column.id == "product Type" ? "product_type" :
+                                    column.id == "master Plan" ? "masterplan_id" :
+                                    column.id == "zip Code" ? "zipcode" :
+                                    column.id == "total Lots" ? "totallots" :
+                                    column.id == "lot Width" ? "lotwidth" :
+                                    column.id == "lot Size" ? "lotsize" :
+                                    column.id == "age Restricted" ? "age" :
+                                    column.id == "all SingleStory" ? "single" :
+                                    column.id == "cross Streets" ? "location" :
+                                    column.id == "latitude" ? "lat" :
+                                    column.id == "longitude" ? "lng" :
+                                    column.id == "gas Provider" ? "gasprovider" :
+                                    column.id == "hOA Fee" ? "hoafee" :
+                                    column.id == "master Plan Fee" ? "masterplanfee" :
+                                    column.id == "parcel Group" ? "parcel" :
+                                    column.id == "date Added" ? "dateadded" :
+                                    column.id == "__pkSubID" ? "subdivision_code" :
+                                    column.id == "_fkBuilderID" ? "builder_code" :
+                                    column.id == "open Since" ? "opensince" : toCamelCase(column.id))
                                 ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
                                           column.id == "builder" ? "builderName" :
-                                            column.id == "product Type" ? "product_type" :
-                                              column.id == "master Plan" ? "masterplan_id" :
-                                                column.id == "zip Code" ? "zipcode" :
-                                                  column.id == "total Lots" ? "totallots" :
-                                                    column.id == "lot Width" ? "lotwidth" :
-                                                      column.id == "lot Size" ? "lotsize" :
-                                                        column.id == "age Restricted" ? "age" :
-                                                          column.id == "all SingleStory" ? "single" :
-                                                            column.id == "cross Streets" ? "location" :
-                                                              column.id == "latitude" ? "lat" :
-                                                                column.id == "longitude" ? "lng" :
-                                                                  column.id == "gas Provider" ? "gasprovider" :
-                                                                    column.id == "hOA Fee" ? "hoafee" :
-                                                                      column.id == "master Plan Fee" ? "masterplanfee" :
-                                                                        column.id == "parcel Group" ? "parcel" :
-                                                                          column.id == "date Added" ? "dateadded" :
-                                                                            column.id == "__pkSubID" ? "subdivision_code" :
-                                                                              column.id == "_fkBuilderID" ? "builder_code" :
-                                                                                column.id == "open Since" ? "opensince" : toCamelCase(column.id))
+                                          column.id == "product Type" ? "product_type" :
+                                          column.id == "master Plan" ? "masterplan_id" :
+                                          column.id == "zip Code" ? "zipcode" :
+                                          column.id == "total Lots" ? "totallots" :
+                                          column.id == "lot Width" ? "lotwidth" :
+                                          column.id == "lot Size" ? "lotsize" :
+                                          column.id == "age Restricted" ? "age" :
+                                          column.id == "all SingleStory" ? "single" :
+                                          column.id == "cross Streets" ? "location" :
+                                          column.id == "latitude" ? "lat" :
+                                          column.id == "longitude" ? "lng" :
+                                          column.id == "gas Provider" ? "gasprovider" :
+                                          column.id == "hOA Fee" ? "hoafee" :
+                                          column.id == "master Plan Fee" ? "masterplanfee" :
+                                          column.id == "parcel Group" ? "parcel" :
+                                          column.id == "date Added" ? "dateadded" :
+                                          column.id == "__pkSubID" ? "subdivision_code" :
+                                          column.id == "_fkBuilderID" ? "builder_code" :
+                                          column.id == "open Since" ? "opensince" : toCamelCase(column.id))
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   )
@@ -5284,19 +5288,19 @@ const SubdivisionList = () => {
                                     <select className="custom-select" value={column.id == "total Lots" ? totalLotsOption : column.id == "lot Width" ? lotWidthOption :
                                       column.id == "lot Size" ? lotSizeOption : column.id == "master Plan Fee" ? masterPlanFeeOption :
                                         column.id == "hOA Fee" ? hOAFeeOption : column.id == "total Closings" ? totalClosingsOption : column.id == "total Permits" ? totalPermitsOption :
-                                          column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
-                                            column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
-                                              column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
-                                                column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
-                                                  column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
-                                                    column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption :
-                                                      column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
-                                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption :
-                                                          column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
-                                                            column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
-                                                              column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
-                                                                column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
-                                                                  column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
+                                        column.id == "total Net Sales" ? totalNetSalesOption : column.id == "months Open" ? monthsOpenOption :
+                                        column.id == "latest Lots Released" ? latestLotsReleasedOption : column.id == "latest Standing Inventory" ? latestStandingInventoryOption :
+                                        column.id == "unsold Lots" ? unsoldLotsOption : column.id == "avg Sqft All" ? avgSqftAllOption :
+                                        column.id == "avg Sqft Active" ? avgSqftActiveOption : column.id == "avg Base Price All" ? avgBasePriceAllOption :
+                                        column.id == "avg Base Price Active" ? avgBasePriceActiveOption : column.id == "min Sqft All" ? minSqftAllOption :
+                                        column.id == "max Sqft All" ? maxSqftAllOption : column.id == "min Base Price All" ? minBasePriceAllOption :
+                                        column.id == "min Sqft Active" ? minSqftActiveOption : column.id == "max Base Price All" ? maxBasePriceAllOption :
+                                        column.id == "max Sqft Active" ? maxSqftActiveOption : column.id == "avg Net Traffic Per Month This Year" ? avgNetTrafficPerMonthThisYearOption :
+                                        column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption : column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption :
+                                        column.id == "avg Net Sales Per Month Since Open" ? avgNetSalesPerMonthSinceOpenOption : column.id == "avg Net Sales Per Month Last 3 Months" ? avgNetSalesPerMonthLastThreeMonthsOption :
+                                        column.id == "month Net Sold" ? monthNetSoldOption : column.id == "year Net Sold" ? yearNetSoldOption :
+                                        column.id == "avg Closing Price" ? avgClosingPriceOption : column.id == "permits This Year" ? permitsThisYearOption :
+                                        column.id == "median Closing Price Since Open" ? medianClosingPriceSinceOpenOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption : ""}
 
                                       style={{
                                         cursor: "pointer",
@@ -5310,37 +5314,37 @@ const SubdivisionList = () => {
 
                                       onChange={(e) => column.id == "total Lots" ? handleSelectChange(e, "totallots") :
                                         column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                            column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
-                                              column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
-                                                column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                                  column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                                    column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
-                                                      column.id == "months Open" ? handleSelectChange(e, "months_open") :
-                                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
-                                                          column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
-                                                            column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
-                                                              column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
-                                                                column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
-                                                                  column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
-                                                                    column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
-                                                                      column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
-                                                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
-                                                                          column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
-                                                                            column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
-                                                                              column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
-                                                                                column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
-                                                                                  column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
-                                                                                    column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                                                                      column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                                                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
-                                                                                          column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
-                                                                                            column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
-                                                                                              column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
-                                                                                                column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
-                                                                                                  column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
-                                                                                                    column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
-                                                                                                      column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
+                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
+                                        column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
+                                        column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
+                                        column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                        column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                        column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
+                                        column.id == "months Open" ? handleSelectChange(e, "months_open") :
+                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
+                                        column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
+                                        column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
+                                        column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
+                                        column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
+                                        column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
+                                        column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
+                                        column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
+                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
+                                        column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
+                                        column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
+                                        column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
+                                        column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
+                                        column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
+                                        column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
+                                        column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
+                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
+                                        column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
+                                        column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
+                                        column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
+                                        column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
                                       }
                                     >
                                       <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
@@ -5817,18 +5821,18 @@ const SubdivisionList = () => {
                                           <i className="fa fa-trash"></i>
                                         </Link>
 
-                                        <Link
+                                        {/* <Link
                                           className="btn btn-primary shadow btn-xs sharp"
                                           style={{ marginLeft: "4px" }}
-                                          onClick={(e) => handleDownloadReport(e, element.id)}
+                                          onClick={() => handleDownloadReport()}
                                           key={element.id}
                                         >
-                                          {loadingReportId === element.id ? (
+                                          {loadingReportId === subdivisionID ? (
                                             <div class="spinner-border spinner-border-sm" role="status" style={{ marginTop: "1px" }} />
                                           ) : (
                                             <i class="fa fa-file-text" aria-hidden="true"></i>
                                           )}
-                                        </Link>
+                                        </Link> */}
                                       </div>
                                     </td>
                                   }
@@ -6066,7 +6070,25 @@ const SubdivisionList = () => {
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
             Subdivision Details
+            {!isFormLoading && <button
+              className="btn btn-primary btn-sm me-1" 
+              title="Report"
+              style={{ marginLeft: "20px" }}
+              onClick={() => handleDownloadReport()}
+              key={subdivisionID}
+            >
+              {loadingReportId === subdivisionID ? (
+                <div class="spinner-border spinner-border-sm" role="status" style={{ marginTop: "1px" }} />
+              ) : (
+                <div>
+                  <i class="fa fa-file-text" aria-hidden="true" />&nbsp;
+                  Report
+                </div>
+              )}
+            </button>}
           </h5>
+          
+          
           <button
             type="button"
             className="btn-close"
