@@ -488,7 +488,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                     <input
-                      type="number"
+                      type="text"
                       defaultValue={Subdivision.parcel}
                       name="parcel"
                       className="form-control"
