@@ -129,7 +129,7 @@ const UserList = () => {
 
   useEffect((currentPage) => {
     if (localStorage.getItem("usertoken")) {
-      getuserList(currentPage);
+      getuserList(currentPage, sortConfig, searchQuery);
     } else {
       navigate("/");
     }
@@ -213,13 +213,16 @@ const UserList = () => {
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
-  const getuserList = async () => {
+  const getuserList = async(currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     try {
       let sortConfigString = "";
+      console.log(sortConfigString);
+      console.log(sortConfig);
+
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
+      } 
       const response = await AdminUserRoleService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
       setUserList(responseData.data);
@@ -329,20 +332,6 @@ const UserList = () => {
     setFilterQuery({
       role: "",
     });
-  };
-  const requestSort = (key) => {
-    let direction = "asc";
-
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    getuserList(currentPage, sortConfig);
   };
 
   const handleOpenDialog = () => {
@@ -517,9 +506,12 @@ const UserList = () => {
       direction: sortOrders[field.value] || 'asc',
     }));
     setSortConfig(sortingConfig)
+    console.log(sortingConfig);
     getuserList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
+  console.log(sortConfig);
+
   return (
     <>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
@@ -857,7 +849,7 @@ const UserList = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id != "action" ? requestSort(column.id == "builder" ? "builderName" : column.id) : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(

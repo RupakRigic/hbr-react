@@ -6441,34 +6441,6 @@ const SubdivisionList = () => {
                                         <td>{element.netsales}</td>
                                         <td>{element.lotreleased}</td>
                                         <td>{element.unsoldinventory}</td>
-                                        <td>
-                                          <div className="d-flex justify-content-center">
-                                            <Link
-                                              to={`/trafficsaleupdate/${element.id}`}
-                                              className="btn btn-primary shadow btn-xs sharp me-1"
-                                            >
-                                              <i className="fas fa-pencil-alt"></i>
-                                            </Link>
-                                            <Link
-                                              onClick={() =>
-                                                swal({
-                                                  title: "Are you sure?",
-
-                                                  icon: "warning",
-                                                  buttons: true,
-                                                  dangerMode: true,
-                                                }).then((willDelete) => {
-                                                  if (willDelete) {
-                                                    handleDelete(element.id);
-                                                  }
-                                                })
-                                              }
-                                              className="btn btn-danger shadow btn-xs sharp"
-                                            >
-                                              <i className="fa fa-trash"></i>
-                                            </Link>
-                                          </div>
-                                        </td>
                                       </tr>
                                     )
                                   )

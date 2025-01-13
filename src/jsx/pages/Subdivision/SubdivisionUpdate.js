@@ -346,9 +346,9 @@ const SubdivisionUpdate = () => {
                             defaultValue={Subdivision?.get_permits?.[0]?.date || ''}
                             name="firstpermitdate"
                             className="form-control"
-                            id="exampleFormControlInput9"
                             placeholder=""
                             disabled
+                            style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
                           />
                         </div>
 
