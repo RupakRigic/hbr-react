@@ -343,11 +343,12 @@ const SubdivisionUpdate = () => {
                           <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                           <input
                             type="date"
-                            defaultValue={Subdivision.firstpermitdate}
+                            defaultValue={Subdivision?.get_permits?.[0]?.date || ''}
                             name="firstpermitdate"
                             className="form-control"
                             id="exampleFormControlInput9"
                             placeholder=""
+                            disabled
                           />
                         </div>
 

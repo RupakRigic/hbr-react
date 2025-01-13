@@ -1584,6 +1584,7 @@ const ProductList = () => {
   }, [showPopup]);
 
   const HandleSortingPopupDetailClick = (e) => {
+    console.log(5555);
     setShowSortingPopup(true);
   };
 

@@ -1030,7 +1030,8 @@ const SubdivisionList = () => {
     localStorage.setItem("to_Subdivision", JSON.stringify(filterQuery.to));
     localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery));
   };
-
+ 
+  console.log(SubdivisionDetails)
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -6419,10 +6420,10 @@ const SubdivisionList = () => {
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
-                                {SubdivisionDetails.traficSales &&
-                                  Array.isArray(SubdivisionDetails.traficSales) &&
-                                  SubdivisionDetails.traficSales.length > 0 ? (
-                                  SubdivisionDetails.traficSales.map(
+                                {SubdivisionDetails.trafic_sales &&
+                                  Array.isArray(SubdivisionDetails.trafic_sales) &&
+                                  SubdivisionDetails.trafic_sales.length > 0 ? (
+                                  SubdivisionDetails.trafic_sales.map(
                                     (element, index) => (
                                       <tr
                                         onClick={handleTraficRedirect}
