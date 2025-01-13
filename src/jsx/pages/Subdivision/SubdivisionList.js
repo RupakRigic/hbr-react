@@ -327,7 +327,7 @@ const SubdivisionList = () => {
     { label: 'Age Restricted', key: 'age' },
     { label: 'All Single Story', key: 'single' },
     { label: 'Gated', key: 'gated' },
-    { label: 'Cross Streets', key: 'location' },
+    { label: 'Cross Streets', key: 'crossstreet' },
     { label: 'Juridiction', key: 'juridiction' },
     { label: 'Latitude', key: 'lat' },
     { label: 'Longitude', key: 'lng' },
@@ -460,7 +460,7 @@ const SubdivisionList = () => {
             mappedRow[header] = (row.gated === 1 && "Yes") || (row.gated === 0 && "No");
             break;
           case "Cross Streets":
-            mappedRow[header] = row.location;
+            mappedRow[header] = row.crossstreet;
             break;
           case "Juridiction":
             mappedRow[header] = row.juridiction;
@@ -5240,7 +5240,7 @@ const SubdivisionList = () => {
                                     column.id == "lot Size" ? "lotsize" :
                                     column.id == "age Restricted" ? "age" :
                                     column.id == "all SingleStory" ? "single" :
-                                    column.id == "cross Streets" ? "location" :
+                                    column.id == "cross Streets" ? "crossstreet" :
                                     column.id == "latitude" ? "lat" :
                                     column.id == "longitude" ? "lng" :
                                     column.id == "gas Provider" ? "gasprovider" :
@@ -5264,7 +5264,7 @@ const SubdivisionList = () => {
                                           column.id == "lot Size" ? "lotsize" :
                                           column.id == "age Restricted" ? "age" :
                                           column.id == "all SingleStory" ? "single" :
-                                          column.id == "cross Streets" ? "location" :
+                                          column.id == "cross Streets" ? "crossstreet" :
                                           column.id == "latitude" ? "lat" :
                                           column.id == "longitude" ? "lng" :
                                           column.id == "gas Provider" ? "gasprovider" :
@@ -5660,7 +5660,7 @@ const SubdivisionList = () => {
                                     </td>
                                   }
                                   {column.id == "cross Streets" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}>{element.location}</td>
+                                    <td key={column.id} style={{ textAlign: "center" }}>{element.crossstreet}</td>
                                   }
                                   {column.id == "juridiction" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
@@ -6422,7 +6422,6 @@ const SubdivisionList = () => {
                                   <th>Net Sales</th>
                                   <th>Lot Released</th>
                                   <th>Unsold Inventory</th>
-                                  <th>Action</th>
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
