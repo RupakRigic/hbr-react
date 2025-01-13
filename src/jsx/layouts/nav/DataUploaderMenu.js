@@ -78,9 +78,14 @@ export const LandSales = [
 ];
 
 export const DataUploaderMenuList = [
+    // {
+    //     title: 'Subscription',
+    //     iconStyle: SVGICON.SubscribeData,
+    //     to: '/subscriptionlist',
+    // }
     {
-        title: 'Subscription',
-        iconStyle: SVGICON.SubscribeData,
-        to: '/subscriptionlist',
-    }
+        title: 'Data Reporting',
+        iconStyle: SVGICON.GridDots,
+        to: '/weekly-data',
+    },
 ];

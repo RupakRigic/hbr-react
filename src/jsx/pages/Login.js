@@ -278,11 +278,13 @@ function Login(props) {
             navigate("/dashboard");
           } else if (userRole == "Standard User" || userRole == "Data Uploader") {
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
-            if (subscription == 1) {
-              navigate("/dashboard");
-            } else {
-              navigate("/subscriptionplan");
-            }
+            // if (subscription == 1) {
+            //   navigate("/weekly-data");
+            // } else {
+            //   navigate("/subscriptionplan");
+            // }
+            navigate("/weekly-data");
+
           } else {
             navigate("/subscriptionlist");
           }
