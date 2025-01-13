@@ -256,13 +256,11 @@ const CCAPNList = () => {
               let message = [];
               const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
               const problematicRowsError = response.data.failed_records_details.map(detail => detail.error).join(', ');
-              message += '\nRecord Imported: ' + response.data.successful_records + '.';
-              message += '\nFailed Record Count: ' + response.data.failed_records + '.';
+              message += '\nRecord Imported: ' + response.data.successful_records;
+              message += '\nFailed Record Count: ' + response.data.failed_records;
               message += '\nProblematic Record Rows: ' + problematicRows + '.';
               message += '\nErrors: ' + problematicRowsError + '.';
-              message += '\nLast Row: ' + response.data.last_processed_row + '.';
-              setSelectedFile("");
-              setIsLoading(false);
+              message += '\nLast Row: ' + response.data.last_processed_row;
               setShow(false);
               swal({
                 title: response.data.message,
@@ -274,11 +272,15 @@ const CCAPNList = () => {
               });
             } else {
               if (response.data.message) {
-                setSelectedFile("");
-                let message = response.data.message;
-                setIsLoading(false);
+                let message = [];
+                const updatedRows = response.data.updated_records_details.map(detail => detail.row).join(', ');
+                message += '\nUpdated Record Count: ' + response.data.updated_records_count;
+                message += '\nUpdated Record Rows: ' + updatedRows + '.';
                 setShow(false);
-                swal(message).then((willDelete) => {
+                swal({
+                  title: response.data.message,
+                  text: message,
+                }).then((willDelete) => {
                   if (willDelete) {
                     GetCCAPNList(currentPage, searchQuery);
                   }
