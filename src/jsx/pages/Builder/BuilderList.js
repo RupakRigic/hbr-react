@@ -22,6 +22,7 @@ import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import { MultiSelect } from "react-multi-select-component";
 import '../../pages/Subdivision/subdivisionList.css';
 import MainPagetitle from "../../layouts/MainPagetitle";
+import Swal from "sweetalert2";
 
 const BuilderTable = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
@@ -38,7 +39,7 @@ const BuilderTable = () => {
 
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkBuilder = useRef();
-
+console.log(selectedLandSales);
   const handleEditCheckboxChange = (e, userId) => {
     if (e.target.checked) {
       setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
@@ -166,6 +167,53 @@ const BuilderTable = () => {
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
+  };
+  const [samePage, setSamePage] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [selectCheckBox, setSelectCheckBox] = useState(false);
+
+  const handleMainCheckboxChange = (e) => {
+    setSamePage(currentPage);
+    if (e.target.checked) {
+      Swal.fire({
+        title: "Select Records",
+        html: `
+          <div style="text-align: left;">
+            <label>
+              <input type="radio" name="selection" value="visible" checked />
+              Select visible records
+            </label>
+            <br />
+            <label>
+              <input type="radio" name="selection" value="all" />
+              Select all records
+            </label>
+          </div>
+        `,
+        confirmButtonText: "Apply",
+        showCancelButton: false,
+        preConfirm: () => {
+          const selectedOption = document.querySelector('input[name="selection"]:checked').value;
+          return selectedOption;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const selectedOption = result.value;
+          if (selectedOption === "visible") {
+            setIsSelectAll(false);
+            setSelectCheckBox(true);
+            setSelectedLandSales(BuilderList.map((user) => user.id));
+          } else if (selectedOption === "all") {
+            setIsSelectAll(true);
+            setSelectCheckBox(true);
+            setSelectedLandSales(AllBuilderListExport.map((user) => user.id));
+          }
+        }
+      });
+    } else {
+      setSelectCheckBox(false);
+      setSelectedLandSales([]);
+    }
   };
 
   const headers = [
@@ -2143,18 +2191,12 @@ const BuilderTable = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>
-                              <input
-                                type="checkbox"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                checked={selectedLandSales.length === BuilderList.length}
-                                onChange={(e) =>
-                                  e.target.checked
-                                    ? setSelectedLandSales(BuilderList.map((user) => user.id))
-                                    : setSelectedLandSales([])
-                                }
-                              />
+                            <input
+                                  type="checkbox"
+                                  style={{ cursor: "pointer" }}
+                                  checked={(currentPage == samePage || isSelectAll) ? selectCheckBox : ""}
+                                  onClick={(e) => handleMainCheckboxChange(e)}
+                                />
                             </th>
                             <th>
                               <strong>No.</strong>

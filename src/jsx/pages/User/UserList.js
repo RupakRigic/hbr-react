@@ -17,6 +17,7 @@ import BulkUserUpdateOffcanvas from "./BulkUserUpdateOffcanvas";
 import Modal from "react-bootstrap/Modal";
 import Select from "react-select";
 import { MultiSelect } from "react-multi-select-component";
+import Swal from "sweetalert2";
 
 const UserList = () => {
 

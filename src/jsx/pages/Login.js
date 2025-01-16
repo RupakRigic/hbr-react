@@ -276,7 +276,7 @@ function Login(props) {
           localStorage.removeItem("setLansSaleFilter");
           if (userRole == "Admin") {
             navigate("/dashboard");
-          } else if (userRole == "Standard User" || userRole == "Data Uploader") {
+          } else if ( userRole == "Data Uploader") {
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
             // if (subscription == 1) {
             //   navigate("/weekly-data");
@@ -285,6 +285,14 @@ function Login(props) {
             // }
             navigate("/weekly-data");
 
+          }else if(userRole == "Standard User"){
+            const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
+
+            if (subscription == 1) {
+              navigate("/weekly-data");
+            } else {
+              navigate("/subscriptionplan");
+            }
           } else {
             navigate("/subscriptionlist");
           }

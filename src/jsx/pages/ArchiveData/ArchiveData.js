@@ -114,7 +114,7 @@ const ArchiveData = () => {
     const handleDownload = async (e, filepath) => {
         e.preventDefault();
         try {
-            const fileUrl = `${'http://localhost/hbr'}/${filepath}`;
+            const fileUrl = `${process.env.REACT_APP_IMAGE_URL}/${filepath}`;
             const link = document.createElement('a');
             link.href = fileUrl;
             link.download = filepath;
@@ -127,7 +127,7 @@ const ArchiveData = () => {
     };
 
     const handleDelete = async (e) => {
-        e.preventDefault();
+        console.log(e);
         try {
             let responseData = await AdminBuilderService.destroyArchive(e).json();
             if (responseData.status === true) {
