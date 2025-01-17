@@ -77,15 +77,35 @@ export const LandSales = [
     },
 ];
 
+const userRole = JSON.parse(localStorage.getItem("user")).role;
 export const DataUploaderMenuList = [
     // {
     //     title: 'Subscription',
     //     iconStyle: SVGICON.SubscribeData,
     //     to: '/subscriptionlist',
-    // }
+    // },
     {
         title: 'Data Reporting',
         iconStyle: SVGICON.GridDots,
         to: '/weekly-data',
+    }
+];
+
+export const AccountAdminafterSubscribed = [
+    // {
+    //     title: 'Subscription',
+    //     iconStyle: SVGICON.SubscribeData,
+    //     to: '/subscriptionlist',
+    // },
+    // {
+    //     title: 'Data Reporting',
+    //     iconStyle: SVGICON.GridDots,
+    //     to: '/weekly-data',
+    // }
+
+    {
+        title: 'Users',
+        iconStyle: SVGICON.User,
+        to: '/userlist/accountadmin',
     },
 ];

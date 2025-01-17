@@ -130,6 +130,7 @@ const SubscriptionPlan = () => {
         try {
             let DataType = selectedOptions.map(option => String(option.value))
             var userData = {
+                payment_period:planFrequency,
                 plan_id: planID,
                 seats: numberOfSeat,
                 data_types: DataType
@@ -204,6 +205,12 @@ const SubscriptionPlan = () => {
         setNumberOfSeat(seat);
     };
 
+    const [planFrequency, setPlanFreQuency] = useState('monthly');
+    const handleFrequencyChange=(e)=>{
+        console.log(e.target.value);
+        setPlanFreQuency(e.target.value);
+    }
+
     return (
         <Fragment>
             <div className="subscription-container">
@@ -242,6 +249,8 @@ const SubscriptionPlan = () => {
                                 <div className="subscription-card" key={data.id}>
                                     <h2 style={{ textAlign: "left" }}>{data.title}</h2>
                                     <h4 style={{ color: "black", fontWeight: "bold", textAlign: "left" }}>Price: <PriceComponent price={data.price} />/month</h4>
+                                    <h4 style={{ color: "black", fontWeight: "bold", textAlign: "left" }}>Price: <PriceComponent price={data.price * 11} />/Year</h4>
+
                                     <div className="features">
                                         <ul>
                                             {data.content.split(',').map((item, index) => (
@@ -290,6 +299,31 @@ const SubscriptionPlan = () => {
                     <Modal.Body>
                         {dataTypeLimitMessage && <div style={{ color: "red", padding: "5px" }}>{dataTypeLimitMessage}</div>}
                         <div className="row">
+                        <div className="col-md-6 mt-3 w-100">
+                            <div className='d-flex justify-content-start'>
+                                <div className='me-5'>
+                                <label className="form-label me-3">Monthly</label>
+                                <input
+                                    type="radio"
+                                    value="monthly"
+                                    name="plan_frequency"
+                                    defaultChecked={true}
+                                    onChange={handleFrequencyChange}
+
+                                />
+                                </div>
+                                <div>
+                                <label className="form-label me-3">Yearly</label>
+                                <input
+                                    type="radio"
+                                    value="yearly"
+                                    name="plan_frequency"
+                                    onChange={handleFrequencyChange}
+                                />
+                                </div>
+                         
+                            </div>
+                            </div>
                             <div className="col-md-6 mt-3 w-100">
                                 <label className="form-label">Number of Seat:</label>
                                 <input

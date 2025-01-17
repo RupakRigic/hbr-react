@@ -16,6 +16,8 @@ import SubdivisionList from "./pages/Subdivision/SubdivisionList";
 import SubdivisionUpdate from "./pages/Subdivision/SubdivisionUpdate";
 import ProductListList from "./pages/Product/ProductList";
 import UserListList from "./pages/User/UserList";
+import AccountAdminUser from "./pages/User/AccountAdminUser";
+
 import UserUpdate from "./pages/User/UserUpdate";
 import ProductUpdate from "./pages/Product/ProductUpdate";
 import PermitList from "./pages/Permit/PermitList";
@@ -62,16 +64,16 @@ const allroutes = [
     component: <Login /> 
   },
   { url: "dashboard", component: <Home />, 
-    allowedRoles: ["Admin","Standard User"] 
+    allowedRoles: ["Admin","Standard User",'Account Admin'] 
   },
   { url: "/builderList", 
     component: <BuilderTable />, 
-    allowedRoles: ["Admin", "Data Uploader", "User","Standard User"] 
+    allowedRoles: ["Admin", "Data Uploader", "User","Standard User",'Account Admin'] 
   },
   {
     url: "/subdivisionlist",
     component: <SubdivisionList />,
-    allowedRoles: ["Admin","Standard User"],
+    allowedRoles: ["Admin","Standard User",'Account Admin'],
   },
   {
     url: "subdivisionUpdate/:id",
@@ -96,7 +98,7 @@ const allroutes = [
   {
     url: "/productlist",
     component: <ProductListList />,
-    allowedRoles: ["Admin","Standard User"],
+    allowedRoles: ["Admin","Standard User",'Account Admin'],
   },
   {
     url: "/productupdate/:id",
@@ -106,6 +108,10 @@ const allroutes = [
   { url: "/userlist", 
     component: <UserListList />, 
     allowedRoles: ["Admin","Standard User"] 
+  },
+  { url: "/userlist/accountAdmin", 
+    component: <AccountAdminUser />, 
+    allowedRoles: ["Account Admin"] 
   },
   { url: "/useranalytics/:id", 
     component: <UserAnalyticsList />, 
@@ -128,7 +134,7 @@ const allroutes = [
   {
     url: "/landsalelist",
     component: <LandsaleList />,
-    allowedRoles: ["Admin","Standard User"],
+    allowedRoles: ["Admin","Standard User",'Account Admin'],
   },
   {
     url: "/landsaleupdate/:id",
@@ -138,7 +144,7 @@ const allroutes = [
   {
     url: "/trafficsalelist",
     component: <TrafficsaleList />,
-    allowedRoles: ["Admin","Standard User"],
+    allowedRoles: ["Admin","Standard User",'Account Admin'],
   },
   {
     url: "/trafficsaleupdate/:id",
@@ -148,7 +154,7 @@ const allroutes = [
   {
     url: "/closingsalelist",
     component: <ClosingList />,
-    allowedRoles: ["Admin","Standard User"],
+    allowedRoles: ["Admin","Standard User",'Account Admin'],
   },
   {
     url: "/closingsaleupdate/:id",
@@ -159,7 +165,7 @@ const allroutes = [
   {
     url: "/weekly-data",
     component: <WeeklyData />,
-    allowedRoles: ["Admin", "Data Uploader","Standard User"],
+    allowedRoles: ["Admin", "Data Uploader","Standard User","Account Admin"],
   },
   {
     url: "/weekly-data-index",
@@ -172,12 +178,12 @@ const allroutes = [
   },
   { url: "/report", 
     component: <Report />, 
-    allowedRoles: ["Admin", "User","Standard User"] 
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'] 
   },
   {
     url: "/report-list",
     component: <ReportList />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/google-map-locator",
@@ -192,7 +198,7 @@ const allroutes = [
   {
     url: "/downloading-archive-data",
     component: <ArchiveData />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/subscriberlist",
@@ -202,52 +208,52 @@ const allroutes = [
   {
     url: "/subscriptionplan",
     component: <SubscriptionPlan />,
-    allowedRoles: ["Data Uploader", "Standard User"],
+    allowedRoles: ["Data Uploader", "Standard User","Account Admin"],
   },
   {
     url: "/subscriptionlist",
     component: <SubscriptionList />,
-    allowedRoles: ["Data Uploader", "Standard User"],
+    allowedRoles: ["Data Uploader", "Standard User","Account Admin"],
   },
   {
     url: "/filterbuilder",
     component: <FilterBuilder />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filtersubdivision",
     component: <FilterSubdivision />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterlandsales",
     component: <FilterLandSales />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterbaseprice",
     component: <FilterBasePrice />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterproducts",
     component: <FilterProducts />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterpermits",
     component: <FilterPermits />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterweeklytrafficandsales",
     component: <FilterWeeklyTrafficAndSales />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {
     url: "/filterclosings",
     component: <FilterClosings />,
-    allowedRoles: ["Admin", "User","Standard User"],
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   // {
   //   url: "/thank-you",

@@ -27,9 +27,37 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [password, setPassword] = useState("");
     const [notes, setNotes] = useState("");
     const [company, setCompany] = useState("");
+    const userRole = JSON.parse(localStorage.getItem("user")).role;
+    const userId = JSON.parse(localStorage.getItem("user")).localId;
+
+  const [userDetail, SetUserDetail] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+      const GetUserList = async (id) => {
+        setIsLoading(true);
+        try {
+          let responseData1 = await AdminUserRoleService.show(id).json();
+          setIsLoading(false);
+          SetUserDetail(responseData1);
+          setBuilderCode(responseData1.builder_id);
+    
+    
+
+        } catch (error) {
+          setIsLoading(false);
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+          }
+        }
+      };
 
     useEffect(() => {
         GetRoleList();
+        if(userRole == 'Account Admin'){
+            GetUserList(userId)
+            setCompany(userDetail.company);
+        }
     }, []);
 
     const GetRoleList = async () => {
@@ -78,6 +106,9 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if(userRole =='Account Admin'){
+            setCompany(userDetail.company);
+        }
         try {
             const FilterRoleCode = RoleCode == 9 && standardRoleCode.filter((id) => id === 11);
             if (FilterRoleCode == 11) {
@@ -93,6 +124,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     setSaveBtn(true);
                     setShowPopup(true);
                 } else {
+                    console.log(data.message);
                     setMessage(data.message);
                     setShowPopup(true);
                 }
@@ -116,12 +148,15 @@ const UserOffcanvas = forwardRef((props, ref) => {
                             props.parentCallback();
                         }
                     })
+                }else{
+                    setError(data.message);
                 }
             }
         }
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
+                console.log(errorJson);
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
@@ -201,12 +236,45 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                     <label htmlFor="exampleFormControlInput6" className="form-label">Notes</label>
                                     <input type="text" name='notes' className="form-control" id="exampleFormControlInput6" placeholder="" onChange={(e) => setNotes(e.target.value)} />
                                 </div>
-                                <div className="col-xl-6 mb-3">
+                                {userRole == 'Account Admin'?(
+
+                                    <>
+                                    
+                              <div className="col-xl-6 mb-3">
+                                <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
+                                <input type="text" name='company' style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} required className="form-control" id="exampleFormControlInput7" placeholder="" disabled value={userDetail.company} />
+                                </div>
+                                    <div className="col-xl-6 mb-3">
+                                    <label className="form-label">Role</label>
+                                    <Select
+                                        options={StandardUserOptions}
+                                        onChange={(selectedOption) => handleRoleCode(selectedOption)}
+                                        placeholder="Select Role"
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
+                                    />
+                                </div>
+                                    </>
+    
+                                ):(
+
+<>
+                            <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
                                     <input type="text" name='company' required className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setCompany(e.target.value)} />
                                 </div>
 
-                                <div className="col-xl-6 mb-3">
+                        <div className="col-xl-6 mb-3">
                                     <label className="form-label">Role</label>
                                     <Select
                                         options={roleOptions}
@@ -226,8 +294,14 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         }}
                                     />
                                 </div>
+</>
+   
+                                )}
 
-                                {RoleCode == 9 && <div className="col-xl-6 mb-3">
+
+     
+
+                                {RoleCode == 9 && userRole!='Account Admin' && <div className="col-xl-6 mb-3">
                                     <label className="form-label">Standard User</label>
                                     <MultiSelect
                                         options={StandardUserOptions}

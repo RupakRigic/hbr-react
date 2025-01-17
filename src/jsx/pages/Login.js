@@ -286,8 +286,9 @@ function Login(props) {
             navigate("/weekly-data");
 
           }else if(userRole == "Standard User"){
+            navigate("/weekly-data");
+          }else if(userRole == "Account Admin"){
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
-
             if (subscription == 1) {
               navigate("/weekly-data");
             } else {

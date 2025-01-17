@@ -4,6 +4,8 @@ import Collapse from 'react-bootstrap/Collapse';
 /// Link
 import { Link } from "react-router-dom";
 import { DataUploaderMenuList } from './DataUploaderMenu';
+import { AccountAdminafterSubscribed } from './DataUploaderMenu';
+
 import { CommanDataType } from './DataUploaderMenu';
 import { WeeklyTrafficAndSales_ProductPricing } from './DataUploaderMenu';
 import { NewHomeClosings } from './DataUploaderMenu';
@@ -11,6 +13,8 @@ import { NewHomePermits } from './DataUploaderMenu';
 import { LandSales } from './DataUploaderMenu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
+
+const userRole = JSON.parse(localStorage.getItem("user")).role;
 
 const reducer = (previousState, updatedState) => ({
   ...previousState,
@@ -93,8 +97,21 @@ const UserSideBar = () => {
         const sortedMenuList = Array.from(mergedMenuList).sort((a, b) => {
           return desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title);
         });
+        
+        if(userRole == "Account Admin"){
 
-        setUserMenuList(sortedMenuList);
+          const finalMenuList = [
+            ...AccountAdminafterSubscribed,
+            ...sortedMenuList,
+        ].sort((a, b) => desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title));
+        setUserMenuList(finalMenuList);
+
+        }else{
+          setUserMenuList(sortedMenuList);
+
+        }
+        
+
       }
     } else {
       setUserMenuList(DataUploaderMenuList);
