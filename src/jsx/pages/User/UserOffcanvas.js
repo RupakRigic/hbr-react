@@ -7,6 +7,7 @@ import Select from 'react-select';
 import { MultiSelect } from 'react-multi-select-component';
 import Modal from "react-bootstrap/Modal";
 import { Button } from 'react-bootstrap';
+import { FiRefreshCcw, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 
 const UserOffcanvas = forwardRef((props, ref) => {
     const [Error, setError] = useState('');
@@ -29,6 +30,54 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [company, setCompany] = useState("");
     const userRole = JSON.parse(localStorage.getItem("user")).role;
     const userId = JSON.parse(localStorage.getItem("user")).localId;
+
+    
+      const [newPassword, setNewPassword] = useState('');
+      const [showNewPassword, setShowNewPassword] = useState(false);
+      const [copySuccess, setCopySuccess] = useState(false);
+      const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
+    
+      const generatePassword = () => {
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        const passwordLength = 8;
+        let password = "";
+        for (let i = 0; i < passwordLength; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        setCopyToClipboardbtn(true);
+        return password;
+      };
+
+      const copyToClipboard = () => {
+        if (newPassword) {
+          const textArea = document.createElement("textarea");
+          textArea.value = newPassword; // Set the text to copy
+          textArea.style.position = "fixed"; // Avoid scrolling to the bottom of the page
+          textArea.style.left = "-9999px"; // Move it off-screen
+          document.body.appendChild(textArea);
+      
+          textArea.focus();
+          textArea.select();
+      
+          try {
+            const successful = document.execCommand("copy"); // Copy the text to clipboard
+            if (successful) {
+              setCopySuccess(true);
+              setTimeout(() => setCopySuccess(false), 3000);
+            } else {
+              console.error("Failed to copy text using execCommand.");
+            }
+          } catch (err) {
+            console.error("Error copying text: ", err);
+          } finally {
+            document.body.removeChild(textArea); // Remove the temporary textarea
+          }
+        } else {
+          console.error("No text to copy.");
+        }
+      };
+    
 
   const [userDetail, SetUserDetail] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +185,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     "email": email,
                     "notes": notes,
                     "company": company,
-                    "password": password
+                    "password": newPassword
                 }
                 const data = await AdminUserRoleService.store(userData).json();
                 if (data.status === true) {
@@ -230,8 +279,48 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label">Password <span className="text-danger">*</span></label>
-                                    <input type="password" name='password' required className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => setPassword(e.target.value)} />
-                                </div>
+          <div className="input-group">
+                            <input
+                              type={showNewPassword ? "text" : "password"}
+                              name="password"
+                              value={newPassword}
+                              className="form-control"
+                              id="exampleFormControlInput7"
+                              placeholder=""
+                              onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={() => setNewPassword(generatePassword())}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              <FiRefreshCcw />
+                            </button>
+                            {copyToClipboardbtn && <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={copyToClipboard}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              <FiCopy />
+                            </button>}
+                            <button
+                              className="btn btn-outline-light"
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              style={{borderColor: "#cccccc"}}
+                            >
+                              {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                            </button>
+                          </div>
+                          {copySuccess && (
+                            <div style={{ color: 'green', marginTop: '5px' }}>
+                              Password copied to clipboard!
+                            </div>
+                          )}                
+                          
+                                          </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label">Notes</label>
                                     <input type="text" name='notes' className="form-control" id="exampleFormControlInput6" placeholder="" onChange={(e) => setNotes(e.target.value)} />

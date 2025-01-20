@@ -269,7 +269,7 @@ console.log(userList)
   };
 
   const handleCallback = () => {
-    getuserList();
+    getuserList(currentPage, sortConfig, searchQuery);
   };
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);

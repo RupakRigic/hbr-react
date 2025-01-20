@@ -77,13 +77,12 @@ export const LandSales = [
     },
 ];
 
-const userRole = JSON.parse(localStorage.getItem("user")).role;
 export const DataUploaderMenuList = [
-    // {
-    //     title: 'Subscription',
-    //     iconStyle: SVGICON.SubscribeData,
-    //     to: '/subscriptionlist',
-    // },
+    {
+        title: 'Subscription',
+        iconStyle: SVGICON.SubscribeData,
+        to: '/subscriptionlist',
+    },
     {
         title: 'Data Reporting',
         iconStyle: SVGICON.GridDots,

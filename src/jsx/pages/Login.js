@@ -44,6 +44,7 @@ function Login(props) {
     } else {
       try {
         const data = await AdminUserService.login(email, password, rememberMe).json();
+        console.log(data,'login data');
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
         localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));
