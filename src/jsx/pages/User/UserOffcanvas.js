@@ -179,7 +179,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 }
             } else {
                 var userData = {
-                    "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                    "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
                     "name": firstName,
                     "last_name": lastName,
                     "email": email,
@@ -216,7 +216,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
         try {
             var userData = {
                 "builder_id": BuilderCode,
-                "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
                 "name": firstName,
                 "last_name": lastName,
                 "email": email,
