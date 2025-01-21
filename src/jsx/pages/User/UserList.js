@@ -244,7 +244,7 @@ console.log(userList)
     try {
       let responseData = await AdminUserRoleService.destroy(e).json();
       if (responseData.status === true) {
-        getuserList();
+        getuserList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -258,7 +258,7 @@ console.log(userList)
     try {
       let responseData = await AdminUserRoleService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getuserList();
+        getuserList(currentPage, sortConfig, searchQuery);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -269,7 +269,7 @@ console.log(userList)
   };
 
   const handleCallback = () => {
-    getuserList();
+    getuserList(currentPage, sortConfig, searchQuery);
   };
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);
