@@ -114,7 +114,7 @@ const UserSideBar = () => {
         ].sort((a, b) => desiredOrder.indexOf(a.title) - desiredOrder.indexOf(b.title));
         setUserMenuList(finalMenuList);
 
-        }else{
+        } else{
           setUserMenuList(sortedMenuList);
 
         }
