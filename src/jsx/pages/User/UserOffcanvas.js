@@ -222,7 +222,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 "email": email,
                 "notes": notes,
                 "company": company,
-                "password": password
+                "password": newPassword
             }
             const data = await AdminUserRoleService.store(userData).json();
             if (data.status === true) {
