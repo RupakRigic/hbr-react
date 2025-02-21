@@ -140,7 +140,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   setCompany("");
                   setStandardUser([]);
                   props.parentCallback();
-                  props.setSelectedUsers([]);
                 }
               });
             }
@@ -184,7 +183,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             setNotes("");
             setCompany("");
             props.parentCallback();
-            props.setSelectedUsers([]);
           }
         });
       }
