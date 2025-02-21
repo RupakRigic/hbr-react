@@ -28,18 +28,9 @@ const BuilderTable = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
   const [excelLoading, setExcelLoading] = useState(true);
-
-  const handleSortCheckboxChange = (e, key) => {
-    if (e.target.checked) {
-      setSelectedCheckboxes(prev => [...prev, key]);
-    } else {
-      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-    }
-  };
-
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkBuilder = useRef();
-console.log(selectedLandSales);
+
   const handleEditCheckboxChange = (e, userId) => {
     if (e.target.checked) {
       setSelectedLandSales((prevSelectedUsers) => [...prevSelectedUsers, userId]);
@@ -47,13 +38,6 @@ console.log(selectedLandSales);
       setSelectedLandSales((prevSelectedUsers) => prevSelectedUsers.filter((id) => id !== userId));
     }
   };
-  const handleRemoveSelected = () => {
-    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-    setSortConfig(newSortConfig);
-    setSelectedCheckboxes([]);
-  };
-  const [showSort, setShowSort] = useState(false);
-  const handleSortClose = () => setShowSort(false);
 
   const [Error, setError] = useState("");
   var imageUrl = process.env.REACT_APP_Builder_IMAGE_URL;
@@ -88,7 +72,6 @@ console.log(selectedLandSales);
   const handleClose = () => setShow(false);
 
   const [BuilderList, setBuilderList] = useState([]);
-  console.log("BuilderList", BuilderList);
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [BuilderListCount, setBuilderListCount] = useState("");
@@ -1007,9 +990,6 @@ console.log(selectedLandSales);
     setShow(true);
   };
 
-  const HandleSortDetailClick = (e) => {
-    setShowSort(true);
-  }
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData('index', index);
   };
@@ -2083,7 +2063,7 @@ console.log(selectedLandSales);
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                              Edit
                             </div>
                           </Link>
                           <button
@@ -2202,63 +2182,47 @@ console.log(selectedLandSales);
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
-                              // onClick={(e) => (column.id == "action" || column.id == "logo") ? "" : e.target.type !== "select-one" ? requestSort(
-                              //   column.id == "active Communities" ? "active_communities" :
-                              //     column.id == "closing This Year" ? "closing_this_year" :
-                              //     column.id == "permits This Year" ? "permits_this_year" :
-                              //     column.id == "net Sales this year" ? "net_sales_this_year" :
-                              //     column.id == "current Avg Base Price" ? "current_avg_base_Price" :
-                              //     column.id == "median Closing Price This Year" ? "median_closing_price_this_year" :
-                              //     column.id == "median Closing Price Last Year" ? "median_closing_price_last_year" :
-                              //     column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                              //     column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                              //     column.id == "total Closings" ? "total_closings" :
-                              //     column.id == "total Permits" ? "total_permits" :
-                              //     column.id == "total Net Sales" ? "total_net_sales" :
-                              //     column.id == "date Of First Closing" ? "date_of_first_closing" :
-                              //     column.id == "date Of Latest Closing" ? "date_of_latest_closing" : toCamelCase(column.id)) : ""}
-                              >
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
                                   {(column.id == "action" && (SyestemUserRole != "Data Uploader" || SyestemUserRole != "User")) ? "Action" : column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "__pkBuilderID" ? "builder_code" :
-                                        column.id == "office Address 1" ? "officeaddress1" :
-                                          column.id == "office Address State" ? "officeaddress2" :
-                                            column.id == "company Type" ? "company_type" :
-                                              column.id == "active" ? "is_active" :
-                                                column.id == "stock Market" ? "stock_market" :
-                                                  column.id == "current Division President" ? "current_division_president" :
-                                                    column.id == "stock Symbol" ? "stock_symbol" :
-                                                      column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                                        column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
-                                                          column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                                            column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                                              column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                                                column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                                                  column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
-                                                                    column.id == "email Address" ? "email_address" : toCamelCase(column.id))
+                                      column.id == "office Address 1" ? "officeaddress1" :
+                                      column.id == "office Address State" ? "officeaddress2" :
+                                      column.id == "company Type" ? "company_type" :
+                                      column.id == "active" ? "is_active" :
+                                      column.id == "stock Market" ? "stock_market" :
+                                      column.id == "current Division President" ? "current_division_president" :
+                                      column.id == "stock Symbol" ? "stock_symbol" :
+                                      column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                      column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                      column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                      column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                      column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                      column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                      column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "__pkBuilderID" ? "builder_code" :
-                                              column.id == "office Address 1" ? "officeaddress1" :
-                                                column.id == "office Address State" ? "officeaddress2" :
-                                                  column.id == "company Type" ? "company_type" :
-                                                    column.id == "active" ? "is_active" :
-                                                      column.id == "stock Market" ? "stock_market" :
-                                                        column.id == "current Division President" ? "current_division_president" :
-                                                          column.id == "stock Symbol" ? "stock_symbol" :
-                                                            column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                                              column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
-                                                                column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                                                  column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                                                    column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                                                        column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
-                                                                          column.id == "email Address" ? "email_address" : toCamelCase(column.id))
+                                            column.id == "office Address 1" ? "officeaddress1" :
+                                            column.id == "office Address State" ? "officeaddress2" :
+                                            column.id == "company Type" ? "company_type" :
+                                            column.id == "active" ? "is_active" :
+                                            column.id == "stock Market" ? "stock_market" :
+                                            column.id == "current Division President" ? "current_division_president" :
+                                            column.id == "stock Symbol" ? "stock_symbol" :
+                                            column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
+                                            column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                            column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
+                                            column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
+                                            column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
+                                            column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
+                                            column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                            column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )
@@ -2276,10 +2240,10 @@ console.log(selectedLandSales);
                                       <br />
                                       <select className="custom-select" value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption :
                                         column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales this year" ? netSalesThisYearOption :
-                                          column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
-                                            column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
-                                              column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
-                                                column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""}
+                                        column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
+                                        column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
+                                        column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
+                                        column.id == "total Permits" ? totalPermitsOption : column.id == "total Net Sales" ? totalNetSalesOption : ""}
                                         style={{
                                           cursor: "pointer",
                                           marginLeft: '0px',
@@ -2291,16 +2255,16 @@ console.log(selectedLandSales);
                                         }}
                                         onChange={(e) => column.id == "active Communities" ? handleSelectChange(e, "active_communities") :
                                           column.id == "closing This Year" ? handleSelectChange(e, "closing_this_year") :
-                                            column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
-                                              column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
-                                                column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
-                                                  column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
-                                                    column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
-                                                      column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                                            column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                                              column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
+                                          column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
+                                          column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
+                                          column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
+                                          column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
+                                          column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
+                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
+                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
+                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
+                                          column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
+                                          column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
@@ -3141,55 +3105,28 @@ console.log(selectedLandSales);
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name === "builder_code"
-                              ? "__pkBuilderID"
-                              : element.field_name === "name"
-                                ? "Builder Name"
-                                : element.field_name === "builder_code"
-                                  ? "Builder Code"
-                                  : element.field_name === "logo"
-                                    ? "Logo"
-                                    : element.field_name === "phone"
-                                      ? "LV Office Phone"
-                                      : element.field_name === "fax"
-                                        ? "Fax"
-                                        : element.field_name === "officeaddress1"
-                                          ? "LV Office Address"
-                                          : element.field_name === "city"
-                                            ? "LV Office City"
-                                            : element.field_name === "zipcode"
-                                              ? "LV Office Zip"
-                                              : element.field_name === "company_type"
-                                                ? "Company Type"
-                                                : element.field_name === "is_active"
-                                                  ? "Status"
-                                                  : element.field_name === "stock_market"
-                                                    ? "Stock Market"
-                                                    : element.field_name ===
-                                                      "current_division_president"
-                                                      ? "Current Division President"
-                                                      : element.field_name === "stock_symbol"
-                                                        ? "Stock Symbol "
-                                                        : element.field_name ===
-                                                          "current_land_aquisitions"
-                                                          ? "Current Land Acquisitions"
-                                                          : element.field_name ===
-                                                            "coporate_officeaddress_1"
-                                                            ? "Corporate Office Address"
-                                                            : element.field_name ===
-                                                              "coporate_officeaddress_2"
-                                                              ? "Corporate Office State"
-                                                              : element.field_name ===
-                                                                "coporate_officeaddress_city"
-                                                                ? "Corporate Office City"
-                                                                : element.field_name ===
-                                                                  "coporate_officeaddress_zipcode"
-                                                                  ? "Corporate Office Zip"
-                                                                  : element.field_name === "officeaddress2"
-                                                                    ? "Address 2"
-                                                                    : element.field_name === "created_at"
-                                                                      ? "Date Added"
-                                                                      : element.field_name}
+                            {element.field_name === "builder_code" ? "__pkBuilderID"
+                              : element.field_name === "name" ? "Builder Name"
+                              : element.field_name === "builder_code" ? "Builder Code"
+                              : element.field_name === "logo" ? "Logo"
+                              : element.field_name === "phone" ? "LV Office Phone"
+                              : element.field_name === "fax" ? "Fax"
+                              : element.field_name === "officeaddress1" ? "LV Office Address"
+                              : element.field_name === "city" ? "LV Office City"
+                              : element.field_name === "zipcode" ? "LV Office Zip"
+                              : element.field_name === "company_type" ? "Company Type"
+                              : element.field_name === "is_active" ? "Status"
+                              : element.field_name === "stock_market" ? "Stock Market"
+                              : element.field_name === "current_division_president" ? "Current Division President"
+                              : element.field_name === "stock_symbol" ? "Stock Symbol "
+                              : element.field_name === "current_land_aquisitions" ? "Current Land Acquisitions"
+                              : element.field_name === "coporate_officeaddress_1" ? "Corporate Office Address"
+                              : element.field_name === "coporate_officeaddress_2" ? "Corporate Office State"
+                              : element.field_name === "coporate_officeaddress_city" ? "Corporate Office City"
+                              : element.field_name === "coporate_officeaddress_zipcode" ? "Corporate Office Zip"
+                              : element.field_name === "officeaddress2" ? "Address 2"
+                              : element.field_name === "created_at" ? "Date Added" : element.field_name
+                            }
                           </label>
                         </div>
                       </div>
