@@ -1608,7 +1608,7 @@ const ClosingList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                               Edit
                             </div>
                           </Link>
                           <button
