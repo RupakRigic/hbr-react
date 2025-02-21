@@ -49,7 +49,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     }));
 
     const handleSubmit = async (event) => {
-        debugger
         event.preventDefault();
         if (selectedLandSales.length === 0) {
             setError('No selected records'); return false
@@ -62,7 +61,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         }).then(async (willDelete) => {
             if (willDelete) {
                 try {
-                    debugger
                     var userData = {
                         "builder_code": event.target.code.value,
                         "name": event.target.name.value,
@@ -96,7 +94,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                 setAddProduct(false);
                                 localStorage.setItem("UpdateBuilderName", JSON.stringify(event.target.name.value));
                                 localStorage.setItem("UpdateID", JSON.stringify(selectedLandSales));
-                                window.location.reload();
+                                props.parentCallback();
                             }
                         })
 

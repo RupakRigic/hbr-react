@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -901,7 +901,6 @@ const SubdivisionList = () => {
 
   const handleCallback = () => {
     getbuilderlist(currentPage, sortConfig, searchQuery);
-    setSelectedLandSales(selectedLandSales);
   };
 
   const handleRowClick = async (id) => {
@@ -4944,7 +4943,7 @@ const SubdivisionList = () => {
     }
   };
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Subdivision"
         pageTitle="Subdivision"
@@ -7110,7 +7109,7 @@ const SubdivisionList = () => {
           </Modal.Footer>
         </>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

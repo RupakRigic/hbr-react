@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useEffect, useImperativeHandle, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -154,7 +154,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             swal("Subdivision Updated Succesfully").then((willDelete) => {
               if (willDelete) {
                 setAddProduct(false);
-                props.setSelectedLandSales([]);
                 props.parentCallback();
               }
             })
@@ -257,7 +256,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   ];
 
   return (
-    <>
+    <Fragment>
       <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
@@ -630,7 +629,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             </div>
           </div>)}
       </Offcanvas>
-    </>
+    </Fragment>
   );
 });
 

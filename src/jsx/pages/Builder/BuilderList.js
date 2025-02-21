@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
@@ -1925,7 +1925,7 @@ const BuilderTable = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="Builders" pageTitle="Builders" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -3387,7 +3387,7 @@ const BuilderTable = () => {
           </Modal.Footer>
         </>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

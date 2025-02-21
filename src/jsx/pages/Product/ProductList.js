@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -453,8 +453,8 @@ const ProductList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setProductList(responseData.data);
-      setNpage(Math.ceil(responseData.meta.total / recordsPage));
-      setProductsListCount(responseData.meta.total);
+      setNpage(Math.ceil(responseData.total / recordsPage));
+      setProductsListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
@@ -462,6 +462,8 @@ const ProductList = () => {
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
+      setIsLoading(false);
+      setExcelLoading(false);
       console.log(error);
       if (error.name === "HTTPError") {
         setIsLoading(false);
@@ -475,8 +477,6 @@ const ProductList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, productList, productListCount) => {
     setExcelLoading(true);
-    // const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(productListCount / recordsPage);
     let allData = productList;
     for (let page = 2; page <= totalPages; page++) {
@@ -575,7 +575,6 @@ const ProductList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     getproductList(currentPage, sortConfig, searchQuery);
   };
 
@@ -1697,7 +1696,7 @@ const ProductList = () => {
     };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Product"
         pageTitle="Product"
@@ -1977,43 +1976,43 @@ const ProductList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "plan Status" ? "status" :
-                                        column.id == "product Name" ? "name" :
-                                          column.id == "square Footage" ? "sqft" :
-                                            column.id == "bed Rooms" ? "bedroom" :
-                                              column.id == "bath Rooms" ? "bathroom" :
-                                                column.id == "current Base Price" ? "recentprice" :
-                                                  column.id == "product Website" ? "website" :
-                                                    column.id == "product Type" ? "product_type" :
-                                                      column.id == "master Plan" ? "masterplan_id" :
-                                                        column.id == "zip Code" ? "zipcode" :
-                                                          column.id == "lot Width" ? "lotwidth" :
-                                                            column.id == "lot Size" ? "lotsize" :
-                                                              column.id == "age Restricted" ? "age" :
-                                                                column.id == "all Single Story" ? "single" :
-                                                                  column.id == "date Added" ? "created_at" :
-                                                                    column.id == "__pkProductID" ? "product_code" :
-                                                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                      column.id == "product Name" ? "name" :
+                                      column.id == "square Footage" ? "sqft" :
+                                      column.id == "bed Rooms" ? "bedroom" :
+                                      column.id == "bath Rooms" ? "bathroom" :
+                                      column.id == "current Base Price" ? "recentprice" :
+                                      column.id == "product Website" ? "website" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "__pkProductID" ? "product_code" :
+                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "plan Status" ? "status" :
-                                              column.id == "product Name" ? "name" :
-                                                column.id == "square Footage" ? "sqft" :
-                                                  column.id == "bed Rooms" ? "bedroom" :
-                                                    column.id == "bath Rooms" ? "bathroom" :
-                                                      column.id == "current Base Price" ? "recentprice" :
-                                                        column.id == "product Website" ? "website" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "master Plan" ? "masterplan_id" :
-                                                              column.id == "zip Code" ? "zipcode" :
-                                                                column.id == "lot Width" ? "lotwidth" :
-                                                                  column.id == "lot Size" ? "lotsize" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "created_at" :
-                                                                          column.id == "__pkProductID" ? "product_code" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                            column.id == "product Name" ? "name" :
+                                            column.id == "square Footage" ? "sqft" :
+                                            column.id == "bed Rooms" ? "bedroom" :
+                                            column.id == "bath Rooms" ? "bathroom" :
+                                            column.id == "current Base Price" ? "recentprice" :
+                                            column.id == "product Website" ? "website" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "created_at" :
+                                            column.id == "__pkProductID" ? "product_code" :
+                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -2030,16 +2029,16 @@ const ProductList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "square Footage" ? squareFootageOption :
-                                            column.id == "stories" ? storiesOption :
-                                              column.id == "bed Rooms" ? bedRoomsOption :
-                                                column.id == "bath Rooms" ? bathRoomsOption :
-                                                  column.id == "garage" ? garageOption :
-                                                    column.id == "current Base Price" ? currentBasePriceOption :
-                                                      column.id == "current Price Per SQFT" ? currentPricePerSQFTOption :
-                                                        column.id == "lot Width" ? lotWidthOption :
-                                                          column.id == "lot Size" ? lotSizeOption :
-                                                            column.id == "price Change Since Open" ? priceChangeSinceOpenOption :
-                                                              column.id == "price Change Last 12 Months" ? priceChangeLast12MonthsOption : ""
+                                          column.id == "stories" ? storiesOption :
+                                          column.id == "bed Rooms" ? bedRoomsOption :
+                                          column.id == "bath Rooms" ? bathRoomsOption :
+                                          column.id == "garage" ? garageOption :
+                                          column.id == "current Base Price" ? currentBasePriceOption :
+                                          column.id == "current Price Per SQFT" ? currentPricePerSQFTOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption :
+                                          column.id == "price Change Since Open" ? priceChangeSinceOpenOption :
+                                          column.id == "price Change Last 12 Months" ? priceChangeLast12MonthsOption : ""
                                         }
 
                                         style={{
@@ -2054,15 +2053,15 @@ const ProductList = () => {
 
                                         onChange={(e) => column.id == "square Footage" ? handleSelectChange(e, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e, "stories") :
-                                            column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
-                                              column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
-                                                column.id == "garage" ? handleSelectChange(e, "garage") :
-                                                  column.id == "current Base Price" ? handleSelectChange(e, "latest_base_price") :
-                                                    column.id == "current Price Per SQFT" ? handleSelectChange(e, "current_price_per_sqft") :
-                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
-                                                            column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
+                                          column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
+                                          column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e, "garage") :
+                                          column.id == "current Base Price" ? handleSelectChange(e, "latest_base_price") :
+                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "current_price_per_sqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
+                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
+                                          column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -3043,7 +3042,7 @@ const ProductList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 
