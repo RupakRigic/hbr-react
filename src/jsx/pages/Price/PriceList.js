@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminPriceService from "../../../API/Services/AdminService/AdminPriceService";
 import PriceComponent from "../../components/Price/PriceComponent";
 import { Link, useNavigate } from "react-router-dom";
@@ -569,18 +569,19 @@ const PriceList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setPriceList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -1611,7 +1612,7 @@ const PriceList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Base Price"
         pageTitle="Base Price"
@@ -2867,7 +2868,7 @@ const PriceList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 
