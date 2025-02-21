@@ -452,13 +452,13 @@ const ProductList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setProductsListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {

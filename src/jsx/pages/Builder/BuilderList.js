@@ -537,20 +537,22 @@ const BuilderTable = () => {
         sortConfigString
       );
       const responseData = await response.json();
+      setIsLoading(false);
+      setExcelLoading(false);
       setBuilderList(responseData.data)
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderListCount(responseData.total);
-      setIsLoading(false);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
+        
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }

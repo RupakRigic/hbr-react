@@ -774,18 +774,19 @@ const SubdivisionList = () => {
       const responseData = await response.json();
       setLoading(false);
       setIsLoading(false);
+      setExcelLoading(false);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      setExcelLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -857,8 +858,6 @@ const SubdivisionList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
     setExcelLoading(true);
-    // const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(BuilderListCount / recordsPage);
     let allData = BuilderList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1167,21 +1166,6 @@ const SubdivisionList = () => {
   const handleLandRedirect = () => {
     navigate("/landsalelist");
   };
-
-  // const requestSort = (key) => {
-  //   let direction = "asc";
-
-  //   const newSortConfig = [...sortConfig];
-  //   const keyIndex = sortConfig.findIndex((item) => item.key === key);
-  //   if (keyIndex !== -1) {
-  //     direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-  //     newSortConfig[keyIndex].direction = direction;
-  //   } else {
-  //     newSortConfig.push({ key, direction });
-  //   }
-  //   setSortConfig(newSortConfig);
-  //   getbuilderlist(currentPage, newSortConfig, searchQuery);
-  // };
 
   const HandleRole = (e) => {
     setRole(e.target.value);

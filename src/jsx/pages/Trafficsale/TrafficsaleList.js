@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -656,6 +656,7 @@ const TrafficsaleList = () => {
 
   const gettrafficsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery));
     try {
@@ -670,18 +671,19 @@ const TrafficsaleList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setTrafficListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllTrafficistExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -692,8 +694,6 @@ const TrafficsaleList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, trafficsaleList, trafficListCount) => {
     setExcelLoading(true);
-    // const response = await AdminTrafficsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(trafficListCount / recordsPage);
     let allData = trafficsaleList;
     for (let page = 2; page <= totalPages; page++) {
@@ -735,7 +735,6 @@ const TrafficsaleList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     gettrafficsaleList(currentPage, sortConfig, searchQuery);
   };
 
@@ -1607,7 +1606,7 @@ const TrafficsaleList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Weekly Traffic & Sales"
         pageTitle="Weekly Traffic & Sales"
@@ -2901,7 +2900,7 @@ const TrafficsaleList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

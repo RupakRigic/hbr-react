@@ -746,6 +746,7 @@ const PermitList = () => {
 
   const getPermitList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery));
     try {
@@ -760,6 +761,7 @@ const PermitList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setPageChange(false);
       setPermitList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -769,7 +771,6 @@ const PermitList = () => {
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
         }
       } else {
-        setExcelLoading(false);
         if(!pageChange){
           setAllPermitListExport(responseData.data);
         }
@@ -777,6 +778,7 @@ const PermitList = () => {
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
