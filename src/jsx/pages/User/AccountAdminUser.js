@@ -227,8 +227,8 @@ const UserList = () => {
       const response = await AdminUserRoleService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
       setUserList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setUserCount(responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setUserCount(responseData.meta.total);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

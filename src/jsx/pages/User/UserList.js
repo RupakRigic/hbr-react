@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import UserOffcanvas from "./UserOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Offcanvas } from "react-bootstrap";
-import { Form } from "react-bootstrap";
-import { debounce } from "lodash";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -15,47 +12,24 @@ import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
 import BulkUserUpdateOffcanvas from "./BulkUserUpdateOffcanvas";
 import Modal from "react-bootstrap/Modal";
-import Select from "react-select";
 import { MultiSelect } from "react-multi-select-component";
-import Swal from "sweetalert2";
 
 const UserList = () => {
+  const navigate = useNavigate();
+  const product = useRef();
+  const bulkproduct = useRef();
 
-  const HandleSortDetailClick = (e) => {
-    setShowSort(true);
-  }
-  const handleSortCheckboxChange = (e, key) => {
-    if (e.target.checked) {
-      setSelectedCheckboxes(prev => [...prev, key]);
-    } else {
-      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-    }
-  };
-  const SyestemUserRole = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).role
-    : "";
-
-  const handleRemoveSelected = () => {
-    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-    setSortConfig(newSortConfig);
-    setSelectedCheckboxes([]);
-  };
   const [showSort, setShowSort] = useState(false);
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
-  const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
-  console.log("userList", userList);
   const [userListCount, setUserCount] = useState('');
-  const [TotaluserListCount, setTotalUserCount] = useState('');
-
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);
   const number = [...Array(npage + 1).keys()].slice(1);
-
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [UserDetails, setUserDetails] = useState({
     builder: "",
@@ -71,7 +45,6 @@ const UserList = () => {
       roles: "",
     });
   };
-
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -79,54 +52,25 @@ const UserList = () => {
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const fieldList = AccessField({ tableName: "users" });
-
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  console.log("userselect", selectedUsers);
-
   const [selectedRole, setSelectedRole] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
-
-
-  useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
-  }, [fieldList]);
-
-  const checkFieldExist = (fieldName) => {
-    return fieldList.includes(fieldName.trim());
-  };
-
-  const HandleRole = (e) => {
-    setRole(e.target.value);
-    setAccessRole(e.target.value);
-  };
-  const handleAccessForm = async (e) => {
-    e.preventDefault();
-    var userData = {
-      form: accessForm,
-      role: role,
-      table: "users",
-    };
-    try {
-      const data = await AdminUserRoleService.manageAccessFields(
-        userData
-      ).json();
-      if (data.status === true) {
-        setManageAccessOffcanvas(false);
-        window.location.reload();
-      }
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
-      }
-    }
-  };
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState({
+    role: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState([]);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
+  const [sortOrders, setSortOrders] = useState({});
 
   useEffect((currentPage) => {
     if (localStorage.getItem("usertoken")) {
@@ -147,6 +91,66 @@ const UserList = () => {
     }
   }, [accessList, accessRole]);
 
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      getAccesslist();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
+    setSelectedCheckboxes(sortConfig.map(col => col.key));
+  }, [sortConfig]);
+
+  const HandleSortDetailClick = (e) => {
+    setShowSort(true);
+  };
+
+  const handleSortCheckboxChange = (e, key) => {
+    if (e.target.checked) {
+      setSelectedCheckboxes(prev => [...prev, key]);
+    } else {
+      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
+    }
+  };
+
+  const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
+
+  const handleRemoveSelected = () => {
+    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
+    setSortConfig(newSortConfig);
+    setSelectedCheckboxes([]);
+  };
+
+  const HandleRole = (e) => {
+    setRole(e.target.value);
+    setAccessRole(e.target.value);
+  };
+
+  const handleAccessForm = async (e) => {
+    e.preventDefault();
+    var userData = {
+      form: accessForm,
+      role: role,
+      table: "users",
+    };
+    try {
+      const data = await AdminUserRoleService.manageAccessFields(
+        userData
+      ).json();
+      if (data.status === true) {
+        setManageAccessOffcanvas(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+      }
+    }
+  };
+
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
     setCheckedItems((prevCheckedItems) => ({
@@ -164,71 +168,51 @@ const UserList = () => {
       const response = await AdminUserRoleService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
     }
   };
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      getAccesslist();
-    } else {
-      navigate("/");
-    }
-  }, []);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterQuery, setFilterQuery] = useState({
-    role: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(false);
-  const [sortConfig, setSortConfig] = useState([]);
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-  }, [sortConfig]);
 
 
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
-  function changeCPage(id) {
+  };
+
+  const changeCPage = (id) => {
     setCurrentPage(id);
-  }
-  function nextPage() {
+  };
+
+  const nextPage = () => {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
-  const product = useRef();
-  const bulkproduct = useRef();
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
-  const getuserList = async(currentPage, sortConfig, searchQuery) => {
+
+  const getuserList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     try {
       let sortConfigString = "";
-      console.log(sortConfigString);
-      console.log(sortConfig);
 
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      } 
+      }
+
       const response = await AdminUserRoleService.index(currentPage, sortConfigString, searchQuery);
+
       const responseData = await response.json();
       setUserList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setUserCount(responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setUserCount(responseData.meta.total);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -237,9 +221,8 @@ const UserList = () => {
         setError(errorJson.message);
       }
     }
-    setIsLoading(false);
   };
-console.log(userList)
+
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminUserRoleService.destroy(e).json();
@@ -278,7 +261,6 @@ console.log(userList)
       let responseData = await AdminUserRoleService.show(id).json();
       setUserDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
@@ -287,36 +269,10 @@ console.log(userList)
       }
     }
   };
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 1000)
-  // ).current;
 
-  // useEffect(() => {
-  //   getuserList();
-  // }, [searchQuery]);
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   if (query) {
-  //     debouncedHandleSearch(`&q=${query}`);
-  //   } else {
-  //     setSearchQuery("");
-  //   }
-  // };
   useEffect(() => {
     setSearchQuery(filterString());
   }, [filterQuery]);
-
-  const HandleFilter = (e) => {
-    const { name, value } = e.target;
-    setFilterQuery((prevFilterQuery) => ({
-      ...prevFilterQuery,
-      [name]: value,
-    }));
-  };
 
   const filterString = () => {
     const queryString = Object.keys(filterQuery)
@@ -382,80 +338,74 @@ console.log(userList)
   ];
 
   const handleSelectRoleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
     setSelectedRole(selectedItems);
   }
-    useEffect(() => {
-      const fieldOptions = fieldList
-        .filter((field) => field !== 'Action' && field !== 'Price Change Since Open' && field !== 'Price Change Last 12 Months' && field !== 'Current Price Per SQFT')
-        .map((field) => {
-          let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
-  
-          if (value === 'planStatus') {
-            value = 'status';
-          }
-          if (value === 'productName') {
-            value = 'name';
-          }
-          if (value === 'squareFootage') {
-            value = 'sqft';
-          }
-          if (value === 'bedRooms') {
-            value = 'bedroom';
-          }
-          if (value === 'bathRooms') {
-            value = 'bathroom';
-          }
-          if (value === 'currentBasePrice') {
-            value = 'recentprice';
-          }
-          if (value === 'productWebsite') {
-            value = 'website';
-          }
-          if (value === 'productType') {
-            value = 'product_type';
-          }
-          if (value === 'masterPlan') {
-            value = 'masterplan_id';
-          }
-          if (value === 'zipCode') {
-            value = 'zipcode';
-          }
-          if (value === 'lotWidth') {
-            value = 'lotwidth';
-          }
-          if (value === 'lotSize') {
-            value = 'lotsize';
-          }
-          if (value === 'ageRestricted') {
-            value = 'age';
-          }
-          if (value === 'allSingleStory') {
-            value = 'single';
-          }
-          if (value === 'dateAdded') {
-            value = 'created_at';
-          }
-          if (value === '__pkProductID') {
-            value = 'product_code';
-          }
-          if (value === '_fkSubID') {
-            value = 'subdivision_code';
-          }
-          return {
-            value: value,
-            label: field,
-          };
-        });
-      setFieldOptions(fieldOptions);
-    }, [fieldList]);
-      const [fieldOptions, setFieldOptions] = useState([]);
-    const handleSortingPopupClose = () => setShowSortingPopup(false);
-    const [showSortingPopup, setShowSortingPopup] = useState(false);
-    const [selectedFields, setSelectedFields] = useState([]);
-    const [selectionOrder, setSelectionOrder] = useState({});
-  
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action' && field !== 'Price Change Since Open' && field !== 'Price Change Last 12 Months' && field !== 'Current Price Per SQFT')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === 'planStatus') {
+          value = 'status';
+        }
+        if (value === 'productName') {
+          value = 'name';
+        }
+        if (value === 'squareFootage') {
+          value = 'sqft';
+        }
+        if (value === 'bedRooms') {
+          value = 'bedroom';
+        }
+        if (value === 'bathRooms') {
+          value = 'bathroom';
+        }
+        if (value === 'currentBasePrice') {
+          value = 'recentprice';
+        }
+        if (value === 'productWebsite') {
+          value = 'website';
+        }
+        if (value === 'productType') {
+          value = 'product_type';
+        }
+        if (value === 'masterPlan') {
+          value = 'masterplan_id';
+        }
+        if (value === 'zipCode') {
+          value = 'zipcode';
+        }
+        if (value === 'lotWidth') {
+          value = 'lotwidth';
+        }
+        if (value === 'lotSize') {
+          value = 'lotsize';
+        }
+        if (value === 'ageRestricted') {
+          value = 'age';
+        }
+        if (value === 'allSingleStory') {
+          value = 'single';
+        }
+        if (value === 'dateAdded') {
+          value = 'created_at';
+        }
+        if (value === '__pkProductID') {
+          value = 'product_code';
+        }
+        if (value === '_fkSubID') {
+          value = 'subdivision_code';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
+
+
   const HandleSortingPopupDetailClick = (e) => {
     setShowSortingPopup(true);
   };
@@ -493,7 +443,6 @@ console.log(userList)
       });
     }
   };
-  const [sortOrders, setSortOrders] = useState({});
   const handleSortOrderChange = (fieldValue, order) => {
     setSortOrders({
       ...sortOrders,
@@ -507,14 +456,12 @@ console.log(userList)
       direction: sortOrders[field.value] || 'asc',
     }));
     setSortConfig(sortingConfig)
-    console.log(sortingConfig);
     getuserList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
-  console.log(sortConfig);
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -525,25 +472,7 @@ console.log(userList)
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">User List</h4>
-                      <div
-                        class="btn-group mx-5"
-                        role="group"
-                        aria-label="Basic example"
-                      >
-                        {/* <button class="btn btn-secondary cursor-none">
-                          {" "}
-                          <i class="fas fa-search"></i>{" "}
-                        </button> */}
-                        {/* <Form.Control
-                          type="text"
-                          style={{
-                            borderTopLeftRadius: "0",
-                            borderBottomLeftRadius: "0",
-                          }}
-                          onChange={HandleSearch}
-                          placeholder="Quick Search"
-                        /> */}
-                      </div>
+                      <div class="btn-group mx-5" role="group" aria-label="Basic example"></div>
                       <ColumnReOrderPopup
                         open={openDialog}
                         fieldList={fieldList}
@@ -601,19 +530,6 @@ console.log(userList)
                                     onChange={handleSelectRoleChange}
                                     placeholder={"Select Role"}
                                   />
-                                  {/* <select
-                                  className="default-select form-control"
-                                  value={filterQuery.role}
-                                  name="role"
-                                  onChange={HandleFilter}
-                                >
-                                  <option data-display="Select">Please select</option>
-                                  <option value="">All</option>
-                                  <option value="User">User</option>
-                                  <option value="Data Uploader">
-                                    Data Uploader
-                                  </option>
-                                </select> */}
                                 </div>
                               </div>
                               <div className="d-flex justify-content-end">
@@ -672,19 +588,6 @@ console.log(userList)
                                     onChange={handleSelectRoleChange}
                                     placeholder={"Select Role"}
                                   />
-                                  {/* <select
-                                className="default-select form-control"
-                                value={filterQuery.role}
-                                name="role"
-                                onChange={HandleFilter}
-                              >
-                                <option data-display="Select">Please select</option>
-                                <option value="">All</option>
-                                <option value="User">User</option>
-                                <option value="Data Uploader">
-                                  Data Uploader
-                                </option>
-                              </select> */}
                                 </div>
                               </div>
                               <div className="d-flex justify-content-end">
@@ -726,7 +629,7 @@ console.log(userList)
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                               Edit
+                              Edit
                             </div>
                           </Link>
                           <button
@@ -868,67 +771,6 @@ console.log(userList)
                                 </strong>
                               </th>
                             ))}
-                            {/* {checkFieldExist("Name") && (
-                              <th onClick={() => requestSort("name")}>
-                                <strong>
-                                  Name
-                                  {sortConfig.key !== "name" ? "↑↓" : ""}
-                                  {sortConfig.key === "name" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Email") && (
-                              <th onClick={() => requestSort("email")}>
-                                <strong>
-                                  Email
-                                  {sortConfig.key !== "email" ? "↑↓" : ""}
-                                  {sortConfig.key === "email" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Role") && (
-                              <th onClick={() => requestSort("role")}>
-                                <strong>
-                                  Role
-                                  {sortConfig.key !== "role" ? "↑↓" : ""}
-                                  {sortConfig.key === "role" && (
-                                    <span>
-                                      {sortConfig.direction === "asc"
-                                        ? "↑"
-                                        : "↓"}
-                                    </span>
-                                  )}
-                                </strong>
-                              </th>
-                            )}
-                            {checkFieldExist("Builder") && (
-                              <th onClick={() => requestSort("builderName")}>
-                                <strong>Builder</strong>
-                                {sortConfig.key !== "builderName" ? "↑↓" : ""}
-                                {sortConfig.key === "builderName" && (
-                                  <span>
-                                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                                  </span>
-                                )}
-                              </th>
-                            )}
-                            {checkFieldExist("Action  ") && (
-                              <th>
-                                Action
-                              </th>
-                            )} */}
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -1016,7 +858,7 @@ console.log(userList)
                                           >
                                             <i className="fa fa-trash"></i>
                                           </Link>
-                                          
+
                                         </div>
                                       </td>
                                     }
@@ -1254,12 +1096,6 @@ console.log(userList)
                           <input
                             className="form-check-input"
                             type="checkbox"
-                            // defaultChecked={(() => {
-                            //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
-                            //   return isChecked;
-                            // })()}
                             checked={checkedItems[element.field_name]}
                             onChange={handleCheckboxChange}
                             name={element.field_name}
@@ -1325,8 +1161,8 @@ console.log(userList)
         </Modal.Footer>
       </Modal>
 
-        {/* Sorting */}
-        <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
         <Modal.Header handleSortingPopupClose>
           <Modal.Title>Sorted Fields</Modal.Title>
           <button
@@ -1424,7 +1260,7 @@ console.log(userList)
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

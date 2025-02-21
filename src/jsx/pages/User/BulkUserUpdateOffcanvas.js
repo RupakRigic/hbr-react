@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
@@ -10,6 +10,7 @@ import { Button } from 'react-bootstrap';
 
 const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const { userSelectedUsers } = props;
+  
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
   const [RoleCode, setRoleCode] = useState([]);
@@ -94,14 +95,18 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             setMessage("Please enter valid company.");
             return;
           }
+
           const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
+
           if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9) || RoleCode.includes(13) || RoleCode.includes(12)) {
             var userData = {
               "name": firstName,
               "company": company,
               "last_name": lastName,
             }
+
             const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
+
             if (data.status === true) {
               setBuilderCode(data.builder_id);
               setMessage("Selected users are the Data Uploader for " + data.builder_name + ".");
@@ -120,7 +125,9 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
               "notes": notes,
               "company": company
             }
+
             const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
+
             if (data.status === true) {
               swal("User Update Succesfully").then((willDelete) => {
                 if (willDelete) {
@@ -195,7 +202,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   };
 
   return (
-    <>
+    <Fragment>
       <Offcanvas show={addUser} onHide={() => { setAddUser(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
@@ -220,6 +227,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     onChange={(e) => setFirstName(e.target.value)}
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput3" className="form-label">Last Name</label>
                   <input
@@ -231,6 +239,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput4" className="form-label">Email</label>
                   <input
@@ -242,6 +251,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput4" className="form-label">Notes</label>
                   <input
@@ -253,6 +263,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                     onChange={(e) => setNotes(e.target.value)}
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput5" className="form-label">Company</label>
                   <input
@@ -345,7 +356,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
           </Button>}
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 });
 
