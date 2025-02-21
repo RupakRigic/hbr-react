@@ -593,8 +593,6 @@ const PriceList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, priceList, productListCount) => {
     setExcelLoading(true);
-    // const response = await AdminPriceService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(productListCount / recordsPage);
     let allData = priceList;
     for (let page = 2; page <= totalPages; page++) {

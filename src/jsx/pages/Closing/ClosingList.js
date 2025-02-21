@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -638,18 +638,19 @@ const ClosingList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllClosingListExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -662,8 +663,6 @@ const ClosingList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, ClosingList, closingListCount) => {
     setExcelLoading(true);
-    // const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(closingListCount / recordsPage);
     let allData = ClosingList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1448,7 +1447,7 @@ const ClosingList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Closings"
         pageTitle="Closings"
@@ -1469,7 +1468,7 @@ const ClosingList = () => {
                         aria-label="Basic example"
                       >
                         {SyestemUserRole == "Admin" &&
-                          <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
+                          <button class="btn btn-secondary cursor-none btn-sm me-1" onClick={UpdateFromCcapn}>
                             {" "}
                             Update with CCAPNs
                           </button>}
@@ -2704,7 +2703,7 @@ const ClosingList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 
