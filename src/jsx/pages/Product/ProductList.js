@@ -454,8 +454,8 @@ const ProductList = () => {
       setIsLoading(false);
       setExcelLoading(false);
       setProductList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setProductsListCount(responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setProductsListCount(responseData.meta.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
@@ -1870,7 +1870,7 @@ const ProductList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>

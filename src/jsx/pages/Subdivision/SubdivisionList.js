@@ -5801,19 +5801,6 @@ const SubdivisionList = () => {
                                         >
                                           <i className="fa fa-trash"></i>
                                         </Link>
-
-                                        {/* <Link
-                                          className="btn btn-primary shadow btn-xs sharp"
-                                          style={{ marginLeft: "4px" }}
-                                          onClick={() => handleDownloadReport()}
-                                          key={element.id}
-                                        >
-                                          {loadingReportId === subdivisionID ? (
-                                            <div class="spinner-border spinner-border-sm" role="status" style={{ marginTop: "1px" }} />
-                                          ) : (
-                                            <i class="fa fa-file-text" aria-hidden="true"></i>
-                                          )}
-                                        </Link> */}
                                       </div>
                                     </td>
                                   }

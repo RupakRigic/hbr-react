@@ -1777,7 +1777,7 @@ const PriceList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1889,37 +1889,37 @@ const PriceList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "date" ? "date" :
-                                        column.id == "product Type" ? "product_type" :
-                                          column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
-                                              column.id == "squre Footage" ? "sqft" :
-                                                column.id == "bedrooms" ? "bedroom" :
-                                                  column.id == "base Price" ? "baseprice" :
-                                                    column.id == "price Per SQFT" ? "perSQFT" :
-                                                      column.id == "lot Width" ? "lotwidth" :
-                                                        column.id == "lot Size" ? "lotsize" :
-                                                          column.id == "age Restricted" ? "age" :
-                                                            column.id == "all Single Story" ? "single" :
-                                                              column.id == "__pkPriceID" ? "id" :
-                                                                column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "squre Footage" ? "sqft" :
+                                      column.id == "bedrooms" ? "bedroom" :
+                                      column.id == "base Price" ? "baseprice" :
+                                      column.id == "price Per SQFT" ? "perSQFT" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "__pkPriceID" ? "id" :
+                                      column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "date" ? "date" :
-                                              column.id == "product Type" ? "product_type" :
-                                                column.id == "master Plan" ? "masterplan_id" :
-                                                  column.id == "zip Code" ? "zipcode" :
-                                                    column.id == "squre Footage" ? "sqft" :
-                                                      column.id == "bedrooms" ? "bedroom" :
-                                                        column.id == "base Price" ? "baseprice" :
-                                                          column.id == "price Per SQFT" ? "perSQFT" :
-                                                            column.id == "lot Width" ? "lotwidth" :
-                                                              column.id == "lot Size" ? "lotsize" :
-                                                                column.id == "age Restricted" ? "age" :
-                                                                  column.id == "all Single Story" ? "single" :
-                                                                    column.id == "__pkPriceID" ? "id" :
-                                                                      column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "squre Footage" ? "sqft" :
+                                            column.id == "bedrooms" ? "bedroom" :
+                                            column.id == "base Price" ? "baseprice" :
+                                            column.id == "price Per SQFT" ? "perSQFT" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "__pkPriceID" ? "id" :
+                                            column.id == "_fkProductID" ? "_fkProductID" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1935,14 +1935,14 @@ const PriceList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "squre Footage" ? squareFootageOption :
-                                            column.id == "stories" ? storiesOption :
-                                              column.id == "bedrooms" ? bedroomsOption :
-                                                column.id == "bathroom" ? bathroomOption :
-                                                  column.id == "garage" ? garageOption :
-                                                    column.id == "base Price" ? basePriceOption :
-                                                      column.id == "price Per SQFT" ? pricePerSQFTOption :
-                                                        column.id == "lot Width" ? lotWidthOption :
-                                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "stories" ? storiesOption :
+                                          column.id == "bedrooms" ? bedroomsOption :
+                                          column.id == "bathroom" ? bathroomOption :
+                                          column.id == "garage" ? garageOption :
+                                          column.id == "base Price" ? basePriceOption :
+                                          column.id == "price Per SQFT" ? pricePerSQFTOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
 
                                         style={{
@@ -1957,13 +1957,13 @@ const PriceList = () => {
 
                                         onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e, "stories") :
-                                            column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
-                                              column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
-                                                column.id == "garage" ? handleSelectChange(e, "garage") :
-                                                  column.id == "base Price" ? handleSelectChange(e, "baseprice") :
-                                                    column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
-                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                          column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
+                                          column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e, "garage") :
+                                          column.id == "base Price" ? handleSelectChange(e, "baseprice") :
+                                          column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>

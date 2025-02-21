@@ -1627,7 +1627,7 @@ const ClosingList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1731,45 +1731,45 @@ const ClosingList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "closing Type" ? "closing_type" :
-                                        column.id == "closing Price" ? "closingprice" :
-                                          column.id == "parcel Number" ? "parcel" :
-                                            column.id == "sub Legal Name" ? "sublegal_name" :
-                                              column.id == "seller Legal Name" ? "sellerleagal" :
-                                                column.id == "buyer Name" ? "buyer" :
-                                                  column.id == "doc" ? "document" :
-                                                    column.id == "product Type" ? "product_type" :
-                                                      column.id == "master Plan" ? "masterplan_id" :
-                                                        column.id == "zip Code" ? "zipcode" :
-                                                          column.id == "lot Width" ? "lotwidth" :
-                                                            column.id == "lot Size" ? "lotsize" :
-                                                              column.id == "age Restricted" ? "age" :
-                                                                column.id == "all Single Story" ? "single" :
-                                                                  column.id == "date Added" ? "dateadded" :
-                                                                    column.id == "__pkRecordID" ? "id" :
-                                                                      column.id == "_fkSubID" ? "subdivision_code" :
-                                                                        column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                      column.id == "closing Price" ? "closingprice" :
+                                      column.id == "parcel Number" ? "parcel" :
+                                      column.id == "sub Legal Name" ? "sublegal_name" :
+                                      column.id == "seller Legal Name" ? "sellerleagal" :
+                                      column.id == "buyer Name" ? "buyer" :
+                                      column.id == "doc" ? "document" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "dateadded" :
+                                      column.id == "__pkRecordID" ? "id" :
+                                      column.id == "_fkSubID" ? "subdivision_code" :
+                                      column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "closing Type" ? "closing_type" :
-                                              column.id == "closing Price" ? "closingprice" :
-                                                column.id == "parcel Number" ? "parcel" :
-                                                  column.id == "sub Legal Name" ? "sublegal_name" :
-                                                    column.id == "seller Legal Name" ? "sellerleagal" :
-                                                      column.id == "buyer Name" ? "buyer" :
-                                                        column.id == "doc" ? "document" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "master Plan" ? "masterplan_id" :
-                                                              column.id == "zip Code" ? "zipcode" :
-                                                                column.id == "lot Width" ? "lotwidth" :
-                                                                  column.id == "lot Size" ? "lotsize" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "dateadded" :
-                                                                          column.id == "__pkRecordID" ? "id" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" :
-                                                                              column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                            column.id == "closing Price" ? "closingprice" :
+                                            column.id == "parcel Number" ? "parcel" :
+                                            column.id == "sub Legal Name" ? "sublegal_name" :
+                                            column.id == "seller Legal Name" ? "sellerleagal" :
+                                            column.id == "buyer Name" ? "buyer" :
+                                            column.id == "doc" ? "document" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "dateadded" :
+                                            column.id == "__pkRecordID" ? "id" :
+                                            column.id == "_fkSubID" ? "subdivision_code" :
+                                            column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1787,9 +1787,9 @@ const ClosingList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "closing Price" ? closingPriceOption :
-                                            column.id == "loan Amount" ? loanAmountOption :
-                                              column.id == "lot Width" ? lotWidthOption :
-                                                column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "loan Amount" ? loanAmountOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
 
                                         style={{
@@ -1804,8 +1804,8 @@ const ClosingList = () => {
 
                                         onChange={(e) => column.id == "closing Price" ? handleSelectChange(e, "closingprice") :
                                           column.id == "loan Amount" ? handleSelectChange(e, "loanamount") :
-                                            column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                              column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>

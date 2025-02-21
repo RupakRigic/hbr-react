@@ -1231,7 +1231,7 @@ const LandsaleList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1338,17 +1338,17 @@ const LandsaleList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "size MS" ? "typeofunit" :
-                                        column.id == "size" ? "noofunit" :
-                                          column.id == "zip Code" ? "zip" :
-                                            toCamelCase(column.id))
+                                      column.id == "size" ? "noofunit" :
+                                      column.id == "zip Code" ? "zip" :
+                                      toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "size MS" ? "typeofunit" :
-                                              column.id == "size" ? "noofunit" :
-                                                column.id == "zip Code" ? "zip" :
-                                                  toCamelCase(column.id))
+                                            column.id == "size" ? "noofunit" :
+                                            column.id == "zip Code" ? "zip" :
+                                            toCamelCase(column.id))
                                         ).direction === "asc"
                                           ? "↑"
                                           : "↓"}
@@ -1365,8 +1365,8 @@ const LandsaleList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "price" ? priceOption :
-                                            column.id == "price Per" ? pricePerOption :
-                                              column.id == "size" ? sizeOption : ""
+                                          column.id == "price Per" ? pricePerOption :
+                                          column.id == "size" ? sizeOption : ""
                                         }
 
                                         style={{
