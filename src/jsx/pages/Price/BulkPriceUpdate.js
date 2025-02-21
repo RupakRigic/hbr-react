@@ -46,7 +46,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                     if (data.status === true) {
                         swal("Closing Update Succesfully").then((willDelete) => {
                             if (willDelete) {
-                                setAddProduct(false);
+                                HandleUpdateCanvasClose();
                                 props.parentCallback();
                             }
                         })
@@ -62,13 +62,19 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
         })
     };
 
+    const HandleUpdateCanvasClose = () => {
+        setAddProduct(false); 
+        setError('');
+        setProductCode([]);
+    };
+
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { setAddProduct(false); setError('') }}
+                        onClick={() => HandleUpdateCanvasClose()}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -119,10 +125,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
                                 <Link 
                                     to={"#"} 
-                                    onClick={() => { 
-                                        setAddProduct(false); 
-                                        setError('') 
-                                    }} 
+                                    onClick={() => HandleUpdateCanvasClose()} 
                                     className="btn btn-danger light ms-1"
                                 >
                                     Cancel

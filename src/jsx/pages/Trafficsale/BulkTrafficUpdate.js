@@ -9,7 +9,7 @@ import Select from "react-select";
 const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const { selectedLandSales } = props;
 
-    const [SubdivisionCode, setSubdivisionCode] = useState('');
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [addProduct, setAddProduct] = useState(false);
@@ -20,8 +20,8 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         { value: '1', label: 'Active' }
     ];
 
-    const handleActive = (e) => {
-        setIsActive(e);
+    const handleActive = (selectedOption) => {
+        setIsActive(selectedOption);
     };
 
     useImperativeHandle(ref, () => ({
@@ -86,7 +86,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     if (data.status === true) {
                         swal("Weekly Traffic & sale Update Succesfully").then((willDelete) => {
                             if (willDelete) {
-                                setAddProduct(false);
+                                HandleUpdateCanvasClose();
                                 props.parentCallback();
                             }
                         })
@@ -102,13 +102,20 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         })
     };
 
+    const HandleUpdateCanvasClose = () => {
+        setAddProduct(false); 
+        setError('');
+        setSubdivisionCode([]);
+        setIsActive([]);
+    };
+
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError(''); setIsActive([]) }} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { setAddProduct(false); setError(''); setIsActive([]) }}
+                        onClick={() => HandleUpdateCanvasClose()}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -122,7 +129,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={SubdivisionList}
-                                            onChange={handleSubdivisionCode}
+                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                             placeholder={"Select Subdivision..."}
                                             getOptionValue={(option) => option.name}
                                             getOptionLabel={(option) => option.label}
@@ -185,7 +192,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                         className=" react-select-container"
                                         classNamePrefix="react-select"
                                         value={isActive}
-                                        onChange={handleActive}
+                                        onChange={(selectedOption) => handleActive(selectedOption)}
                                         placeholder={"Select Status"}
                                         styles={{
                                             container: (provided) => ({
@@ -208,7 +215,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link type="reset" to={"#"} onClick={() => { setAddProduct(false); setError('') }} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link type="reset" to={"#"} onClick={() => HandleUpdateCanvasClose()} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>

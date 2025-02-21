@@ -153,7 +153,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           if (data.status === true) {
             swal("Subdivision Updated Succesfully").then((willDelete) => {
               if (willDelete) {
-                setAddProduct(false);
+                HandleUpdateCanvasClose();
                 props.parentCallback();
               }
             })
@@ -169,6 +169,21 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       }
     })
   };
+
+  const HandleUpdateCanvasClose = () => {
+    setAddProduct(false); 
+    setError('');
+    setBuilderCode([]);
+    setStatus("");
+    setReporting("");
+    setProductType("");
+    setAge("");
+    setSingle("");
+    setMasterPlan([]);
+    setArea([]);
+    setJuridiction([]);
+    setGate("");
+};
 
   const optionsMasterPlan = [
     { value: "ALIANTE", label: "ALIANTE" },
@@ -257,11 +272,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
   return (
     <Fragment>
-      <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddProduct(false); setError('') }}
+            onClick={() => HandleUpdateCanvasClose()}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -619,8 +634,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   </button>
                   <Link
                     type="reset"
-                    to={"/subdivisionlist"}
+                    to={"#"}
                     className="btn btn-danger light ms-1"
+                    onClick={() => HandleUpdateCanvasClose()}
                   >
                     Cancel
                   </Link>

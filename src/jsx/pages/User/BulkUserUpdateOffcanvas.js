@@ -131,7 +131,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             if (data.status === true) {
               swal("User Update Succesfully").then((willDelete) => {
                 if (willDelete) {
-                  setAddUser(false);
+                  HandleUpdateCanvasClose();
                   setRoleCode();
                   setFirstName("");
                   setLastName("");
@@ -176,7 +176,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
         setStandardUser([]);
         swal("User Update Succesfully").then((willDelete) => {
           if (willDelete) {
-            setAddUser(false);
+            HandleUpdateCanvasClose();
             setFirstName("");
             setLastName("");
             setEmail("");
@@ -199,13 +199,21 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     setShowPopup(true);
   };
 
+  const HandleUpdateCanvasClose = () => {
+    setAddUser(false); 
+    setError('');
+    setRoleCode([]); 
+    setBuilderCode("");  
+    setStandardUser([]);
+  };
+
   return (
     <Fragment>
-      <Offcanvas show={addUser} onHide={() => { setAddUser(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+      <Offcanvas show={addUser} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddUser(false); setRoleCode(); setBuilderCode(""); setError(''); setStandardUser([]); }}
+            onClick={() => HandleUpdateCanvasClose()}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -323,7 +331,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                 <button type="submit" className="btn btn-primary me-1">
                   Submit
                 </button>
-                <Link to={"#"} onClick={() => { setAddUser(false); setError(''); setRoleCode(); setStandardUser([]); }} className="btn btn-danger light ms-1">
+                <Link to={"#"} onClick={() => HandleUpdateCanvasClose()} className="btn btn-danger light ms-1">
                   Cancel
                 </Link>
               </div>

@@ -24,11 +24,18 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         { value: 'private', label: 'Private' }
     ];
 
-    const handleActive = e => {
+    const handleActive = (e) => {
         setIsActive(e);
     };
 
-    const handleCompanyType = e => {
+    const HandleUpdateCanvasClose = () => {
+        setAddProduct(false); 
+        setIsActive('');
+        setCompany_type('');
+        setError('');
+    };
+
+    const handleCompanyType = (e) => {
         setCompany_type(e);
     };
 
@@ -91,7 +98,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     if (data.status === true) {
                         swal("Builder Update Succesfully").then((willDelete) => {
                             if (willDelete) {
-                                setAddProduct(false);
+                                HandleUpdateCanvasClose();
                                 localStorage.setItem("UpdateBuilderName", JSON.stringify(event.target.name.value));
                                 localStorage.setItem("UpdateID", JSON.stringify(selectedLandSales));
                                 props.parentCallback();
@@ -113,11 +120,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { setAddProduct(false); setError('') }}
+                        onClick={() => HandleUpdateCanvasClose()}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -223,7 +230,20 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                         className=" react-select-container"
                                         classNamePrefix="react-select"
                                         value={company_type}
+                                        placeholder={"Select Company Type"}
                                         onChange={handleCompanyType}
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
                                     />
                                 </div>
 
@@ -294,7 +314,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} type="reset" className="btn btn-danger light ms-1" onClick={() => { setAddProduct(false); setError('') }}>Cancel</Link>
+                                <Link to={"#"} type="reset" className="btn btn-danger light ms-1" onClick={() => HandleUpdateCanvasClose()}>Cancel</Link>
                             </div>
                         </form>
                     </div>

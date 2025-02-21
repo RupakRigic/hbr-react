@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
@@ -8,7 +8,7 @@ import Select from "react-select";
 const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const { selectedLandSales, SubdivisionList } = props;
 
-  const [SubdivisionCode, setSubdivisionCode] = useState('');
+  const [SubdivisionCode, setSubdivisionCode] = useState([]);
   const [Error, setError] = useState('');
   const [addProduct, setAddProduct] = useState(false);
 
@@ -17,8 +17,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       setAddProduct(true)
     }
   }));
-
-  const navigate = useNavigate();
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -38,7 +36,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       if (willDelete) {
         try {
           var userData = {
-            subdivision_id: SubdivisionCode ? SubdivisionCode.value : "",
+            subdivision_id: SubdivisionCode?.value,
             name: event.target.name.value,
             status: event.target.status.value,
             sqft: event.target.sqft.value,
@@ -53,7 +51,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           if (data.status === true) {
             swal("Product Updated Succesfully").then((willDelete) => {
               if (willDelete) {
-                setAddProduct(false);
+                HandleUpdateCanvasClose();
                 props.parentCallback();
               }
             })
@@ -69,13 +67,19 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     })
   };
 
+  const HandleUpdateCanvasClose = () => {
+    setAddProduct(false); 
+    setError('');
+    setSubdivisionCode([]);
+  };
+
   return (
     <Fragment>
-      <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddProduct(false); setError('') }}
+            onClick={() => HandleUpdateCanvasClose()}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -119,7 +123,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput5" className="form-label">Status</label>
                   <select className="default-select form-control" name="status">
-                    <option value="" disabled>Select Status</option>
+                    <option value="" disabled selected>Select Status</option>
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>
                     <option value="2">Future</option>
@@ -204,7 +208,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                 </button>
                 <Link
                   to={"#"}
-                  onClick={() => { setAddProduct(false); setError('') }}
+                  onClick={() => HandleUpdateCanvasClose()}
                   className="btn btn-danger light ms-1"
                 >
                   Cancel
