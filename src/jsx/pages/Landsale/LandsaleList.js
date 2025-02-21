@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -561,6 +561,7 @@ const LandsaleList = () => {
 
   const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
     try {
@@ -575,18 +576,19 @@ const LandsaleList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -598,8 +600,6 @@ const LandsaleList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, LandsaleList, landSaleListCount) => {
     setExcelLoading(true);
-    // const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(landSaleListCount / recordsPage);
     let allData = LandsaleList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1057,7 +1057,7 @@ const LandsaleList = () => {
       }
     };
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Land sales"
         pageTitle="Land Sales"
@@ -2133,7 +2133,7 @@ const LandsaleList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

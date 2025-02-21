@@ -624,6 +624,7 @@ const ClosingList = () => {
 
   const getClosingList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByClosingsFilter", JSON.stringify(searchQuery));
     try {

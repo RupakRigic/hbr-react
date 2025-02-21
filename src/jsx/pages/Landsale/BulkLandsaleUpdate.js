@@ -1,15 +1,15 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
+import Select from "react-select";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 
 const BulkLandsaleUpdate = forwardRef((props, ref) => {
-    const navigate = useNavigate();
-
     const { selectedLandSales } = props;
-    const [SubdivisionCode, setSubdivisionCode] = useState('');
+
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [addProduct, setAddProduct] = useState(false);
@@ -44,7 +44,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
-    }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -76,32 +76,32 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                         "lng": event.target.lng.value,
                         "area": event.target.area.value,
                         "zip": event.target.zip.value,
-                        "subdivision_id": SubdivisionCode,
+                        "subdivision_id": SubdivisionCode?.value,
                     }
-                    console.log(userData);
+
                     const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
+
                     if (data.status === true) {
                         swal("Landsale Update Succesfully").then((willDelete) => {
                             if (willDelete) {
                                 setAddProduct(false);
-                                navigate('/landsalelist');
+                                props.parentCallback();
                             }
                         })
-                        props.parentCallback();
                     }
                 }
                 catch (error) {
                     if (error.name === 'HTTPError') {
                         const errorJson = await error.response.json();
-                        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
                     }
                 }
             }
         })
-    }
+    };
 
     return (
-        <>
+        <Fragment>
             <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
@@ -118,16 +118,24 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Subdivision</label>
                                     <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={(e) => handleSubdivisionCode(e.target.value)}
+                                        <Select
+                                            options={SubdivisionList}
                                             value={SubdivisionCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Subdivision</option>
-                                            {SubdivisionList.map((element) => (
-                                                <option value={element.value}>{element.label}</option>
-                                            ))}
-                                        </Form.Select>
+                                            placeholder={"Select Subdivision..."}
+                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                            }}
+                                        />
                                     </Form.Group>
                                 </div>
                                 <div className="col-xl-6 mb-3">
@@ -208,7 +216,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     </div>
                 </div>
             </Offcanvas>
-        </>
+        </Fragment>
     );
 });
 
