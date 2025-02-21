@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminPermitService from "../../../API/Services/AdminService/AdminPermitService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -830,7 +830,6 @@ const PermitList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     getPermitList(currentPage, sortConfig, searchQuery);
   };
 
@@ -1386,7 +1385,7 @@ const PermitList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -2650,7 +2649,7 @@ const PermitList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 
