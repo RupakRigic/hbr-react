@@ -456,8 +456,8 @@ const ProductList = () => {
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductsListCount(responseData.meta.total);
-      if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      if (responseData.meta.total > 100) {
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
       } else {
         setAllBuilderExport(responseData.data);
       }
