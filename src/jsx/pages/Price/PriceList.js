@@ -925,7 +925,7 @@ const PriceList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 184) {
         e.preventDefault();
-        getpriceList(currentPage, sortConfig, searchQuery);
+        getpriceList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_BasePrice", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_BasePrice", JSON.stringify(selectedSubdivisionName));

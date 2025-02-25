@@ -840,7 +840,7 @@ const ProductList = () => {
       localStorage.removeItem("setProductFilter");
     }
     e.preventDefault();
-    getproductList(currentPage, sortConfig, searchQuery);
+    getproductList(1, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
     localStorage.setItem("selectedStatusByProductFilter_Product", JSON.stringify(selectedStatus));
     localStorage.setItem("selectedBuilderNameByFilter_Product", JSON.stringify(selectedBuilderName));

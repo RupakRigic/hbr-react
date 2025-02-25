@@ -288,7 +288,7 @@ const PermitList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        getPermitList(currentPage, sortConfig, searchQuery);
+        getPermitList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_Permit", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_Permit", JSON.stringify(selectedSubdivisionName));

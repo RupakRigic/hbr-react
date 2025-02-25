@@ -222,7 +222,7 @@ const ClosingList = () => {
       if (totaldays < 367) {
         e.preventDefault();
         console.log(555);
-        getClosingList(currentPage, sortConfig, searchQuery);
+        getClosingList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("seletctedClosingTypeByFilter_Closing", JSON.stringify(seletctedClosingType));
         localStorage.setItem("selectedBuilderNameByFilter_Closing", JSON.stringify(selectedBuilderName));

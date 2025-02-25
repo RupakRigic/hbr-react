@@ -154,7 +154,7 @@ const LandsaleList = () => {
       if (totaldays < 367) {
         e.preventDefault();
         console.log(555);
-        getLandsaleList(currentPage, sortConfig, searchQuery);
+        getLandsaleList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_LandSale", JSON.stringify(selectedSubdivisionName));

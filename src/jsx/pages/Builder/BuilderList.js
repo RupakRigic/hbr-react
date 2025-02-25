@@ -747,7 +747,7 @@ const BuilderTable = () => {
     e.preventDefault();
     setFilter(false);
     setNormalFilter(false);
-    getbuilderlist(currentPage, sortConfig, searchQuery);
+    getbuilderlist(1, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
     setActiveCommunitiesOption("");
     setClosingThisYearOption("");

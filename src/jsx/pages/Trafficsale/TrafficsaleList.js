@@ -240,7 +240,7 @@ const TrafficsaleList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        gettrafficsaleList(currentPage, sortConfig, searchQuery);
+        gettrafficsaleList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_TrafficSale", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_TrafficSale", JSON.stringify(selectedSubdivisionName));
