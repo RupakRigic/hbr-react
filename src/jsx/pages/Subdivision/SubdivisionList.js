@@ -6143,10 +6143,10 @@ const SubdivisionList = () => {
 
                           <div className="d-flex" style={{ marginTop: "5px" }}>
                             <div className="fs-18" style={{ width: "180px" }}><span><b>TOTAL LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.totallots || "NA"}</span></div>
-                            <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.lotreleased || "NA"}</span></div>
+                            <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.latest_lots_released || "NA"}</span></div>
                           </div>
                           <div className="d-flex" style={{ marginTop: "5px" }}>
-                            <div className="fs-18" style={{ width: "180px" }}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsoldlots || "NA"}</span></div>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsold_lots || "NA"}</span></div>
                             <div className="fs-18"><span><b>STANDING INVENTORY:</b></span>&nbsp;<span>{SubdivisionDetails.stadinginventory || "NA"}</span></div>
                           </div>
                           <div className="d-flex" style={{ marginTop: "5px" }}>
