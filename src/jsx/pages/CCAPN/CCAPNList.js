@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -13,6 +13,7 @@ import { Form, Offcanvas } from "react-bootstrap";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import Dropdown from "react-bootstrap/Dropdown";
+import InputMask from "react-input-mask";
 
 const CCAPNList = () => {
   const [selectedLandSales, setSelectedLandSales] = useState([]);
@@ -39,6 +40,13 @@ const CCAPNList = () => {
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const HandleSortingPopupShow = () => setShowSortingPopup(true);
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
+  const [sortConfig, setSortConfig] = useState([]);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -50,7 +58,7 @@ const CCAPNList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage, searchQuery);
+      GetCCAPNList(currentPage, sortConfig, searchQuery);
     } else {
       navigate("/");
     }
@@ -131,6 +139,29 @@ const CCAPNList = () => {
     }
   };
 
+  const fieldOptions = [
+    { value: "builderName", label: "Builder" },
+    { value: "subdivisionName", label: "Subdivision" },
+    { value: "parcel", label: "Parcel Number" },
+    { value: "loc_strno", label: "Full Address" },
+    { value: "ll_x", label: "Latitude" },
+    { value: "ll_y", label: "Longitude" },
+    { value: "subdivision_code", label: "Sub ID" },
+    { value: "permits", label: "Permits" },
+    { value: "closings", label: "Closings" },
+    { value: "updated_at", label: "Modification Date" },
+  ];
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    GetCCAPNList(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
+  };
+
   const handleSelectSubdivisionNameChange = (e) => {
     setSelectedSubdivisionName(e.value);
   };
@@ -179,12 +210,23 @@ const CCAPNList = () => {
     }
   };
 
-  const GetCCAPNList = async (pageNumber, searchQuery) => {
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
+
+  const GetCCAPNList = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
     try {
-      
-      const response = await AdminCCAPNService.index(pageNumber, searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminCCAPNService.index(
+        pageNumber,
+        searchQuery,
+        sortConfigString
+      );
       const responseData = await response.json();
       setIsLoading(false);
       setCCAPNList(responseData.data);
@@ -267,7 +309,7 @@ const CCAPNList = () => {
                 text: message,
               }).then((willDelete) => {
                 if (willDelete) {
-                  GetCCAPNList(currentPage, searchQuery);
+                  GetCCAPNList(currentPage, sortConfig, searchQuery);
                 }
               });
             } else {
@@ -282,7 +324,7 @@ const CCAPNList = () => {
                   text: message,
                 }).then((willDelete) => {
                   if (willDelete) {
-                    GetCCAPNList(currentPage, searchQuery);
+                    GetCCAPNList(currentPage, sortConfig, searchQuery);
                   }
                 });
               }
@@ -332,7 +374,7 @@ const CCAPNList = () => {
             swal("Ccapn Updated Succesfully").then((willDelete) => {
               if (willDelete) {
                 navigate("/ccapn");
-                GetCCAPNList(currentPage, searchQuery);
+                GetCCAPNList(currentPage, sortConfig, searchQuery);
               }
             });
           }
@@ -348,8 +390,51 @@ const CCAPNList = () => {
     });
   };
 
+  const handleSortingCheckboxChange = (e, field) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
+    } else {
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders({
+      ...sortOrders,
+      [fieldValue]: order,
+    });
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+      const newOrder = {};
+      fieldOptions.forEach((field, index) => {
+        newOrder[field.value] = index + 1;
+      });
+      setSelectionOrder(newOrder);
+    } else {
+      setSelectedFields([]);
+      setSelectionOrder({});
+    }
+  };
+
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="CCAPNs" pageTitle="CCAPNs" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -409,10 +494,21 @@ const CCAPNList = () => {
                       </div>
                       <button
                         onClick={handleSubmit}
-                        className="btn btn-sm btn-primary"
+                        className="btn btn-sm btn-primary me-3"
                       >
                         Assign
                       </button>
+                      <Button
+                        className="btn-sm me-3"
+                        variant="secondary"
+                        onClick={HandleSortingPopupShow}
+                        title="Sorted Fields"
+                      >
+                        <div style={{ fontSize: "11px" }}>
+                          <i class="fa-solid fa-sort" />&nbsp;
+                          Sort
+                        </div>
+                      </Button>
                     </div>
 
                     <div className="mt-2">
@@ -423,6 +519,7 @@ const CCAPNList = () => {
                       ) : (
                         <div className="d-flex justify-content-between">
                           <div className="me-3">
+
                             <Dropdown>
                               <Dropdown.Toggle
                                 variant="success"
@@ -435,9 +532,16 @@ const CCAPNList = () => {
 
                               <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
                                 <label className="form-label">Parcel :</label>
-                                <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
+                                <InputMask
+                                  mask="999-99-999-999"
+                                  maskChar=""
+                                  type="search"
+                                  name="parcel"
+                                  className="form-control"
+                                  onChange={HandleFilter}
+                                />
 
-                                <label className="form-label">Address :</label>
+                                <label className="form-label mt-3">Address :</label>
                                 <input type="search" name="address" className="form-control" onChange={HandleFilter} />
                               </Dropdown.Menu>
                             </Dropdown>
@@ -613,41 +717,17 @@ const CCAPNList = () => {
                                     }}
                                   />
                                 </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {index + 1}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.builder &&
-                                    element.subdivision.builder.name}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.name}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.parcel}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.loc_strno +
-                                    " " +
-                                    element.loc_strname}{" "}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.ll_x}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.ll_y}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.subdivision_code}
-                                </td>
+                                <td style={{ textAlign: "center" }}>{index + 1}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.builder?.name}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.name}</td>
+                                <td style={{ textAlign: "center" }}>{element?.parcel}</td>
+                                <td style={{ textAlign: "center" }}>{element?.loc_strno + " " + element?.loc_strname}{" "}</td>
+                                <td style={{ textAlign: "center" }}>{element?.ll_x}</td>
+                                <td style={{ textAlign: "center" }}>{element?.ll_y}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.subdivision_code}</td>
                                 <td style={{ textAlign: "center" }}>-</td>
                                 <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>
-                                  <DateComponent date={element.created_at} />
-                                </td>
+                                <td style={{ textAlign: "center" }}><DateComponent date={element.updated_at} /></td>
                                 <td style={{ textAlign: "center" }}>
                                   <div className="d-flex justify-content-center">
                                     <button
@@ -842,7 +922,107 @@ const CCAPNList = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupShow}>
+        <Modal.Header handleSortingPopupClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                    />
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
+                    </label>
+                  </div>
+                </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value]; // Get the selection order
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "40px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
+        </Modal.Footer>
+      </Modal>
+    </Fragment>
   );
 };
 

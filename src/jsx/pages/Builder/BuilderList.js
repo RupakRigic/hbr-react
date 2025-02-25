@@ -2823,6 +2823,7 @@ const BuilderTable = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
+      
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
