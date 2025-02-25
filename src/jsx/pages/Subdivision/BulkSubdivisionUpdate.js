@@ -130,7 +130,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             opensince: event.target.opensince.value,
             age: age,
             single: single,
-            firstpermitdate: event.target.firstpermitdate.value,
+            // firstpermitdate: event.target.firstpermitdate.value,
             masterplan_id: masterplan?.value,
             lat: event.target.lat.value,
             lng: event.target.lng.value,
@@ -139,7 +139,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             zipcode: event.target.zipcode.value,
             parcel: event.target.parcel.value,
             crossstreet: event.target.crossstreet.value,
-            totallots: event.target.totallots.value,
+            // totallots: event.target.totallots.value,
             lotwidth: event.target.lotwidth.value,
             lotsize: event.target.lotsize.value,
             gated: gate,
@@ -408,7 +408,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     </select>
                   </div>
 
-                  <div className="col-xl-6 mb-3">
+                  {/* <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                     <input
                       type="date"
@@ -417,7 +417,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                       id="exampleFormControlInput9"
                       placeholder=""
                     />
-                  </div>
+                  </div> */}
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
@@ -544,7 +544,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     />
                   </div>
 
-                  <div className="col-xl-6 mb-3">
+                  {/* <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput18" className="form-label">Total Lots</label>
                     <input
                       type="number"
@@ -552,7 +552,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                       className="form-control"
                       id="exampleFormControlInput18"
                     />
-                  </div>
+                  </div> */}
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput21" className="form-label">Lot Width</label>
