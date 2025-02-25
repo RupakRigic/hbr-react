@@ -12,8 +12,8 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import { Form, Offcanvas } from "react-bootstrap";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-import Dropdown from "react-bootstrap/Dropdown";
 import InputMask from "react-input-mask";
+import { MultiSelect } from "react-multi-select-component";
 
 const CCAPNList = () => {
   const [selectedLandSales, setSelectedLandSales] = useState([]);
@@ -22,10 +22,15 @@ const CCAPNList = () => {
   const [filterQuery, setFilterQuery] = useState({
     parcel: "",
     address: "",
+    builder_name: "",
+    subdivision_name: "",
+    subdivision_code: ""
   });
   const [BuilderList, setBuilderList] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
   const [selectedBuilderName, setSelectedBuilderName] = useState("");
+  const [selectedSubdivisionNameFilter, setSelectedSubdivisionNameFilter] = useState([]);
+  const [selectedBuilderNameFilter, setSelectedBuilderNameFilter] = useState([]);
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [Error, setError] = useState("");
@@ -47,6 +52,9 @@ const CCAPNList = () => {
   const [selectionOrder, setSelectionOrder] = useState({});
   const [sortOrders, setSortOrders] = useState({});
   const [sortConfig, setSortConfig] = useState([]);
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [subdivisionDropDown, setSubdivisionDropDown] = useState([]);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -54,11 +62,15 @@ const CCAPNList = () => {
 
   useEffect(() => {
     getbuilderDoplist();
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
   }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage, sortConfig, searchQuery);
+      if (!manageFilterOffcanvas) {
+        GetCCAPNList(currentPage, sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
@@ -112,10 +124,38 @@ const CCAPNList = () => {
     return queryString ? `&${queryString}` : "";
   };
 
-  const handleSelectBuilderNameChange = (e) => {
-    setSelectedBuilderName(e);
-    console.log(e.value);
-    getbuilderlist(e.value);
+  const GetBuilderDropDownList = async () => {
+    try {
+      const response = await AdminBuilderService.builderDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderDropDown(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
+  const GetSubdivisionDropDownList = async () => {
+    try {
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      setSubdivisionDropDown(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
   };
 
   const getbuilderlist = async (builderId) => {
@@ -126,18 +166,40 @@ const CCAPNList = () => {
         label: subdivision.name,
         value: subdivision.id,
       }));
-      console.log(formattedData);
       setBuilderList(formattedData);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
+
+  const handleSelectBuilderNameChange = (e) => {
+    setSelectedBuilderName(e);
+    getbuilderlist(e.value);
+  };
+
+  const handleSelectBuilderNameChangeFilter = (selectedItems) => {
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedBuilderNameFilter(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+    }));
+  }
+
+  const handleSelectSubdivisionNameChangeFilter = (selectedItems) => {
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionNameFilter(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      subdivision_name: selectedNames
+    }));
+  };
+
+
 
   const fieldOptions = [
     { value: "builderName", label: "Builder" },
@@ -201,10 +263,8 @@ const CCAPNList = () => {
         ]);
       }
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -233,7 +293,6 @@ const CCAPNList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -290,7 +349,6 @@ const CCAPNList = () => {
             throw new Error("HTTPError");
           } else {
             currentChunk++;
-            console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
 
             document.getElementById("fileInput").value = null;
 
@@ -364,8 +422,6 @@ const CCAPNList = () => {
           var userData = {
             subdivision_id: selectedSubdivisionName,
           };
-          console.log(userData);
-          console.log(selectedLandSales);
           const data = await AdminCCAPNService.bulkupdate(
             selectedLandSales,
             userData
@@ -433,6 +489,25 @@ const CCAPNList = () => {
     }
   };
 
+  const HandleFilterForm = (e) => {
+    e.preventDefault();
+    GetCCAPNList(1, sortConfig, searchQuery);
+    setManageFilterOffcanvas(false);
+  };
+
+  const HandleCancelFilter = (e) => {
+    e.preventDefault();
+    setFilterQuery({
+      parcel: "",
+      address: "",
+      builder_name: "",
+      subdivision_name: "",
+      subdivision_code: "",
+    });
+    setSelectedBuilderNameFilter([]);
+    setSelectedSubdivisionNameFilter([]);
+  }
+
   return (
     <Fragment>
       <MainPagetitle mainTitle="CCAPNs" pageTitle="CCAPNs" parentTitle="Home" />
@@ -498,17 +573,6 @@ const CCAPNList = () => {
                       >
                         Assign
                       </button>
-                      <Button
-                        className="btn-sm me-3"
-                        variant="secondary"
-                        onClick={HandleSortingPopupShow}
-                        title="Sorted Fields"
-                      >
-                        <div style={{ fontSize: "11px" }}>
-                          <i class="fa-solid fa-sort" />&nbsp;
-                          Sort
-                        </div>
-                      </Button>
                     </div>
 
                     <div className="mt-2">
@@ -519,33 +583,28 @@ const CCAPNList = () => {
                       ) : (
                         <div className="d-flex justify-content-between">
                           <div className="me-3">
+                            <Button
+                              className="btn-sm"
+                              variant="secondary"
+                              onClick={HandleSortingPopupShow}
+                              title="Sorted Fields"
+                            >
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fa-solid fa-sort" />&nbsp;
+                                Sort
+                              </div>
+                            </Button>
+                          </div>
 
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                variant="success"
-                                className="btn-sm"
-                                id="dropdown-basic"
-                              >
+                          <div className="me-3">
+                            <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                              <div style={{ fontSize: "11px" }}>
                                 <i className="fa fa-filter" />&nbsp;
                                 Filter
-                              </Dropdown.Toggle>
-
-                              <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
-                                <label className="form-label">Parcel :</label>
-                                <InputMask
-                                  mask="999-99-999-999"
-                                  maskChar=""
-                                  type="search"
-                                  name="parcel"
-                                  className="form-control"
-                                  onChange={HandleFilter}
-                                />
-
-                                <label className="form-label mt-3">Address :</label>
-                                <input type="search" name="address" className="form-control" onChange={HandleFilter} />
-                              </Dropdown.Menu>
-                            </Dropdown>
+                              </div>
+                            </button>
                           </div>
+
                           <div>
                             <Button
                               className="btn-sm me-1"
@@ -1022,6 +1081,99 @@ const CCAPNList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Filter Canvas */}
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter CCAPNs{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <div className="">
+              <form>
+                <div className="row">
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Parcel:</label>
+                    <InputMask
+                      mask="999-99-999-999"
+                      maskChar=""
+                      type="search"
+                      name="parcel"
+                      value={filterQuery.parcel}
+                      className="form-control"
+                      onChange={HandleFilter}
+                    />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Address:</label>
+                    <input type="search" name="address" className="form-control" value={filterQuery.address} onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Subdivision Code:</label>
+                    <input type="search" name="subdivision_code" value={filterQuery.subdivision_code} className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">BUILDER NAME:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown || []}
+                        value={selectedBuilderNameFilter}
+                        onChange={handleSelectBuilderNameChangeFilter}
+                        placeholder={"Select Builder Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">SUBDIVISION NAME:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={subdivisionDropDown || []}
+                        value={selectedSubdivisionNameFilter}
+                        onChange={handleSelectSubdivisionNameChangeFilter}
+                        placeholder={"Select Subdivision Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                variant="secondary"
+                onClick={HandleCancelFilter}
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                variant="primary"
+                onClick={HandleFilterForm}
+              >
+                Filter
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Offcanvas>
     </Fragment>
   );
 };
