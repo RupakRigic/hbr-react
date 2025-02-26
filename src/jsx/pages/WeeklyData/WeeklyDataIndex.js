@@ -106,7 +106,7 @@ const WeeklyDataIndex = () => {
   };
 
   const calculateNetSales = (id, data) => {
-    const grossSales = formData[id]?.grosssales || data.grosssales;
+    const grossSales = formData[id]?.gross_sales || data.grosssales;
     const cancelations = formData[id]?.cancelations || data.cancelations;
     return grossSales - cancelations;
   };
