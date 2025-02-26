@@ -41,14 +41,14 @@ const WeeklyDataOffcanvas = forwardRef((props, ref) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (localStorage.getItem('enddate')) {
-            var enddate=localStorage.getItem('enddate');
+            var enddate = localStorage.getItem('enddate');
         }else{
             var enddate='2024-01-01'
         }
         try {
             var userData = {
-                "subdivision_id":BuilderCode,
-                'week_ending_date':enddate,
+                "subdivision_id": BuilderCode,
+                'week_ending_date': enddate,
                 "status": event.target.status.value,
                 "weekly_traffic": event.target.weekly_traffic.value,
                 "gross_sales": event.target.gross_sales.value,

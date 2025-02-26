@@ -60,21 +60,20 @@ const WeeklyDataIndex = () => {
   }, []);
 
   const getWeeklyList = async () => {
-
     setIsLoading(true);
     try {
-      const response = await AdminWeeklyDataService.index(
-        localStorage.getItem("enddate"),
-        localStorage.getItem("builderId")
-      );
-      const responseData = await response.json();
-      console.log(responseData);
-      const updatedData = responseData.map((element) => ({
+      let weekending = localStorage.getItem('enddate');
+      let builder_id = localStorage.getItem('builderId');
+
+      const response = await AdminWeeklyDataService.index(weekending, builder_id).json();
+
+      const updatedData = response?.map((element) => ({
         ...element,
         net_sales:
           element.trafic_sales[0].grosssales -
           element.trafic_sales[0].cancelations,
       }));
+
       setIsLoading(false);
       setBuilderList(updatedData);
     } catch (error) {
@@ -127,6 +126,7 @@ const WeeklyDataIndex = () => {
         setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(
@@ -298,39 +298,17 @@ const WeeklyDataIndex = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <strong> Week Ending &nbsp;</strong>
-                            </th>
-                            <th>
-                              <strong> Sold Out?</strong>
-                            </th>
-                            <th>
-                              <strong> Subdivision</strong>
-                            </th>
-                            <th>
-                              <strong> Weekly Traffic </strong>
-                            </th>
-                            <th>
-                              <strong> Gross Sales </strong>
-                            </th>
-                            <th>
-                              <strong> - </strong>
-                            </th>
-                            <th>
-                              <strong> cancelations </strong>
-                            </th>
-                            <th>
-                              <strong> = </strong>
-                            </th>
-                            <th>
-                              <strong> Net Sales</strong>
-                            </th>
-                            <th>
-                              <strong> Current Lots Released </strong>
-                            </th>
-                            <th>
-                              <strong>Current Unsold Standing Inventory</strong>
-                            </th>
+                            <th><strong>Week Ending</strong></th>
+                            <th><strong>Sold Out?</strong></th>
+                            <th><strong>Subdivision</strong></th>
+                            <th><strong>Weekly Traffic</strong></th>
+                            <th><strong>Gross Sales</strong></th>
+                            <th><strong>-</strong></th>
+                            <th><strong>cancelations</strong></th>
+                            <th><strong>=</strong></th>
+                            <th><strong>Net Sales</strong></th>
+                            <th><strong>Current Lots Released</strong></th>
+                            <th><strong>Current Unsold Standing Inventory</strong></th>
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
@@ -352,7 +330,7 @@ const WeeklyDataIndex = () => {
                                       element.trafic_sales[0].weeklytraffic
                                     }
                                     className="form-control"
-                                    name="weeklytraffic"
+                                    name="weekly_traffic"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -363,7 +341,7 @@ const WeeklyDataIndex = () => {
                                       element.trafic_sales[0].grosssales
                                     }
                                     className="form-control"
-                                    name="grosssales"
+                                    name="gross_sales"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -388,7 +366,7 @@ const WeeklyDataIndex = () => {
                                       element.trafic_sales[0].lotreleased
                                     }
                                     className="form-control"
-                                    name="lotreleased"
+                                    name="current_lots_released"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
@@ -408,7 +386,7 @@ const WeeklyDataIndex = () => {
                                           .unsoldinventory
                                       }
                                       className="form-control"
-                                      name="unsoldinventory"
+                                      name="current_un_sold_standing_inventory"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
@@ -465,11 +443,13 @@ const WeeklyDataIndex = () => {
           </div>
         </div>
       </div>
+
       <SubdivisionOffcanvas
         ref={subdivision}
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
+
       <FutureSubdivisionPopup
         show={showModal}
         BuilderList={BuilderList}
