@@ -106,7 +106,7 @@ const WeeklyDataIndex = () => {
   };
 
   const calculateNetSales = (id, data) => {
-    const grossSales = formData[id]?.gross_sales || data.grosssales;
+    const grossSales = formData[id]?.grosssales || data.grosssales;
     const cancelations = formData[id]?.cancelations || data.cancelations;
     return grossSales - cancelations;
   };
@@ -377,7 +377,7 @@ const WeeklyDataIndex = () => {
                                       element.trafic_sales[0].grosssales
                                     }
                                     className="form-control"
-                                    name="gross_sales"
+                                    name="grosssales"
                                     onChange={(event) => handleChange(event, currentId)}
                                   />{" "}
                                 </td>
