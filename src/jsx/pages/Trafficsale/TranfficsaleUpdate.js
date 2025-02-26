@@ -149,7 +149,7 @@ const TrafficsaleUpdate = () => {
                                             </div>
                                             <div className="col-xl-6 mb-3">
                                                 <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales <span className="text-danger">*</span></label>
-                                                <input type="number" value={grossSale - cancelation} name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ cursor: "not-allowed" }} />
+                                                <input type="number" value={grossSale - cancelation} name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
                                             </div>
                                             <div className="col-xl-6 mb-3">
                                                 <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released <span className="text-danger">*</span></label>

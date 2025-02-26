@@ -14,6 +14,8 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [addProduct, setAddProduct] = useState(false);
     const [isActive, setIsActive] = useState([]);
+    const [grossSale, setGrossSale] = useState(null);
+    const [cancelation, setCancelation] = useState(null);
 
     const isActiveData = [
         { value: '0', label: 'De-active' },
@@ -73,9 +75,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                         "subdivision_id": SubdivisionCode?.value,
                         "weekending": event.target.weekending.value,
                         "weeklytraffic": event.target.weeklytraffic.value,
-                        "grosssales": event.target.grosssales.value,
-                        "cancelations": event.target.cancelations.value,
-                        "netsales": event.target.netsales.value,
+                        "grosssales": grossSale,
+                        "cancelations": cancelation,
+                        "netsales": grossSale - cancelation,
                         "lotreleased": event.target.lotreleased.value,
                         "unsoldinventory": event.target.unsoldinventory.value,
                         "status": isActive?.value,
@@ -107,6 +109,14 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         setError('');
         setSubdivisionCode([]);
         setIsActive([]);
+    };
+
+    const handleGrossSales = (e) => {
+        setGrossSale(e.target.value);
+    };
+
+    const handleCancelations = (e) => {
+        setCancelation(e.target.value);
     };
 
     return (
@@ -162,17 +172,17 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales</label>
-                                    <input type="number" name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" />
+                                    <input type="number" name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" onChange={(e) => handleGrossSales(e)} />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations</label>
-                                    <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" />
+                                    <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales</label>
-                                    <input type="number" name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" />
+                                    <input type="number" name='netsales' value={grossSale - cancelation} className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ cursor: "not-allowed", backgroundColor: "#e9ecef" }} />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
