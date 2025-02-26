@@ -182,10 +182,10 @@ const ProductList = () => {
             mappedRow[header] = row.garage;
             break;
           case "Current Base Price":
-            mappedRow[header] = row.latest_base_price;
+            mappedRow[header] = row.recentprice;
             break;
           case "Current Price Per SQFT":
-            mappedRow[header] = row.current_price_per_sqft;
+            mappedRow[header] = row.recentpricesqft;
             break;
           case "Product Website":
             mappedRow[header] = row.website;
@@ -279,7 +279,7 @@ const ProductList = () => {
     single: localStorage.getItem("single_Product") ? JSON.parse(localStorage.getItem("single_Product")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
-    current_price_per_sqft: "",
+    recentpricesqft: "",
     price_changes_since_open: "",
     price_changes_last_12_Month: "",
   });
@@ -713,7 +713,7 @@ const ProductList = () => {
       single: ""
     })
     setFilterQueryCalculation({
-      current_price_per_sqft: "",
+      recentpricesqft: "",
       price_changes_since_open: "",
       price_changes_last_12_Month: ""
     });
@@ -947,7 +947,7 @@ const ProductList = () => {
       return items;
     };
 
-    filtered = applyNumberFilter(filtered, filterQueryCalculation.current_price_per_sqft, 'current_price_per_sqft');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.recentpricesqft, 'recentpricesqft');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_last_12_Month, 'price_changes_last_12_Month');
 
@@ -1103,19 +1103,19 @@ const ProductList = () => {
         return sum + (products.garage || 0);
       }, 0);
     }
-    if (field == "latest_base_price") {
+    if (field == "recentprice") {
       return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.latest_base_price || 0);
+        return sum + Math.floor(products.recentprice || 0);
       }, 0);
     }
-    if (field == "current_price_per_sqft") {
+    if (field == "recentpricesqft") {
       if (filter) {
         return productList.reduce((sum, products) => {
-          return sum + (products.current_price_per_sqft || 0);
+          return sum + Math.floor(products.recentpricesqft || 0);
         }, 0);
       } else {
         return AllProductListExport.reduce((sum, products) => {
-          return sum + (products.current_price_per_sqft || 0);
+          return sum + Math.floor(products.recentpricesqft || 0);
         }, 0);
       }
     }
@@ -1154,7 +1154,7 @@ const ProductList = () => {
   };
 
   const averageFields = (field) => {
-    if (field == "current_price_per_sqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
+    if (field == "recentpricesqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
       const sum = totalSumFields(field);
       if (filter) {
         return sum / productList.length;
@@ -1326,7 +1326,7 @@ const ProductList = () => {
         }
         break;
 
-      case "latest_base_price":
+      case "recentprice":
         setCurrentBasePriceOption(value);
         setSquareFootageOption("");
         setStoriesOption("");
@@ -1357,7 +1357,7 @@ const ProductList = () => {
         }
         break;
 
-      case "current_price_per_sqft":
+      case "recentpricesqft":
         setCurrentPricePerSQFTOption(value);
         setSquareFootageOption("");
         setStoriesOption("");
@@ -2056,8 +2056,8 @@ const ProductList = () => {
                                           column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
                                           column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
                                           column.id == "garage" ? handleSelectChange(e, "garage") :
-                                          column.id == "current Base Price" ? handleSelectChange(e, "latest_base_price") :
-                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "current_price_per_sqft") :
+                                          column.id == "current Base Price" ? handleSelectChange(e, "recentprice") :
+                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "recentpricesqft") :
                                           column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
                                           column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
                                           column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
@@ -2229,45 +2229,45 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.garage}</td>
                                     }
                                     {column.id == "current Base Price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_base_price != "" ? <PriceComponent price={element.latest_base_price} /> : ""}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.recentprice != "" ? <PriceComponent price={element.recentprice} /> : ""}</td>
                                     }
                                     {column.id == "current Price Per SQFT" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.current_price_per_sqft != "" ? <PriceComponent price={element.current_price_per_sqft} /> : "" }</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.recentpricesqft != "" ? <PriceComponent price={element.recentpricesqft} /> : "" }</td>
                                     }
                                     {column.id == "product Website" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
                                     }
                                     {column.id == "product Type" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
                                     }
                                     {column.id == "area" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
                                     }
                                     {column.id == "master Plan" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                     }
                                     {column.id == "zip Code" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
                                     }
                                     {column.id == "lot Size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
                                     }
                                     {column.id == "zoning" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
                                     }
                                     {column.id == "age Restricted" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision.age === 1 && "Yes"}
-                                        {element.subdivision.age === 0 && "No"}
+                                        {element.age === 1 && "Yes"}
+                                        {element.age === 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "all Single Story" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision.single === 1 && "Yes"}
-                                        {element.subdivision.single === 0 && "No"}
+                                        {element.single === 1 && "Yes"}
+                                        {element.single === 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "date Added" &&
@@ -2277,7 +2277,7 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product_code}</td>
                                     }
                                     {column.id == "_fkSubID" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
                                     }
                                     {column.id == "price Change Since Open" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_since_open != "" ? element.price_changes_since_open + '%' : ""}</td>
@@ -2642,7 +2642,7 @@ const ProductList = () => {
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">CURRENT PRICE PER SQFT:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.current_price_per_sqft} name="current_price_per_sqft" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.recentpricesqft} name="recentpricesqft" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">PRICE CHANGE SINCE OPEN:{" "}</label>
@@ -2724,13 +2724,13 @@ const ProductList = () => {
                           {ProductDetails.status === 0 && "Sold Out"}
                           {ProductDetails.status === 2 && "Future"}
                           {ProductDetails.status === 3 && "Closed"}</span></div>
-                        <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.latest_base_price} />
+                        <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.recentprice} />
                         ) || "NA"}</span></div>
                       </div>
                       <div className="d-flex" style={{ marginTop: "5px" }}>
                         <div className="fs-18" style={{ width: "300px" }}><span><b>SQFT:</b></span>&nbsp;<span>{ProductDetails.sqft || "NA"}</span></div>
                         <div className="fs-18"><span><b>$ per SQFT:</b></span>&nbsp;<span>
-                          {(<PriceComponent price={ProductDetails.current_price_per_sqft} />
+                          {(<PriceComponent price={ProductDetails.recentprice / ProductDetails.sqft} />
                           ) || "NA"}
                         </span></div>
                       </div>
