@@ -191,37 +191,37 @@ const ProductList = () => {
             mappedRow[header] = row.website;
             break;
           case "Product Type":
-            mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
+            mappedRow[header] = row.product_type;
             break;
           case "Area":
-            mappedRow[header] = row.subdivision ? row.subdivision.area : '';
+            mappedRow[header] = row.area;
             break;
           case "Master Plan":
-            mappedRow[header] = row.subdivision ? row.subdivision.masterplan_id : '';
+            mappedRow[header] = row.masterplan_id;
             break;
           case "Zip Code":
-            mappedRow[header] = row.subdivision ? row.subdivision.zipcode : '';
+            mappedRow[header] = row.zipcode;
             break;
           case "Lot Width":
-            mappedRow[header] = row.subdivision ? row.subdivision.lotwidth : '';
+            mappedRow[header] = row.lotwidth;
             break;
           case "Lot Size":
-            mappedRow[header] = row.subdivision ? row.subdivision.lotsize : '';
+            mappedRow[header] = row.lotsize;
             break;
           case "Zoning":
-            mappedRow[header] = row.subdivision ? row.subdivision.zoning : '';
+            mappedRow[header] = row.zoning;
             break;
           case "Age Restricted":
-            mappedRow[header] = (row.subdivision && row.subdivision.age === 1 && "Yes") || (row.subdivision && row.subdivision.age === 0 && "No") || '';
+            mappedRow[header] = (row.age === 1 && "Yes") || (row.age === 0 && "No") || '';
             break;
           case "All Single Story":
-            mappedRow[header] = (row.subdivision && row.subdivision.single === 1 && "Yes") || (row.subdivision && row.subdivision.single === 0 && "No") || '';
+            mappedRow[header] = (row.single === 1 && "Yes") || (row.single === 0 && "No") || '';
             break;
           case "Product ID":
             mappedRow[header] = row.product_code;
             break;
           case "Fk Sub ID":
-            mappedRow[header] = row.subdivision ? row.subdivision.subdivision_code : '';
+            mappedRow[header] = row.subdivision_code;
             break;
           case "Price Change Since Open":
             mappedRow[header] = row.price_changes_since_open + '%';
