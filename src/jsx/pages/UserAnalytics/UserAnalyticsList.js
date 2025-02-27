@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Tabs, Tab } from 'react-bootstrap';
 import AdminUserRoleService from '../../../API/Services/AdminService/AdminUserRoleService';
@@ -15,14 +15,20 @@ const UserAnalyticsList = () => {
     const [userLoginAnalyticsList, setUserLoginAnalyticsList] = useState([]);
     const [userLogoutAnalyticsList, setUserLogoutAnalyticsList] = useState([]);
     const [userActivityLogList, setUserActivityLogList] = useState([]);
+    const [userActivityLogListCount, setUserActivityLogListCount] = useState(0);
     const [activeKey, setActiveKey] = useState("loginDetail");
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPage = 100;
+    const lastIndex = currentPage * recordsPage;
+    const [npage, setNpage] = useState(0);
+    const number = [...Array(npage + 1).keys()].slice(1);
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             if (activeKey === "loginDetail") {
-                GetUserLoginAnalyticsList(params.id);
+                GetUserLoginAnalyticsList(currentPage, params.id);
             } else if (activeKey === "logoutDetail") {
-                GetUserLogoutAnalyticsList(params.id);
+                GetUserLogoutAnalyticsList(currentPage, params.id);
             } else if (activeKey === "export file" || activeKey === "Weeklydata Input") {
                 GetUserActivityLog(params.id);
             } else {
@@ -31,16 +37,34 @@ const UserAnalyticsList = () => {
         } else {
             navigate("/");
         }
-    }, [activeKey]);
+    }, [currentPage, activeKey]);
 
-    const GetUserLoginAnalyticsList = async (id) => {
+    const prePage = () => {
+        if (currentPage !== 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const changeCPage = (id) => {
+        setCurrentPage(id);
+    };
+
+    const nextPage = () => {
+        if (currentPage !== npage) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const GetUserLoginAnalyticsList = async (pageNumber, id) => {
         setIsLoading(true);
         try {
-            const responseData = await AdminUserRoleService.userloginanalytics(id).json();
+            const responseData = await AdminUserRoleService.userloginanalytics(pageNumber, id).json();
             if (responseData.status) {
                 setIsLoading(false);
-                setUserLoginAnalyticsList(responseData.data.activity);
-                setUserName(responseData.data.user);
+                setUserLoginAnalyticsList(responseData.activity.data);
+                setNpage(Math.ceil(responseData.activity.meta.total / recordsPage));
+                setUserActivityLogListCount(responseData.activity.meta.total);
+                setUserName(responseData.user);
             }
         } catch (error) {
             setIsLoading(false);
@@ -51,14 +75,16 @@ const UserAnalyticsList = () => {
         }
     };
 
-    const GetUserLogoutAnalyticsList = async (id) => {
+    const GetUserLogoutAnalyticsList = async (pageNumber, id) => {
         setIsLoading(true);
         try {
-            const responseData = await AdminUserRoleService.userlogoutnanalytics(id).json();
+            const responseData = await AdminUserRoleService.userlogoutnanalytics(pageNumber, id).json();
             if (responseData.status) {
                 setIsLoading(false);
-                setUserLogoutAnalyticsList(responseData.data.activity);
-                setUserName(responseData.data.user);
+                setUserLogoutAnalyticsList(responseData.activity.data);
+                setNpage(Math.ceil(responseData.activity.meta.total / recordsPage));
+                setUserActivityLogListCount(responseData.activity.meta.total);
+                setUserName(responseData.user);
             }
         } catch (error) {
             setIsLoading(false);
@@ -148,7 +174,7 @@ const UserAnalyticsList = () => {
                                                             {userLoginAnalyticsList !== null && userLoginAnalyticsList?.length > 0 ? (
                                                                 userLoginAnalyticsList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{index + 1}</td>
+                                                                        <td>{(currentPage - 1) * 100 + (index + 1)}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.loggedin_at}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.last_used_at}</td>
                                                                     </tr>
@@ -195,7 +221,7 @@ const UserAnalyticsList = () => {
                                                             {userLogoutAnalyticsList !== null && userLogoutAnalyticsList?.length > 0 ? (
                                                                 userLogoutAnalyticsList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{index + 1}</td>
+                                                                        <td>{(currentPage - 1) * 100 + (index + 1)}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.logged_out_at}</td>
                                                                     </tr>
                                                                 ))
@@ -308,6 +334,72 @@ const UserAnalyticsList = () => {
                                             </div>
                                         </Tab>
                                     </Tabs>
+                                    <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                                        <div className="dataTables_info">
+                                            Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                                            {userActivityLogListCount} entries
+                                        </div>
+                                        <div
+                                            className="dataTables_paginate paging_simple_numbers justify-content-center"
+                                            id="example2_paginate"
+                                        >
+                                            <Link
+                                                className="paginate_button previous disabled"
+                                                to="#"
+                                                onClick={prePage}
+                                            >
+                                                <i className="fa-solid fa-angle-left" />
+                                            </Link>
+                                            <span>
+                                                {number.map((n, i) => {
+                                                    if (number.length > 4) {
+                                                        if (
+                                                            i === 0 ||
+                                                            i === number.length - 1 ||
+                                                            Math.abs(currentPage - n) <= 1 ||
+                                                            (i === 1 && n === 2) ||
+                                                            (i === number.length - 2 &&
+                                                                n === number.length - 1)
+                                                        ) {
+                                                            return (
+                                                                <Link
+                                                                    className={`paginate_button ${currentPage === n ? "current" : ""
+                                                                        } `}
+                                                                    key={i}
+                                                                    onClick={() => changeCPage(n)}
+                                                                >
+                                                                    {n}
+                                                                </Link>
+                                                            );
+                                                        } else if (i === 1 || i === number.length - 2) {
+                                                            return <span key={i}>...</span>;
+                                                        } else {
+                                                            return null;
+                                                        }
+                                                    } else {
+                                                        return (
+                                                            <Link
+                                                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                                                    } `}
+                                                                key={i}
+                                                                onClick={() => changeCPage(n)}
+                                                            >
+                                                                {n}
+                                                            </Link>
+                                                        );
+                                                    }
+                                                })}
+                                            </span>
+
+                                            <Link
+                                                className="paginate_button next"
+                                                to="#"
+                                                onClick={nextPage}
+                                            >
+                                                <i className="fa-solid fa-angle-right" />
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
