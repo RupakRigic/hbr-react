@@ -10,6 +10,8 @@ import Footer from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrollToTop";
 import Home from "./components/Dashboard/Home";
 import Login from "./pages/Login";
+// Notify Admin List
+import NotifyAdminList from "./pages/NotifyAdmin/NotifyAdminList";
 /// Table
 import BuilderTable from "./pages/Builder/BuilderList";
 import SubdivisionList from "./pages/Subdivision/SubdivisionList";
@@ -254,6 +256,11 @@ const allroutes = [
     url: "/filterclosings",
     component: <FilterClosings />,
     allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
+  },
+  {
+    url: "/notifyuserlist",
+    component: <NotifyAdminList />,
+    allowedRoles: ["Admin"],
   },
   // {
   //   url: "/thank-you",
