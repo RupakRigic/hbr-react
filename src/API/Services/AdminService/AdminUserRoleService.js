@@ -14,4 +14,5 @@ export default {
     checkBuilderForCompany: (userData) => clientAuth.post(`admin/user/check-company-builder`, { json: userData }),
     userloginanalytics: (id) => clientAuth.get(`admin/user/user-login-activity/${id}`),
     userlogoutnanalytics: (id) => clientAuth.get(`admin/user/user-logout-activity/${id}`),
+    activity_log: (id, userData) => clientAuth.get(`admin/user/activity/log/${id}`, { json: userData }),
 };
