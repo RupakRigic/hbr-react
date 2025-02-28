@@ -348,88 +348,97 @@ const WeeklyDataIndex = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {records.map((element) => {
-                            const currentId = element.trafic_sales[0].subdivision_id;
-                            return (
-                              <tr key={currentId} style={{ textAlign: "center" }}>
-                                <td>{element.trafic_sales[0].weekending}</td>
-                                <td>
-                                  <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
-                                    Sold Out
-                                  </Button>
-                                </td>
-                                <td>{element.name}</td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].weeklytraffic
-                                    }
-                                    className="form-control"
-                                    name="weekly_traffic"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].grosssales
-                                    }
-                                    className="form-control"
-                                    name="grosssales"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td></td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].cancelations
-                                    }
-                                    className="form-control"
-                                    name="cancelations"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td></td>
-                                <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].lotreleased
-                                    }
-                                    className="form-control"
-                                    name="current_lots_released"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td>
+                          {records?.length > 0 ?
+                            records.map((element) => {
+                              const currentId = element.trafic_sales[0].subdivision_id;
+                              return (
+                                <tr key={currentId} style={{ textAlign: "center" }}>
+                                  <td>{element.trafic_sales[0].weekending}</td>
                                   <td>
-                                    <input
-                                      type="hidden"
-                                      name="subdivision_id"
-                                      value={
-                                        element.trafic_sales[0].subdivision_id
-                                      }
-                                    />
+                                    <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
+                                      Sold Out
+                                    </Button>
+                                  </td>
+                                  <td>{element.name}</td>
+                                  <td>
                                     <input
                                       type="number"
                                       defaultValue={
-                                        element.trafic_sales[0]
-                                          .unsoldinventory
+                                        element.trafic_sales[0].weeklytraffic
                                       }
                                       className="form-control"
-                                      name="current_un_sold_standing_inventory"
+                                      name="weekly_traffic"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].grosssales
+                                      }
+                                      className="form-control"
+                                      name="grosssales"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td></td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].cancelations
+                                      }
+                                      className="form-control"
+                                      name="cancelations"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td></td>
+                                  <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].lotreleased
+                                      }
+                                      className="form-control"
+                                      name="current_lots_released"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td>
+                                    <td>
+                                      <input
+                                        type="hidden"
+                                        name="subdivision_id"
+                                        value={
+                                          element.trafic_sales[0].subdivision_id
+                                        }
+                                      />
+                                      <input
+                                        type="number"
+                                        defaultValue={
+                                          element.trafic_sales[0]
+                                            .unsoldinventory
+                                        }
+                                        className="form-control"
+                                        name="current_un_sold_standing_inventory"
+                                        onChange={(event) => handleChange(event, currentId)}
+                                      />{" "}
+                                    </td>
+                                  </td>
+                                </tr>
+                              );
+                            }
+                            ) : (
+                              <tr>
+                                <td colSpan="11" style={{ textAlign: "center" }}>
+                                  No data found
                                 </td>
                               </tr>
-                            );
-                          })}
+                            )
+                          }
                         </tbody>
                       </table>
                       <div className="d-sm-flex text-center justify-content-between align-items-center">
