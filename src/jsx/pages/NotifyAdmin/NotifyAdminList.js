@@ -64,12 +64,15 @@ const NotifyAdminList = () => {
         setNpage(Math.ceil(responseData.data.total / recordsPage));
         setNotifyUserListCount(responseData.data.total);
         setSelectedNotifyUsers(selectedUser ? selectedUser?.map(user => user.id) : []);
+      } else {
+        setError(responseData.message);
+        setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        console.log(errorJson.message);
       }
     }
   };
@@ -232,7 +235,7 @@ const NotifyAdminList = () => {
                                       />
                                     </td>
                                     <td>{(currentPage - 1) * 100 + (index + 1)}</td>
-                                    <td style={{ textAlign: "center" }}>{element.name + " " + element.last_name}</td>
+                                    <td style={{ textAlign: "center" }}>{element.name || "" + " " + element.last_name || ""}</td>
                                     <td style={{ textAlign: "center" }}>{element.email}</td>
                                   </tr>
                                 ))
@@ -297,7 +300,7 @@ const NotifyAdminList = () => {
                                       />
                                     </td>
                                     <td>{(currentPage - 1) * 100 + (index + 1)}</td>
-                                    <td style={{ textAlign: "center" }}>{element.name + " " + element.last_name}</td>
+                                    <td style={{ textAlign: "center" }}>{element.name || "" + " " + element.last_name || ""}</td>
                                     <td style={{ textAlign: "center" }}>{element.email}</td>
                                   </tr>
                                 ))

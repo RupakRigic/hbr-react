@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Tabs, Tab } from 'react-bootstrap';
@@ -12,28 +12,18 @@ const UserAnalyticsList = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [userName, setUserName] = useState("");
-    const [userLoginAnalyticsList, setUserLoginAnalyticsList] = useState([]);
-    const [userLogoutAnalyticsList, setUserLogoutAnalyticsList] = useState([]);
     const [userActivityLogList, setUserActivityLogList] = useState([]);
     const [userActivityLogListCount, setUserActivityLogListCount] = useState(0);
-    const [activeKey, setActiveKey] = useState("loginDetail");
+    const [activeKey, setActiveKey] = useState("login");
     const [currentPage, setCurrentPage] = useState(1);
-    const recordsPage = 100;
+    const recordsPage = 10;
     const lastIndex = currentPage * recordsPage;
     const [npage, setNpage] = useState(0);
     const number = [...Array(npage + 1).keys()].slice(1);
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
-            if (activeKey === "loginDetail") {
-                GetUserLoginAnalyticsList(currentPage, params.id);
-            } else if (activeKey === "logoutDetail") {
-                GetUserLogoutAnalyticsList(currentPage, params.id);
-            } else if (activeKey === "export file" || activeKey === "Weeklydata Input") {
-                GetUserActivityLog(params.id);
-            } else {
-                return;
-            }
+            GetUserActivityLog(params.id);
         } else {
             navigate("/");
         }
@@ -55,59 +45,21 @@ const UserAnalyticsList = () => {
         }
     };
 
-    const GetUserLoginAnalyticsList = async (pageNumber, id) => {
-        setIsLoading(true);
-        try {
-            const responseData = await AdminUserRoleService.userloginanalytics(pageNumber, id).json();
-            if (responseData.status) {
-                setIsLoading(false);
-                setUserLoginAnalyticsList(responseData.activity.data);
-                setNpage(Math.ceil(responseData.activity.meta.total / recordsPage));
-                setUserActivityLogListCount(responseData.activity.meta.total);
-                setUserName(responseData.user);
-            }
-        } catch (error) {
-            setIsLoading(false);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
-    const GetUserLogoutAnalyticsList = async (pageNumber, id) => {
-        setIsLoading(true);
-        try {
-            const responseData = await AdminUserRoleService.userlogoutnanalytics(pageNumber, id).json();
-            if (responseData.status) {
-                setIsLoading(false);
-                setUserLogoutAnalyticsList(responseData.activity.data);
-                setNpage(Math.ceil(responseData.activity.meta.total / recordsPage));
-                setUserActivityLogListCount(responseData.activity.meta.total);
-                setUserName(responseData.user);
-            }
-        } catch (error) {
-            setIsLoading(false);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
     const GetUserActivityLog = async (id) => {
         setIsLoading(true);
         try {
             var userData = {
-                activitytype: activeKey
+                activity_type: activeKey
             }
 
             const responseData = await AdminUserRoleService.activity_log(id, userData).json();
 
             if (responseData.status) {
                 setIsLoading(false);
-                setUserActivityLogList(responseData.data.activity);
-                setUserName(responseData.data.user);
+                setUserActivityLogList(responseData.activity.data);
+                setNpage(Math.ceil(responseData.activity.meta.total / recordsPage));
+                setUserActivityLogListCount(responseData.activity.meta.total);
+                setUserName(responseData.user);
             }
         } catch (error) {
             setIsLoading(false);
@@ -119,7 +71,7 @@ const UserAnalyticsList = () => {
     };
 
     return (
-        <div>
+        <Fragment>
             <MainPagetitle mainTitle="User Analytics List" pageTitle="User Analytics List" parentTitle="Users" link="/userlist" />
             <div className="container-fluid">
                 <div className="row">
@@ -144,9 +96,9 @@ const UserAnalyticsList = () => {
                                         onSelect={(key) => setActiveKey(key)}
                                         className="mb-3 custom-tabs mt-2"
                                     >
-                                        <Tab eventKey="loginDetail"
+                                        <Tab eventKey="login"
                                             title={
-                                                <span style={{ fontWeight: activeKey === "loginDetail" ? "bold" : "normal" }}>Login Details</span>
+                                                <span style={{ fontWeight: activeKey === "login" ? "bold" : "normal" }}>Login Details</span>
                                             }
                                         >
                                             <div
@@ -171,10 +123,10 @@ const UserAnalyticsList = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody style={{ textAlign: "center" }}>
-                                                            {userLoginAnalyticsList !== null && userLoginAnalyticsList?.length > 0 ? (
-                                                                userLoginAnalyticsList?.map((element, index) => (
+                                                            {userActivityLogList !== null && userActivityLogList?.length > 0 ? (
+                                                                userActivityLogList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{(currentPage - 1) * 100 + (index + 1)}</td>
+                                                                        <td>{(currentPage - 1) * 10 + (index + 1)}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.loggedin_at}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.last_used_at}</td>
                                                                     </tr>
@@ -192,9 +144,9 @@ const UserAnalyticsList = () => {
 
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="logoutDetail"
+                                        <Tab eventKey="logout"
                                             title={
-                                                <span style={{ fontWeight: activeKey === "logoutDetail" ? "bold" : "normal" }}>Logout Details</span>
+                                                <span style={{ fontWeight: activeKey === "logout" ? "bold" : "normal" }}>Logout Details</span>
                                             }
                                         >
                                             <div
@@ -218,10 +170,10 @@ const UserAnalyticsList = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody style={{ textAlign: "center" }}>
-                                                            {userLogoutAnalyticsList !== null && userLogoutAnalyticsList?.length > 0 ? (
-                                                                userLogoutAnalyticsList?.map((element, index) => (
+                                                            {userActivityLogList !== null && userActivityLogList?.length > 0 ? (
+                                                                userActivityLogList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{(currentPage - 1) * 100 + (index + 1)}</td>
+                                                                        <td>{(currentPage - 1) * 10 + (index + 1)}</td>
                                                                         <td style={{ textAlign: "center" }}>{element.logged_out_at}</td>
                                                                     </tr>
                                                                 ))
@@ -260,17 +212,17 @@ const UserAnalyticsList = () => {
                                                         <thead>
                                                             <tr style={{ textAlign: "center" }}>
                                                                 <th><strong>No.</strong></th>
-                                                                <th>Logged In At</th>
-                                                                <th>Last Used At</th>
+                                                                <th>Module</th>
+                                                                <th>Filename</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody style={{ textAlign: "center" }}>
                                                             {userActivityLogList !== null && userActivityLogList?.length > 0 ? (
                                                                 userActivityLogList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{index + 1}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.loggedin_at}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.last_used_at}</td>
+                                                                        <td>{(currentPage - 1) * 10 + (index + 1)}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.exported_module}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.exported_filename}</td>
                                                                     </tr>
                                                                 ))
                                                             ) : (
@@ -308,17 +260,17 @@ const UserAnalyticsList = () => {
                                                         <thead>
                                                             <tr style={{ textAlign: "center" }}>
                                                                 <th><strong>No.</strong></th>
-                                                                <th>Logged In At</th>
-                                                                <th>Last Used At</th>
+                                                                <th>Module</th>
+                                                                <th>Filename</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody style={{ textAlign: "center" }}>
                                                             {userActivityLogList !== null && userActivityLogList?.length > 0 ? (
                                                                 userActivityLogList?.map((element, index) => (
                                                                     <tr>
-                                                                        <td>{index + 1}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.loggedin_at}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.last_used_at}</td>
+                                                                        <td>{(currentPage - 1) * 10 + (index + 1)}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.exported_module}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.exported_filename}</td>
                                                                     </tr>
                                                                 ))
                                                             ) : (
@@ -406,7 +358,7 @@ const UserAnalyticsList = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Fragment>
     );
 };
 
