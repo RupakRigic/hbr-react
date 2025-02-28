@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import BuilderOffcanvas from "./BuilderOffcanvas";
-import { Form, Offcanvas, Row } from "react-bootstrap";
+import { Col, Form, Offcanvas, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import PriceComponent from "../../components/Price/PriceComponent";
 import Box from "@mui/material/Box";
@@ -249,6 +249,7 @@ const BuilderTable = () => {
   const exportColumns = [
     { label: "Builder_code", key: "builder_code" },
     { label: "Logo", key: "Logo" },
+    { label: "Fax", key: "fax" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
     { label: "Company Type", key: "company_type" },
@@ -264,7 +265,10 @@ const BuilderTable = () => {
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_office_state" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
+    { label: "Coporate Office Address Latitude", key: "coporate_officeaddress_lat" },
+    { label: "Coporate Office Address Longitude", key: "coporate_officeaddress_lng" },
     { label: "Stock Market", key: "stock_market" },
+    { label: "Active", key: "is_active" },
     { label: "Stock Symbol", key: "stock_symbol" },
     { label: "Active Communities", key: "active_communities" },
     { label: "Closing This Year", key: "closing_this_year" },
@@ -3166,7 +3170,7 @@ const BuilderTable = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)} size="lg">
         <Fragment>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -3178,32 +3182,52 @@ const BuilderTable = () => {
           </Modal.Header>
           <Modal.Body>
             <Row>
-              <ul className="list-unstyled">
-                <li>
-                  <label className="form-check">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={selectAll}
-                      onChange={handleSelectAllToggle}
-                    />
-                    Select All
-                  </label>
-                </li>
-                {exportColumns.map((col) => (
-                  <li key={col.label}>
+            <Col lg={6}>
+                <ul className='list-unstyled'>
+                  <li>
                     <label className="form-check">
                       <input
                         type="checkbox"
                         className="form-check-input"
-                        checked={selectedColumns.includes(col.label)}
-                        onChange={() => handleColumnToggle(col.label)}
+                        checked={selectAll}
+                        onChange={handleSelectAllToggle}
                       />
-                      {col.label}
+                      Select All
                     </label>
                   </li>
-                ))}
-              </ul>
+                  {exportColumns.slice(0, 20).map((col) => (
+                    <li key={col.label}>
+                      <label className='form-check'>
+                        <input
+                          type="checkbox"
+                          className='form-check-input'
+                          checked={selectedColumns.includes(col.label)}
+                          onChange={() => handleColumnToggle(col.label)}
+                        />
+                        {col.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
+
+              <Col lg={6}>
+                <ul className='list-unstyled'>
+                  {exportColumns.slice(20, 37).map((col) => (
+                    <li key={col.label}>
+                      <label className='form-check'>
+                        <input
+                          type="checkbox"
+                          className='form-check-input'
+                          checked={selectedColumns.includes(col.label)}
+                          onChange={() => handleColumnToggle(col.label)}
+                        />
+                        {col.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
             </Row>
           </Modal.Body>
           <Modal.Footer>
