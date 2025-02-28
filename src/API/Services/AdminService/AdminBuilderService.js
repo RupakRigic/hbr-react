@@ -11,7 +11,6 @@ export default {
     accessField: () => clientAuth.get(`admin/builder/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/builder/manage-access-fields`,{ json: userData }),
     getRoleFieldList:(tableName)=> clientAuth.get(`admin/builder/access-list/${tableName}`),    
-    export: () => clientAuth.get(`admin/builder/export`),
     import: (userData) => clientAuth.post(`admin/builder/import`, { json: userData }),
     builderDropDown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/builder/bulkupdate/${id}`, { json: userData }),
@@ -20,4 +19,5 @@ export default {
     getArchiveFieldList:(tableName)=> clientAuth.get(`admin/archive/get-fields/${tableName}`),
     getArchiveList:()=> clientAuth.get(`admin/archive/archive-data-list`),
     destroyArchive: (id) => clientAuth.delete(`admin/archive/destroy/${id}`),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/builder/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };

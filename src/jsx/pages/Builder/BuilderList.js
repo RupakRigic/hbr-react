@@ -27,7 +27,8 @@ import Swal from "sweetalert2";
 const BuilderTable = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkBuilder = useRef();
 
@@ -270,22 +271,10 @@ const BuilderTable = () => {
     { label: "Permits This Year", key: "permits_this_year" },
     { label: "Net Sales this year", key: "net_sales_this_year" },
     { label: "Current Avg Base Price", key: "current_avg_base_Price" },
-    {
-      label: "Median Closing Price This Year ",
-      key: "median_closing_price_this_year",
-    },
-    {
-      label: "Median Closing Price Last Year",
-      key: "median_closing_price_last_year",
-    },
-    {
-      label: "Avg Net Sales Per Month This Year ",
-      key: "avg_net_sales_per_month_this_year",
-    },
-    {
-      label: "Avg Closings Per Month This Year",
-      key: "avg_closings_per_month_this_year",
-    },
+    { label: "Median Closing Price This Year ", key: "median_closing_price_this_year" },
+    { label: "Median Closing Price Last Year", key: "median_closing_price_last_year" },
+    { label: "Avg Net Sales Per Month This Year ", key: "avg_net_sales_per_month_this_year" },
+    { label: "Avg Closings Per Month This Year", key: "avg_closings_per_month_this_year" },
     { label: "Total Closings", key: "total_closings" },
     { label: "Total Permits", key: "total_permits" },
     { label: "Total Net Sales", key: "total_net_sales" },
@@ -312,143 +301,30 @@ const BuilderTable = () => {
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminBuilderService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `builders.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = (filter ? BuilderList : AllBuilderListExport).map((row) => {
-      const mappedRow = {};
-      tableHeaders.forEach((header) => {
-        switch (header) {
-          case "Builder_code":
-            mappedRow[header] = row.builder_code;
-            break;
-          case "Logo":
-            mappedRow[header] = imageUrl + row.logo;
-            break;
-          case "Website":
-            mappedRow[header] = row.website;
-            break;
-          case "Builder Name":
-            mappedRow[header] = row.name;
-            break;
-          case "Company Type":
-            mappedRow[header] = row.company_type;
-            break;
-          case "LV office Phone":
-            mappedRow[header] = row.phone;
-            break;
-          case "LV office Email":
-            mappedRow[header] = row.email_address;
-            break;
-          case "LV office address":
-            mappedRow[header] = row.officeaddress1;
-            break;
-          case "LV office City":
-            mappedRow[header] = row.city;
-            break;
-          case "LV office Zip code":
-            mappedRow[header] = row.zipcode;
-            break;
-          case "Current Division President":
-            mappedRow[header] = row.current_division_president;
-            break;
-          case "Current Land Acquisitions":
-            mappedRow[header] = row.current_land_aquisitions;
-            break;
-          case "Corporate Office Address":
-            mappedRow[header] = row.coporate_officeaddress_1;
-            break;
-          case "Corporate Office City":
-            mappedRow[header] = row.coporate_officeaddress_city;
-            break;
-          case "Corporate Office State":
-            mappedRow[header] = row.coporate_officeaddress_2;
-            break;
-          case "Corporate Office Zip":
-            mappedRow[header] = row.coporate_officeaddress_zipcode;
-            break;
-          case "Stock Market":
-            mappedRow[header] = row.stock_market;
-            break;
-          case "Stock Symbol":
-            mappedRow[header] = row.stock_symbol;
-            break;
-          case "Active Communities":
-            mappedRow[header] = row.active_communities;
-            break;
-          case "Closing This Year":
-            mappedRow[header] = row.closing_this_year;
-            break;
-          case "Permits This Year":
-            mappedRow[header] = row.permits_this_year;
-            break;
-          case "Net Sales this year":
-            mappedRow[header] = row.net_sales_this_year;
-            break;
-          case "Current Avg Base Price":
-            mappedRow[header] = row.current_avg_base_Price;
-            break;
-          case "Median Closing Price This Year":
-            mappedRow[header] = row.median_closing_price_this_year;
-            break;
-          case "Median Closing Price Last Year":
-            mappedRow[header] = row.median_closing_price_last_year;
-            break;
-          case "Avg Net Sales Per Month This Year":
-            mappedRow[header] = row.avg_net_sales_per_month_this_year;
-            break;
-          case "Avg Closings Per Month This Year":
-            mappedRow[header] = row.avg_closings_per_month_this_year;
-            break;
-          case "Total Closings":
-            mappedRow[header] = row.total_closings;
-            break;
-          case "Total Permits":
-            mappedRow[header] = row.total_permits;
-            break;
-          case "Total Net Sales":
-            mappedRow[header] = row.total_net_sales;
-            break;
-          case "Date Of First Closing":
-            mappedRow[header] = row.date_of_first_closing;
-            break;
-          case "Date Of Latest Closing":
-            mappedRow[header] = row.date_of_latest_closing;
-            break;
-          default:
-            mappedRow[header] = "";
-        }
-      });
-      return mappedRow;
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
-
-    // Applying font style to header
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Builders');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Builders.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
 
   const [BuilderDetails, SetBuilderDetails] = useState({
@@ -601,8 +477,6 @@ const BuilderTable = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
     setExcelLoading(true);
-    // const response = await AdminBuilderService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(BuilderListCount / recordsPage);
     let allData = BuilderList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1975,15 +1849,11 @@ const BuilderTable = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -2011,15 +1881,11 @@ const BuilderTable = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -3300,8 +3166,8 @@ const BuilderTable = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
-        <>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
+        <Fragment>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
             <button
@@ -3344,52 +3210,13 @@ const BuilderTable = () => {
             <button
               varient="primary"
               class="btn btn-primary"
+              disabled={excelDownload}
               onClick={handleDownloadExcel}
             >
-              Download
+              {excelDownload ? "Downloading..." : "Download"}
             </button>
           </Modal.Footer>
-        </>
-      </Modal>
-      <Modal show={columnSeq} onHide={setcolumnSeq}>
-        <>
-          <Modal.Header>
-            <Modal.Title>Column Sequence</Modal.Title>
-            <button
-              className="btn-close"
-              aria-label="Close"
-              onClick={() => setcolumnSeq(false)}
-            ></button>
-          </Modal.Header>
-          <Modal.Body>
-            <Row>
-              <ul className="list-unstyled">
-                {colSeq.map((col, index) => (
-                  <li
-                    key={index}
-                    draggable
-                    onDragStart={handleDragStart(index)}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    data-index={index}
-                    style={{ backgroundColor: 'lightblue', padding: '10px', margin: '5px', cursor: 'move' }}
-                  >
-                    {col}
-                  </li>
-                ))}
-              </ul>
-            </Row>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              varient="primary"
-              class="btn btn-primary"
-              onClick={handleDownloadExcel}
-            >
-              Save
-            </button>
-          </Modal.Footer>
-        </>
+        </Fragment>
       </Modal>
     </Fragment>
   );

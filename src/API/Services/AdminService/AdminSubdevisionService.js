@@ -9,7 +9,6 @@ export default {
     accessField: () => clientAuth.get(`admin/subdivision/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/subdivision/manage-access-fields`,{ json: userData }),
     getRoleFieldList:()=> clientAuth.get(`admin/subdivision/access-list`),
-    export: () => clientAuth.get(`admin/subdivision/export`),
     getByBuilderId: (filterQuery='') => clientAuth.get(`admin/subdivision/list-for-google-map${filterQuery}`),
     import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
     put: (id, userData) => clientAuth.put(`admin/subdivision/soldout/${id}`, { json: userData }),

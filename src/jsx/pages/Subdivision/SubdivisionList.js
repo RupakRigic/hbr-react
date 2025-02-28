@@ -416,15 +416,15 @@ const SubdivisionList = () => {
       const downloadUrl = URL.createObjectURL(response);
       const a = document.createElement('a');
       a.href = downloadUrl;
-      a.setAttribute('download', `subdivision.xlsx`);
+      a.setAttribute('download', `subdivisions.xlsx`);
       document.body.appendChild(a);
       a.click();
       a.parentNode.removeChild(a);
       setExcelDownload(false);
     } catch (error) {
       console.log(error);
-    };
-  }
+    }
+  };
 
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
     builder_id: "",
