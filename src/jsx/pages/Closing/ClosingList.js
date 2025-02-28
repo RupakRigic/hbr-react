@@ -25,7 +25,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const ClosingList = () => {
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
@@ -432,94 +433,30 @@ const ClosingList = () => {
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminClosingService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `closings.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = AllClosingListExport.map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Closing Type":
-            return row.closing_type || '';
-          case "Closing Date":
-            return row.closingdate || '';
-          case "Doc":
-            return row.document || '';
-          case "Builder Name":
-            return row.subdivision?.builder?.name || '';
-          case "Subdivision Name":
-            return row.subdivision?.name || '';
-          case "Closing Price":
-            return row.closingprice || '';
-          case "Address":
-            return row.address || '';
-          case "Parcel Number":
-            return row.parcel || '';
-          case "Sub Legal Name":
-            return row.sublegal_name || '';
-          case "Seller Legal Name":
-            return row.sellerleagal || '';
-          case "Buyer Name":
-            return row.buyer || '';
-          case "Lender":
-            return row.lender || '';
-          case "Loan Amount":
-            return row.loanamount || '';
-          case "Type":
-            return row.type || '';
-          case "Product Type":
-            return row.subdivision?.product_type || '';
-          case "Area":
-            return row.subdivision?.area || '';
-          case "Master Plan":
-            return row.subdivision?.masterplan_id || '';
-          case "Zip Code":
-            return row.subdivision?.zipcode || '';
-          case "Lot Width":
-            return row.subdivision?.lotwidth || '';
-          case "Lot Size":
-            return row.subdivision?.lotsize || '';
-          case "Zoning":
-            return row.subdivision?.zoning || '';
-          case "Age Restricted":
-            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
-          case "All Single Story":
-            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
-          case "Fk Sub Id":
-            return row.subdivision?.subdivision_code || '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Closing');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Closing.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
-
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -1505,15 +1442,11 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1541,15 +1474,11 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -2584,7 +2513,14 @@ const ClosingList = () => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button 
+              varient="primary" 
+              class="btn btn-primary"
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+                {excelDownload ? "Downloading..." : "Download"}
+              </button>
           </Modal.Footer>
         </>
       </Modal>

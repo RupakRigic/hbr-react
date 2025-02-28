@@ -10,10 +10,9 @@ export default {
 
     accessField: () => clientAuth.get(`admin/closing/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/closing/manage-access-fields`,{ json: userData }),
-    export: () => clientAuth.get(`admin/closing/export`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/closing/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/closing/bulkdestroy/${id}`),
     ccapnUpdate: (userData) => clientAuth.post(`admin/closing/ccapn-update`,{ json: userData }),
     lender: () => clientAuth.get(`admin/closing/lender`),
-
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/closing/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };
