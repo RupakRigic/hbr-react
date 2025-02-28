@@ -9,9 +9,8 @@ export default {
     import: (userData) => clientAuth.post(`admin/price/import`, { json: userData }),
     accessField: () => clientAuth.get(`admin/price/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/price/manage-access-fields`,{ json: userData }),
-    export: () => clientAuth.get(`admin/price/export`),
     import: (userData) => clientAuth.post(`admin/price/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/price/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/price/bulkdestroy/${id}`),
-
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/price/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };

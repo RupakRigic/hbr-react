@@ -2519,8 +2519,8 @@ const ClosingList = () => {
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >
-                {excelDownload ? "Downloading..." : "Download"}
-              </button>
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
           </Modal.Footer>
         </>
       </Modal>

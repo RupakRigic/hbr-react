@@ -29,6 +29,8 @@ const PriceList = () => {
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByBasePricesFilter") ? JSON.parse(localStorage.getItem("searchQueryByBasePricesFilter")) : "");
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState(false);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const handlePopupClose = () => setShowPopup(false);
   const resetSelection = () => {
     setSelectAll(false);
@@ -125,90 +127,29 @@ const PriceList = () => {
 
   ];
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminPriceService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `prices.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = (filter ? priceList : AllProductListExport).map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Date":
-            return row.created_at ? formatDate(row.created_at) : "" || '';
-          case "Builder Name":
-            return row.product.subdivision &&
-              row.product.subdivision.builder?.name;
-          case "Subdivision Name":
-            return row.product.subdivision &&
-              row.product.subdivision?.name;
-          case "Product Name":
-            return row.name || '';
-          case "Square Footage":
-            return row.product.sqft
-          case "Stories":
-            return row.product.stories || '';
-          case "Bedrooms":
-            return row.product.bedroom || '';
-          case "Bathrooms":
-            return row.product.bathrooms || '';
-          case "Garage":
-            return row.product.garage || '';
-          case "Base Price":
-            return row.baseprice || '';
-          case "Price Per SQFT":
-            return row.product.recentpricesqft || '';
-          case "Product Type":
-            return row.product.subdivision.product_type || '';
-          case "Area":
-            return row.product.subdivision.area || '';
-          case "Master Plan":
-            return row.product.subdivision.masterplan_id || '';
-          case "Zip Code":
-            return row.product.subdivision.zipcode || '';
-          case "Lot Width":
-            return row.product.subdivision.lotwidth || '';
-          case "Lot Size":
-            return row.product.subdivision.lotsize || '';
-          case "Zoning":
-            return row.product.subdivision.zoning || '';
-          case "Age Restricted":
-            return row.product.subdivision.age === 1 ? "Yes" : row.product.subdivision.age === 0 ? "No" : '';
-          case "All Single Story":
-            return row.product.subdivision.single === 1 ? "Yes" : row.product.subdivision.single === 0 ? "No" : '';
-          case "__pkPriceID":
-            return row.id || '';
-          case "_fkProductID":
-            return row.product.product_code || '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Price List');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Price_List.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
 
   const [filterQuery, setFilterQuery] = useState({
@@ -275,7 +216,6 @@ const PriceList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
-  const [excelLoading, setExcelLoading] = useState(true);
   const [ProductList, setProductList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -1662,15 +1602,11 @@ const PriceList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1698,15 +1634,11 @@ const PriceList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -2738,7 +2670,7 @@ const PriceList = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -2779,7 +2711,14 @@ const PriceList = () => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button 
+              varient="primary" 
+              class="btn btn-primary" 
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
