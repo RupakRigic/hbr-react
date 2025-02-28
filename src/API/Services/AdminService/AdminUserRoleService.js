@@ -15,4 +15,6 @@ export default {
     userloginanalytics: (page=1, id) => clientAuth.get(`admin/user/user-login-activity/${id}?page=${page}`),
     userlogoutnanalytics: (page=1, id) => clientAuth.get(`admin/user/user-logout-activity/${id}?page=${page}`),
     activity_log: (id, userData) => clientAuth.get(`admin/user/activity/log/${id}`, { json: userData }),
+    notify_user_list: (page=1, userData) => clientAuth.post(`admin/notify/user/list?page=${page}`, { json: userData }),
+    notify_user_store: (userData) => clientAuth.post(`admin/notify/user/store`, { json: userData }),
 };
