@@ -2734,7 +2734,7 @@ console.log(selectedLandSales);
       )}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Import Builder CSV Data</Modal.Title>
+          <Modal.Title>Import Product CSV Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mt-3">
