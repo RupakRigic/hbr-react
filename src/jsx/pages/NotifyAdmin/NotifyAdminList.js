@@ -27,6 +27,7 @@ const NotifyAdminList = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       NotifyUserList();
+      setSelectedNotifyUsers([]);
     } else {
       navigate("/");
     }
@@ -66,6 +67,9 @@ const NotifyAdminList = () => {
         setSelectedNotifyUsers(selectedUser ? selectedUser?.map(user => user.id) : []);
       } else {
         setError(responseData.message);
+        setNotifyUserList([]);
+        setNotifyUserListCount(0);
+        setSelectedNotifyUsers([]);
         setIsLoading(false);
       }
     } catch (error) {
