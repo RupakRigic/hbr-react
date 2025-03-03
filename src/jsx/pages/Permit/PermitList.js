@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminPermitService from "../../../API/Services/AdminService/AdminPermitService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -24,7 +24,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const PermitList = () => {
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const [SubdivisionList, SetSubdivisionList] = useState([]);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
@@ -288,7 +289,7 @@ const PermitList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        getPermitList(currentPage, sortConfig, searchQuery);
+        getPermitList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_Permit", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_Permit", JSON.stringify(selectedSubdivisionName));
@@ -554,97 +555,30 @@ const PermitList = () => {
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminPermitService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `permits.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = AllPermitListExport.map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Date":
-            return row.date || '';
-          case "Builder Name":
-            return row.subdivision?.builder.name || '';
-          case "Subdivision Name":
-            return row.subdivision?.name || '';
-          case "Address Number":
-            return row.address2 || '';
-          case "Address Name":
-            return row.address1 || '';
-          case "Parcel Number":
-            return row.parcel || '';
-          case "Contractor":
-            return row.contractor || '';
-          case "Square Footage":
-            return row.sqft || '';
-          case "Owner":
-            return row.owner || '';
-          case "Lot Number":
-            return row.lotnumber || '';
-          case "Permit Number":
-            return row.permitnumber || '';
-          case "Plan":
-            return row.plan || '';
-          case "Sub Legal Name":
-            return row.subdivision?.name || '';
-          case "Value":
-            return row.value || '';
-          case "Product Type":
-            return row.subdivision?.product_type || '';
-          case "Area":
-            return row.subdivision?.area || '';
-          case "Master Plan":
-            return row.subdivision?.masterplan_id || '';
-          case "Zip Code":
-            return row.subdivision?.zipcode || '';
-          case "Lot Width":
-            return row.subdivision?.lotwidth || '';
-          case "Lot Size":
-            return row.subdivision?.lotsize || '';
-          case "Zoning":
-            return row.subdivision?.zoning || '';
-          case "Age Restricted":
-            return (row.subdivision?.age === 1 ? "Yes" : "No") || '';
-          case "All Single Story":
-            return (row.subdivision?.single === 1 ? "Yes" : "No") || '';
-          case "Permit id":
-            return row.permitnumber || '';
-          case "Fk sub id":
-            return row.subdivision?.subdivision_code || '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    // Optionally apply styles to the headers
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Permit');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Permit.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
-
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -746,6 +680,7 @@ const PermitList = () => {
 
   const getPermitList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery));
     try {
@@ -760,6 +695,7 @@ const PermitList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setPageChange(false);
       setPermitList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
@@ -769,7 +705,6 @@ const PermitList = () => {
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
         }
       } else {
-        setExcelLoading(false);
         if(!pageChange){
           setAllPermitListExport(responseData.data);
         }
@@ -777,6 +712,7 @@ const PermitList = () => {
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -830,7 +766,6 @@ const PermitList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     getPermitList(currentPage, sortConfig, searchQuery);
   };
 
@@ -1386,7 +1321,7 @@ const PermitList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -1434,15 +1369,11 @@ const PermitList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1470,15 +1401,11 @@ const PermitList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -2583,7 +2510,7 @@ const PermitList = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -2627,9 +2554,10 @@ const PermitList = () => {
             <button
               varient="primary"
               class="btn btn-primary"
+              disabled={excelDownload}
               onClick={handleDownloadExcel}
             >
-              Download
+              {excelDownload ? "Downloading..." : "Download"}
             </button>
           </Modal.Footer>
         </>
@@ -2650,7 +2578,7 @@ const PermitList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -12,7 +12,8 @@ import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilder
 import { Form, Offcanvas } from "react-bootstrap";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
-import Dropdown from "react-bootstrap/Dropdown";
+import InputMask from "react-input-mask";
+import { MultiSelect } from "react-multi-select-component";
 
 const CCAPNList = () => {
   const [selectedLandSales, setSelectedLandSales] = useState([]);
@@ -21,10 +22,15 @@ const CCAPNList = () => {
   const [filterQuery, setFilterQuery] = useState({
     parcel: "",
     address: "",
+    builder_name: "",
+    subdivision_name: "",
+    subdivision_code: ""
   });
   const [BuilderList, setBuilderList] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
   const [selectedBuilderName, setSelectedBuilderName] = useState("");
+  const [selectedSubdivisionNameFilter, setSelectedSubdivisionNameFilter] = useState([]);
+  const [selectedBuilderNameFilter, setSelectedBuilderNameFilter] = useState([]);
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [Error, setError] = useState("");
@@ -39,6 +45,16 @@ const CCAPNList = () => {
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const HandleSortingPopupShow = () => setShowSortingPopup(true);
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
+  const [sortConfig, setSortConfig] = useState([]);
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [subdivisionDropDown, setSubdivisionDropDown] = useState([]);
 
   useEffect(() => {
     setSearchQuery(filterString());
@@ -46,11 +62,15 @@ const CCAPNList = () => {
 
   useEffect(() => {
     getbuilderDoplist();
+    GetBuilderDropDownList();
+    GetSubdivisionDropDownList();
   }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      GetCCAPNList(currentPage, searchQuery);
+      if (!manageFilterOffcanvas) {
+        GetCCAPNList(currentPage, sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
@@ -104,10 +124,38 @@ const CCAPNList = () => {
     return queryString ? `&${queryString}` : "";
   };
 
-  const handleSelectBuilderNameChange = (e) => {
-    setSelectedBuilderName(e);
-    console.log(e.value);
-    getbuilderlist(e.value);
+  const GetBuilderDropDownList = async () => {
+    try {
+      const response = await AdminBuilderService.builderDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((builder) => ({
+        label: builder.name,
+        value: builder.id,
+      }));
+      setBuilderDropDown(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
+
+  const GetSubdivisionDropDownList = async () => {
+    try {
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      setSubdivisionDropDown(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
   };
 
   const getbuilderlist = async (builderId) => {
@@ -118,17 +166,62 @@ const CCAPNList = () => {
         label: subdivision.name,
         value: subdivision.id,
       }));
-      console.log(formattedData);
       setBuilderList(formattedData);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
+  };
+
+  const handleSelectBuilderNameChange = (e) => {
+    setSelectedBuilderName(e);
+    getbuilderlist(e.value);
+  };
+
+  const handleSelectBuilderNameChangeFilter = (selectedItems) => {
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedBuilderNameFilter(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      builder_name: selectedNames
+    }));
+  }
+
+  const handleSelectSubdivisionNameChangeFilter = (selectedItems) => {
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionNameFilter(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      subdivision_name: selectedNames
+    }));
+  };
+
+
+
+  const fieldOptions = [
+    { value: "builderName", label: "Builder" },
+    { value: "subdivisionName", label: "Subdivision" },
+    { value: "parcel", label: "Parcel Number" },
+    { value: "loc_strno", label: "Full Address" },
+    { value: "ll_x", label: "Latitude" },
+    { value: "ll_y", label: "Longitude" },
+    { value: "subdivision_code", label: "Sub ID" },
+    { value: "permits", label: "Permits" },
+    { value: "closings", label: "Closings" },
+    { value: "updated_at", label: "Modification Date" },
+  ];
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    GetCCAPNList(currentPage, sortingConfig, searchQuery);
+    handleSortingPopupClose();
   };
 
   const handleSelectSubdivisionNameChange = (e) => {
@@ -170,28 +263,36 @@ const CCAPNList = () => {
         ]);
       }
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
   };
 
-  const GetCCAPNList = async (pageNumber, searchQuery) => {
+  const stringifySortConfig = (sortConfig) => {
+    return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
+  };
+
+  const GetCCAPNList = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
     setSearchQuery(searchQuery);
     try {
-      
-      const response = await AdminCCAPNService.index(pageNumber, searchQuery);
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      const response = await AdminCCAPNService.index(
+        pageNumber,
+        searchQuery,
+        sortConfigString
+      );
       const responseData = await response.json();
       setIsLoading(false);
       setCCAPNList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -248,7 +349,6 @@ const CCAPNList = () => {
             throw new Error("HTTPError");
           } else {
             currentChunk++;
-            console.log(`Chunk ${currentChunk}/${totalChunks} uploaded.`);
 
             document.getElementById("fileInput").value = null;
 
@@ -267,7 +367,7 @@ const CCAPNList = () => {
                 text: message,
               }).then((willDelete) => {
                 if (willDelete) {
-                  GetCCAPNList(currentPage, searchQuery);
+                  GetCCAPNList(currentPage, sortConfig, searchQuery);
                 }
               });
             } else {
@@ -282,7 +382,7 @@ const CCAPNList = () => {
                   text: message,
                 }).then((willDelete) => {
                   if (willDelete) {
-                    GetCCAPNList(currentPage, searchQuery);
+                    GetCCAPNList(currentPage, sortConfig, searchQuery);
                   }
                 });
               }
@@ -322,8 +422,6 @@ const CCAPNList = () => {
           var userData = {
             subdivision_id: selectedSubdivisionName,
           };
-          console.log(userData);
-          console.log(selectedLandSales);
           const data = await AdminCCAPNService.bulkupdate(
             selectedLandSales,
             userData
@@ -332,7 +430,7 @@ const CCAPNList = () => {
             swal("Ccapn Updated Succesfully").then((willDelete) => {
               if (willDelete) {
                 navigate("/ccapn");
-                GetCCAPNList(currentPage, searchQuery);
+                GetCCAPNList(currentPage, sortConfig, searchQuery);
               }
             });
           }
@@ -348,8 +446,70 @@ const CCAPNList = () => {
     });
   };
 
+  const handleSortingCheckboxChange = (e, field) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
+    } else {
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders({
+      ...sortOrders,
+      [fieldValue]: order,
+    });
+  };
+
+  const handleSelectAllChange = (e) => {
+    if (e.target.checked) {
+      setSelectedFields(fieldOptions);
+      const newOrder = {};
+      fieldOptions.forEach((field, index) => {
+        newOrder[field.value] = index + 1;
+      });
+      setSelectionOrder(newOrder);
+    } else {
+      setSelectedFields([]);
+      setSelectionOrder({});
+    }
+  };
+
+  const HandleFilterForm = (e) => {
+    e.preventDefault();
+    GetCCAPNList(1, sortConfig, searchQuery);
+    setManageFilterOffcanvas(false);
+  };
+
+  const HandleCancelFilter = (e) => {
+    e.preventDefault();
+    setFilterQuery({
+      parcel: "",
+      address: "",
+      builder_name: "",
+      subdivision_name: "",
+      subdivision_code: "",
+    });
+    setSelectedBuilderNameFilter([]);
+    setSelectedSubdivisionNameFilter([]);
+  }
+
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="CCAPNs" pageTitle="CCAPNs" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -409,7 +569,7 @@ const CCAPNList = () => {
                       </div>
                       <button
                         onClick={handleSubmit}
-                        className="btn btn-sm btn-primary"
+                        className="btn btn-sm btn-primary me-3"
                       >
                         Assign
                       </button>
@@ -423,25 +583,28 @@ const CCAPNList = () => {
                       ) : (
                         <div className="d-flex justify-content-between">
                           <div className="me-3">
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                variant="success"
-                                className="btn-sm"
-                                id="dropdown-basic"
-                              >
+                            <Button
+                              className="btn-sm"
+                              variant="secondary"
+                              onClick={HandleSortingPopupShow}
+                              title="Sorted Fields"
+                            >
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fa-solid fa-sort" />&nbsp;
+                                Sort
+                              </div>
+                            </Button>
+                          </div>
+
+                          <div className="me-3">
+                            <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                              <div style={{ fontSize: "11px" }}>
                                 <i className="fa fa-filter" />&nbsp;
                                 Filter
-                              </Dropdown.Toggle>
-
-                              <Dropdown.Menu style={{ width: "400px", overflow: "unset" }}>
-                                <label className="form-label">Parcel :</label>
-                                <input type="search" name="parcel" className="form-control" onChange={HandleFilter} />
-
-                                <label className="form-label">Address :</label>
-                                <input type="search" name="address" className="form-control" onChange={HandleFilter} />
-                              </Dropdown.Menu>
-                            </Dropdown>
+                              </div>
+                            </button>
                           </div>
+
                           <div>
                             <Button
                               className="btn-sm me-1"
@@ -613,41 +776,17 @@ const CCAPNList = () => {
                                     }}
                                   />
                                 </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {index + 1}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.builder &&
-                                    element.subdivision.builder.name}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.name}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.parcel}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.loc_strno +
-                                    " " +
-                                    element.loc_strname}{" "}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.ll_x}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.ll_y}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {element.subdivision &&
-                                    element.subdivision.subdivision_code}
-                                </td>
+                                <td style={{ textAlign: "center" }}>{index + 1}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.builder?.name}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.name}</td>
+                                <td style={{ textAlign: "center" }}>{element?.parcel}</td>
+                                <td style={{ textAlign: "center" }}>{element?.loc_strno + " " + element?.loc_strname}{" "}</td>
+                                <td style={{ textAlign: "center" }}>{element?.ll_x}</td>
+                                <td style={{ textAlign: "center" }}>{element?.ll_y}</td>
+                                <td style={{ textAlign: "center" }}>{element?.subdivision?.subdivision_code}</td>
                                 <td style={{ textAlign: "center" }}>-</td>
                                 <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>
-                                  <DateComponent date={element.created_at} />
-                                </td>
+                                <td style={{ textAlign: "center" }}><DateComponent date={element.updated_at} /></td>
                                 <td style={{ textAlign: "center" }}>
                                   <div className="d-flex justify-content-center">
                                     <button
@@ -842,7 +981,200 @@ const CCAPNList = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupShow}>
+        <Modal.Header handleSortingPopupClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                    />
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
+                    </label>
+                  </div>
+                </div>
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value]; // Get the selection order
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "40px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Filter Canvas */}
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter CCAPNs{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <div className="">
+              <form>
+                <div className="row">
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Parcel:</label>
+                    <InputMask
+                      mask="999-99-999-999"
+                      maskChar=""
+                      type="search"
+                      name="parcel"
+                      value={filterQuery.parcel}
+                      className="form-control"
+                      onChange={HandleFilter}
+                    />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Address:</label>
+                    <input type="search" name="address" className="form-control" value={filterQuery.address} onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">Subdivision Code:</label>
+                    <input type="search" name="subdivision_code" value={filterQuery.subdivision_code} className="form-control" onChange={HandleFilter} />
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">BUILDER NAME:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="builder_name"
+                        options={builderDropDown || []}
+                        value={selectedBuilderNameFilter}
+                        onChange={handleSelectBuilderNameChangeFilter}
+                        placeholder={"Select Builder Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                  <div className="col-md-4 mt-3">
+                    <label className="form-label">SUBDIVISION NAME:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="subdivision_name"
+                        options={subdivisionDropDown || []}
+                        value={selectedSubdivisionNameFilter}
+                        onChange={handleSelectSubdivisionNameChangeFilter}
+                        placeholder={"Select Subdivision Name"}
+                      />
+                    </Form.Group>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                variant="secondary"
+                onClick={HandleCancelFilter}
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                variant="primary"
+                onClick={HandleFilterForm}
+              >
+                Filter
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Offcanvas>
+    </Fragment>
   );
 };
 

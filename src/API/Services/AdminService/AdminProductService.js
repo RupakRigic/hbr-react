@@ -8,10 +8,10 @@ export default {
     show: (id) => clientAuth.get(`admin/product/show/${id}`),
     accessField: () => clientAuth.get(`admin/product/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/product/manage-access-fields`,{ json: userData }),
-    export: () => clientAuth.get(`admin/product/export`),
     getBySubDivisionId: (id) => clientAuth.get(`admin/product/showbysubdivisionid/${id}`),
     import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/product/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/product/bulkdestroy/${id}`),
     productDropDown:()=> clientAuth.get(`admin/product/list/dropdown`),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/product/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };

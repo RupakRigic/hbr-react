@@ -9,7 +9,6 @@ export default {
     accessField: () => clientAuth.get(`admin/subdivision/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/subdivision/manage-access-fields`,{ json: userData }),
     getRoleFieldList:()=> clientAuth.get(`admin/subdivision/access-list`),
-    export: () => clientAuth.get(`admin/subdivision/export`),
     getByBuilderId: (filterQuery='') => clientAuth.get(`admin/subdivision/list-for-google-map${filterQuery}`),
     import: (userData) => clientAuth.post(`admin/subdivision/import`, { json: userData }),
     put: (id, userData) => clientAuth.put(`admin/subdivision/soldout/${id}`, { json: userData }),
@@ -18,4 +17,5 @@ export default {
     getByBuilderId: (builderId) => clientAuth.get(`admin/subdivision/bybuilder/${builderId}`),
     subdivisionDropDown: () => clientAuth.get(`admin/subdivision/builder/subdivision/list`),
     Subdivisionbybuilderid: (builderId) => clientAuth.get(`admin/subdivision/subdivisionbybuilderid/${builderId}`),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/subdivision/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };

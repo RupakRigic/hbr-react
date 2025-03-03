@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -27,7 +27,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const ProductList = () => {
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -83,7 +84,7 @@ const ProductList = () => {
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
-    { label: 'Age Restrictedr', key: 'agerestrictedr' },
+    { label: 'Age Restricted', key: 'agerestricted' },
     { label: 'All Single Story', key: 'singlestory' },
     { label: 'Product ID', key: 'productid' },
     { label: 'Fk Sub ID', key: 'fksubid' },
@@ -111,7 +112,7 @@ const ProductList = () => {
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
-    { label: 'Age Restrictedr', key: 'agerestrictedr' },
+    { label: 'Age Restricted', key: 'agerestricted' },
     { label: 'All Single Story', key: 'singlestory' },
     { label: 'Product ID', key: 'productid' },
     { label: 'Fk Sub ID', key: 'fksubid' },
@@ -137,126 +138,31 @@ const ProductList = () => {
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
-  console.log('data', productList);
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns('');
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminProductService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `products.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = (filter ? productList : AllProductListExport).map((row) => {
-      const mappedRow = {};
-      tableHeaders.forEach((header) => {
-        switch (header) {
-          case "Status":
-            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future") || (row.status === 3 && "Closed");
-            break;
-          case "Builder Name":
-            mappedRow[header] = row.subdivision ? row.subdivision.builder.name : '';
-            break;
-          case "Subdivision Name":
-            mappedRow[header] = row.subdivision ? row.subdivision.name : '';
-            break;
-          case "Product Name":
-            mappedRow[header] = row.name;
-            break;
-          case "Square Footage":
-            mappedRow[header] = row.sqft;
-            break;
-          case "Stories":
-            mappedRow[header] = row.stories;
-            break;
-          case "Bed Rooms":
-            mappedRow[header] = row.bedroom;
-            break;
-          case "Bath Rooms":
-            mappedRow[header] = row.bathroom;
-            break;
-          case "Garage":
-            mappedRow[header] = row.garage;
-            break;
-          case "Current Base Price":
-            mappedRow[header] = row.latest_base_price;
-            break;
-          case "Current Price Per SQFT":
-            mappedRow[header] = row.current_price_per_sqft;
-            break;
-          case "Product Website":
-            mappedRow[header] = row.website;
-            break;
-          case "Product Type":
-            mappedRow[header] = row.subdivision ? row.subdivision.product_type : '';
-            break;
-          case "Area":
-            mappedRow[header] = row.subdivision ? row.subdivision.area : '';
-            break;
-          case "Master Plan":
-            mappedRow[header] = row.subdivision ? row.subdivision.masterplan_id : '';
-            break;
-          case "Zip Code":
-            mappedRow[header] = row.subdivision ? row.subdivision.zipcode : '';
-            break;
-          case "Lot Width":
-            mappedRow[header] = row.subdivision ? row.subdivision.lotwidth : '';
-            break;
-          case "Lot Size":
-            mappedRow[header] = row.subdivision ? row.subdivision.lotsize : '';
-            break;
-          case "Zoning":
-            mappedRow[header] = row.subdivision ? row.subdivision.zoning : '';
-            break;
-          case "Age Restricted":
-            mappedRow[header] = (row.subdivision && row.subdivision.age === 1 && "Yes") || (row.subdivision && row.subdivision.age === 0 && "No") || '';
-            break;
-          case "All Single Story":
-            mappedRow[header] = (row.subdivision && row.subdivision.single === 1 && "Yes") || (row.subdivision && row.subdivision.single === 0 && "No") || '';
-            break;
-          case "Product ID":
-            mappedRow[header] = row.product_code;
-            break;
-          case "Fk Sub ID":
-            mappedRow[header] = row.subdivision ? row.subdivision.subdivision_code : '';
-            break;
-          case "Price Change Since Open":
-            mappedRow[header] = row.price_changes_since_open + '%';
-            break;
-          case "Price Change Last 12 Months":
-            mappedRow[header] = row.price_changes_last_12_Month + '%';
-            break;
-          default:
-            mappedRow[header] = '';
-        }
-      });
-      return mappedRow;
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
-
-    // Optionally apply styles to the headers
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Product');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Product.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
-
 
   const [filterQuery, setFilterQuery] = useState({
     status: localStorage.getItem("product_status_Product") ? JSON.parse(localStorage.getItem("product_status_Product")) : "",
@@ -279,7 +185,7 @@ const ProductList = () => {
     single: localStorage.getItem("single_Product") ? JSON.parse(localStorage.getItem("single_Product")) : "",
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
-    current_price_per_sqft: "",
+    recentpricesqft: "",
     price_changes_since_open: "",
     price_changes_last_12_Month: "",
   });
@@ -452,16 +358,18 @@ const ProductList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductsListCount(responseData.meta.total);
-      if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      if (responseData.meta.total > 100) {
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
+      setIsLoading(false);
+      setExcelLoading(false);
       console.log(error);
       if (error.name === "HTTPError") {
         setIsLoading(false);
@@ -475,8 +383,6 @@ const ProductList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, productList, productListCount) => {
     setExcelLoading(true);
-    // const response = await AdminProductService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(productListCount / recordsPage);
     let allData = productList;
     for (let page = 2; page <= totalPages; page++) {
@@ -575,7 +481,6 @@ const ProductList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     getproductList(currentPage, sortConfig, searchQuery);
   };
 
@@ -714,7 +619,7 @@ const ProductList = () => {
       single: ""
     })
     setFilterQueryCalculation({
-      current_price_per_sqft: "",
+      recentpricesqft: "",
       price_changes_since_open: "",
       price_changes_last_12_Month: ""
     });
@@ -841,7 +746,7 @@ const ProductList = () => {
       localStorage.removeItem("setProductFilter");
     }
     e.preventDefault();
-    getproductList(currentPage, sortConfig, searchQuery);
+    getproductList(1, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
     localStorage.setItem("selectedStatusByProductFilter_Product", JSON.stringify(selectedStatus));
     localStorage.setItem("selectedBuilderNameByFilter_Product", JSON.stringify(selectedBuilderName));
@@ -948,7 +853,7 @@ const ProductList = () => {
       return items;
     };
 
-    filtered = applyNumberFilter(filtered, filterQueryCalculation.current_price_per_sqft, 'current_price_per_sqft');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.recentpricesqft, 'recentpricesqft');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_last_12_Month, 'price_changes_last_12_Month');
 
@@ -1104,19 +1009,19 @@ const ProductList = () => {
         return sum + (products.garage || 0);
       }, 0);
     }
-    if (field == "latest_base_price") {
+    if (field == "recentprice") {
       return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.latest_base_price || 0);
+        return sum + Math.floor(products.recentprice || 0);
       }, 0);
     }
-    if (field == "current_price_per_sqft") {
+    if (field == "recentpricesqft") {
       if (filter) {
         return productList.reduce((sum, products) => {
-          return sum + (products.current_price_per_sqft || 0);
+          return sum + Math.floor(products.recentpricesqft || 0);
         }, 0);
       } else {
         return AllProductListExport.reduce((sum, products) => {
-          return sum + (products.current_price_per_sqft || 0);
+          return sum + Math.floor(products.recentpricesqft || 0);
         }, 0);
       }
     }
@@ -1155,7 +1060,7 @@ const ProductList = () => {
   };
 
   const averageFields = (field) => {
-    if (field == "current_price_per_sqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
+    if (field == "recentpricesqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
       const sum = totalSumFields(field);
       if (filter) {
         return sum / productList.length;
@@ -1327,7 +1232,7 @@ const ProductList = () => {
         }
         break;
 
-      case "latest_base_price":
+      case "recentprice":
         setCurrentBasePriceOption(value);
         setSquareFootageOption("");
         setStoriesOption("");
@@ -1358,7 +1263,7 @@ const ProductList = () => {
         }
         break;
 
-      case "current_price_per_sqft":
+      case "recentpricesqft":
         setCurrentPricePerSQFTOption(value);
         setSquareFootageOption("");
         setStoriesOption("");
@@ -1697,7 +1602,7 @@ const ProductList = () => {
     };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Product"
         pageTitle="Product"
@@ -1749,15 +1654,11 @@ const ProductList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1785,15 +1686,11 @@ const ProductList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1852,7 +1749,7 @@ const ProductList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                               Edit
                             </div>
                           </Link>
                           <button
@@ -1871,7 +1768,7 @@ const ProductList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1977,43 +1874,43 @@ const ProductList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "plan Status" ? "status" :
-                                        column.id == "product Name" ? "name" :
-                                          column.id == "square Footage" ? "sqft" :
-                                            column.id == "bed Rooms" ? "bedroom" :
-                                              column.id == "bath Rooms" ? "bathroom" :
-                                                column.id == "current Base Price" ? "recentprice" :
-                                                  column.id == "product Website" ? "website" :
-                                                    column.id == "product Type" ? "product_type" :
-                                                      column.id == "master Plan" ? "masterplan_id" :
-                                                        column.id == "zip Code" ? "zipcode" :
-                                                          column.id == "lot Width" ? "lotwidth" :
-                                                            column.id == "lot Size" ? "lotsize" :
-                                                              column.id == "age Restricted" ? "age" :
-                                                                column.id == "all Single Story" ? "single" :
-                                                                  column.id == "date Added" ? "created_at" :
-                                                                    column.id == "__pkProductID" ? "product_code" :
-                                                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                      column.id == "product Name" ? "name" :
+                                      column.id == "square Footage" ? "sqft" :
+                                      column.id == "bed Rooms" ? "bedroom" :
+                                      column.id == "bath Rooms" ? "bathroom" :
+                                      column.id == "current Base Price" ? "recentprice" :
+                                      column.id == "product Website" ? "website" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "__pkProductID" ? "product_code" :
+                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "plan Status" ? "status" :
-                                              column.id == "product Name" ? "name" :
-                                                column.id == "square Footage" ? "sqft" :
-                                                  column.id == "bed Rooms" ? "bedroom" :
-                                                    column.id == "bath Rooms" ? "bathroom" :
-                                                      column.id == "current Base Price" ? "recentprice" :
-                                                        column.id == "product Website" ? "website" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "master Plan" ? "masterplan_id" :
-                                                              column.id == "zip Code" ? "zipcode" :
-                                                                column.id == "lot Width" ? "lotwidth" :
-                                                                  column.id == "lot Size" ? "lotsize" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "created_at" :
-                                                                          column.id == "__pkProductID" ? "product_code" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                            column.id == "product Name" ? "name" :
+                                            column.id == "square Footage" ? "sqft" :
+                                            column.id == "bed Rooms" ? "bedroom" :
+                                            column.id == "bath Rooms" ? "bathroom" :
+                                            column.id == "current Base Price" ? "recentprice" :
+                                            column.id == "product Website" ? "website" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "created_at" :
+                                            column.id == "__pkProductID" ? "product_code" :
+                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -2030,16 +1927,16 @@ const ProductList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "square Footage" ? squareFootageOption :
-                                            column.id == "stories" ? storiesOption :
-                                              column.id == "bed Rooms" ? bedRoomsOption :
-                                                column.id == "bath Rooms" ? bathRoomsOption :
-                                                  column.id == "garage" ? garageOption :
-                                                    column.id == "current Base Price" ? currentBasePriceOption :
-                                                      column.id == "current Price Per SQFT" ? currentPricePerSQFTOption :
-                                                        column.id == "lot Width" ? lotWidthOption :
-                                                          column.id == "lot Size" ? lotSizeOption :
-                                                            column.id == "price Change Since Open" ? priceChangeSinceOpenOption :
-                                                              column.id == "price Change Last 12 Months" ? priceChangeLast12MonthsOption : ""
+                                          column.id == "stories" ? storiesOption :
+                                          column.id == "bed Rooms" ? bedRoomsOption :
+                                          column.id == "bath Rooms" ? bathRoomsOption :
+                                          column.id == "garage" ? garageOption :
+                                          column.id == "current Base Price" ? currentBasePriceOption :
+                                          column.id == "current Price Per SQFT" ? currentPricePerSQFTOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption :
+                                          column.id == "price Change Since Open" ? priceChangeSinceOpenOption :
+                                          column.id == "price Change Last 12 Months" ? priceChangeLast12MonthsOption : ""
                                         }
 
                                         style={{
@@ -2054,15 +1951,15 @@ const ProductList = () => {
 
                                         onChange={(e) => column.id == "square Footage" ? handleSelectChange(e, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e, "stories") :
-                                            column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
-                                              column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
-                                                column.id == "garage" ? handleSelectChange(e, "garage") :
-                                                  column.id == "current Base Price" ? handleSelectChange(e, "latest_base_price") :
-                                                    column.id == "current Price Per SQFT" ? handleSelectChange(e, "current_price_per_sqft") :
-                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
-                                                            column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
+                                          column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
+                                          column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e, "garage") :
+                                          column.id == "current Base Price" ? handleSelectChange(e, "recentprice") :
+                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "recentpricesqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
+                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
+                                          column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2230,45 +2127,45 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.garage}</td>
                                     }
                                     {column.id == "current Base Price" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.latest_base_price != "" ? <PriceComponent price={element.latest_base_price} /> : ""}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.recentprice != "" ? <PriceComponent price={element.recentprice} /> : ""}</td>
                                     }
                                     {column.id == "current Price Per SQFT" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.current_price_per_sqft != "" ? <PriceComponent price={element.current_price_per_sqft} /> : "" }</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.recentpricesqft != "" ? <PriceComponent price={element.recentpricesqft} /> : "" }</td>
                                     }
                                     {column.id == "product Website" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.website}</td>
                                     }
                                     {column.id == "product Type" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.product_type}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.product_type}</td>
                                     }
                                     {column.id == "area" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.area}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
                                     }
                                     {column.id == "master Plan" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                     }
                                     {column.id == "zip Code" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotwidth}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotwidth}</td>
                                     }
                                     {column.id == "lot Size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.lotsize}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotsize}</td>
                                     }
                                     {column.id == "zoning" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zoning}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zoning}</td>
                                     }
                                     {column.id == "age Restricted" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision.age === 1 && "Yes"}
-                                        {element.subdivision.age === 0 && "No"}
+                                        {element.age === 1 && "Yes"}
+                                        {element.age === 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "all Single Story" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision.single === 1 && "Yes"}
-                                        {element.subdivision.single === 0 && "No"}
+                                        {element.single === 1 && "Yes"}
+                                        {element.single === 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "date Added" &&
@@ -2278,7 +2175,7 @@ const ProductList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product_code}</td>
                                     }
                                     {column.id == "_fkSubID" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision_code}</td>
                                     }
                                     {column.id == "price Change Since Open" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.price_changes_since_open != "" ? element.price_changes_since_open + '%' : ""}</td>
@@ -2643,7 +2540,7 @@ const ProductList = () => {
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">CURRENT PRICE PER SQFT:{" "}</label>
-                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.current_price_per_sqft} name="current_price_per_sqft" className="form-control" onChange={handleInputChange} />
+                      <input style={{ marginTop: "20px" }} value={filterQueryCalculation.recentpricesqft} name="recentpricesqft" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">PRICE CHANGE SINCE OPEN:{" "}</label>
@@ -2725,13 +2622,13 @@ const ProductList = () => {
                           {ProductDetails.status === 0 && "Sold Out"}
                           {ProductDetails.status === 2 && "Future"}
                           {ProductDetails.status === 3 && "Closed"}</span></div>
-                        <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.latest_base_price} />
+                        <div className="fs-18"><span><b>RECENT PRICE:</b></span>&nbsp;<span>{(<PriceComponent price={ProductDetails.recentprice} />
                         ) || "NA"}</span></div>
                       </div>
                       <div className="d-flex" style={{ marginTop: "5px" }}>
                         <div className="fs-18" style={{ width: "300px" }}><span><b>SQFT:</b></span>&nbsp;<span>{ProductDetails.sqft || "NA"}</span></div>
                         <div className="fs-18"><span><b>$ per SQFT:</b></span>&nbsp;<span>
-                          {(<PriceComponent price={ProductDetails.current_price_per_sqft} />
+                          {(<PriceComponent price={ProductDetails.recentprice / ProductDetails.sqft} />
                           ) || "NA"}
                         </span></div>
                       </div>
@@ -2898,7 +2795,7 @@ const ProductList = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -2939,7 +2836,14 @@ const ProductList = () => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button 
+              varient="primary" 
+              class="btn btn-primary" 
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
@@ -3043,7 +2947,7 @@ const ProductList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

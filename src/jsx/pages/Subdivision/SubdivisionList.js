@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import SubdivisionOffcanvas from "../../pages/WeeklyData/SubdivisionOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas, Form } from "react-bootstrap";
+import { Offcanvas, Form, Col } from "react-bootstrap";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import Button from "react-bootstrap/Button";
 import Box from "@mui/material/Box";
@@ -32,7 +32,8 @@ import Swal from "sweetalert2";
 const SubdivisionList = () => {
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
 
   // const handleSortCheckboxChange = (e, key) => {
   //   if (e.target.checked) {
@@ -400,236 +401,29 @@ const SubdivisionList = () => {
     return fieldList.includes(fieldName.trim());
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns('');
-
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+      
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminSubdevisionService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `subdivisions.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = (filter ? BuilderList : AllBuilderListExport).map((row) => {
-      const mappedRow = {};
-      tableHeaders.forEach((header) => {
-        switch (header) {
-          case "Status":
-            mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future");
-            break;
-          case "Reporting":
-            mappedRow[header] = (row.reporting === 1 && "Yes") || (row.status === 0 && "No");
-            break;
-          case "Builder":
-            mappedRow[header] = row.builder ? row.builder.name : '';
-            break;
-          case "Name":
-            mappedRow[header] = row.name;
-            break;
-          case "Product Type":
-            mappedRow[header] = row.product_type;
-            break;
-          case "Area":
-            mappedRow[header] = row.area;
-            break;
-          case "Master Plan":
-            mappedRow[header] = row.masterplan_id;
-            break;
-          case "Zip Code":
-            mappedRow[header] = row.zipcode;
-            break;
-          case "Total Lots":
-            mappedRow[header] = row.totallots;
-            break;
-          case "Lot Width":
-            mappedRow[header] = row.lotwidth;
-            break;
-          case "Lot Size":
-            mappedRow[header] = row.lotsize;
-            break;
-          case "Zoning":
-            mappedRow[header] = row.zoning;
-            break;
-          case "Age Restricted":
-            mappedRow[header] = (row.age === 1 && "Yes") || (row.age === 0 && "No");
-            break;
-          case "All Single Story":
-            mappedRow[header] = (row.single === 1 && "Yes") || (row.single === 0 && "No");
-            break;
-          case "Gated":
-            mappedRow[header] = (row.gated === 1 && "Yes") || (row.gated === 0 && "No");
-            break;
-          case "Cross Streets":
-            mappedRow[header] = row.crossstreet;
-            break;
-          case "Juridiction":
-            mappedRow[header] = row.juridiction;
-            break;
-          case "Latitude":
-            mappedRow[header] = row.lat;
-            break;
-          case "Longitude":
-            mappedRow[header] = row.lng;
-            break;
-          case "Gas Provider":
-            mappedRow[header] = row.gasprovider;
-            break;
-          case "HOA Fee":
-            mappedRow[header] = row.hoafee;
-            break;
-          case "Master Plan Fee":
-            mappedRow[header] = row.masterplanfee;
-            break;
-          case "Parcel Group":
-            mappedRow[header] = row.parcel;
-            break;
-          case "Phone":
-            mappedRow[header] = row.phone;
-            break;
-          case "Website":
-            mappedRow[header] = row.builder ? row.website : '';
-            break;
-          case "Date Added":
-            mappedRow[header] = row.dateadded;
-            break;
-          case "FK Builder Id":
-            mappedRow[header] = row.builder ? row.builder.builder_code : '';
-            break;
-          case 'Total Closings':
-            mappedRow[header] = row.total_closings;
-            break;
-          case 'Total Permits':
-            mappedRow[header] = row.total_permits;
-            break;
-          case 'Total Net Sales':
-            mappedRow[header] = row.total_net_sales;
-            break;
-          case 'Months Open':
-            mappedRow[header] = row.months_open;
-            break;
-          case 'Latest Traffic/Sales Data':
-            mappedRow[header] = row.latest_traffic_data;
-            break;
-          case 'Latest Lots Released':
-            mappedRow[header] = row.latest_lots_released;
-            break;
-          case 'Latest Standing Inventory':
-            mappedRow[header] = row.latest_standing_inventory;
-            break;
-          case 'Unsold Lots':
-            mappedRow[header] = row.unsold_lots;
-            break;
-          case 'Avg Sqft All':
-            mappedRow[header] = row.avg_sqft_all;
-            break;
-          case 'Avg Sqft Active':
-            mappedRow[header] = row.avg_sqft_active;
-            break;
-          case 'Avg Base Price All':
-            mappedRow[header] = row.avg_base_price_all;
-            break;
-          case 'Avg Base Price Active':
-            mappedRow[header] = row.avg_base_price_active;
-            break;
-          case 'Min Sqft All':
-            mappedRow[header] = row.min_sqft_all;
-            break;
-          case 'Min Sqft Active':
-            mappedRow[header] = row.min_sqft_active;
-            break;
-          case 'Max Sqft All':
-            mappedRow[header] = row.max_sqft_all;
-            break;
-          case 'Max Sqft Active':
-            mappedRow[header] = row.max_sqft_active;
-            break;
-          case 'Min Base Price All':
-            mappedRow[header] = row.min_base_price_all;
-            break;
-          case 'Min Sqft Active':
-            mappedRow[header] = row.min_sqft_active_current;
-            break;
-          case 'Max Base Price All':
-            mappedRow[header] = row.max_base_price_all;
-            break;
-          case 'Max Sqft Active Current':
-            mappedRow[header] = row.max_sqft_active_current;
-            break;
-          case 'Avg Traffic Per Month This Year':
-            mappedRow[header] = row.avg_net_traffic_per_month_this_year;
-            break;
-          case 'Avg Net Sales Per Month This Year':
-            mappedRow[header] = row.avg_net_sales_per_month_this_year;
-            break;
-          case 'Avg Closings Per Month This Year':
-            mappedRow[header] = row.avg_closings_per_month_this_year;
-            break;
-          case 'Avg Net Sales Per Month Since Open':
-            mappedRow[header] = row.avg_net_sales_per_month_since_open;
-            break;
-          case 'Avg Net Sales Per Month Last 3 Months':
-            mappedRow[header] = row.avg_net_sales_per_month_last_three_months;
-            break;
-          case 'Max Week Ending':
-            mappedRow[header] = row.max_week_ending;
-            break;
-          case 'Min Week Ending':
-            mappedRow[header] = row.min_week_ending;
-            break;
-          case 'Sqft Group':
-            mappedRow[header] = row.sqft_group;
-            break;
-          case 'Price Group':
-            mappedRow[header] = row.price_group.group;
-            break;
-          case 'Month Net Sold':
-            mappedRow[header] = row.month_net_sold;
-            break;
-          case 'Year Net Sold':
-            mappedRow[header] = row.year_net_sold;
-            break;
-          case 'Open Since':
-            mappedRow[header] = <DateComponent date={row.year_net_sold} />;
-            break;
-          case 'Avg Closing Price':
-            mappedRow[header] = row.avg_closing_price;
-            break;
-          case 'Permits This Year':
-            mappedRow[header] = row.permit_this_year;
-            break;
-          case 'Median Closing Price Since Open':
-            mappedRow[header] = row.median_closing_price_since_open;
-            break;
-          case 'Median Closing Price This Year':
-            mappedRow[header] = row.median_closing_price_this_year;
-            break;
-          default:
-            mappedRow[header] = '';
-        }
-      });
-      return mappedRow;
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
-
-    // Optionally apply styles to the headers
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sub Division List');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Sub Division List.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
 
   const [SubdivisionDetails, setSubdivisionDetails] = useState({
@@ -774,18 +568,19 @@ const SubdivisionList = () => {
       const responseData = await response.json();
       setLoading(false);
       setIsLoading(false);
+      setExcelLoading(false);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      setExcelLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -857,8 +652,6 @@ const SubdivisionList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, BuilderList, BuilderListCount) => {
     setExcelLoading(true);
-    // const response = await AdminSubdevisionService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(BuilderListCount / recordsPage);
     let allData = BuilderList;
     for (let page = 2; page <= totalPages; page++) {
@@ -951,7 +744,7 @@ const SubdivisionList = () => {
     e.preventDefault();
     setFilter(false);
     setNormalFilter(false);
-    getbuilderlist(currentPage, sortConfig, searchQuery);
+    getbuilderlist(1, sortConfig, searchQuery);
     setManageFilterOffcanvas(false);
     setTotalClosingsOption("");
     setTotalPermitsOption("");
@@ -1167,21 +960,6 @@ const SubdivisionList = () => {
   const handleLandRedirect = () => {
     navigate("/landsalelist");
   };
-
-  // const requestSort = (key) => {
-  //   let direction = "asc";
-
-  //   const newSortConfig = [...sortConfig];
-  //   const keyIndex = sortConfig.findIndex((item) => item.key === key);
-  //   if (keyIndex !== -1) {
-  //     direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-  //     newSortConfig[keyIndex].direction = direction;
-  //   } else {
-  //     newSortConfig.push({ key, direction });
-  //   }
-  //   setSortConfig(newSortConfig);
-  //   getbuilderlist(currentPage, newSortConfig, searchQuery);
-  // };
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -4943,7 +4721,7 @@ const SubdivisionList = () => {
     }
   };
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Subdivision"
         pageTitle="Subdivision"
@@ -4995,15 +4773,11 @@ const SubdivisionList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -5031,15 +4805,11 @@ const SubdivisionList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -5206,72 +4976,21 @@ const SubdivisionList = () => {
                         <thead>
                           <tr style={{ textAlign: "center" }}>
                             <th>
-                            <input
-                                  type="checkbox"
-                                  style={{ cursor: "pointer" }}
-                                  checked={(currentPage == samePage || isSelectAll) ? selectCheckBox : ""}
-                                  onClick={(e) => handleMainCheckboxChange(e)}
-                                />
+                              <input
+                                type="checkbox"
+                                style={{ cursor: "pointer" }}
+                                checked={(currentPage == samePage || isSelectAll) ? selectCheckBox : ""}
+                                onClick={(e) => handleMainCheckboxChange(e)}
+                              />
                             </th>
                             <th>
                               <strong> No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}
-                            // onClick={(e) => (column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : e.target.type !== "select-one" ? requestSort(
-                            //   column.id == "builder" ? "builderName" :
-                            //   column.id == "product Type" ? "product_type" :
-                            //   column.id == "master Plan" ? "masterplan_id" :
-                            //   column.id == "total Lots" ? "totallots" :
-                            //   column.id == "lot Width" ? "lotwidth" :
-                            //   column.id == "lot Size" ? "lotsize" :
-                            //   column.id == "age Restricted" ? "age" :
-                            //   column.id == "all Single Story" ? "single" :
-                            //   column.id == "latitude" ? "lat" :
-                            //   column.id == "longitude" ? "lng" :
-                            //   column.id == "gas Provider" ? "gasprovider" :
-                            //   column.id == "hOA Fee" ? "hoafee" :
-                            //   column.id == "master Plan Fee" ? "masterplanfee" :
-                            //   column.id == "parcel Group" ? "parcel" :
-                            //   column.id == "date Added" ? "created_at" :
-                            //   column.id == "__pkSubID" ? "subdivision_code" :
-                            //   column.id == "_fkBuilderID" ? "builder_code" :
-                            //   column.id == "total Closings" ? "total_closings" :
-                            //   column.id == "total Permits" ? "total_permits" :
-                            //   column.id == "total Net Sales" ? "total_net_sales" :
-                            //   column.id == "months Open" ? "months_open" :
-                            //   column.id == "latest Traffic/Sales Data" ? "latest_traffic_data" :
-                            //   column.id == "latest Lots Released" ? "latest_lots_released" :
-                            //   column.id == "latest Standing Inventory" ? "latest_standing_inventory" :
-                            //   column.id == "unsold Lots" ? "unsold_lots" :
-                            //   column.id == "avg Sqft All" ? "avg_sqft_all" :
-                            //   column.id == "avg Sqft Active" ? "avg_sqft_active" :
-                            //   column.id == "avg Base Price All" ? "avg_base_price_all" :
-                            //   column.id == "avg Base Price Active" ? "avg_base_price_active" :
-                            //   column.id == "min Sqft All" ? "min_sqft_all" :
-                            //   column.id == "max Sqft All" ? "max_sqft_all" :
-                            //   column.id == "max Sqft Active" ? "max_sqft_active_current" :
-                            //   column.id == "min Base Price All" ? "min_base_price_all" :
-                            //   column.id == "min Sqft Active" ? "min_sqft_active_current" :
-                            //   column.id == "max Base Price All" ? "max_base_price_all" :
-                            //   column.id == "avg Traffic Per Month This Year" ? "avg_net_traffic_per_month_this_year" :
-                            //   column.id == "avg Net Sales Per Month This Year" ? "avg_net_sales_per_month_this_year" :
-                            //   column.id == "avg Closings Per Month This Year" ? "avg_closings_per_month_this_year" :
-                            //   column.id == "avg Net Sales Per Month Since Open" ? "avg_net_sales_per_month_since_open" :
-                            //   column.id == "avg Net Sales Per Month Last 3 Months" ? "avg_net_sales_per_month_last_three_months" :
-                            //   column.id == "max Week Ending" ? "max_week_ending" :
-                            //   column.id == "min Week Ending" ? "min_week_ending" :
-                            //   column.id == "sqft Group" ? "sqft_group" :
-                            //   column.id == "price Group" ? "price_group" :
-                            //   column.id == "month Net Sold" ? "month_net_sold" :
-                            //   column.id == "year Net Sold" ? "year_net_sold" :
-                            //   column.id == "parcel" ? "parcel" : toCamelCase(column.id)) : ""}
-                            >
-                              <strong>
-
-                                {column.label}
-                                {column.id != "action" && sortConfig.some(
-                                  (item) => item.key === (
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
+                                <strong>
+                                  {column.label}
+                                  {column.id != "action" && sortConfig.some((item) => item.key === (
                                     column.id == "builder" ? "builderName" :
                                     column.id == "product Type" ? "product_type" :
                                     column.id == "master Plan" ? "masterplan_id" :
@@ -5868,19 +5587,6 @@ const SubdivisionList = () => {
                                         >
                                           <i className="fa fa-trash"></i>
                                         </Link>
-
-                                        {/* <Link
-                                          className="btn btn-primary shadow btn-xs sharp"
-                                          style={{ marginLeft: "4px" }}
-                                          onClick={() => handleDownloadReport()}
-                                          key={element.id}
-                                        >
-                                          {loadingReportId === subdivisionID ? (
-                                            <div class="spinner-border spinner-border-sm" role="status" style={{ marginTop: "1px" }} />
-                                          ) : (
-                                            <i class="fa fa-file-text" aria-hidden="true"></i>
-                                          )}
-                                        </Link> */}
                                       </div>
                                     </td>
                                   }
@@ -6223,10 +5929,10 @@ const SubdivisionList = () => {
 
                           <div className="d-flex" style={{ marginTop: "5px" }}>
                             <div className="fs-18" style={{ width: "180px" }}><span><b>TOTAL LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.totallots || "NA"}</span></div>
-                            <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.lotreleased || "NA"}</span></div>
+                            <div className="fs-18"><span><b>TOTAL RELEASED:</b></span>&nbsp;<span>{SubdivisionDetails.latest_lots_released || "NA"}</span></div>
                           </div>
                           <div className="d-flex" style={{ marginTop: "5px" }}>
-                            <div className="fs-18" style={{ width: "180px" }}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsoldlots || "NA"}</span></div>
+                            <div className="fs-18" style={{ width: "180px" }}><span><b>UNSOLD LOTS:</b></span>&nbsp;<span>{SubdivisionDetails.unsold_lots || "NA"}</span></div>
                             <div className="fs-18"><span><b>STANDING INVENTORY:</b></span>&nbsp;<span>{SubdivisionDetails.stadinginventory || "NA"}</span></div>
                           </div>
                           <div className="d-flex" style={{ marginTop: "5px" }}>
@@ -6975,27 +6681,33 @@ const SubdivisionList = () => {
                       placeholder="Select Gas Provider"
                     />
                   </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">From:{" "}</label>
-                    <DatePicker
-                      name="from"
-                      className="form-control"
-                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                      onChange={handleFilterDateFrom}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                  </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">To:{" "}</label>
-                    <DatePicker
-                      name="to"
-                      className="form-control"
-                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                      onChange={handleFilterDateTo}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
+                  <div className="d-flex flex-column mb-3" style={{ border: "1px solid #cccccc", borderRadius: "0.375rem", marginLeft: "12px", width: "50%" }}>
+                    <label className="form-label" style={{ marginTop: "10px" }}>OPEN SINCE</label>
+                    <hr style={{marginTop: "0px"}}/>
+                    <div className="d-flex gap-4 col-md-11 mb-3" style={{ width: "100%" }}>
+                      <div style={{ width: "100%" }}>
+                        <label className="form-label">From:</label>
+                        <DatePicker
+                          name="from"
+                          className="form-control"
+                          selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                          onChange={handleFilterDateFrom}
+                          dateFormat="MM/dd/yyyy"
+                          placeholderText="mm/dd/yyyy"
+                        />
+                      </div>
+                      <div style={{ width: "100%" }}>
+                        <label className="form-label">To:</label>
+                        <DatePicker
+                          name="to"
+                          className="form-control"
+                          selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                          onChange={handleFilterDateTo}
+                          dateFormat="MM/dd/yyyy"
+                          placeholderText="mm/dd/yyyy"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>
@@ -7115,8 +6827,8 @@ const SubdivisionList = () => {
           </div>
         </div>
       </Offcanvas>
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
-        <>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)} size="xl">
+        <Fragment>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
             <button
@@ -7127,40 +6839,60 @@ const SubdivisionList = () => {
           </Modal.Header>
           <Modal.Body>
             <Row>
-              <ul className='list-unstyled'>
-                <li>
-                  <label className="form-check">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={selectAll}
-                      onChange={handleSelectAllToggle}
-                    />
-                    Select All
-                  </label>
-                </li>
-                {exportColumns.map((col) => (
-                  <li key={col.label}>
-                    <label className='form-check'>
+              <Col lg={6}>
+                <ul className='list-unstyled'>
+                  <li>
+                    <label className="form-check">
                       <input
                         type="checkbox"
-                        className='form-check-input'
-                        checked={selectedColumns.includes(col.label)}
-                        onChange={() => handleColumnToggle(col.label)}
+                        className="form-check-input"
+                        checked={selectAll}
+                        onChange={handleSelectAllToggle}
                       />
-                      {col.label}
+                      Select All
                     </label>
                   </li>
-                ))}
-              </ul>
+                  {exportColumns.slice(0, 32).map((col) => (
+                    <li key={col.label}>
+                      <label className='form-check'>
+                        <input
+                          type="checkbox"
+                          className='form-check-input'
+                          checked={selectedColumns.includes(col.label)}
+                          onChange={() => handleColumnToggle(col.label)}
+                        />
+                        {col.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
+
+              <Col lg={6}>
+                <ul className='list-unstyled'>
+                  {exportColumns.slice(32, 64).map((col) => (
+                    <li key={col.label}>
+                      <label className='form-check'>
+                        <input
+                          type="checkbox"
+                          className='form-check-input'
+                          checked={selectedColumns.includes(col.label)}
+                          onChange={() => handleColumnToggle(col.label)}
+                        />
+                        {col.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button varient="primary" class="btn btn-primary" disabled={excelDownload} onClick={handleDownloadExcel}>{excelDownload ? "Downloading..." : "Download"}</button>
           </Modal.Footer>
-        </>
+        </Fragment>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

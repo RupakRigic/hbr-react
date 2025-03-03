@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -24,7 +24,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 const TrafficsaleList = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const [selectedFileError, setSelectedFileError] = useState("");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -240,7 +241,7 @@ const TrafficsaleList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        gettrafficsaleList(currentPage, sortConfig, searchQuery);
+        gettrafficsaleList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_TrafficSale", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_TrafficSale", JSON.stringify(selectedSubdivisionName));
@@ -470,89 +471,30 @@ const TrafficsaleList = () => {
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
-  console.log('trafficsaleList : ', trafficsaleList);
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminTrafficsaleService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `weekly_trafficsales.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = AllTrafficListExport.map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Week Ending":
-            return row.weekending || '';
-          case "Builder Name":
-            return row.subdivision?.builder?.name || '';
-          case "Subdivision Name":
-            return row.subdivision?.name || '';
-          case "Weekly Traffic":
-            return row.weeklytraffic || 0;
-          case "Weekly Gross Sales":
-            return row.grosssales || 0;
-          case "Weekly Cancellations":
-            return row.cancelations || 0;
-          case "Weekly Net Sales":
-            return row.netsales || 0;
-          case "Total Lots":
-            return row.subdivision?.totallots || '';
-          case "Weekly Lots Release For Sale":
-            return row.lotreleased || '';
-          case "Weekly Unsold Standing Inventory":
-            return row.unsoldinventory || '';
-          case "Product Type":
-            return row.subdivision?.product_type || '';
-          case "Area":
-            return row.subdivision?.area || '';
-          case "Master Plan":
-            return row.subdivision?.masterplan_id || '';
-          case "Zip Code":
-            return row.subdivision?.zipcode || '';
-          case "Lot Width":
-            return row.subdivision?.lotwidth || '';
-          case "Lot Size":
-            return row.subdivision?.lotsize || '';
-          case "Zoning":
-            return row.subdivision?.zoning || '';
-          case "Age Restricted":
-            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
-          case "All Single Story":
-            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
-          case "Pk Record id":
-            return row.id || '';
-          case "Fk sub id":
-            return row.subdivision?.subdivision_code || '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    // Optionally apply styles to the headers
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Weekly Traffic & Sales List');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Weekly_Traffic_Sales_List.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
 
   const HandleRole = (e) => {
@@ -656,6 +598,7 @@ const TrafficsaleList = () => {
 
   const gettrafficsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery));
     try {
@@ -670,18 +613,19 @@ const TrafficsaleList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setTrafficListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllTrafficistExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -692,8 +636,6 @@ const TrafficsaleList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, trafficsaleList, trafficListCount) => {
     setExcelLoading(true);
-    // const response = await AdminTrafficsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(trafficListCount / recordsPage);
     let allData = trafficsaleList;
     for (let page = 2; page <= totalPages; page++) {
@@ -735,7 +677,6 @@ const TrafficsaleList = () => {
   };
 
   const handleCallback = () => {
-    // Update the name in the component's state
     gettrafficsaleList(currentPage, sortConfig, searchQuery);
   };
 
@@ -1607,7 +1548,7 @@ const TrafficsaleList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Weekly Traffic & Sales"
         pageTitle="Weekly Traffic & Sales"
@@ -1661,15 +1602,11 @@ const TrafficsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1697,15 +1634,11 @@ const TrafficsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1751,7 +1684,7 @@ const TrafficsaleList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                                Edit
                             </div>
                           </Link>
                           <button
@@ -1770,7 +1703,7 @@ const TrafficsaleList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -2714,7 +2647,7 @@ const TrafficsaleList = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -2755,7 +2688,14 @@ const TrafficsaleList = () => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button 
+              varient="primary" 
+              class="btn btn-primary"
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
@@ -2901,7 +2841,7 @@ const TrafficsaleList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

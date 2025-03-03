@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -25,7 +25,8 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const ClosingList = () => {
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
@@ -222,7 +223,7 @@ const ClosingList = () => {
       if (totaldays < 367) {
         e.preventDefault();
         console.log(555);
-        getClosingList(currentPage, sortConfig, searchQuery);
+        getClosingList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("seletctedClosingTypeByFilter_Closing", JSON.stringify(seletctedClosingType));
         localStorage.setItem("selectedBuilderNameByFilter_Closing", JSON.stringify(selectedBuilderName));
@@ -432,94 +433,30 @@ const ClosingList = () => {
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
 
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminClosingService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `closings.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = AllClosingListExport.map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Closing Type":
-            return row.closing_type || '';
-          case "Closing Date":
-            return row.closingdate || '';
-          case "Doc":
-            return row.document || '';
-          case "Builder Name":
-            return row.subdivision?.builder?.name || '';
-          case "Subdivision Name":
-            return row.subdivision?.name || '';
-          case "Closing Price":
-            return row.closingprice || '';
-          case "Address":
-            return row.address || '';
-          case "Parcel Number":
-            return row.parcel || '';
-          case "Sub Legal Name":
-            return row.sublegal_name || '';
-          case "Seller Legal Name":
-            return row.sellerleagal || '';
-          case "Buyer Name":
-            return row.buyer || '';
-          case "Lender":
-            return row.lender || '';
-          case "Loan Amount":
-            return row.loanamount || '';
-          case "Type":
-            return row.type || '';
-          case "Product Type":
-            return row.subdivision?.product_type || '';
-          case "Area":
-            return row.subdivision?.area || '';
-          case "Master Plan":
-            return row.subdivision?.masterplan_id || '';
-          case "Zip Code":
-            return row.subdivision?.zipcode || '';
-          case "Lot Width":
-            return row.subdivision?.lotwidth || '';
-          case "Lot Size":
-            return row.subdivision?.lotsize || '';
-          case "Zoning":
-            return row.subdivision?.zoning || '';
-          case "Age Restricted":
-            return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
-          case "All Single Story":
-            return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
-          case "Fk Sub Id":
-            return row.subdivision?.subdivision_code || '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
-    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
-      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
-      if (!cell.s) cell.s = {};
-      cell.s.font = { name: 'Calibri', sz: 11, bold: false };
-    }
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Closing');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Closing.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
-
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -624,6 +561,7 @@ const ClosingList = () => {
 
   const getClosingList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByClosingsFilter", JSON.stringify(searchQuery));
     try {
@@ -638,18 +576,19 @@ const ClosingList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllClosingListExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -662,8 +601,6 @@ const ClosingList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, ClosingList, closingListCount) => {
     setExcelLoading(true);
-    // const response = await AdminClosingService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(closingListCount / recordsPage);
     let allData = ClosingList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1448,7 +1385,7 @@ const ClosingList = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Closings"
         pageTitle="Closings"
@@ -1469,7 +1406,7 @@ const ClosingList = () => {
                         aria-label="Basic example"
                       >
                         {SyestemUserRole == "Admin" &&
-                          <button class="btn btn-secondary cursor-none" onClick={UpdateFromCcapn}>
+                          <button class="btn btn-secondary cursor-none btn-sm me-1" onClick={UpdateFromCcapn}>
                             {" "}
                             Update with CCAPNs
                           </button>}
@@ -1505,15 +1442,11 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1541,15 +1474,11 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1608,7 +1537,7 @@ const ClosingList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                               Edit
                             </div>
                           </Link>
                           <button
@@ -1627,7 +1556,7 @@ const ClosingList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1731,45 +1660,45 @@ const ClosingList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "closing Type" ? "closing_type" :
-                                        column.id == "closing Price" ? "closingprice" :
-                                          column.id == "parcel Number" ? "parcel" :
-                                            column.id == "sub Legal Name" ? "sublegal_name" :
-                                              column.id == "seller Legal Name" ? "sellerleagal" :
-                                                column.id == "buyer Name" ? "buyer" :
-                                                  column.id == "doc" ? "document" :
-                                                    column.id == "product Type" ? "product_type" :
-                                                      column.id == "master Plan" ? "masterplan_id" :
-                                                        column.id == "zip Code" ? "zipcode" :
-                                                          column.id == "lot Width" ? "lotwidth" :
-                                                            column.id == "lot Size" ? "lotsize" :
-                                                              column.id == "age Restricted" ? "age" :
-                                                                column.id == "all Single Story" ? "single" :
-                                                                  column.id == "date Added" ? "dateadded" :
-                                                                    column.id == "__pkRecordID" ? "id" :
-                                                                      column.id == "_fkSubID" ? "subdivision_code" :
-                                                                        column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                      column.id == "closing Price" ? "closingprice" :
+                                      column.id == "parcel Number" ? "parcel" :
+                                      column.id == "sub Legal Name" ? "sublegal_name" :
+                                      column.id == "seller Legal Name" ? "sellerleagal" :
+                                      column.id == "buyer Name" ? "buyer" :
+                                      column.id == "doc" ? "document" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "dateadded" :
+                                      column.id == "__pkRecordID" ? "id" :
+                                      column.id == "_fkSubID" ? "subdivision_code" :
+                                      column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "closing Type" ? "closing_type" :
-                                              column.id == "closing Price" ? "closingprice" :
-                                                column.id == "parcel Number" ? "parcel" :
-                                                  column.id == "sub Legal Name" ? "sublegal_name" :
-                                                    column.id == "seller Legal Name" ? "sellerleagal" :
-                                                      column.id == "buyer Name" ? "buyer" :
-                                                        column.id == "doc" ? "document" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "master Plan" ? "masterplan_id" :
-                                                              column.id == "zip Code" ? "zipcode" :
-                                                                column.id == "lot Width" ? "lotwidth" :
-                                                                  column.id == "lot Size" ? "lotsize" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "dateadded" :
-                                                                          column.id == "__pkRecordID" ? "id" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" :
-                                                                              column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
+                                            column.id == "closing Price" ? "closingprice" :
+                                            column.id == "parcel Number" ? "parcel" :
+                                            column.id == "sub Legal Name" ? "sublegal_name" :
+                                            column.id == "seller Legal Name" ? "sellerleagal" :
+                                            column.id == "buyer Name" ? "buyer" :
+                                            column.id == "doc" ? "document" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "dateadded" :
+                                            column.id == "__pkRecordID" ? "id" :
+                                            column.id == "_fkSubID" ? "subdivision_code" :
+                                            column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1787,9 +1716,9 @@ const ClosingList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "closing Price" ? closingPriceOption :
-                                            column.id == "loan Amount" ? loanAmountOption :
-                                              column.id == "lot Width" ? lotWidthOption :
-                                                column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "loan Amount" ? loanAmountOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
 
                                         style={{
@@ -1804,8 +1733,8 @@ const ClosingList = () => {
 
                                         onChange={(e) => column.id == "closing Price" ? handleSelectChange(e, "closingprice") :
                                           column.id == "loan Amount" ? handleSelectChange(e, "loanamount") :
-                                            column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                              column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2584,7 +2513,14 @@ const ClosingList = () => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button varient="primary" class="btn btn-primary" onClick={handleDownloadExcel}>Download</button>
+            <button 
+              varient="primary" 
+              class="btn btn-primary"
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
@@ -2704,7 +2640,7 @@ const ClosingList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

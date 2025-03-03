@@ -71,8 +71,11 @@ const Header = ({ onNote }) => {
 
 										</div>
 									</Dropdown.Toggle>
-									<Dropdown.Menu style={{ width: '200px', height: '50px', overflowY: "hidden" }}>
+									<Dropdown.Menu style={{ width: '200px', height: '90px', overflowY: "hidden" }}>
 										<Dropdown.Item onClick={handleShowModal} style={{textAlign: "center", marginTop: "-12px", fontSize: "13px"}}>Change Password</Dropdown.Item>
+										{userData?.role?.includes("Admin") && 
+											<Dropdown.Item onClick={() => navigate("/notifyuserlist")} style={{textAlign: "center", fontSize: "13px"}}>Notify Admin List</Dropdown.Item>
+										}
 									</Dropdown.Menu>
 									{/* <Dropdown.Menu align="end">
 										<div className="card border-0 mb-0">

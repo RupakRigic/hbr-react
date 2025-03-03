@@ -159,8 +159,8 @@ const UserOffcanvas = forwardRef((props, ref) => {
             setCompany(userDetail.company);
         }
         try {
-            const FilterRoleCode = RoleCode == 9 && standardRoleCode.filter((id) => id === 11);
-            if (FilterRoleCode == 11) {
+            const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
+            if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9) || RoleCode.includes(13) || RoleCode.includes(12)) {
                 var userData = {
                     "name": firstName,
                     "company": company,
@@ -179,7 +179,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 }
             } else {
                 var userData = {
-                    "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                    "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
                     "name": firstName,
                     "last_name": lastName,
                     "email": email,
@@ -216,13 +216,13 @@ const UserOffcanvas = forwardRef((props, ref) => {
         try {
             var userData = {
                 "builder_id": BuilderCode,
-                "role_id": RoleCode == 9 ? standardRoleCode : RoleCode,
+                "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
                 "name": firstName,
                 "last_name": lastName,
                 "email": email,
                 "notes": notes,
                 "company": company,
-                "password": password
+                "password": newPassword
             }
             const data = await AdminUserRoleService.store(userData).json();
             if (data.status === true) {

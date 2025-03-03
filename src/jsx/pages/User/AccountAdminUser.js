@@ -728,7 +728,7 @@ console.log(userList)
                                 <td>{index + 1}</td>
                                 {columns.map((column) => (
                                   <>
-                                    {column.id == "name" &&
+                                    {column.id == "first Name" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
                                     }
                                     {column.id == "last Name" &&

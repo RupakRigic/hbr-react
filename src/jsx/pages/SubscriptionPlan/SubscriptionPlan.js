@@ -14,7 +14,6 @@ const SubscriptionPlan = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [activePlan, setActivePlan] = useState(localStorage.getItem("subscriptionActivePlan") ? localStorage.getItem("subscriptionActivePlan") : false);
-    console.log("subscriptionActivePlan", activePlan);
 
     const [isSubscribed, setIsSubscribed] = useState(localStorage.getItem("is_subscribed") ? JSON.parse(localStorage.getItem("is_subscribed")) : "");
     const [subscriptionList, setSubscriptionList] = useState([]);

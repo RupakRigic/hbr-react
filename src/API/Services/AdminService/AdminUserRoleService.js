@@ -12,6 +12,9 @@ export default {
     bulkupdate: (id, userData) => clientAuth.put(`admin/user/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/user/bulkdestroy/${id}`),
     checkBuilderForCompany: (userData) => clientAuth.post(`admin/user/check-company-builder`, { json: userData }),
-    userloginanalytics: (id) => clientAuth.get(`admin/user/user-login-activity/${id}`),
-    userlogoutnanalytics: (id) => clientAuth.get(`admin/user/user-logout-activity/${id}`),
+    userloginanalytics: (page=1, id) => clientAuth.get(`admin/user/user-login-activity/${id}?page=${page}`),
+    userlogoutnanalytics: (page=1, id) => clientAuth.get(`admin/user/user-logout-activity/${id}?page=${page}`),
+    activity_log: (id, userData) => clientAuth.post(`admin/user/all/activity/${id}`, { json: userData }),
+    notify_user_list: (page=1, userData) => clientAuth.post(`admin/notify/user/list?page=${page}`, { json: userData }),
+    notify_user_store: (userData) => clientAuth.post(`admin/notify/user/store`, { json: userData }),
 };

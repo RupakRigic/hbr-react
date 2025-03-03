@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminWeeklyDataService from "../../../API/Services/AdminService/AdminWeeklyDataService";
 import SubdivisionOffcanvas from "./SubdivisionOffcanvas";
@@ -9,10 +9,12 @@ import FutureSubdivisionPopup from "./FutureSubdivisionPopup";
 import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
 import axios from "axios";
+import swal from "sweetalert";
 
 const WeeklyDataIndex = () => {
+  const navigate = useNavigate();
+
   const [showModal, setShowModal] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
   const [builderId, setBuilderId] = useState('');
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
@@ -33,23 +35,21 @@ const WeeklyDataIndex = () => {
     getWeeklyList();
   };
 
-  const navigate = useNavigate();
-
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
-  }
+  };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -59,27 +59,29 @@ const WeeklyDataIndex = () => {
     }
   }, []);
 
-  const getWeeklyList = async () => {
-
+  const getWeeklyList = async (reset) => {
     setIsLoading(true);
     try {
-      const response = await AdminWeeklyDataService.index(
-        localStorage.getItem("enddate"),
-        localStorage.getItem("builderId")
-      );
-      const responseData = await response.json();
-      console.log(responseData);
-      const updatedData = responseData.map((element) => ({
+      let weekending = localStorage.getItem('enddate');
+      let builder_id = localStorage.getItem('builderId');
+
+      const response = await AdminWeeklyDataService.index(weekending, builder_id).json();
+
+      const updatedData = response?.map((element) => ({
         ...element,
         net_sales:
           element.trafic_sales[0].grosssales -
           element.trafic_sales[0].cancelations,
       }));
+
       setIsLoading(false);
       setBuilderList(updatedData);
+
+      if (reset) {
+        swal("Data reset successfully.");
+      }
     } catch (error) {
       setIsLoading(false);
-      console.log(444);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -127,6 +129,7 @@ const WeeklyDataIndex = () => {
         setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(
@@ -136,13 +139,9 @@ const WeeklyDataIndex = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   const handleReset = () => {
     setReset(true);
-    getWeeklyList();
+    getWeeklyList(true);
   }
 
   const handleOpenDialog = () => {
@@ -153,7 +152,6 @@ const WeeklyDataIndex = () => {
   const [message, setMessage] = useState(false);
   const [status, setStatus] = useState(false);
   const [event, setEvent] = useState([]);
-  console.log(event);
 
   const handlePopupClose = () => setShowPopup(false);
 
@@ -169,7 +167,7 @@ const WeeklyDataIndex = () => {
   };
 
   const GeneratePDF = async (e) => {
-    setPdfLoading(true);
+    setIsLoading(true);
     e.preventDefault();
     let weekending = localStorage.getItem('enddate');
     let builder_id = localStorage.getItem('builderId');
@@ -184,24 +182,24 @@ const WeeklyDataIndex = () => {
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_IMAGE_URL}api/admin/weekly/download_pdf`,
-          reportdata, {
-            responseType: "arraybuffer",
-            headers: {
-              Accept: "application/pdf",
-              Authorization: `Bearer ${bearerToken}`,
-            },
-          }
-        );
+        reportdata, {
+        responseType: "arraybuffer",
+        headers: {
+          Accept: "application/pdf",
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      }
+      );
 
       const blob = new Blob([response.data], { type: "application/pdf" });
-        
+
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = `Weekly Data Reporting.pdf`;
-        
+
       document.body.appendChild(link);
       link.click();
-      setPdfLoading(false);
+      setIsLoading(false);
       document.body.removeChild(link);
     } catch (error) {
       if (error.response && error.response.data) {
@@ -211,28 +209,35 @@ const WeeklyDataIndex = () => {
     }
   };
 
-  const SaveAll = async(e) => {
+  const SaveAll = async (e) => {
     e.preventDefault();
-    console.log('Saving all changes:', formData);
-    try {
-      const data = await AdminWeeklyDataService.update_all_data(localStorage.getItem("enddate"), formData).json();
-      if (data.status === true) {
-        getWeeklyList();
-      }
-    } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+    if (Object.keys(formData).length === 0) {
+      swal("No changes are available.").then((willDelete) => {
+        if (willDelete) {
+          return;
+        }
+      });
+    } else {
+      try {
+        const data = await AdminWeeklyDataService.update_all_data(localStorage.getItem("enddate"), formData).json();
+        if (data.status === true) {
+          swal("Data save successfully.").then((willDelete) => {
+            if (willDelete) {
+              getWeeklyList();
+            }
+          });
+        }
+      } catch (error) {
+        if (error.name === "HTTPError") {
+          const errorJson = await error.response.json();
+          setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
+        }
       }
     }
   };
-  
-
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Data Reporting"
         pageTitle="Data Reporting"
@@ -247,11 +252,28 @@ const WeeklyDataIndex = () => {
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center">
                     <h4 className="heading mb-0">Data Reporting List</h4>
                     <div className="d-flex">
-                      <Button className="btn btn-primary btn-sm me-1"
-                        onClick={(e) => pdfLoading ? "" : GeneratePDF(e)}
+                      <Button
+                        className="btn btn-primary btn-sm me-1"
+                        onClick={(e) =>
+                          swal({
+                            title: "Are you sure?",
+                            text: "Generate the PDF the data that they've entered.",
+                            icon: "warning",
+                            buttons: {
+                              cancel: "No",
+                              confirm: "Yes"
+                            },
+                            dangerMode: false,
+                          }).then((willGenerate) => {
+                            if (willGenerate) {
+                              GeneratePDF(e);
+                            }
+                          })
+                        }
                       >
-                        {pdfLoading ? "Loading..." : "Generate PDF"}
+                        Generate PDF
                       </Button>
+
                       <button className="btn btn-primary btn-sm me-1"
                         onClick={() => handleOpenDialog()}
                       >
@@ -266,13 +288,27 @@ const WeeklyDataIndex = () => {
                         + Add Subdivision
                       </Link>
                       <button className="btn btn-primary btn-sm me-1"
-                        style={{marginLeft: "5px"}}
+                        style={{ marginLeft: "5px" }}
                         onClick={(e) => SaveAll(e)}
                       >
                         Save All
                       </button>
                       <button className="btn btn-primary btn-sm me-1"
-                        onClick={() => handleReset()}
+                        onClick={() => swal({
+                          title: "Are you sure?",
+                          text: "Reset the data that they've entered.",
+                          icon: "warning",
+                          buttons: {
+                            cancel: "No",
+                            confirm: "Yes"
+                          },
+                          dangerMode: false,
+                        }).then((willGenerate) => {
+                          if (willGenerate) {
+                            handleReset();
+                          }
+                        })
+                        }
                       >
                         Cancel
                       </button>
@@ -284,7 +320,7 @@ const WeeklyDataIndex = () => {
                     </div>
                   </div>
                   {isLoading ? (
-                    <div className="d-flex justify-content-center align-items-center mb-5">
+                    <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
                       <ClipLoader color="#4474fc" />
                     </div>
                   ) : (
@@ -298,124 +334,111 @@ const WeeklyDataIndex = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <strong> Week Ending &nbsp;</strong>
-                            </th>
-                            <th>
-                              <strong> Sold Out?</strong>
-                            </th>
-                            <th>
-                              <strong> Subdivision</strong>
-                            </th>
-                            <th>
-                              <strong> Weekly Traffic </strong>
-                            </th>
-                            <th>
-                              <strong> Gross Sales </strong>
-                            </th>
-                            <th>
-                              <strong> - </strong>
-                            </th>
-                            <th>
-                              <strong> cancelations </strong>
-                            </th>
-                            <th>
-                              <strong> = </strong>
-                            </th>
-                            <th>
-                              <strong> Net Sales</strong>
-                            </th>
-                            <th>
-                              <strong> Current Lots Released </strong>
-                            </th>
-                            <th>
-                              <strong>Current Unsold Standing Inventory</strong>
-                            </th>
+                            <th><strong>Week Ending</strong></th>
+                            <th><strong>Sold Out?</strong></th>
+                            <th><strong>Subdivision</strong></th>
+                            <th><strong>Weekly Traffic</strong></th>
+                            <th><strong>Gross Sales</strong></th>
+                            <th><strong>-</strong></th>
+                            <th><strong>cancelations</strong></th>
+                            <th><strong>=</strong></th>
+                            <th><strong>Net Sales</strong></th>
+                            <th><strong>Current Lots Released</strong></th>
+                            <th><strong>Current Unsold Standing Inventory</strong></th>
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {records.map((element) => {
-                            const currentId = element.trafic_sales[0].subdivision_id;
-                            return (
-                              <tr key={currentId} style={{ textAlign: "center" }}>
-                                <td>{element.trafic_sales[0].weekending}</td>
-                                <td>
-                                  <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
-                                    Sold Out
-                                  </Button>
-                                </td>
-                                <td>{element.name}</td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].weeklytraffic
-                                    }
-                                    className="form-control"
-                                    name="weeklytraffic"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].grosssales
-                                    }
-                                    className="form-control"
-                                    name="grosssales"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td></td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].cancelations
-                                    }
-                                    className="form-control"
-                                    name="cancelations"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td></td>
-                                <td>{reset ? element.net_sales: (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    defaultValue={
-                                      element.trafic_sales[0].lotreleased
-                                    }
-                                    className="form-control"
-                                    name="lotreleased"
-                                    onChange={(event) => handleChange(event, currentId)}
-                                  />{" "}
-                                </td>
-                                <td>
+                          {records?.length > 0 ?
+                            records.map((element) => {
+                              const currentId = element.trafic_sales[0].subdivision_id;
+                              return (
+                                <tr key={currentId} style={{ textAlign: "center" }}>
+                                  <td>{element.trafic_sales[0].weekending}</td>
                                   <td>
-                                    <input
-                                      type="hidden"
-                                      name="subdivision_id"
-                                      value={
-                                        element.trafic_sales[0].subdivision_id
-                                      }
-                                    />
+                                    <Button variant="primary" onClick={(event) => handlePopupOpen(event)}>
+                                      Sold Out
+                                    </Button>
+                                  </td>
+                                  <td>{element.name}</td>
+                                  <td>
                                     <input
                                       type="number"
                                       defaultValue={
-                                        element.trafic_sales[0]
-                                          .unsoldinventory
+                                        element.trafic_sales[0].weeklytraffic
                                       }
                                       className="form-control"
-                                      name="unsoldinventory"
+                                      name="weekly_traffic"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].grosssales
+                                      }
+                                      className="form-control"
+                                      name="grosssales"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td></td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].cancelations
+                                      }
+                                      className="form-control"
+                                      name="cancelations"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td></td>
+                                  <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      defaultValue={
+                                        element.trafic_sales[0].lotreleased
+                                      }
+                                      className="form-control"
+                                      name="current_lots_released"
+                                      onChange={(event) => handleChange(event, currentId)}
+                                    />{" "}
+                                  </td>
+                                  <td>
+                                    <td>
+                                      <input
+                                        type="hidden"
+                                        name="subdivision_id"
+                                        value={
+                                          element.trafic_sales[0].subdivision_id
+                                        }
+                                      />
+                                      <input
+                                        type="number"
+                                        defaultValue={
+                                          element.trafic_sales[0]
+                                            .unsoldinventory
+                                        }
+                                        className="form-control"
+                                        name="current_un_sold_standing_inventory"
+                                        onChange={(event) => handleChange(event, currentId)}
+                                      />{" "}
+                                    </td>
+                                  </td>
+                                </tr>
+                              );
+                            }
+                            ) : (
+                              <tr>
+                                <td colSpan="11" style={{ textAlign: "center" }}>
+                                  No data found
                                 </td>
                               </tr>
-                            );
-                          })}
+                            )
+                          }
                         </tbody>
                       </table>
                       <div className="d-sm-flex text-center justify-content-between align-items-center">
@@ -465,11 +488,13 @@ const WeeklyDataIndex = () => {
           </div>
         </div>
       </div>
+
       <SubdivisionOffcanvas
         ref={subdivision}
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
+
       <FutureSubdivisionPopup
         show={showModal}
         BuilderList={BuilderList}
@@ -500,7 +525,7 @@ const WeeklyDataIndex = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 

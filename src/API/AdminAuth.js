@@ -3,8 +3,8 @@ import ky from 'ky';
 let userData = localStorage.getItem('admintoken') ? localStorage.getItem('admintoken') : "";
 class HTTPError extends Error { }
 const AdminAuth = ky.extend({
-  //  prefixUrl: "http://127.0.0.1:8000/api/",
-  prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
+   prefixUrl: "http://127.0.0.1:8000/api/",
+  // prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
   
   hooks: {
     beforeRequest: [

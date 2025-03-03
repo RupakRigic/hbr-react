@@ -498,6 +498,18 @@ const ArchiveData = () => {
                                 options={typeOptions}
                                 onChange={(selectedOption) => HandleTable(selectedOption)}
                                 placeholder="Select a Data Type..."
+                                styles={{
+                                    container: (provided) => ({
+                                        ...provided,
+                                        width: '100%',
+                                        color: 'black'
+                                    }),
+                                    menu: (provided) => ({
+                                        ...provided,
+                                        width: '100%',
+                                        color: 'black'
+                                    }),
+                                }}
                             />
                         </div>
 
@@ -534,6 +546,18 @@ const ArchiveData = () => {
                                         value={selectedFields}
                                         onChange={(selectedOption) => HandleFiels(selectedOption)}
                                         placeholder="Search and select a fields..."
+                                        styles={{
+                                            container: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                width: '100%',
+                                                color: 'black'
+                                            }),
+                                        }}
                                     />
                                 </Form.Group>
                             </div>

@@ -1,5 +1,5 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
@@ -7,8 +7,8 @@ import Select from "react-select";
 
 const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const { selectedLandSales, SubdivisionList } = props;
-  console.log("bulkselectedLandSales", selectedLandSales);
-  const [SubdivisionCode, setSubdivisionCode] = useState('');
+
+  const [SubdivisionCode, setSubdivisionCode] = useState([]);
   const [Error, setError] = useState('');
   const [addProduct, setAddProduct] = useState(false);
 
@@ -17,8 +17,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       setAddProduct(true)
     }
   }));
-
-  const navigate = useNavigate();
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -38,7 +36,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       if (willDelete) {
         try {
           var userData = {
-            subdivision_id: SubdivisionCode ? SubdivisionCode.value : "",
+            subdivision_id: SubdivisionCode?.value,
             name: event.target.name.value,
             status: event.target.status.value,
             sqft: event.target.sqft.value,
@@ -53,12 +51,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           if (data.status === true) {
             swal("Product Updated Succesfully").then((willDelete) => {
               if (willDelete) {
-                setAddProduct(false);
-                navigate('/productlist');
+                HandleUpdateCanvasClose();
+                props.parentCallback();
               }
             })
           }
-          props.parentCallback();
         }
         catch (error) {
           if (error.name === 'HTTPError') {
@@ -70,13 +67,19 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     })
   };
 
+  const HandleUpdateCanvasClose = () => {
+    setAddProduct(false); 
+    setError('');
+    setSubdivisionCode([]);
+  };
+
   return (
-    <>
-      <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+    <Fragment>
+      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddProduct(false); setError('') }}
+            onClick={() => HandleUpdateCanvasClose()}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -86,13 +89,12 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-xl-6 mb-3">
-                  <label className="form-label">
-                    Subdivision
-                  </label>
+                  <label className="form-label">Subdivision</label>
                   <Form.Group controlId="tournamentList">
                     <Select
                       options={SubdivisionList}
                       onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                      placeholder={"Select Subdivision..."}
                       styles={{
                         container: (provided) => ({
                           ...provided,
@@ -106,14 +108,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     />
                   </Form.Group>
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput3"
-                    className="form-label"
-                  >
-                    {" "}
-                    Name
-                  </label>
+                  <label htmlFor="exampleFormControlInput3" className="form-label">Name</label>
                   <input
                     type="text"
                     name="name"
@@ -122,32 +119,20 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput5"
-                    className="form-label"
-                  >
-                    {" "}
-                    Status
-                  </label>
-                  <select
-                    className="default-select form-control"
-                    name="status"
-                  >
-                    <option value="">All</option>
+                  <label htmlFor="exampleFormControlInput5" className="form-label">Status</label>
+                  <select className="default-select form-control" name="status">
+                    <option value="" disabled selected>Select Status</option>
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>
                     <option value="2">Future</option>
                     <option value="3">Closed</option>
                   </select>
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput17"
-                    className="form-label"
-                  >
-                    SQFT
-                  </label>
+                  <label htmlFor="exampleFormControlInput17" className="form-label">SQFT</label>
                   <input
                     type="number"
                     name="sqft"
@@ -156,13 +141,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Stories
-                  </label>
+                  <label htmlFor="exampleFormControlInput4" className="form-label">Stories</label>
                   <input
                     type="number"
                     name="stories"
@@ -171,13 +152,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput12"
-                    className="form-label"
-                  >
-                    Bedroom
-                  </label>
+                  <label htmlFor="exampleFormControlInput12" className="form-label">Bedroom</label>
                   <input
                     type="number"
                     name="bedroom"
@@ -186,13 +163,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput10"
-                    className="form-label"
-                  >
-                    Bathroom
-                  </label>
+                  <label htmlFor="exampleFormControlInput10" className="form-label">Bathroom</label>
                   <input
                     type="number"
                     name="bathroom"
@@ -202,14 +175,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     step="0.1"
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput6"
-                    className="form-label"
-                  >
-                    {" "}
-                    Garage
-                  </label>
+                  <label htmlFor="exampleFormControlInput6" className="form-label">Garage</label>
                   <input
                     type="number"
                     name="garage"
@@ -218,13 +186,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput18"
-                    className="form-label"
-                  >
-                    Website
-                  </label>
+                  <label htmlFor="exampleFormControlInput18" className="form-label">Website</label>
                   <input
                     type="text"
                     name="website"
@@ -233,15 +197,18 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <p className="text-danger fs-12">{Error}</p>
+
               </div>
+
               <div>
                 <button type="submit" className="btn btn-primary me-1">
                   Submit
                 </button>
                 <Link
                   to={"#"}
-                  onClick={() => { setAddProduct(false); setError('') }}
+                  onClick={() => HandleUpdateCanvasClose()}
                   className="btn btn-danger light ms-1"
                 >
                   Cancel
@@ -251,7 +218,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           </div>
         </div>
       </Offcanvas>
-    </>
+    </Fragment>
   );
 });
 

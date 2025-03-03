@@ -13,6 +13,8 @@ const PermitOffcanvas = forwardRef((props, ref) => {
     const [addProduct, setAddProduct] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [grossSale, setGrossSale] = useState(null);
+    const [cancelation, setCancelation] = useState(null);
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -57,9 +59,9 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                 "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
                 "weekending": event.target.weekending.value,
                 "weeklytraffic": event.target.weeklytraffic.value,
-                "grosssales": event.target.grosssales.value,
-                "cancelations": event.target.cancelations.value,
-                "netsales": event.target.netsales.value,
+                "grosssales": grossSale,
+                "cancelations": cancelation,
+                "netsales": grossSale - cancelation,
                 "lotreleased": event.target.lotreleased.value,
                 "unsoldinventory": event.target.unsoldinventory.value,
                 "status": isActive ? isActive : ''
@@ -81,6 +83,14 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
         }
+    };
+
+    const handleGrossSales = (e) => {
+        setGrossSale(e.target.value);
+    };
+
+    const handleCancelations = (e) => {
+        setCancelation(e.target.value);
     };
 
     return (
@@ -127,15 +137,15 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales <span className="text-danger">*</span></label>
-                                    <input type="number" name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" />
+                                    <input type="number" name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" onChange={(e) => handleGrossSales(e)} />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations <span className="text-danger">*</span></label>
-                                    <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" />
+                                    <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales <span className="text-danger">*</span></label>
-                                    <input type="number" name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" />
+                                    <input type="number" name='netsales' value={grossSale - cancelation} className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released <span className="text-danger">*</span></label>

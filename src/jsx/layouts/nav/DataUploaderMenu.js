@@ -91,17 +91,6 @@ export const DataUploaderMenuList = [
 ];
 
 export const AccountAdminafterSubscribed = [
-    // {
-    //     title: 'Subscription',
-    //     iconStyle: SVGICON.SubscribeData,
-    //     to: '/subscriptionlist',
-    // },
-    // {
-    //     title: 'Data Reporting',
-    //     iconStyle: SVGICON.GridDots,
-    //     to: '/weekly-data',
-    // }
-
     {
         title: 'Users',
         iconStyle: SVGICON.User,

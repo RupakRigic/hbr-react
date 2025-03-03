@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useEffect, useImperativeHandle, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -9,21 +9,20 @@ import ClipLoader from 'react-spinners/ClipLoader';
 
 const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const { selectedLandSales } = props;
-  console.log("bulkselectedLandSales", selectedLandSales);
+
   const [isLoading, setIsLoading] = useState(false);
   const [addProduct, setAddProduct] = useState(false);
-  const [BuilderCode, setBuilderCode] = useState([]);
   const [Error, setError] = useState("");
-  const [Subdivision, setSubdivision] = useState([]);
-  const [status, setStatus] = useState("1");
-  const [productType, setProductType] = useState("DET");
-  const [reporting, setReporting] = useState("1");
-  const [single, setSingle] = useState("1");
-  const [age, setAge] = useState("1");
-  const [area, setArea] = useState("1");
-  const [juridiction, setJuridiction] = useState("");
-  const [masterplan, setMasterPlan] = useState("");
-  const [gate, setGate] = useState('');
+  const [BuilderCode, setBuilderCode] = useState([]);
+  const [masterplan, setMasterPlan] = useState([]);
+  const [area, setArea] = useState([]);
+  const [juridiction, setJuridiction] = useState([]);
+  const [status, setStatus] = useState("");
+  const [productType, setProductType] = useState("");
+  const [reporting, setReporting] = useState("");
+  const [single, setSingle] = useState("");
+  const [age, setAge] = useState("");
+  const [gate, setGate] = useState("");
   const [options, setOptions] = useState([]);
   const navigate = useNavigate();
 
@@ -53,60 +52,25 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     setAge(e.target.value);
   };
 
-  const handleArea = (e) => {
-    setArea(e.target.value);
+  const handleArea = (selectedOption) => {
+    setArea(selectedOption);
   };
 
-  const handleJurisdiction = (e) => {
-    setJuridiction(e.target.value);
+  const handleJurisdiction = (selectedOption) => {
+    setJuridiction(selectedOption);
   };
 
-  const handleMasterPlan = (e) => {
-    setMasterPlan(e.target.value);
+  const handleMasterPlan = (selectedOption) => {
+    setMasterPlan(selectedOption);
   };
 
   const handleGate = (e) => {
     setGate(e.target.value);
   };
 
-  const GetSubdivision = async (id) => {
-    setIsLoading(true);
-    try {
-      let responseData = await AdminSubdevisionService.show(id).json();
-      setIsLoading(false);
-      setSubdivision(responseData);
-
-      if (responseData.builder) {
-        const formattedBuilderCode = {
-          value: responseData.builder.id,
-          label: responseData.builder.name,
-        };
-        setBuilderCode(formattedBuilderCode);
-      }
-
-      setStatus(responseData.status);
-      setProductType(responseData.product_type);
-      setReporting(responseData.reporting);
-      setProductType(responseData.product_type);
-      setSingle(responseData.single);
-      setAge(responseData.age);
-      setArea(responseData.area);
-      setJuridiction(responseData.juridiction);
-      setMasterPlan(responseData.masterplan_id);
-      setGate(responseData.gated);
-    } catch (error) {
-      setIsLoading(false);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       if (selectedLandSales.length > 0 && addProduct) {
-        GetSubdivision(selectedLandSales[0]);
         GetBuilderlist();
       } else {
         return;
@@ -117,6 +81,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   }, [selectedLandSales, addProduct]);
 
   const GetBuilderlist = async () => {
+    setIsLoading(true);
     try {
       const response = await AdminBuilderService.all_builder_list();
       const responseData = await response.json();
@@ -127,8 +92,10 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           label: element.name
         }));
       setOptions(options);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
       if (error.name === 'HTTPError') {
         const errorJson = await error.response.json();
         setError(errorJson.message)
@@ -154,7 +121,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
       if (willDelete) {
         try {
           var userData = {
-            builder_id: BuilderCode.value ? BuilderCode.value : Subdivision.builder_id,
+            builder_id: BuilderCode?.value,
             name: event.target.name.value,
             status: status,
             reporting: reporting,
@@ -163,12 +130,12 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             opensince: event.target.opensince.value,
             age: age,
             single: single,
-            firstpermitdate: event.target.firstpermitdate.value,
-            masterplan_id: masterplan,
+            // firstpermitdate: event.target.firstpermitdate.value,
+            masterplan_id: masterplan?.value,
             lat: event.target.lat.value,
             lng: event.target.lng.value,
-            area: area,
-            juridiction: juridiction,
+            area: area?.value,
+            juridiction: juridiction?.value,
             zipcode: event.target.zipcode.value,
             parcel: event.target.parcel.value,
             crossstreet: event.target.crossstreet.value,
@@ -186,8 +153,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
           if (data.status === true) {
             swal("Subdivision Updated Succesfully").then((willDelete) => {
               if (willDelete) {
-                setAddProduct(false);
-                props.setSelectedLandSales([]);
+                HandleUpdateCanvasClose();
                 props.parentCallback();
               }
             })
@@ -204,13 +170,113 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     })
   };
 
+  const HandleUpdateCanvasClose = () => {
+    setAddProduct(false); 
+    setError('');
+    setBuilderCode([]);
+    setStatus("");
+    setReporting("");
+    setProductType("");
+    setAge("");
+    setSingle("");
+    setMasterPlan([]);
+    setArea([]);
+    setJuridiction([]);
+    setGate("");
+};
+
+  const optionsMasterPlan = [
+    { value: "ALIANTE", label: "ALIANTE" },
+    { value: "ANTHEM", label: "ANTHEM" },
+    { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
+    { value: "ASCAYA", label: "ASCAYA" },
+    { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
+    { value: "CADENCE", label: "CADENCE" },
+    { value: "CANYON CREST", label: "CANYON CREST" },
+    { value: "CANYON GATE", label: "CANYON GATE" },
+    { value: "CORONADO RANCH", label: "CORONADO RANCH" },
+    { value: "ELDORADO", label: "ELDORADO" },
+    { value: "GREEN VALLEY", label: "GREEN VALLEY" },
+    { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
+    { value: "INSPIRADA", label: "INSPIRADA" },
+    { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
+    { value: "THE LAKES", label: "THE LAKES" },
+    { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
+    { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
+    { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
+    { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
+    { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
+    { value: "NEVADA RANCH", label: "NEVADA RANCH" },
+    { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
+    { value: "PROVIDENCE", label: "PROVIDENCE" },
+    { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
+    { value: "RED ROCK CC", label: "RED ROCK CC" },
+    { value: "RHODES RANCH", label: "RHODES RANCH" },
+    { value: "SEDONA RANCH", label: "SEDONA RANCH" },
+    { value: "SEVEN HILLS", label: "SEVEN HILLS" },
+    { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
+    { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
+    { value: "SKYE CANYON", label: "SKYE CANYON" },
+    { value: "SKYE HILLS", label: "SKYE HILLS" },
+    { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
+    { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
+    { value: "SUMMERLIN", label: "SUMMERLIN" },
+    { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
+    { value: "SUNSTONE", label: "SUNSTONE" },
+    { value: "TUSCANY", label: "TUSCANY" },
+    { value: "VALLEY VISTA", label: "VALLEY VISTA" },
+    { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
+    { value: "VISTA VERDE", label: "VISTA VERDE" },
+    { value: "WESTON HILLS", label: "WESTON HILLS" },
+  ];
+
+  const optionsArea = [
+    { value: "BC", label: "BC" },
+    { value: "E", label: "E" },
+    { value: "H", label: "H" },
+    { value: "IS", label: "IS" },
+    { value: "L", label: "L" },
+    { value: "MSQ", label: "MSQ" },
+    { value: "MV", label: "MV" },
+    { value: "NLV", label: "NLV" },
+    { value: "NW", label: "NW" },
+    { value: "P", label: "P" },
+    { value: "SO", label: "SO" },
+    { value: "SW", label: "SW" },
+  ];
+
+  const optionsJuridiction = [
+    { value: "Boulder City", label: "Boulder City" },
+    { value: "CLV", label: "CLV" },
+    { value: "CC Enterprise", label: "CC Enterprise" },
+    { value: "CC Indian Springs", label: "CC Indian Springs" },
+    { value: "CC Laughlin", label: "CC Laughlin" },
+    { value: "Lone Mtn", label: "Lone Mtn" },
+    { value: "Lower Kyle Canyon", label: "Lower Kyle Canyon" },
+    { value: "CC Moapa Valley", label: "CC Moapa Valley" },
+    { value: "CC Mt Charleston", label: "CC Mt Charleston" },
+    { value: "CC Mtn Springs", label: "CC Mtn Springs" },
+    { value: "CC Paradise", label: "CC Paradise" },
+    { value: "CC Searchlight", label: "CC Searchlight" },
+    { value: "CC Spring Valley", label: "CC Spring Valley" },
+    { value: "CC Summerlin South", label: "CC Summerlin South" },
+    { value: "CC Sunrise Manor", label: "CC Sunrise Manor" },
+    { value: "CC Whiteney", label: "CC Whiteney" },
+    { value: "CC Winchester", label: "CC Winchester" },
+    { value: "CC Unincorporated", label: "CC Unincorporated" },
+    { value: "Henderson", label: "Henderson" },
+    { value: "Mesquite", label: "Mesquite" },
+    { value: "NLV", label: "NLV" },
+    { value: "NYE", label: "NYE" },
+  ];
+
   return (
-    <>
-      <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+    <Fragment>
+      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"
-            onClick={() => { setAddProduct(false); setError('') }}
+            onClick={() => HandleUpdateCanvasClose()}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -230,6 +296,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                       <Select
                         options={options}
                         value={BuilderCode}
+                        placeholder={"Select Builder..."}
                         onChange={(selectedOption) => handleBuilderCode(selectedOption)}
                         styles={{
                           container: (provided) => ({
@@ -243,7 +310,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                             color: 'black'
                           }),
                         }}
-                      ></Select>
+                      />
                     </Form.Group>
                   </div>
 
@@ -251,7 +318,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput3" className="form-label">Name</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.name}
                       name="name"
                       className="form-control"
                       id="exampleFormControlInput3"
@@ -262,6 +328,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput4" className="form-label">Status</label>
                     <select className="default-select form-control" onChange={handleStatus} value={status}>
+                      <option value="" disabled>Select Status</option>
                       <option value="1">Active</option>
                       <option value="0">Sold Out</option>
                       <option value="2">Future</option>
@@ -271,6 +338,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput5" className="form-label">Reporting</label>
                     <select className="default-select form-control" onChange={handleReporting} value={reporting}>
+                      <option value="" disabled>Select Reporting</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
@@ -279,6 +347,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput6" className="form-label">Product Type</label>
                     <select className="default-select form-control" onChange={handleProductType} value={productType}>
+                      <option value="" disabled>Select Product Type</option>
                       <option value="DET">DET</option>
                       <option value="ATT">ATT</option>
                       <option value="HR">HR</option>
@@ -290,7 +359,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput7" className="form-label">Phone</label>
                     <input
                       type="tel"
-                      defaultValue={Subdivision.phone}
                       name="phone"
                       className="form-control"
                       id="exampleFormControlInput7"
@@ -317,7 +385,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label className="form-label">Open Since</label>
                     <input
                       type="date"
-                      defaultValue={Subdivision.opensince}
                       name="opensince"
                       className="form-control"
                     />
@@ -326,6 +393,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label className="form-label">Age Restricted</label>
                     <select className="default-select form-control" name="" onChange={handleAge} value={age}>
+                      <option value="" disabled>Select Age Restricted</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
@@ -334,78 +402,51 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story</label>
                     <select className="default-select form-control" name="" onChange={handleSingle} value={single}>
+                      <option value="" disabled>Select All Single Story</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
                   </div>
 
-                  <div className="col-xl-6 mb-3">
+                  {/* <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                     <input
                       type="date"
-                      defaultValue={Subdivision.firstpermitdate}
                       name="firstpermitdate"
                       className="form-control"
                       id="exampleFormControlInput9"
                       placeholder=""
                     />
-                  </div>
+                  </div> */}
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
-                    <select className="default-select form-control" name="" onChange={handleMasterPlan} value={masterplan}>
-                      <option value="">Select Masterplan</option>
-                      <option value=""></option>
-                      <option value="ALIANTE">ALIANTE</option>
-                      <option value="ANTHEM">ANTHEM</option>
-                      <option value="ARLINGTON RANCH">ARLINGTON RANCH</option>
-                      <option value="ASCAYA">ASCAYA</option>
-                      <option value="BUFFALO RANCH">BUFFALO RANCH</option>
-                      <option value="CADENCE">CADENCE</option>
-                      <option value="CANYON CREST">CANYON CREST</option>
-                      <option value="CANYON GATE">CANYON GATE</option>
-                      <option value="CORONADO RANCH">CORONADO RANCH</option>
-                      <option value="ELDORADO">ELDORADO</option>
-                      <option value="GREEN VALLEY">GREEN VALLEY</option>
-                      <option value="HIGHLANDS RANCH">HIGHLANDS RANCH</option>
-                      <option value="INSPIRADA">INSPIRADA</option>
-                      <option value="LAKE LAS VEGAS">LAKE LAS VEGAS</option>
-                      <option value="THE LAKES">THE LAKES</option>
-                      <option value="LAS VEGAS COUNTRY CLUB">LAS VEGAS COUNTRY CLUB</option>
-                      <option value="LONE MOUNTAIN">LONE MOUNTAIN</option>
-                      <option value="MACDONALD RANCH">MACDONALD RANCH</option>
-                      <option value="MOUNTAINS EDGE">MOUNTAINS EDGE</option>
-                      <option value="MOUNTAIN FALLS">MOUNTAIN FALLS</option>
-                      <option value="NEVADA RANCH">NEVADA RANCH</option>
-                      <option value="NEVADA TRAILS">NEVADA TRAILS</option>
-                      <option value="PROVIDENCE">PROVIDENCE</option>
-                      <option value="QUEENSRIDGE">QUEENSRIDGE</option>
-                      <option value="RED ROCK CC">RED ROCK CC</option>
-                      <option value="RHODES RANCH">RHODES RANCH</option>
-                      <option value="SEDONA RANCH">SEDONA RANCH</option>
-                      <option value="SEVEN HILLS">SEVEN HILLS</option>
-                      <option value="SILVERADO RANCH">SILVERADO RANCH</option>
-                      <option value="SILVERSTONE RANCH">SILVERSTONE RANCH</option>
-                      <option value="SKYE CANYON">SKYE CANYON</option>
-                      <option value="SKYE HILLS">SKYE HILLS</option>
-                      <option value="SPANISH TRAIL">SPANISH TRAIL</option>
-                      <option value="SOUTHERN HIGHLANDS">SOUTHERN HIGHLANDS</option>
-                      <option value="SUMMERLIN">SUMMERLIN</option>
-                      <option value="SUNRISE HIGH">SUNRISE HIGH</option>
-                      <option value="SUNSTONE">SUNSTONE</option>
-                      <option value="TUSCANY">TUSCANY</option>
-                      <option value="VALLEY VISTA">VALLEY VISTA</option>
-                      <option value="VILLAGES AT TULE SPRING">VILLAGES AT TULE SPRINGS</option>
-                      <option value="VISTA VERDE">VISTA VERDE</option>
-                      <option value="WESTON HILLS">WESTON HILLS</option>
-                    </select>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={optionsMasterPlan}
+                        value={masterplan}
+                        placeholder={"Select Masterplan..."}
+                        onChange={(selectedOption) => handleMasterPlan(selectedOption)}
+                        styles={{
+                          container: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                        }}
+                      />
+                    </Form.Group>
                   </div>
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput11" className="form-label">Latitude</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.lat}
                       name="lat"
                       className="form-control"
                       id="exampleFormControlInput11"
@@ -417,7 +458,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput12" className="form-label">Longitude</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.lng}
                       name="lng"
                       className="form-control"
                       id="exampleFormControlInput12"
@@ -427,57 +467,56 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput13" className="form-label">Area</label>
-                    <select className="default-select form-control" name="" onChange={handleArea} value={area}>
-                      <option value="">Select Area</option>
-                      <option value="BC">BC</option>
-                      <option value="E">E</option>
-                      <option value="H">H</option>
-                      <option value="IS">IS</option>
-                      <option value="L">L</option>
-                      <option value="MSQ">MSQ</option>
-                      <option value="MV">MV</option>
-                      <option value="NLV">NLV</option>
-                      <option value="NW">NW</option>
-                      <option value="P">P</option>
-                      <option value="SO">SO</option>
-                      <option value="SW">SW</option>
-                    </select>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={optionsArea}
+                        value={area}
+                        placeholder={"Select Area..."}
+                        onChange={(selectedOption) => handleArea(selectedOption)}
+                        styles={{
+                          container: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                        }}
+                      />
+                    </Form.Group>
                   </div>
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
-                    <select className="default-select form-control" name="" onChange={handleJurisdiction} value={juridiction}>
-                      <option value="">Select Juridiction</option>
-                      <option value="Boulder City">Boulder City</option>
-                      <option value="CLV">CLV</option>
-                      <option value="CC Enterprise">CC Enterprise</option>
-                      <option value="CC Indian Springs">CC Indian Springs</option>
-                      <option value="CC Laughlin">CC Laughlin</option>
-                      <option value="Lone Mtn">Lone Mtn</option>
-                      <option value="Lower Kyle Canyon">Lower Kyle Canyon</option>
-                      <option value="CC Moapa Valley">CC Moapa Valley</option>
-                      <option value="CC Mt Charleston">CC Mt Charleston</option>
-                      <option value="CC Mtn Springs">CC Mtn Springs</option>
-                      <option value="CC Paradise">CC Paradise</option>
-                      <option value="CC Searchlight">CC Searchlight</option>
-                      <option value="CC Spring Valley">CC Spring Valley</option>
-                      <option value="CC Summerlin South">CC Summerlin South</option>
-                      <option value="CC Sunrise Manor">CC Sunrise Manor</option>
-                      <option value="CC Whiteney">CC Whiteney</option>
-                      <option value="CC Winchester">CC Winchester</option>
-                      <option value="CC Unincorporated">CC Unincorporated</option>
-                      <option value="Henderson">Henderson</option>
-                      <option value="Mesquite">Mesquite</option>
-                      <option value="NLV">NLV</option>
-                      <option value="NYE">NYE</option>
-                    </select>
+                    <Form.Group controlId="tournamentList">
+                      <Select
+                        options={optionsJuridiction}
+                        value={juridiction}
+                        placeholder={"Select Juridiction..."}
+                        onChange={(selectedOption) => handleJurisdiction(selectedOption)}
+                        styles={{
+                          container: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                          menu: (provided) => ({
+                            ...provided,
+                            width: '100%',
+                            color: 'black'
+                          }),
+                        }}
+                      />
+                    </Form.Group>
                   </div>
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
                     <input
                       type="number"
-                      defaultValue={Subdivision.zipcode}
                       name="zipcode"
                       className="form-control"
                       id="exampleFormControlInput15"
@@ -489,7 +528,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput16" className="form-label">Parcel</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.parcel}
                       name="parcel"
                       className="form-control"
                       id="exampleFormControlInput16"
@@ -500,7 +538,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput17" className="form-label">Cross Street</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.crossstreet}
                       name="crossstreet"
                       className="form-control"
                       id="exampleFormControlInput17"
@@ -511,7 +548,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput18" className="form-label">Total Lots</label>
                     <input
                       type="number"
-                      defaultValue={Subdivision.totallots}
                       name="totallots"
                       className="form-control"
                       id="exampleFormControlInput18"
@@ -522,7 +558,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput21" className="form-label">Lot Width</label>
                     <input
                       type="number"
-                      defaultValue={Subdivision.lotwidth}
                       name="lotwidth"
                       className="form-control"
                       id="exampleFormControlInput21"
@@ -533,7 +568,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput23" className="form-label">Lot Size</label>
                     <input
                       type="number"
-                      defaultValue={Subdivision.lotsize}
                       name="lotsize"
                       className="form-control"
                       id="exampleFormControlInput23"
@@ -543,7 +577,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
                     <select className="default-select form-control" onChange={handleGate} value={gate}>
-                      <option value="">Select Gate</option>
+                      <option value="" disabled>Select Gate</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
@@ -553,7 +587,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput31" className="form-label">Master Plan Fee</label>
                     <input
                       type="number"
-                      defaultValue={Subdivision.masterplanfee}
                       name="masterplanfee"
                       className="form-control"
                       id="exampleFormControlInput31"
@@ -564,7 +597,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput34" className="form-label">Zoning</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.zoning}
                       name="zoning"
                       className="form-control"
                       id="exampleFormControlInput34"
@@ -575,7 +607,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput35" className="form-label">Gas Provider</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.gasprovider}
                       name="gasprovider"
                       className="form-control"
                       id="exampleFormControlInput35"
@@ -586,23 +617,26 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <label htmlFor="exampleFormControlInput36" className="form-label">Website</label>
                     <input
                       type="text"
-                      defaultValue={Subdivision.website}
                       name='website'
                       className="form-control"
                       id="exampleFormControlInput36"
                       placeholder=""
                     />
                   </div>
+
                   <p className="text-danger fs-12">{Error}</p>
+
                 </div>
+
                 <div>
                   <button type="submit" className="btn btn-primary me-1">
                     Submit
                   </button>
                   <Link
                     type="reset"
-                    to={"/subdivisionlist"}
+                    to={"#"}
                     className="btn btn-danger light ms-1"
+                    onClick={() => HandleUpdateCanvasClose()}
                   >
                     Cancel
                   </Link>
@@ -611,7 +645,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             </div>
           </div>)}
       </Offcanvas>
-    </>
+    </Fragment>
   );
 });
 

@@ -1,18 +1,17 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
+import Select from "react-select";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 
 
 const BulkPriceUpdate = forwardRef((props, ref) => {
     const { selectedLandSales } = props;
-    console.log("bulkselectedLandSales", selectedLandSales);
+
     const [Error, setError] = useState('');
     const [addProduct, setAddProduct] = useState(false);
-    const [ProductList, setProductList] = useState([]);
-    const [ProductCode, setProductCode] = useState("");
-    const [PriceList, setPriceList] = useState("");
+    const [ProductCode, setProductCode] = useState([]);
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -21,14 +20,8 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
     }));
 
     const handleProductCode = (code) => {
-        setProductCode(code.target.value);
+        setProductCode(code);
     };
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        setProductList(props.productList);
-    }, [props.productList]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -44,7 +37,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
             if (willDelete) {
                 try {
                     var userData = {
-                        product_id: ProductCode,
+                        product_id: ProductCode?.value,
                         baseprice: event.target.baseprice.value,
                         date: event.target.date.value,
                     };
@@ -53,11 +46,10 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                     if (data.status === true) {
                         swal("Closing Update Succesfully").then((willDelete) => {
                             if (willDelete) {
-                                setAddProduct(false);
-                                navigate('/priceList');
+                                HandleUpdateCanvasClose();
+                                props.parentCallback();
                             }
                         })
-                        props.parentCallback();
                     }
                 }
                 catch (error) {
@@ -70,13 +62,19 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
         })
     };
 
+    const HandleUpdateCanvasClose = () => {
+        setAddProduct(false); 
+        setError('');
+        setProductCode([]);
+    };
+
     return (
-        <>
-            <Offcanvas show={addProduct} onHide={() => { setAddProduct(false); setError('') }} className="offcanvas-end customeoff" placement='end'>
+        <Fragment>
+            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { setAddProduct(false); setError('') }}
+                        onClick={() => HandleUpdateCanvasClose()}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -90,59 +88,46 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                                         Product
                                     </label>
                                     <Form.Group controlId="tournamentList">
-                                        <Form.Select
-                                            onChange={handleProductCode}
+                                        <Select
+                                            options={props.productList}
                                             value={ProductCode}
-                                            className="default-select form-control"
-                                        >
-                                            <option value=''>Select Product</option>
-                                            {ProductList.map((element) => (
-                                                <option value={element.value}>{element.label}</option>
-                                            ))}
-                                        </Form.Select>
+                                            placeholder={"Select Product..."}
+                                            onChange={(selectedOption) => handleProductCode(selectedOption)}
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                            }}
+                                        />
                                     </Form.Group>
                                 </div>
+
                                 <div className="col-xl-6 mb-3">
-                                    <label
-                                        htmlFor="exampleFormControlInput2"
-                                        className="form-label"
-                                    >
-                                        {" "}
-                                        Base Price:
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="baseprice"
-                                        className="form-control"
-                                        id="exampleFormControlInput2"
-                                        placeholder=""
-                                        defaultValue={PriceList.baseprice}
-                                    />
+                                    <label htmlFor="exampleFormControlInput2" className="form-label">Base Price:</label>
+                                    <input type="number" name="baseprice" className="form-control" id="exampleFormControlInput2"/>
                                 </div>
+
                                 <div className="col-xl-6 mb-3">
-                                    <label
-                                        htmlFor="exampleFormControlInput9"
-                                        className="form-label"
-                                    >
-                                        {" "}
-                                        Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="date"
-                                        className="form-control"
-                                        id="exampleFormControlInput9"
-                                        placeholder=""
-                                        defaultValue={PriceList.date}
-                                    />
+                                    <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
+                                    <input type="date" name="date" className="form-control" id="exampleFormControlInput9" placeholder=""/>
                                 </div>
                                 <p className="text-danger fs-12">{Error}</p>
                             </div>
+
                             <div>
-                                <button type="submit" className="btn btn-primary me-1">
-                                    Submit
-                                </button>
-                                <Link to={"#"} onClick={() => { setAddProduct(false); setError('') }} className="btn btn-danger light ms-1">
+                                <button type="submit" className="btn btn-primary me-1">Submit</button>
+                                <Link 
+                                    to={"#"} 
+                                    onClick={() => HandleUpdateCanvasClose()} 
+                                    className="btn btn-danger light ms-1"
+                                >
                                     Cancel
                                 </Link>
                             </div>
@@ -150,7 +135,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                     </div>
                 </div>
             </Offcanvas>
-        </>
+        </Fragment>
     );
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -81,7 +81,9 @@ const LandsaleList = () => {
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
   const [sortConfig, setSortConfig] = useState([]);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
-  const [excelLoading, setExcelLoading] = useState(true);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
+  
 
   const [priceOption, setPriceOption] = useState("");
   const [pricePerOption, setPricePerOption] = useState("");
@@ -154,7 +156,7 @@ const LandsaleList = () => {
       if (totaldays < 367) {
         e.preventDefault();
         console.log(555);
-        getLandsaleList(currentPage, sortConfig, searchQuery);
+        getLandsaleList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderName));
         localStorage.setItem("selectedSubdivisionNameByFilter_LandSale", JSON.stringify(selectedSubdivisionName));
@@ -364,60 +366,30 @@ const LandsaleList = () => {
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
 
-  const handleDownloadExcel = () => {
-    setExportModelShow(false);
-    setSelectedColumns("");
-    let tableHeaders;
-    if (selectedColumns.length > 0) {
-      tableHeaders = selectedColumns;
-    } else {
-      tableHeaders = headers.map((c) => c.label);
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    try {
+      let sortConfigString = "";
+      if (sortConfig !== null) {
+        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+      }
+
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminLandsaleService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `landsales.xlsx`);
+      document.body.appendChild(a);
+      a.click();
+      a.parentNode.removeChild(a);
+      setExcelDownload(false);
+    } catch (error) {
+      console.log(error);
     }
-
-    const tableData = AllProductListExport.map((row) => {
-      return tableHeaders.map((header) => {
-        switch (header) {
-          case "Builder Name":
-            return row.subdivision?.builder?.name || '';
-          case "Subdivision Name":
-            return row.subdivision?.name || '';
-          case "Seller":
-            return row.seller || '';
-          case "Buyer":
-            return row.buyer || '';
-          case "Location":
-            return row.location || '';
-          case "Notes":
-            return row.notes || '';
-          case "Price":
-            return row.price ? `${row.price}/${row.typeofunit}` : '';
-          case "Size":
-            return row.noofunit ? `${row.noofunit}` : 0;
-          case "Price Per":
-            return row.price_per ? `${row.price_per}/${row.typeofunit}` : '';
-          case "Size MS":
-            return row.typeofunit ? `${row.typeofunit}` : '';
-          case "Date":
-            return row.date ? `${row.date}` : '';
-          default:
-            return '';
-        }
-      });
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Land sales');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(data, 'Land_sales.xlsx');
-
-    resetSelection();
-    setExportModelShow(false);
   };
-
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -561,6 +533,7 @@ const LandsaleList = () => {
 
   const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setExcelLoading(true);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
     try {
@@ -575,18 +548,19 @@ const LandsaleList = () => {
       );
       const responseData = await response.json();
       setIsLoading(false);
+      setExcelLoading(false);
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setlandSaleListCount(responseData.total);
       if (responseData.total > 100) {
         FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
       } else {
-        setExcelLoading(false);
         setAllBuilderExport(responseData.data);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
+        setExcelLoading(false);
         const errorJson = await error.response.json();
         setError(errorJson.message);
       }
@@ -598,8 +572,6 @@ const LandsaleList = () => {
 
   const FetchAllPages = async (searchQuery, sortConfig, LandsaleList, landSaleListCount) => {
     setExcelLoading(true);
-    // const response = await AdminLandsaleService.index(1, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-    // const responseData = await response.json();
     const totalPages = Math.ceil(landSaleListCount / recordsPage);
     let allData = LandsaleList;
     for (let page = 2; page <= totalPages; page++) {
@@ -1057,7 +1029,7 @@ const LandsaleList = () => {
       }
     };
   return (
-    <>
+    <Fragment>
       <MainPagetitle
         mainTitle="Land sales"
         pageTitle="Land Sales"
@@ -1109,15 +1081,11 @@ const LandsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1145,15 +1113,11 @@ const LandsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button onClick={() => !excelLoading ? setExportModelShow(true) : ""} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
-                              :
-                              <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
-                                Export
-                              </div>
-                            }
+                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
                           </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
@@ -1212,7 +1176,7 @@ const LandsaleList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
-                              Bulk Edit
+                               Edit
                             </div>
                           </Link>
                           <button
@@ -1231,7 +1195,7 @@ const LandsaleList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                              Bulk Delete
+                               Delete
                             </div>
                           </button>
                         </div>
@@ -1338,17 +1302,17 @@ const LandsaleList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "size MS" ? "typeofunit" :
-                                        column.id == "size" ? "noofunit" :
-                                          column.id == "zip Code" ? "zip" :
-                                            toCamelCase(column.id))
+                                      column.id == "size" ? "noofunit" :
+                                      column.id == "zip Code" ? "zip" :
+                                      toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "size MS" ? "typeofunit" :
-                                              column.id == "size" ? "noofunit" :
-                                                column.id == "zip Code" ? "zip" :
-                                                  toCamelCase(column.id))
+                                            column.id == "size" ? "noofunit" :
+                                            column.id == "zip Code" ? "zip" :
+                                            toCamelCase(column.id))
                                         ).direction === "asc"
                                           ? "↑"
                                           : "↓"}
@@ -1365,8 +1329,8 @@ const LandsaleList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "price" ? priceOption :
-                                            column.id == "price Per" ? pricePerOption :
-                                              column.id == "size" ? sizeOption : ""
+                                          column.id == "price Per" ? pricePerOption :
+                                          column.id == "size" ? sizeOption : ""
                                         }
 
                                         style={{
@@ -1966,7 +1930,7 @@ const LandsaleList = () => {
         </div>
       </Offcanvas>
 
-      <Modal show={exportmodelshow} onHide={setExportModelShow}>
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
         <>
           <Modal.Header>
             <Modal.Title>Export</Modal.Title>
@@ -2010,9 +1974,10 @@ const LandsaleList = () => {
             <button
               varient="primary"
               class="btn btn-primary"
+              disabled={excelDownload}
               onClick={handleDownloadExcel}
             >
-              Download
+              {excelDownload ? "Downloading..." : "Download"}
             </button>
           </Modal.Footer>
         </>
@@ -2133,7 +2098,7 @@ const LandsaleList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Fragment>
   );
 };
 
