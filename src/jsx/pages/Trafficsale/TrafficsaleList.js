@@ -104,6 +104,7 @@ const TrafficsaleList = () => {
     zoning: localStorage.getItem("zoning_TrafficSale") ? JSON.parse(localStorage.getItem("zoning_TrafficSale")) : "",
     age: localStorage.getItem("age_TrafficSale") ? JSON.parse(localStorage.getItem("age_TrafficSale")) : "",
     single: localStorage.getItem("single_TrafficSale") ? JSON.parse(localStorage.getItem("single_TrafficSale")) : "",
+    grosssales: ""
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
@@ -824,62 +825,62 @@ const TrafficsaleList = () => {
       .join('');
   }
 
-  const applyFilters = () => {
-    const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+  // const applyFilters = () => {
+  //   const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
 
-    if (AllTrafficListExport.length === 0) {
-      setTrafficsaleList(trafficsaleList);
-      return;
-    }
+  //   if (AllTrafficListExport.length === 0) {
+  //     setTrafficsaleList(trafficsaleList);
+  //     return;
+  //   }
 
-    let filtered = AllTrafficListExport;
+  //   let filtered = AllTrafficListExport;
 
-    const applyNumberFilter = (items, query, key) => {
-      if (query) {
-        let operator = '=';
-        let value = query;
+  //   const applyNumberFilter = (items, query, key) => {
+  //     if (query) {
+  //       let operator = '=';
+  //       let value = query;
 
-        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-          operator = query[0];
-          value = query.slice(1);
-        }
+  //       if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+  //         operator = query[0];
+  //         value = query.slice(1);
+  //       }
 
-        const numberValue = parseFloat(value);
-        if (!isNaN(numberValue)) {
-          return items.filter(item => {
-            const itemValue = parseFloat(item[key]);
-            if (operator === '>') return itemValue > numberValue;
-            if (operator === '<') return itemValue < numberValue;
-            return itemValue === numberValue;
-          });
-        }
-      }
-      return items;
-    };
+  //       const numberValue = parseFloat(value);
+  //       if (!isNaN(numberValue)) {
+  //         return items.filter(item => {
+  //           const itemValue = parseFloat(item[key]);
+  //           if (operator === '>') return itemValue > numberValue;
+  //           if (operator === '<') return itemValue < numberValue;
+  //           return itemValue === numberValue;
+  //         });
+  //       }
+  //     }
+  //     return items;
+  //   };
 
-    filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
+  //   filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
 
-    if (isAnyFilterApplied && !normalFilter) {
-      setTrafficsaleList(filtered.slice(0, 100));
-      setTrafficListCount(filtered.length);
-      setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(false);
-      setNormalFilter(false);
-    } else {
-      setTrafficsaleList(filtered.slice(0, 100));
-      setTrafficListCount(filtered.length);
-      setNpage(Math.ceil(filtered.length / recordsPage));
-      setCurrentPage(1);
-      setFilter(false);
-      setNormalFilter(false);
-    }
-  };
+  //   if (isAnyFilterApplied && !normalFilter) {
+  //     setTrafficsaleList(filtered.slice(0, 100));
+  //     setTrafficListCount(filtered.length);
+  //     setNpage(Math.ceil(filtered.length / recordsPage));
+  //     setFilter(false);
+  //     setNormalFilter(false);
+  //   } else {
+  //     setTrafficsaleList(filtered.slice(0, 100));
+  //     setTrafficListCount(filtered.length);
+  //     setNpage(Math.ceil(filtered.length / recordsPage));
+  //     setCurrentPage(1);
+  //     setFilter(false);
+  //     setNormalFilter(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (filter) {
-      applyFilters();
-    }
-  }, [filterQuery]);
+  // useEffect(() => {
+  //   if (filter) {
+  //     applyFilters();
+  //   }
+  // }, [filterQuery]);
 
   const GetBuilderDropDownList = async () => {
     try {
@@ -922,14 +923,14 @@ const TrafficsaleList = () => {
     GetSubdivisionDropDownList();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFilterQuery(prevFilterQuery => ({
-      ...prevFilterQuery,
-      [name]: value
-    }));
-    setFilter(true);
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFilterQuery(prevFilterQuery => ({
+  //     ...prevFilterQuery,
+  //     [name]: value
+  //   }));
+  //   setFilter(true);
+  // };
 
   const ageOptions = [
     { value: "1", label: "Yes" },
@@ -2613,6 +2614,15 @@ const TrafficsaleList = () => {
                       placeholder={"Select Single"}
                     />
                   </div>
+                  <h5 className="">Calculation Filter Options</h5>
+                  <div className="border-top">
+                    <div className="row">
+                      <div className="col-md-3 mt-3 mb-3">
+                        <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
+                        <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={HandleFilter} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
               </form>
@@ -2634,7 +2644,7 @@ const TrafficsaleList = () => {
               </Button>
             </div>
             <br />
-            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+            {/* {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
               <>
                 <h5 className="">Calculation Filter Options</h5>
                 <div className="border-top">
@@ -2646,7 +2656,7 @@ const TrafficsaleList = () => {
                   </div>
                 </div>
               </>
-            }
+            } */}
           </div>
         </div>
       </Offcanvas>
