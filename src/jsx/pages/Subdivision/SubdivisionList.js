@@ -4864,7 +4864,11 @@ const SubdivisionList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkSubdivision.current.showEmployeModal() : ""}
+                            onClick={() => selectedLandSales.length > 0 ? bulkSubdivision.current.showEmployeModal() : swal({
+                              text: "Please select at least one record.",
+                              icon: "warning",
+                              dangerMode: true,
+                            })}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
