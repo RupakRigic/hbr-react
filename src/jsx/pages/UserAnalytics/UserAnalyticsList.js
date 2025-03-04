@@ -260,8 +260,8 @@ const UserAnalyticsList = () => {
                                                         <thead>
                                                             <tr style={{ textAlign: "center" }}>
                                                                 <th><strong>No.</strong></th>
-                                                                <th>Module</th>
-                                                                <th>Filename</th>
+                                                                <th>Builder Name</th>
+                                                                <th>Week Ending Date</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody style={{ textAlign: "center" }}>
@@ -269,8 +269,8 @@ const UserAnalyticsList = () => {
                                                                 userActivityLogList?.map((element, index) => (
                                                                     <tr>
                                                                         <td>{(currentPage - 1) * 10 + (index + 1)}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.exported_module}</td>
-                                                                        <td style={{ textAlign: "center" }}>{element.exported_filename}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.builder_name}</td>
+                                                                        <td style={{ textAlign: "center" }}>{element.week_ending_date}</td>
                                                                     </tr>
                                                                 ))
                                                             ) : (

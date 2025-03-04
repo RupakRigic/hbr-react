@@ -367,7 +367,7 @@ const WeeklyDataIndex = () => {
                                         element.trafic_sales[0].weeklytraffic
                                       }
                                       className="form-control"
-                                      name="weekly_traffic"
+                                      name="weeklytraffic"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
@@ -403,7 +403,7 @@ const WeeklyDataIndex = () => {
                                         element.trafic_sales[0].lotreleased
                                       }
                                       className="form-control"
-                                      name="current_lots_released"
+                                      name="lotreleased"
                                       onChange={(event) => handleChange(event, currentId)}
                                     />{" "}
                                   </td>
@@ -419,11 +419,10 @@ const WeeklyDataIndex = () => {
                                       <input
                                         type="number"
                                         defaultValue={
-                                          element.trafic_sales[0]
-                                            .unsoldinventory
+                                          element.trafic_sales[0].unsoldinventory
                                         }
                                         className="form-control"
-                                        name="current_un_sold_standing_inventory"
+                                        name="unsoldinventory"
                                         onChange={(event) => handleChange(event, currentId)}
                                       />{" "}
                                     </td>
