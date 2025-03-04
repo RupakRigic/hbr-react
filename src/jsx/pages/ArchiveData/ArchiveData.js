@@ -67,10 +67,15 @@ const ArchiveData = () => {
         try {
             const response = await AdminBuilderService.getArchiveList();
             const responseData = await response.json();
-            setArchiveList(responseData);
-            setNpage(Math.ceil(responseData.length / recordsPage));
-            setArchiveListCount(responseData.length);
-            setIsLoading(false);
+            
+            if(responseData.status){
+                setArchiveList(responseData);
+                setNpage(Math.ceil(responseData.length / recordsPage));
+                setArchiveListCount(responseData.length);
+                setIsLoading(false);
+            } else {
+                setIsLoading(false);
+            }
         } catch (error) {
             console.log(error);
             setIsLoading(false);
@@ -399,7 +404,7 @@ const ArchiveData = () => {
                                                             </tr>
                                                         ))) : (
                                                         <tr>
-                                                            <td colSpan="5" style={{ textAlign: "center" }}>
+                                                            <td colSpan="7" style={{ textAlign: "center" }}>
                                                                 No data found
                                                             </td>
                                                         </tr>)}
