@@ -172,6 +172,7 @@ const PriceList = () => {
     lotsize: localStorage.getItem("lotsize_BasePrice") ? JSON.parse(localStorage.getItem("lotsize_BasePrice")) : "",
     age: localStorage.getItem("age_BasePrice") ? JSON.parse(localStorage.getItem("age_BasePrice")) : "",
     single: localStorage.getItem("single_BasePrice") ? JSON.parse(localStorage.getItem("single_BasePrice")) : "",
+    price_per_sqft: ""
   });
   const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     price_per_sqft: ""
@@ -366,61 +367,61 @@ const PriceList = () => {
     GetSubdivisionDropDownList();
   }, []);
 
-  const applyFilters = () => {
-    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+  // const applyFilters = () => {
+  //   const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-    if (AllProductListExport.length === 0) {
-      setPriceList(priceList);
-      return;
-    }
+  //   if (AllProductListExport.length === 0) {
+  //     setPriceList(priceList);
+  //     return;
+  //   }
 
-    let filtered = AllProductListExport;
+  //   let filtered = AllProductListExport;
 
-    const applyNumberFilter = (items, query, key) => {
-      if (query) {
-        let operator = '=';
-        let value = query;
+  //   const applyNumberFilter = (items, query, key) => {
+  //     if (query) {
+  //       let operator = '=';
+  //       let value = query;
 
-        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-          operator = query[0];
-          value = query.slice(1);
-        }
+  //       if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+  //         operator = query[0];
+  //         value = query.slice(1);
+  //       }
 
-        const numberValue = parseFloat(value);
-        if (!isNaN(numberValue)) {
-          return items.filter(item => {
-            const itemValue = parseFloat(item[key]);
-            if (operator === '>') return itemValue > numberValue;
-            if (operator === '<') return itemValue < numberValue;
-            return itemValue === numberValue;
-          });
-        }
-      }
-      return items;
-    };
+  //       const numberValue = parseFloat(value);
+  //       if (!isNaN(numberValue)) {
+  //         return items.filter(item => {
+  //           const itemValue = parseFloat(item[key]);
+  //           if (operator === '>') return itemValue > numberValue;
+  //           if (operator === '<') return itemValue < numberValue;
+  //           return itemValue === numberValue;
+  //         });
+  //       }
+  //     }
+  //     return items;
+  //   };
 
-    filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
+  //   filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
 
 
-    if (isAnyFilterApplied) {
-      setPriceList(filtered.slice(0, 100));
-      setProductListCount(filtered.length);
-      setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(true);
-      setNormalFilter(false);
-    } else {
-      setPriceList(filtered.slice(0, 100));
-      setProductListCount(filtered.length);
-      setNpage(Math.ceil(filtered.length / recordsPage));
-      setCurrentPage(1);
-      setFilter(false);
-      setNormalFilter(false);
-    }
-  };
+  //   if (isAnyFilterApplied) {
+  //     setPriceList(filtered.slice(0, 100));
+  //     setProductListCount(filtered.length);
+  //     setNpage(Math.ceil(filtered.length / recordsPage));
+  //     setFilter(true);
+  //     setNormalFilter(false);
+  //   } else {
+  //     setPriceList(filtered.slice(0, 100));
+  //     setProductListCount(filtered.length);
+  //     setNpage(Math.ceil(filtered.length / recordsPage));
+  //     setCurrentPage(1);
+  //     setFilter(false);
+  //     setNormalFilter(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    applyFilters();
-  }, [filterQueryCalculation]);
+  // useEffect(() => {
+  //   applyFilters();
+  // }, [filterQueryCalculation]);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -612,14 +613,14 @@ const PriceList = () => {
     setNormalFilter(true);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFilterQueryCalculation(prevFilterQuery => ({
-      ...prevFilterQuery,
-      [name]: value
-    }));
-    setFilter(true);
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFilterQueryCalculation(prevFilterQuery => ({
+  //     ...prevFilterQuery,
+  //     [name]: value
+  //   }));
+  //   setFilter(true);
+  // };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
@@ -2329,7 +2330,7 @@ const PriceList = () => {
             <div className="">
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">From:{" "}
                       <span className="text-danger">*</span>
                     </label>
@@ -2342,7 +2343,7 @@ const PriceList = () => {
                       placeholderText="mm/dd/yyyy"
                     />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">To:{" "}
                       <span className="text-danger">*</span>
                     </label>
@@ -2355,7 +2356,7 @@ const PriceList = () => {
                       placeholderText="mm/dd/yyyy"
                     />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       BUILDER NAME:{" "}
                     </label>
@@ -2369,7 +2370,7 @@ const PriceList = () => {
                       />
                     </Form.Group>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       SUBDIVISION NAME:{" "}
                     </label>
@@ -2383,49 +2384,49 @@ const PriceList = () => {
                       />
                     </Form.Group>
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       PRODUCT NAME :{" "}
                     </label>
                     <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       SQUARE FOOTAGE:{" "}
                     </label>
                     <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       STORIES:{" "}
                     </label>
                     <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       BEDROOMS:{" "}
                     </label>
                     <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       BATH ROOMS:{" "}
                     </label>
                     <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       GARAGE:{" "}
                     </label>
                     <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3">
+                  <div className="col-md-3 mt-2">
                     <label className="form-label">
                       BASE PRICE:{" "}
                     </label>
                     <input name="baseprice" value={filterQuery.baseprice} className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       PRODUCT TYPE:{" "}
                     </label>
@@ -2437,7 +2438,7 @@ const PriceList = () => {
                       placeholder="Select Prodcut Type"
                     />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       AREA:{" "}
                     </label>
@@ -2449,7 +2450,7 @@ const PriceList = () => {
                       placeholder="Select Area"
                     />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       MASTERPLAN:{" "}
                     </label>
@@ -2461,7 +2462,7 @@ const PriceList = () => {
                       placeholder="Select Area"
                     />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       ZIP CODE:{" "}
                     </label>
@@ -2477,20 +2478,20 @@ const PriceList = () => {
                       }}
                     />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       LOT WIDTH:{" "}
                     </label>
                     <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label className="form-label">
                       LOT SIZE:{" "}
                     </label>
                     <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                   </div>
 
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
                     <MultiSelect
                       name="age"
@@ -2500,7 +2501,7 @@ const PriceList = () => {
                       placeholder={"Select Age"}
                     />
                   </div>
-                  <div className="col-md-3 mt-3 mb-3">
+                  <div className="col-md-3 mt-2 mb-3">
                     <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
                     <MultiSelect
                       name="single"
@@ -2510,10 +2511,21 @@ const PriceList = () => {
                       placeholder={"Select Single"}
                     />
                   </div>
+                  <h5 className="mt-0">Calculation Filter Options</h5>
+                  <div className="border-top">
+                    <div className="row">
+                      <div className="col-md-3 mt-2">
+                        <label className="form-label">
+                          PRICE PER SQFT:{" "}
+                        </label>
+                        <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </form>
             </div>
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between mt-3">
               <Button
                 className="btn-sm"
                 onClick={HandleCancelFilter}
@@ -2530,7 +2542,7 @@ const PriceList = () => {
               </Button>
             </div>
             <br />
-            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+            {/* {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
               <>
                 <h5 className="">Calculation Filter Options</h5>
                 <div className="border-top">
@@ -2544,7 +2556,7 @@ const PriceList = () => {
                   </div>
                 </div>
               </>
-            }
+            } */}
           </div>
         </div>
       </Offcanvas>
