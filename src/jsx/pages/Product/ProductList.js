@@ -1745,7 +1745,7 @@ const ProductList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => bulkProduct.current.showEmployeModal()}
+                            onClick={() => selectedLandSales.length > 0 ? bulkProduct.current.showEmployeModal() : ""}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;

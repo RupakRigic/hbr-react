@@ -1931,7 +1931,7 @@ const BuilderTable = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => bulkBuilder.current.showEmployeModal()}
+                            onClick={() => selectedLandSales.length > 0 ? bulkBuilder.current.showEmployeModal() : ""}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;

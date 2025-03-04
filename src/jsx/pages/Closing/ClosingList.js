@@ -1533,7 +1533,7 @@ const ClosingList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => bulkClosing.current.showEmployeModal()}
+                            onClick={() => selectedLandSales.length > 0 ? bulkClosing.current.showEmployeModal() : ""}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;

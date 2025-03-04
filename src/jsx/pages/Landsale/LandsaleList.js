@@ -1172,7 +1172,7 @@ const LandsaleList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => bulklandsale.current.showEmployeModal()}
+                            onClick={() => selectedLandSales.length > 0 ? bulklandsale.current.showEmployeModal() : ""}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
