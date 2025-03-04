@@ -347,7 +347,7 @@ const WeeklyDataIndex = () => {
                             <th><strong>Current Unsold Standing Inventory</strong></th>
                           </tr>
                         </thead>
-                        <tbody style={{ textAlign: "center" }}>
+                        <tbody style={{ textAlign: "center", position: "relative", zIndex: "0" }}>
                           {records?.length > 0 ?
                             records.map((element) => {
                               const currentId = element.trafic_sales[0].subdivision_id;
