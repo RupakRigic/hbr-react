@@ -23,11 +23,20 @@ const UserAnalyticsList = () => {
 
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
-            GetUserActivityLog(params.id);
+            GetUserActivityLog(currentPage, params.id);
         } else {
             navigate("/");
         }
-    }, [currentPage, activeKey]);
+    }, [currentPage]);
+
+    useEffect(() => {
+        if (localStorage.getItem("usertoken")) {
+            GetUserActivityLog(1, params.id);
+            setCurrentPage(1);
+        } else {
+            navigate("/");
+        }
+    }, [activeKey]);
 
     const prePage = () => {
         if (currentPage !== 1) {
@@ -45,14 +54,14 @@ const UserAnalyticsList = () => {
         }
     };
 
-    const GetUserActivityLog = async (id) => {
+    const GetUserActivityLog = async (pageNumber, id) => {
         setIsLoading(true);
         try {
             var userData = {
                 activity_type: activeKey
             }
 
-            const responseData = await AdminUserRoleService.activity_log(id, userData).json();
+            const responseData = await AdminUserRoleService.activity_log(pageNumber, id, userData).json();
 
             if (responseData.status) {
                 setIsLoading(false);
