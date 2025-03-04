@@ -31,79 +31,79 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const userRole = JSON.parse(localStorage.getItem("user")).role;
     const userId = JSON.parse(localStorage.getItem("user")).localId;
 
-    
-      const [newPassword, setNewPassword] = useState('');
-      const [showNewPassword, setShowNewPassword] = useState(false);
-      const [copySuccess, setCopySuccess] = useState(false);
-      const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
-    
-      const generatePassword = () => {
+
+    const [newPassword, setNewPassword] = useState('');
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
+
+    const generatePassword = () => {
         const chars =
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
         const passwordLength = 8;
         let password = "";
         for (let i = 0; i < passwordLength; i++) {
-          password += chars.charAt(Math.floor(Math.random() * chars.length));
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         setCopyToClipboardbtn(true);
         return password;
-      };
+    };
 
-      const copyToClipboard = () => {
+    const copyToClipboard = () => {
         if (newPassword) {
-          const textArea = document.createElement("textarea");
-          textArea.value = newPassword; // Set the text to copy
-          textArea.style.position = "fixed"; // Avoid scrolling to the bottom of the page
-          textArea.style.left = "-9999px"; // Move it off-screen
-          document.body.appendChild(textArea);
-      
-          textArea.focus();
-          textArea.select();
-      
-          try {
-            const successful = document.execCommand("copy"); // Copy the text to clipboard
-            if (successful) {
-              setCopySuccess(true);
-              setTimeout(() => setCopySuccess(false), 3000);
-            } else {
-              console.error("Failed to copy text using execCommand.");
+            const textArea = document.createElement("textarea");
+            textArea.value = newPassword; // Set the text to copy
+            textArea.style.position = "fixed"; // Avoid scrolling to the bottom of the page
+            textArea.style.left = "-9999px"; // Move it off-screen
+            document.body.appendChild(textArea);
+
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand("copy"); // Copy the text to clipboard
+                if (successful) {
+                    setCopySuccess(true);
+                    setTimeout(() => setCopySuccess(false), 3000);
+                } else {
+                    console.error("Failed to copy text using execCommand.");
+                }
+            } catch (err) {
+                console.error("Error copying text: ", err);
+            } finally {
+                document.body.removeChild(textArea); // Remove the temporary textarea
             }
-          } catch (err) {
-            console.error("Error copying text: ", err);
-          } finally {
-            document.body.removeChild(textArea); // Remove the temporary textarea
-          }
         } else {
-          console.error("No text to copy.");
+            console.error("No text to copy.");
         }
-      };
-    
+    };
 
-  const [userDetail, SetUserDetail] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-      const GetUserList = async (id) => {
+    const [userDetail, SetUserDetail] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const GetUserList = async (id) => {
         setIsLoading(true);
         try {
-          let responseData1 = await AdminUserRoleService.show(id).json();
-          setIsLoading(false);
-          SetUserDetail(responseData1);
-          setBuilderCode(responseData1.builder_id);
-    
-    
+            let responseData1 = await AdminUserRoleService.show(id).json();
+            setIsLoading(false);
+            SetUserDetail(responseData1);
+            setBuilderCode(responseData1.builder_id);
+
+
 
         } catch (error) {
-          setIsLoading(false);
-          if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(errorJson.message);
-          }
+            setIsLoading(false);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
         }
-      };
+    };
 
     useEffect(() => {
         GetRoleList();
-        if(userRole == 'Account Admin'){
+        if (userRole == 'Account Admin') {
             GetUserList(userId)
             setCompany(userDetail.company);
         }
@@ -144,6 +144,10 @@ const UserOffcanvas = forwardRef((props, ref) => {
             label: code.label
         }];
         const selectedValues = formattedRoles.map(item => item.value);
+
+        if (!selectedValues.includes(9)) {
+            setStandardRoleCode([]);
+        }
         setRoleCode(selectedValues);
     };
 
@@ -155,7 +159,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if(userRole =='Account Admin'){
+        if (userRole == 'Account Admin') {
             setCompany(userDetail.company);
         }
         try {
@@ -197,7 +201,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                             props.parentCallback();
                         }
                     })
-                }else{
+                } else {
                     setError(data.message);
                 }
             }
@@ -279,91 +283,59 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label">Password <span className="text-danger">*</span></label>
-          <div className="input-group">
-                            <input
-                              type={showNewPassword ? "text" : "password"}
-                              name="password"
-                              value={newPassword}
-                              className="form-control"
-                              id="exampleFormControlInput7"
-                              placeholder=""
-                              onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                            <button
-                              className="btn btn-outline-light"
-                              type="button"
-                              onClick={() => setNewPassword(generatePassword())}
-                              style={{borderColor: "#cccccc"}}
-                            >
-                              <FiRefreshCcw />
-                            </button>
-                            {copyToClipboardbtn && <button
-                              className="btn btn-outline-light"
-                              type="button"
-                              onClick={copyToClipboard}
-                              style={{borderColor: "#cccccc"}}
-                            >
-                              <FiCopy />
-                            </button>}
-                            <button
-                              className="btn btn-outline-light"
-                              type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              style={{borderColor: "#cccccc"}}
-                            >
-                              {showNewPassword ? <FiEye /> : <FiEyeOff />}
-                            </button>
-                          </div>
-                          {copySuccess && (
-                            <div style={{ color: 'green', marginTop: '5px' }}>
-                              Password copied to clipboard!
-                            </div>
-                          )}                
-                          
-                                          </div>
+                                    <div className="input-group">
+                                        <input
+                                            type={showNewPassword ? "text" : "password"}
+                                            name="password"
+                                            value={newPassword}
+                                            className="form-control"
+                                            id="exampleFormControlInput7"
+                                            placeholder=""
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                        <button
+                                            className="btn btn-outline-light"
+                                            type="button"
+                                            onClick={() => setNewPassword(generatePassword())}
+                                            style={{ borderColor: "#cccccc" }}
+                                        >
+                                            <FiRefreshCcw />
+                                        </button>
+                                        {copyToClipboardbtn && <button
+                                            className="btn btn-outline-light"
+                                            type="button"
+                                            onClick={copyToClipboard}
+                                            style={{ borderColor: "#cccccc" }}
+                                        >
+                                            <FiCopy />
+                                        </button>}
+                                        <button
+                                            className="btn btn-outline-light"
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            style={{ borderColor: "#cccccc" }}
+                                        >
+                                            {showNewPassword ? <FiEye /> : <FiEyeOff />}
+                                        </button>
+                                    </div>
+                                    {copySuccess && (
+                                        <div style={{ color: 'green', marginTop: '5px' }}>
+                                            Password copied to clipboard!
+                                        </div>
+                                    )}
+
+                                </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput6" className="form-label">Notes</label>
                                     <input type="text" name='notes' className="form-control" id="exampleFormControlInput6" placeholder="" onChange={(e) => setNotes(e.target.value)} />
                                 </div>
-                                {userRole == 'Account Admin'?(
 
-                                    <>
-                                    
-                              <div className="col-xl-6 mb-3">
-                                <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
-                                <input type="text" name='company' style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} required className="form-control" id="exampleFormControlInput7" placeholder="" disabled value={userDetail.company} />
-                                </div>
-                                    <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Role</label>
-                                    <Select
-                                        options={StandardUserOptions}
-                                        onChange={(selectedOption) => handleRoleCode(selectedOption)}
-                                        placeholder="Select Role"
-                                        styles={{
-                                            container: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                            menu: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                        }}
-                                    />
-                                </div>
-                                    </>
-    
-                                ):(
-
-<>
-                            <div className="col-xl-6 mb-3">
+                                <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
                                     <input type="text" name='company' required className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setCompany(e.target.value)} />
                                 </div>
 
-                        <div className="col-xl-6 mb-3">
+                                <div className="col-xl-6 mb-3">
                                     <label className="form-label">Role</label>
                                     <Select
                                         options={roleOptions}
@@ -383,14 +355,8 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         }}
                                     />
                                 </div>
-</>
-   
-                                )}
 
-
-     
-
-                                {RoleCode == 9 && userRole!='Account Admin' && <div className="col-xl-6 mb-3">
+                                {RoleCode == 9 && userRole != 'Account Admin' && <div className="col-xl-6 mb-3">
                                     <label className="form-label">Standard User</label>
                                     <MultiSelect
                                         options={StandardUserOptions}

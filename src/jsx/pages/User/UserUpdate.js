@@ -118,6 +118,10 @@ const UserUpdate = () => {
       label: code.label
     }];
     const selectedValues = formattedRoles.map(item => item.value);
+  
+    if(!selectedValues.includes(9)){
+      setStandardRoleCode([]);
+    }
     setRoleCode(selectedValues);
   };
 
