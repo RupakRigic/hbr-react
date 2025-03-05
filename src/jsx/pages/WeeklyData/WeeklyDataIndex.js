@@ -112,7 +112,6 @@ const WeeklyDataIndex = () => {
   };
 
   const handleStatusChange = async (event) => {
-    setIsLoading(true);
     const trElement = event.target.closest("tr");
     const inputElements = trElement.querySelectorAll("input");
     const createFormData = {};
@@ -126,10 +125,8 @@ const WeeklyDataIndex = () => {
       if (data.status === true) {
         getWeeklyList();
         setShowPopup(false);
-        setIsLoading(false);
       }
     } catch (error) {
-      setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(

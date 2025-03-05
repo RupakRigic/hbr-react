@@ -113,7 +113,7 @@ const UserAnalyticsList = () => {
                                             <div
                                                 id="employee-tbl_wrapper"
                                                 className="dataTables_wrapper no-footer"
-                                                style={{ marginTop: "-14px" }}
+                                                style={{ marginTop: "-14px", height: "390px" }}
                                             >
                                                 {isLoading ? (
                                                     <div className="d-flex justify-content-center align-items-center mb-5">
@@ -161,7 +161,7 @@ const UserAnalyticsList = () => {
                                             <div
                                                 id="employee-tbl_wrapper"
                                                 className="dataTables_wrapper no-footer"
-                                                style={{ marginTop: "-14px" }}
+                                                style={{ marginTop: "-14px", height: "390px" }}
                                             >
                                                 {isLoading ? (
                                                     <div className="d-flex justify-content-center align-items-center mb-5">
@@ -207,7 +207,7 @@ const UserAnalyticsList = () => {
                                             <div
                                                 id="employee-tbl_wrapper"
                                                 className="dataTables_wrapper no-footer"
-                                                style={{ marginTop: "-14px" }}
+                                                style={{ marginTop: "-14px", height: "390px" }}
                                             >
                                                 {isLoading ? (
                                                     <div className="d-flex justify-content-center align-items-center mb-5">
@@ -255,7 +255,7 @@ const UserAnalyticsList = () => {
                                             <div
                                                 id="employee-tbl_wrapper"
                                                 className="dataTables_wrapper no-footer"
-                                                style={{ marginTop: "-14px" }}
+                                                style={{ marginTop: "-14px", height: "390px" }}
                                             >
                                                 {isLoading ? (
                                                     <div className="d-flex justify-content-center align-items-center mb-5">
