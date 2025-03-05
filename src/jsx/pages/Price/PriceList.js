@@ -2126,7 +2126,7 @@ const PriceList = () => {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="7" style={{ textAlign: "center" }}>
+                              <td colSpan="11" style={{ textAlign: "center" }}>
                                 No data found
                               </td>
                             </tr>
@@ -2135,34 +2135,49 @@ const PriceList = () => {
                       </table>
                     )}
                   </div>
-                </div>
-                <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
-                  <div className="dataTables_info">
-                    Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
-                    {productListCount} entries
-                  </div>
-                  <div
-                    className="dataTables_paginate paging_simple_numbers justify-content-center"
-                    id="example2_paginate"
-                  >
-                    <Link
-                      className="paginate_button previous disabled"
-                      to="#"
-                      onClick={prePage}
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
+                      {productListCount} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
                     >
-                      <i className="fa-solid fa-angle-left" />
-                    </Link>
-                    <span>
-                      {number.map((n, i) => {
-                        if (number.length > 4) {
-                          if (
-                            i === 0 ||
-                            i === number.length - 1 ||
-                            Math.abs(currentPage - n) <= 1 ||
-                            (i === 1 && n === 2) ||
-                            (i === number.length - 2 &&
-                              n === number.length - 1)
-                          ) {
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
+                      >
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
+                              return (
+                                <Link
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
+                            }
+                          } else {
                             return (
                               <Link
                                 className={`paginate_button ${currentPage === n ? "current" : ""
@@ -2173,33 +2188,18 @@ const PriceList = () => {
                                 {n}
                               </Link>
                             );
-                          } else if (i === 1 || i === number.length - 2) {
-                            return <span key={i}>...</span>;
-                          } else {
-                            return null;
                           }
-                        } else {
-                          return (
-                            <Link
-                              className={`paginate_button ${currentPage === n ? "current" : ""
-                                } `}
-                              key={i}
-                              onClick={() => changeCPage(n)}
-                            >
-                              {n}
-                            </Link>
-                          );
-                        }
-                      })}
-                    </span>
+                        })}
+                      </span>
 
-                    <Link
-                      className="paginate_button next"
-                      to="#"
-                      onClick={nextPage}
-                    >
-                      <i className="fa-solid fa-angle-right" />
-                    </Link>
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
