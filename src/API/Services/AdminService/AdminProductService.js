@@ -13,5 +13,5 @@ export default {
     bulkupdate: (id, userData) => clientAuth.put(`admin/product/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/product/bulkdestroy/${id}`),
     productDropDown:()=> clientAuth.get(`admin/product/list/dropdown`),
-    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/product/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/product/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };

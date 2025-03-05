@@ -120,50 +120,6 @@ const ProductList = () => {
     { label: 'Price Change Last 12 Months', key: 'pricechangelasttwelvemonths' },
   ];
 
-  const handleSelectAllToggle = () => {
-    const newSelectAll = !selectAll;
-    setSelectAll(newSelectAll);
-    if (newSelectAll) {
-      setSelectedColumns(exportColumns.map(col => col.label));
-    } else {
-      setSelectedColumns([]);
-    }
-  };
-
-  const handleColumnToggle = (column) => {
-    const updatedColumns = selectedColumns.includes(column)
-      ? selectedColumns.filter((col) => col !== column)
-      : [...selectedColumns, column];
-    console.log(updatedColumns);
-    setSelectedColumns(updatedColumns);
-    setSelectAll(updatedColumns.length === exportColumns.length);
-  };
-
-  const handleDownloadExcel = async () => {
-    setExcelDownload(true);
-    try {
-      let sortConfigString = "";
-      if (sortConfig !== null) {
-        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
-
-      var exportColumn = {
-        columns: selectedColumns
-      }
-      const response = await AdminProductService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
-      const downloadUrl = URL.createObjectURL(response);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.setAttribute('download', `products.xlsx`);
-      document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
-      setExcelDownload(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const [filterQuery, setFilterQuery] = useState({
     status: localStorage.getItem("product_status_Product") ? JSON.parse(localStorage.getItem("product_status_Product")) : "",
     builder_name: localStorage.getItem("builder_name_Product") ? JSON.parse(localStorage.getItem("builder_name_Product")) : "",
@@ -189,6 +145,175 @@ const ProductList = () => {
     price_changes_since_open: "",
     price_changes_last_12_Month: "",
   });
+
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
+  };
+
+  const handleDownloadExcel = async () => {
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+    let sortConfigString = "";
+    if (sortConfig !== null) {
+      sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+    }
+
+    setExcelDownload(true);
+    if (isAnyFilterApplied) {
+      let tableHeaders;
+      if (selectedColumns.length > 0) {
+        tableHeaders = selectedColumns;
+      } else {
+        tableHeaders = headers.map((c) => c.label);
+      }
+      const is_calculated = "&is_calculated";
+      const response = await AdminProductService.export(currentPage, sortConfigString, searchQuery, "", is_calculated).json();
+      if(response.status){
+        const tableData = productList?.map((row) => {
+          const mappedRow = {};
+          tableHeaders.forEach((header) => {
+            switch (header) {
+              case "Status":
+                mappedRow[header] = (row.status === 1 && "Active") || (row.status === 0 && "Sold Out") || (row.status === 2 && "Future") || (row.status === 3 && "Closed");
+                break;
+              case "Builder Name":
+                mappedRow[header] = row.subdivision ? row.subdivision.builder.name : '';
+                break;
+              case "Subdivision Name":
+                mappedRow[header] = row.subdivision ? row.subdivision.name : '';
+                break;
+              case "Product Name":
+                mappedRow[header] = row.name;
+                break;
+              case "Square Footage":
+                mappedRow[header] = row.sqft;
+                break;
+              case "Stories":
+                mappedRow[header] = row.stories;
+                break;
+              case "Bed Rooms":
+                mappedRow[header] = row.bedroom;
+                break;
+              case "Bath Rooms":
+                mappedRow[header] = row.bathroom;
+                break;
+              case "Garage":
+                mappedRow[header] = row.garage;
+                break;
+              case "Current Base Price":
+                mappedRow[header] = row.recentprice;
+                break;
+              case "Current Price Per SQFT":
+                mappedRow[header] = row.recentpricesqft;
+                break;
+              case "Product Website":
+                mappedRow[header] = row.website;
+                break;
+              case "Product Type":
+                mappedRow[header] = row.product_type;
+                break;
+              case "Area":
+                mappedRow[header] = row.area;
+                break;
+              case "Master Plan":
+                mappedRow[header] = row.masterplan_id;
+                break;
+              case "Zip Code":
+                mappedRow[header] = row.zipcode;
+                break;
+              case "Lot Width":
+                mappedRow[header] = row.lotwidth;
+                break;
+              case "Lot Size":
+                mappedRow[header] = row.lotsize;
+                break;
+              case "Zoning":
+                mappedRow[header] = row.zoning;
+                break;
+              case "Age Restricted":
+                mappedRow[header] = (row.age === 1 && "Yes") || (row.age === 0 && "No") || '';
+                break;
+              case "All Single Story":
+                mappedRow[header] = (row.single === 1 && "Yes") || (row.single === 0 && "No") || '';
+                break;
+              case "Product ID":
+                mappedRow[header] = row.product_code;
+                break;
+              case "Fk Sub ID":
+                mappedRow[header] = row.subdivision_code;
+                break;
+              case "Price Change Since Open":
+                mappedRow[header] = row.price_changes_since_open ? row.price_changes_since_open + '%' : "";
+                break;
+              case "Price Change Last 12 Months":
+                mappedRow[header] = row.price_changes_last_12_Month ? row.price_changes_last_12_Month + '%' : "";
+                break;
+              default:
+                mappedRow[header] = '';
+            }
+          });
+          return mappedRow;
+        });
+    
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+    
+        // Optionally apply styles to the headers
+        const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+          if (!cell.s) cell.s = {};
+          cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+        }
+    
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Worksheet');
+    
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, 'products.xlsx');
+    
+        resetSelection();
+        setExportModelShow(false);
+        setExcelDownload(false);
+      } else {
+        setExportModelShow(false);
+        setExcelDownload(false);
+        return;
+      }
+    } else {
+      try {
+        var exportColumn = {
+          columns: selectedColumns
+        }
+        const response = await AdminProductService.export(currentPage, sortConfigString, searchQuery, exportColumn, "").blob();
+        const downloadUrl = URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.setAttribute('download', `products.xlsx`);
+        document.body.appendChild(a);
+        a.click();
+        a.parentNode.removeChild(a);
+        setExcelDownload(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    
+  };
 
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -1686,7 +1811,7 @@ const ProductList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          <button disabled={excelDownload || productList.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
@@ -1701,6 +1826,7 @@ const ProductList = () => {
                           <Button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => !excelLoading ? addToBuilderList() : ""}
+                            title="Map"
                           >
                             {excelLoading ?
                               <div class="spinner-border spinner-border-sm" role="status" />
