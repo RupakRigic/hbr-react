@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import swal from "sweetalert";
+import '../../pages/Subdivision/subdivisionList.css';
 
 const WeeklyDataIndex = () => {
   const navigate = useNavigate();
@@ -30,6 +31,12 @@ const WeeklyDataIndex = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [netSale, setNetSale] = useState(false);
   const [reset, setReset] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [event, setEvent] = useState([]);
+
+  const handlePopupClose = () => setShowPopup(false);
 
   const handleCallback = () => {
     getWeeklyList();
@@ -38,16 +45,19 @@ const WeeklyDataIndex = () => {
   const prePage = () => {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
+      setFormData(formData);
     }
   };
 
   const changeCPage = (id) => {
     setCurrentPage(id);
+    setFormData(formData);
   };
 
   const nextPage = () => {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
+      setFormData(formData);
     }
   };
 
@@ -105,10 +115,35 @@ const WeeklyDataIndex = () => {
     }));
   };
 
+  const WeeklyTraffic = (id, data) => {
+    const grossSales = formData[id]?.weeklytraffic || data.weeklytraffic;
+    return grossSales;
+  };
+
+  const GrossSales = (id, data) => {
+    const grossSales = formData[id]?.grosssales || data.grosssales;
+    return grossSales;
+  };
+
+  const Cancelations = (id, data) => {
+    const cancelations = formData[id]?.cancelations || data.cancelations;
+    return cancelations;
+  };
+
   const calculateNetSales = (id, data) => {
     const grossSales = formData[id]?.grosssales || data.grosssales;
     const cancelations = formData[id]?.cancelations || data.cancelations;
     return grossSales - cancelations;
+  };
+
+  const LotReleased = (id, data) => {
+    const lotreleased = formData[id]?.lotreleased || data.lotreleased;
+    return lotreleased;
+  };
+
+  const UnSoldInventory = (id, data) => {
+    const unsoldinventory = formData[id]?.unsoldinventory || data.unsoldinventory;
+    return unsoldinventory;
   };
 
   const handleStatusChange = async (event) => {
@@ -144,13 +179,6 @@ const WeeklyDataIndex = () => {
   const handleOpenDialog = () => {
     setShowModal(true);
   };
-
-  const [showPopup, setShowPopup] = useState(false);
-  const [message, setMessage] = useState(false);
-  const [status, setStatus] = useState(false);
-  const [event, setEvent] = useState([]);
-
-  const handlePopupClose = () => setShowPopup(false);
 
   const handlePopupOpen = (event) => {
     setShowPopup(true);
@@ -316,6 +344,72 @@ const WeeklyDataIndex = () => {
                       </button>
                     </div>
                   </div>
+                  <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
+                    <div className="dataTables_info">
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
+                      {BuilderList?.length} entries
+                    </div>
+                    <div
+                      className="dataTables_paginate paging_simple_numbers justify-content-center"
+                      id="example2_paginate"
+                    >
+                      <Link
+                        className="paginate_button previous disabled"
+                        to="#"
+                        onClick={prePage}
+                      >
+                        <i className="fa-solid fa-angle-left" />
+                      </Link>
+                      <span>
+                        {number.map((n, i) => {
+                          if (number.length > 4) {
+                            if (
+                              i === 0 ||
+                              i === number.length - 1 ||
+                              Math.abs(currentPage - n) <= 1 ||
+                              (i === 1 && n === 2) ||
+                              (i === number.length - 2 &&
+                                n === number.length - 1)
+                            ) {
+                              return (
+                                <Link
+                                  className={`paginate_button ${currentPage === n ? "current" : ""
+                                    } `}
+                                  key={i}
+                                  onClick={() => changeCPage(n)}
+                                >
+                                  {n}
+                                </Link>
+                              );
+                            } else if (i === 1 || i === number.length - 2) {
+                              return <span key={i}>...</span>;
+                            } else {
+                              return null;
+                            }
+                          } else {
+                            return (
+                              <Link
+                                className={`paginate_button ${currentPage === n ? "current" : ""
+                                  } `}
+                                key={i}
+                                onClick={() => changeCPage(n)}
+                              >
+                                {n}
+                              </Link>
+                            );
+                          }
+                        })}
+                      </span>
+
+                      <Link
+                        className="paginate_button next"
+                        to="#"
+                        onClick={nextPage}
+                      >
+                        <i className="fa-solid fa-angle-right" />
+                      </Link>
+                    </div>
+                  </div>
                   <div
                     id="employee-tbl_wrapper"
                     className="dataTables_wrapper no-footer"
@@ -327,7 +421,7 @@ const WeeklyDataIndex = () => {
                     ) : (
                       <table
                         id="empoloyees-tblwrapper"
-                        className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                        className="table ItemsCheckboxSec dataTable no-footer mb-0 datareporting-table"
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
@@ -363,6 +457,7 @@ const WeeklyDataIndex = () => {
                                       defaultValue={
                                         element.trafic_sales[0].weeklytraffic
                                       }
+                                      value={reset ? element.trafic_sales[0].weeklytraffic : (netSale ? WeeklyTraffic(currentId, element.trafic_sales[0]) : element.trafic_sales[0].weeklytraffic)}
                                       className="form-control"
                                       name="weeklytraffic"
                                       onChange={(event) => handleChange(event, currentId)}
@@ -371,9 +466,10 @@ const WeeklyDataIndex = () => {
                                   <td>
                                     <input
                                       type="number"
-                                      defaultValue={
-                                        element.trafic_sales[0].grosssales
-                                      }
+                                      // defaultValue={
+                                      //   element.trafic_sales[0].grosssales
+                                      // }
+                                      value={reset ? element.trafic_sales[0].grosssales : (netSale ? GrossSales(currentId, element.trafic_sales[0]) : element.trafic_sales[0].grosssales)}
                                       className="form-control"
                                       name="grosssales"
                                       onChange={(event) => handleChange(event, currentId)}
@@ -383,9 +479,10 @@ const WeeklyDataIndex = () => {
                                   <td>
                                     <input
                                       type="number"
-                                      defaultValue={
-                                        element.trafic_sales[0].cancelations
-                                      }
+                                      // defaultValue={
+                                      //   element.trafic_sales[0].cancelations
+                                      // }
+                                      value={reset ? element.trafic_sales[0].cancelations : (netSale ? Cancelations(currentId, element.trafic_sales[0]) : element.trafic_sales[0].cancelations)}
                                       className="form-control"
                                       name="cancelations"
                                       onChange={(event) => handleChange(event, currentId)}
@@ -396,9 +493,10 @@ const WeeklyDataIndex = () => {
                                   <td>
                                     <input
                                       type="number"
-                                      defaultValue={
-                                        element.trafic_sales[0].lotreleased
-                                      }
+                                      // defaultValue={
+                                      //   element.trafic_sales[0].lotreleased
+                                      // }
+                                      value={reset ? element.trafic_sales[0].lotreleased : (netSale ? LotReleased(currentId, element.trafic_sales[0]) : element.trafic_sales[0].lotreleased)}
                                       className="form-control"
                                       name="lotreleased"
                                       onChange={(event) => handleChange(event, currentId)}
@@ -415,9 +513,10 @@ const WeeklyDataIndex = () => {
                                       />
                                       <input
                                         type="number"
-                                        defaultValue={
-                                          element.trafic_sales[0].unsoldinventory
-                                        }
+                                        // defaultValue={
+                                        //   element.trafic_sales[0].unsoldinventory
+                                        // }
+                                        value={reset ? element.trafic_sales[0].unsoldinventory : (netSale ? UnSoldInventory(currentId, element.trafic_sales[0]) : element.trafic_sales[0].unsoldinventory)}
                                         className="form-control"
                                         name="unsoldinventory"
                                         onChange={(event) => handleChange(event, currentId)}

@@ -147,6 +147,25 @@ div#employee-tbl_wrapper table.ccapns-table tr td:nth-child(4){
   left: 304px;
 }
 
+div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(1),
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(1){
+  left: 0px;
+}
+div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(2),
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(2){
+  left: 84px;
+}
+div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(3),
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(3){
+  left: 188px;
+  z-index: 4;
+}
+div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(4),
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(4){
+  left: 441px;
+  z-index: 4;
+}
+
 div#employee-tbl_wrapper table tr td:first-child,
 div#employee-tbl_wrapper table tr td:nth-child(2),
 div#employee-tbl_wrapper table tr td:nth-child(3),
