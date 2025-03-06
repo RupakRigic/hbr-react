@@ -307,27 +307,172 @@ const BuilderTable = () => {
 
   
   const handleDownloadExcel = async () => {
-    setExcelDownload(true);
-    try {
-      let sortConfigString = "";
-      if (sortConfig !== null) {
-        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+    let sortConfigString = "";
+    if (sortConfig !== null) {
+      sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+    }
 
-      var exportColumn = {
-        columns: selectedColumns
+    setExcelDownload(true);
+    if (isAnyFilterApplied) {
+      let tableHeaders;
+      if (selectedColumns.length > 0) {
+        tableHeaders = selectedColumns;
+      } else {
+        tableHeaders = headers.map((c) => c.label);
       }
-      const response = await AdminBuilderService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
-      const downloadUrl = URL.createObjectURL(response);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.setAttribute('download', `builders.xlsx`);
-      document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
-      setExcelDownload(false);
-    } catch (error) {
-      console.log(error);
+      const is_calculated = "&is_calculated";
+      const response = await AdminBuilderService.export(currentPage, sortConfigString, searchQuery, "", is_calculated).json();
+      if(response.status){
+        const tableData = BuilderList.map((row) => {
+          const mappedRow = {};
+          tableHeaders.forEach((header) => {
+            switch (header) {
+              case "Builder_code":
+                mappedRow[header] = row.builder_code;
+                break;
+              case "Logo":
+                mappedRow[header] = imageUrl + row.logo;
+                break;
+              case "Website":
+                mappedRow[header] = row.website;
+                break;
+              case "Builder Name":
+                mappedRow[header] = row.name;
+                break;
+              case "Company Type":
+                mappedRow[header] = row.company_type;
+                break;
+              case "LV office Phone":
+                mappedRow[header] = row.phone;
+                break;
+              case "LV office Email":
+                mappedRow[header] = row.email_address;
+                break;
+              case "LV office address":
+                mappedRow[header] = row.officeaddress1;
+                break;
+              case "LV office City":
+                mappedRow[header] = row.city;
+                break;
+              case "LV office Zip code":
+                mappedRow[header] = row.zipcode;
+                break;
+              case "Current Division President":
+                mappedRow[header] = row.current_division_president;
+                break;
+              case "Current Land Acquisitions":
+                mappedRow[header] = row.current_land_aquisitions;
+                break;
+              case "Corporate Office Address":
+                mappedRow[header] = row.coporate_officeaddress_1;
+                break;
+              case "Corporate Office City":
+                mappedRow[header] = row.coporate_officeaddress_city;
+                break;
+              case "Corporate Office State":
+                mappedRow[header] = row.coporate_officeaddress_2;
+                break;
+              case "Corporate Office Zip":
+                mappedRow[header] = row.coporate_officeaddress_zipcode;
+                break;
+              case "Stock Market":
+                mappedRow[header] = row.stock_market;
+                break;
+              case "Stock Symbol":
+                mappedRow[header] = row.stock_symbol;
+                break;
+              case "Active Communities":
+                mappedRow[header] = row.active_communities;
+                break;
+              case "Closing This Year":
+                mappedRow[header] = row.closing_this_year;
+                break;
+              case "Permits This Year":
+                mappedRow[header] = row.permits_this_year;
+                break;
+              case "Net Sales this year":
+                mappedRow[header] = row.net_sales_this_year;
+                break;
+              case "Current Avg Base Price":
+                mappedRow[header] = row.current_avg_base_Price;
+                break;
+              case "Median Closing Price This Year":
+                mappedRow[header] = row.median_closing_price_this_year;
+                break;
+              case "Median Closing Price Last Year":
+                mappedRow[header] = row.median_closing_price_last_year;
+                break;
+              case "Avg Net Sales Per Month This Year":
+                mappedRow[header] = row.avg_net_sales_per_month_this_year;
+                break;
+              case "Avg Closings Per Month This Year":
+                mappedRow[header] = row.avg_closings_per_month_this_year;
+                break;
+              case "Total Closings":
+                mappedRow[header] = row.total_closings;
+                break;
+              case "Total Permits":
+                mappedRow[header] = row.total_permits;
+                break;
+              case "Total Net Sales":
+                mappedRow[header] = row.total_net_sales;
+                break;
+              case "Date Of First Closing":
+                mappedRow[header] = row.date_of_first_closing;
+                break;
+              case "Date Of Latest Closing":
+                mappedRow[header] = row.date_of_latest_closing;
+                break;
+              default:
+                mappedRow[header] = "";
+            }
+          });
+          return mappedRow;
+        });
+
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(tableData, { header: tableHeaders });
+
+        // Applying font style to header
+        const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+          if (!cell.s) cell.s = {};
+          cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+        }
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Worksheet');
+
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, 'builders.xlsx');
+    
+        resetSelection();
+        setExportModelShow(false);
+        setExcelDownload(false);
+      } else {
+        setExportModelShow(false);
+        setExcelDownload(false);
+        return;
+      }
+    } else {
+      try {
+        var exportColumn = {
+          columns: selectedColumns
+        }
+        const response = await AdminBuilderService.export(currentPage, sortConfigString, searchQuery, exportColumn, "").blob();
+        const downloadUrl = URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.setAttribute('download', `builders.xlsx`);
+        document.body.appendChild(a);
+        a.click();
+        a.parentNode.removeChild(a);
+        setExcelDownload(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 

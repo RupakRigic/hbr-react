@@ -19,5 +19,5 @@ export default {
     getArchiveFieldList:(tableName)=> clientAuth.get(`admin/archive/get-fields/${tableName}`),
     getArchiveList:()=> clientAuth.get(`admin/archive/archive-data-list`),
     destroyArchive: (id) => clientAuth.delete(`admin/archive/destroy/${id}`),
-    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/builder/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/builder/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };
