@@ -4759,7 +4759,7 @@ const SubdivisionList = () => {
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa-solid fa-list" />&nbsp;
-                              Columns Order
+                              Column Order
                             </div>
                           </button>
                           <Button
@@ -4791,7 +4791,7 @@ const SubdivisionList = () => {
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa-solid fa-list"></i>&nbsp;
-                              Columns Order
+                              Column Order
                             </div>
                           </button>
                           <Button

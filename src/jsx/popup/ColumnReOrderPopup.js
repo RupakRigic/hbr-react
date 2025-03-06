@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 const ColumnReOrderPopup = ({ open, handleCloseDialog, handleSaveDialog, draggedColumns, handleColumnOrderChange }) => {
     return (
         <Dialog open={open}>
-            <DialogTitle>Set Columns Order
+            <DialogTitle>Set Column Order
                 <IconButton style={{ position: 'absolute', right: 5, top: 5 }} onClick={handleCloseDialog}>
                     <CloseIcon />
                 </IconButton>
