@@ -98,7 +98,7 @@ const PriceList = () => {
     { label: 'Age Restricted', key: 'age' },
     { label: 'All Single Story', key: 'single' },
     { label: '__pkPriceID', key: 'id' },
-    { label: '_fkProductID ', key: 'product_code' },
+    { label: '_fkProductID', key: 'product_code' },
   ];
 
   const headers = [
@@ -123,7 +123,7 @@ const PriceList = () => {
     { label: 'Age Restricted', key: 'age' },
     { label: 'All Single Story', key: 'single' },
     { label: '__pkPriceID', key: 'id' },
-    { label: '_fkProductID ', key: 'product_code' },
+    { label: '_fkProductID', key: 'product_code' },
 
   ];
 
