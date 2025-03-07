@@ -214,7 +214,7 @@ const BuilderTable = () => {
     { label: "LV office Zip", key: "zipcode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
-    { label: "Corporate Office Address ", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office Address", key: "coporate_officeaddress_1" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
@@ -229,7 +229,7 @@ const BuilderTable = () => {
     { label: "Net Sales this year", key: "net_sales_this_year" },
     { label: "Current Avg Base Price", key: "current_avg_base_Price" },
     {
-      label: "Median Closing Price This Year ",
+      label: "Median Closing Price This Year",
       key: "median_closing_price_this_year",
     },
     {
@@ -237,7 +237,7 @@ const BuilderTable = () => {
       key: "median_closing_price_last_year",
     },
     {
-      label: "Avg Net Sales Per Month This Year ",
+      label: "Avg Net Sales Per Month This Year",
       key: "avg_net_sales_per_month_this_year",
     },
     {
@@ -265,7 +265,7 @@ const BuilderTable = () => {
     { label: "LV office Zip", key: "zipCode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
-    { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
+    { label: "Corporate Office Address", key: "coporate_officeaddress_1" },
     { label: "Corporate State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_officeaddress_2" },
@@ -280,9 +280,9 @@ const BuilderTable = () => {
     { label: "Permits This Year", key: "permits_this_year" },
     { label: "Net Sales this year", key: "net_sales_this_year" },
     { label: "Current Avg Base Price", key: "current_avg_base_Price" },
-    { label: "Median Closing Price This Year ", key: "median_closing_price_this_year" },
+    { label: "Median Closing Price This Year", key: "median_closing_price_this_year" },
     { label: "Median Closing Price Last Year", key: "median_closing_price_last_year" },
-    { label: "Avg Net Sales Per Month This Year ", key: "avg_net_sales_per_month_this_year" },
+    { label: "Avg Net Sales Per Month This Year", key: "avg_net_sales_per_month_this_year" },
     { label: "Avg Closings Per Month This Year", key: "avg_closings_per_month_this_year" },
     { label: "Total Closings", key: "total_closings" },
     { label: "Total Permits", key: "total_permits" },
