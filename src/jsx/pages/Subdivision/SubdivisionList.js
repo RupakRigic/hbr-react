@@ -496,7 +496,7 @@ const SubdivisionList = () => {
                 mappedRow[header] = row.phone;
                 break;
               case "Website":
-                mappedRow[header] = row.builder ? row.website : '';
+                mappedRow[header] = row.website ? row.website : '';
                 break;
               case "Date Added":
                 mappedRow[header] = row.dateadded;
@@ -556,13 +556,13 @@ const SubdivisionList = () => {
                 mappedRow[header] = row.min_base_price_all;
                 break;
               case 'Min Sqft Active':
-                mappedRow[header] = row.min_sqft_active_current;
+                mappedRow[header] = row.min_sqft_active;
                 break;
               case 'Max Base Price All':
                 mappedRow[header] = row.max_base_price_all;
                 break;
               case 'Max Sqft Active Current':
-                mappedRow[header] = row.max_sqft_active_current;
+                mappedRow[header] = row.max_sqft_active;
                 break;
               case 'Avg Traffic Per Month This Year':
                 mappedRow[header] = row.avg_net_traffic_per_month_this_year;
@@ -598,7 +598,7 @@ const SubdivisionList = () => {
                 mappedRow[header] = row.year_net_sold;
                 break;
               case 'Open Since':
-                mappedRow[header] = <DateComponent date={row.year_net_sold} />;
+                mappedRow[header] = <DateComponent date={row.opensince} />;
                 break;
               case 'Avg Closing Price':
                 mappedRow[header] = row.avg_closing_price;

@@ -201,10 +201,12 @@ const BuilderTable = () => {
   };
 
   const headers = [
-    { label: "Logo", key: "Logo" },
+    { label: "Builder_code", key: "builder_code" },
+    { label: "Logo", key: "logo" },
+    { label: "Fax", key: "fax" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
-    { label: "Company Type", key: "companytype" },
+    { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
     { label: "LV office Email", key: "email_address" },
     { label: "LV office address", key: "officeaddress1" },
@@ -214,9 +216,12 @@ const BuilderTable = () => {
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address ", key: "coporate_officeaddress_1" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
-    { label: "Corporate Office State", key: "coporate_office_state" },
+    { label: "Corporate Office State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
+    { label: "Coporate Office Address Latitude", key: "coporate_officeaddress_lat" },
+    { label: "Coporate Office Address Longitude", key: "coporate_officeaddress_lng" },
     { label: "Stock Market", key: "stock_market" },
+    { label: "Active", key: "is_active" },
     { label: "Stock Symbol", key: "stock_symbol" },
     { label: "Active Communities", key: "active_communities" },
     { label: "Closing This Year", key: "closing_this_year" },
@@ -263,7 +268,7 @@ const BuilderTable = () => {
     { label: "Corporate Office Address 1", key: "coporate_officeaddress_1" },
     { label: "Corporate State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
-    { label: "Corporate Office State", key: "coporate_office_state" },
+    { label: "Corporate Office State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
     { label: "Coporate Office Address Latitude", key: "coporate_officeaddress_lat" },
     { label: "Coporate Office Address Longitude", key: "coporate_officeaddress_lng" },
@@ -334,6 +339,9 @@ const BuilderTable = () => {
               case "Logo":
                 mappedRow[header] = imageUrl + row.logo;
                 break;
+              case "Fax":
+                mappedRow[header] = row.fax;
+                break;
               case "Website":
                 mappedRow[header] = row.website;
                 break;
@@ -376,8 +384,17 @@ const BuilderTable = () => {
               case "Corporate Office Zip":
                 mappedRow[header] = row.coporate_officeaddress_zipcode;
                 break;
+              case "Coporate Office Address Latitude":
+                mappedRow[header] = row.coporate_officeaddress_lat;
+                break;
+              case "Coporate Office Address Longitude":
+                mappedRow[header] = row.coporate_officeaddress_lng;
+                break;
               case "Stock Market":
                 mappedRow[header] = row.stock_market;
+                break;
+              case "Active":
+                mappedRow[header] = row.is_active == 1 ? "Yes" : row.is_active == 0 ? "No" : "";
                 break;
               case "Stock Symbol":
                 mappedRow[header] = row.stock_symbol;
