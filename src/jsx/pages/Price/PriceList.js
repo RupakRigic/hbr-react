@@ -149,7 +149,7 @@ const PriceList = () => {
           return tableHeaders.map((header) => {
             switch (header) {
               case "Date":
-                return row.created_at ? formatDate(row.created_at) : "" || '';
+                return row.date ? row.date : "" || '';
               case "Builder Name":
                 return row.product.subdivision &&
                   row.product.subdivision.builder?.name;
@@ -157,7 +157,7 @@ const PriceList = () => {
                 return row.product.subdivision &&
                   row.product.subdivision?.name;
               case "Product Name":
-                return row.name || '';
+                return row.product.name || '';
               case "Square Footage":
                 return row.product.sqft
               case "Stories":
@@ -165,13 +165,13 @@ const PriceList = () => {
               case "Bedrooms":
                 return row.product.bedroom || '';
               case "Bathrooms":
-                return row.product.bathrooms || '';
+                return row.product.bathroom || '';
               case "Garage":
                 return row.product.garage || '';
               case "Base Price":
                 return row.baseprice || '';
               case "Price Per SQFT":
-                return row.product.recentpricesqft || '';
+                return row.price_per_sqft || '';
               case "Product Type":
                 return row.product.subdivision.product_type || '';
               case "Area":
@@ -187,9 +187,9 @@ const PriceList = () => {
               case "Zoning":
                 return row.product.subdivision.zoning || '';
               case "Age Restricted":
-                return row.product.subdivision.age === 1 ? "Yes" : row.product.subdivision.age === 0 ? "No" : '';
+                return row.product.subdivision.age == 1 ? "Yes" : row.product.subdivision.age == 0 ? "No" : '';
               case "All Single Story":
-                return row.product.subdivision.single === 1 ? "Yes" : row.product.subdivision.single === 0 ? "No" : '';
+                return row.product.subdivision.single == 1 ? "Yes" : row.product.subdivision.single == 0 ? "No" : '';
               case "__pkPriceID":
                 return row.id || '';
               case "_fkProductID":
