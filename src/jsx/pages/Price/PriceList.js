@@ -128,27 +128,119 @@ const PriceList = () => {
   ];
 
   const handleDownloadExcel = async () => {
-    setExcelDownload(true);
-    try {
-      let sortConfigString = "";
-      if (sortConfig !== null) {
-        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+    let sortConfigString = "";
+    if (sortConfig !== null) {
+      sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+    }
 
-      var exportColumn = {
-        columns: selectedColumns
+    setExcelDownload(true);
+    if (isAnyFilterApplied) {
+      let tableHeaders;
+      if (selectedColumns.length > 0) {
+        tableHeaders = selectedColumns;
+      } else {
+        tableHeaders = headers.map((c) => c.label);
       }
-      const response = await AdminPriceService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
-      const downloadUrl = URL.createObjectURL(response);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.setAttribute('download', `prices.xlsx`);
-      document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
-      setExcelDownload(false);
-    } catch (error) {
-      console.log(error);
+      const is_calculated = "&is_calculated";
+      const response = await AdminPriceService.export(currentPage, sortConfigString, searchQuery, "", is_calculated).json();
+      if (response.status) {
+        const tableData = priceList?.map((row) => {
+          return tableHeaders.map((header) => {
+            switch (header) {
+              case "Date":
+                return row.created_at ? formatDate(row.created_at) : "" || '';
+              case "Builder Name":
+                return row.product.subdivision &&
+                  row.product.subdivision.builder?.name;
+              case "Subdivision Name":
+                return row.product.subdivision &&
+                  row.product.subdivision?.name;
+              case "Product Name":
+                return row.name || '';
+              case "Square Footage":
+                return row.product.sqft
+              case "Stories":
+                return row.product.stories || '';
+              case "Bedrooms":
+                return row.product.bedroom || '';
+              case "Bathrooms":
+                return row.product.bathrooms || '';
+              case "Garage":
+                return row.product.garage || '';
+              case "Base Price":
+                return row.baseprice || '';
+              case "Price Per SQFT":
+                return row.product.recentpricesqft || '';
+              case "Product Type":
+                return row.product.subdivision.product_type || '';
+              case "Area":
+                return row.product.subdivision.area || '';
+              case "Master Plan":
+                return row.product.subdivision.masterplan_id || '';
+              case "Zip Code":
+                return row.product.subdivision.zipcode || '';
+              case "Lot Width":
+                return row.product.subdivision.lotwidth || '';
+              case "Lot Size":
+                return row.product.subdivision.lotsize || '';
+              case "Zoning":
+                return row.product.subdivision.zoning || '';
+              case "Age Restricted":
+                return row.product.subdivision.age === 1 ? "Yes" : row.product.subdivision.age === 0 ? "No" : '';
+              case "All Single Story":
+                return row.product.subdivision.single === 1 ? "Yes" : row.product.subdivision.single === 0 ? "No" : '';
+              case "__pkPriceID":
+                return row.id || '';
+              case "_fkProductID":
+                return row.product.product_code || '';
+              default:
+                return '';
+            }
+          });
+        });
+
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+
+        const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+          if (!cell.s) cell.s = {};
+          cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+        }
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Worksheet');
+
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, 'prices.xlsx');
+
+        resetSelection();
+        setExportModelShow(false);
+        setExcelDownload(false);
+      } else {
+        setExportModelShow(false);
+        setExcelDownload(false);
+        return;
+      }
+    } else {
+      try {
+        var exportColumn = {
+          columns: selectedColumns
+        }
+        const response = await AdminPriceService.export(currentPage, sortConfigString, searchQuery, exportColumn, "").blob();
+        const downloadUrl = URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.setAttribute('download', `prices.xlsx`);
+        document.body.appendChild(a);
+        a.click();
+        a.parentNode.removeChild(a);
+        setExcelDownload(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -367,61 +459,61 @@ const PriceList = () => {
     GetSubdivisionDropDownList();
   }, []);
 
-  // const applyFilters = () => {
-  //   const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+  const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-  //   if (AllProductListExport.length === 0) {
-  //     setPriceList(priceList);
-  //     return;
-  //   }
+    if (AllProductListExport.length === 0) {
+      setPriceList(priceList);
+      return;
+    }
 
-  //   let filtered = AllProductListExport;
+    let filtered = AllProductListExport;
 
-  //   const applyNumberFilter = (items, query, key) => {
-  //     if (query) {
-  //       let operator = '=';
-  //       let value = query;
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
 
-  //       if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-  //         operator = query[0];
-  //         value = query.slice(1);
-  //       }
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+          operator = query[0];
+          value = query.slice(1);
+        }
 
-  //       const numberValue = parseFloat(value);
-  //       if (!isNaN(numberValue)) {
-  //         return items.filter(item => {
-  //           const itemValue = parseFloat(item[key]);
-  //           if (operator === '>') return itemValue > numberValue;
-  //           if (operator === '<') return itemValue < numberValue;
-  //           return itemValue === numberValue;
-  //         });
-  //       }
-  //     }
-  //     return items;
-  //   };
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
+          return items.filter(item => {
+            const itemValue = parseFloat(item[key]);
+            if (operator === '>') return itemValue > numberValue;
+            if (operator === '<') return itemValue < numberValue;
+            return itemValue === numberValue;
+          });
+        }
+      }
+      return items;
+    };
 
-  //   filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
 
 
-  //   if (isAnyFilterApplied) {
-  //     setPriceList(filtered.slice(0, 100));
-  //     setProductListCount(filtered.length);
-  //     setNpage(Math.ceil(filtered.length / recordsPage));
-  //     setFilter(true);
-  //     setNormalFilter(false);
-  //   } else {
-  //     setPriceList(filtered.slice(0, 100));
-  //     setProductListCount(filtered.length);
-  //     setNpage(Math.ceil(filtered.length / recordsPage));
-  //     setCurrentPage(1);
-  //     setFilter(false);
-  //     setNormalFilter(false);
-  //   }
-  // };
+    if (isAnyFilterApplied) {
+      setPriceList(filtered.slice(0, 100));
+      setProductListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setFilter(true);
+      setNormalFilter(false);
+    } else {
+      setPriceList(filtered.slice(0, 100));
+      setProductListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setCurrentPage(1);
+      setFilter(false);
+      setNormalFilter(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   applyFilters();
-  // }, [filterQueryCalculation]);
+  useEffect(() => {
+    applyFilters();
+  }, [filterQueryCalculation]);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -613,14 +705,14 @@ const PriceList = () => {
     setNormalFilter(true);
   };
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFilterQueryCalculation(prevFilterQuery => ({
-  //     ...prevFilterQuery,
-  //     [name]: value
-  //   }));
-  //   setFilter(true);
-  // };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQueryCalculation(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+    setFilter(true);
+  };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
@@ -2511,17 +2603,6 @@ const PriceList = () => {
                       placeholder={"Select Single"}
                     />
                   </div>
-                  <h5 className="mt-0">Calculation Filter Options</h5>
-                  <div className="border-top">
-                    <div className="row">
-                      <div className="col-md-3 mt-2">
-                        <label className="form-label">
-                          PRICE PER SQFT:{" "}
-                        </label>
-                        <input name="price_per_sqft" value={filterQuery.price_per_sqft} className="form-control" onChange={HandleFilter} />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </form>
             </div>
@@ -2542,7 +2623,7 @@ const PriceList = () => {
               </Button>
             </div>
             <br />
-            {/* {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
               <>
                 <h5 className="">Calculation Filter Options</h5>
                 <div className="border-top">
@@ -2556,7 +2637,7 @@ const PriceList = () => {
                   </div>
                 </div>
               </>
-            } */}
+            }
           </div>
         </div>
       </Offcanvas>

@@ -12,5 +12,5 @@ export default {
     import: (userData) => clientAuth.post(`admin/price/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/price/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/price/bulkdestroy/${id}`),
-    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/price/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/price/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };
