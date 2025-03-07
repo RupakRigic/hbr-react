@@ -1120,7 +1120,7 @@ const CCAPNList = () => {
                   <div className="col-md-4 mt-3">
                     <label className="form-label">Parcel:</label>
                     <InputMask
-                      mask="999-99-999-999"
+                      // mask="999-99-999-999"
                       maskChar=""
                       type="search"
                       name="parcel"
