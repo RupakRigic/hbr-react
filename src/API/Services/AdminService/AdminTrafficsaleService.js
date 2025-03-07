@@ -11,5 +11,5 @@ export default {
     bulkupdate: (id, userData) => clientAuth.put(`admin/trafficsale/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/trafficsale/bulkdestroy/${id}`),
     import: (userData) => clientAuth.post(`admin/trafficsale/import`, { json: userData }),
-    export: (page=1,sortConfig='',searchQuery = '', exportColumn) => clientAuth.post(`admin/trafficsale/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
+    export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/trafficsale/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };

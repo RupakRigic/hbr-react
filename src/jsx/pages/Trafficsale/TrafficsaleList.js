@@ -104,6 +104,9 @@ const TrafficsaleList = () => {
     zoning: localStorage.getItem("zoning_TrafficSale") ? JSON.parse(localStorage.getItem("zoning_TrafficSale")) : "",
     age: localStorage.getItem("age_TrafficSale") ? JSON.parse(localStorage.getItem("age_TrafficSale")) : "",
     single: localStorage.getItem("single_TrafficSale") ? JSON.parse(localStorage.getItem("single_TrafficSale")) : "",
+    
+  });
+  const [filterQueryCalculation, setFilterQueryCalculation] = useState({
     grosssales: ""
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -474,27 +477,116 @@ const TrafficsaleList = () => {
   };
 
   const handleDownloadExcel = async () => {
-    setExcelDownload(true);
-    try {
-      let sortConfigString = "";
-      if (sortConfig !== null) {
-        sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
-      }
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
+    let sortConfigString = "";
+    if (sortConfig !== null) {
+      sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+    }
 
-      var exportColumn = {
-        columns: selectedColumns
+    setExcelDownload(true);
+    if (isAnyFilterApplied) {
+      let tableHeaders;
+      if (selectedColumns.length > 0) {
+        tableHeaders = selectedColumns;
+      } else {
+        tableHeaders = headers.map((c) => c.label);
       }
-      const response = await AdminTrafficsaleService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
-      const downloadUrl = URL.createObjectURL(response);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.setAttribute('download', `weekly_trafficsales.xlsx`);
-      document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
-      setExcelDownload(false);
-    } catch (error) {
-      console.log(error);
+      const is_calculated = "&is_calculated";
+      const response = await AdminTrafficsaleService.export(currentPage, sortConfigString, searchQuery, "", is_calculated).json();
+      if (response.status) {
+        const tableData = trafficsaleList?.map((row) => {
+          return tableHeaders.map((header) => {
+            switch (header) {
+              case "Week Ending":
+                return row.weekending || '';
+              case "Builder Name":
+                return row.subdivision?.builder?.name || '';
+              case "Subdivision Name":
+                return row.subdivision?.name || '';
+              case "Weekly Traffic":
+                return row.weeklytraffic || 0;
+              case "Weekly Gross Sales":
+                return row.grosssales || 0;
+              case "Weekly Cancellations":
+                return row.cancelations || 0;
+              case "Weekly Net Sales":
+                return row.netsales || 0;
+              case "Total Lots":
+                return row.subdivision?.totallots || '';
+              case "Weekly Lots Release For Sale":
+                return row.lotreleased || '';
+              case "Weekly Unsold Standing Inventory":
+                return row.unsoldinventory || '';
+              case "Product Type":
+                return row.subdivision?.product_type || '';
+              case "Area":
+                return row.subdivision?.area || '';
+              case "Master Plan":
+                return row.subdivision?.masterplan_id || '';
+              case "Zip Code":
+                return row.subdivision?.zipcode || '';
+              case "Lot Width":
+                return row.subdivision?.lotwidth || '';
+              case "Lot Size":
+                return row.subdivision?.lotsize || '';
+              case "Zoning":
+                return row.subdivision?.zoning || '';
+              case "Age Restricted":
+                return row.subdivision?.age === 1 ? "Yes" : row.subdivision?.age === 0 ? "No" : '';
+              case "All Single Story":
+                return row.subdivision?.single === 1 ? "Yes" : row.subdivision?.single === 0 ? "No" : '';
+              case "Pk Record id":
+                return row.id || '';
+              case "Fk sub id":
+                return row.subdivision?.subdivision_code || '';
+              default:
+                return '';
+            }
+          });
+        });
+
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet([tableHeaders, ...tableData]);
+
+        // Optionally apply styles to the headers
+        const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+          const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: C })];
+          if (!cell.s) cell.s = {};
+          cell.s.font = { name: 'Calibri', sz: 11, bold: false };
+        }
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Worksheet');
+
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, 'weekly_trafficsales.xlsx');
+
+        resetSelection();
+        setExportModelShow(false);
+        setExcelDownload(false);
+      } else {
+        setExportModelShow(false);
+        setExcelDownload(false);
+        return;
+      }
+    } else {
+      try {
+        var exportColumn = {
+          columns: selectedColumns
+        }
+        const response = await AdminTrafficsaleService.export(currentPage, sortConfigString, searchQuery, exportColumn, "").blob();
+        const downloadUrl = URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.setAttribute('download', `weekly_trafficsales.xlsx`);
+        document.body.appendChild(a);
+        a.click();
+        a.parentNode.removeChild(a);
+        setExcelDownload(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -825,62 +917,62 @@ const TrafficsaleList = () => {
       .join('');
   }
 
-  // const applyFilters = () => {
-  //   const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
+  const applyFilters = () => {
+    const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
 
-  //   if (AllTrafficListExport.length === 0) {
-  //     setTrafficsaleList(trafficsaleList);
-  //     return;
-  //   }
+    if (AllTrafficListExport.length === 0) {
+      setTrafficsaleList(trafficsaleList);
+      return;
+    }
 
-  //   let filtered = AllTrafficListExport;
+    let filtered = AllTrafficListExport;
 
-  //   const applyNumberFilter = (items, query, key) => {
-  //     if (query) {
-  //       let operator = '=';
-  //       let value = query;
+    const applyNumberFilter = (items, query, key) => {
+      if (query) {
+        let operator = '=';
+        let value = query;
 
-  //       if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-  //         operator = query[0];
-  //         value = query.slice(1);
-  //       }
+        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
+          operator = query[0];
+          value = query.slice(1);
+        }
 
-  //       const numberValue = parseFloat(value);
-  //       if (!isNaN(numberValue)) {
-  //         return items.filter(item => {
-  //           const itemValue = parseFloat(item[key]);
-  //           if (operator === '>') return itemValue > numberValue;
-  //           if (operator === '<') return itemValue < numberValue;
-  //           return itemValue === numberValue;
-  //         });
-  //       }
-  //     }
-  //     return items;
-  //   };
+        const numberValue = parseFloat(value);
+        if (!isNaN(numberValue)) {
+          return items.filter(item => {
+            const itemValue = parseFloat(item[key]);
+            if (operator === '>') return itemValue > numberValue;
+            if (operator === '<') return itemValue < numberValue;
+            return itemValue === numberValue;
+          });
+        }
+      }
+      return items;
+    };
 
-  //   filtered = applyNumberFilter(filtered, filterQuery.grosssales, 'grosssales');
+    filtered = applyNumberFilter(filtered, filterQueryCalculation.grosssales, 'grosssales');
 
-  //   if (isAnyFilterApplied && !normalFilter) {
-  //     setTrafficsaleList(filtered.slice(0, 100));
-  //     setTrafficListCount(filtered.length);
-  //     setNpage(Math.ceil(filtered.length / recordsPage));
-  //     setFilter(false);
-  //     setNormalFilter(false);
-  //   } else {
-  //     setTrafficsaleList(filtered.slice(0, 100));
-  //     setTrafficListCount(filtered.length);
-  //     setNpage(Math.ceil(filtered.length / recordsPage));
-  //     setCurrentPage(1);
-  //     setFilter(false);
-  //     setNormalFilter(false);
-  //   }
-  // };
+    if (isAnyFilterApplied && !normalFilter) {
+      setTrafficsaleList(filtered.slice(0, 100));
+      setTrafficListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setFilter(false);
+      setNormalFilter(false);
+    } else {
+      setTrafficsaleList(filtered.slice(0, 100));
+      setTrafficListCount(filtered.length);
+      setNpage(Math.ceil(filtered.length / recordsPage));
+      setCurrentPage(1);
+      setFilter(false);
+      setNormalFilter(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   if (filter) {
-  //     applyFilters();
-  //   }
-  // }, [filterQuery]);
+  useEffect(() => {
+    if (filter) {
+      applyFilters();
+    }
+  }, [filterQueryCalculation]);
 
   const GetBuilderDropDownList = async () => {
     try {
@@ -923,14 +1015,14 @@ const TrafficsaleList = () => {
     GetSubdivisionDropDownList();
   }, []);
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFilterQuery(prevFilterQuery => ({
-  //     ...prevFilterQuery,
-  //     [name]: value
-  //   }));
-  //   setFilter(true);
-  // };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterQueryCalculation(prevFilterQuery => ({
+      ...prevFilterQuery,
+      [name]: value
+    }));
+    setFilter(true);
+  };
 
   const ageOptions = [
     { value: "1", label: "Yes" },
@@ -2614,17 +2706,7 @@ const TrafficsaleList = () => {
                       placeholder={"Select Single"}
                     />
                   </div>
-                  <h5 className="">Calculation Filter Options</h5>
-                  <div className="border-top">
-                    <div className="row">
-                      <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
-                        <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={HandleFilter} />
-                      </div>
-                    </div>
-                  </div>
                 </div>
-
               </form>
             </div>
             <div className="d-flex justify-content-between">
@@ -2644,19 +2726,19 @@ const TrafficsaleList = () => {
               </Button>
             </div>
             <br />
-            {/* {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
+            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
               <>
                 <h5 className="">Calculation Filter Options</h5>
                 <div className="border-top">
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
                       <label className="form-label">WEEKLY GROSS SALES:{" "}</label>
-                      <input value={filterQuery.grosssales} name="grosssales" className="form-control" onChange={handleInputChange} />
+                      <input value={filterQueryCalculation.grosssales} name="grosssales" className="form-control" onChange={handleInputChange} />
                     </div>
                   </div>
                 </div>
               </>
-            } */}
+            }
           </div>
         </div>
       </Offcanvas>
