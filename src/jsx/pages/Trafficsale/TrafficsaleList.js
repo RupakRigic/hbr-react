@@ -20,6 +20,7 @@ import { MultiSelect } from "react-multi-select-component";
 import DatePicker from "react-datepicker";
 import moment from 'moment';
 import '../../pages/Subdivision/subdivisionList.css';
+import Swal from "sweetalert2";
 
 const TrafficsaleList = () => {
   const [loading, setLoading] = useState(false);
@@ -138,6 +139,9 @@ const TrafficsaleList = () => {
   const [selectedFields, setSelectedFields] = useState([]);
   const [selectionOrder, setSelectionOrder] = useState({});
   const [sortOrders, setSortOrders] = useState({});
+  const [samePage, setSamePage] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [selectCheckBox, setSelectCheckBox] = useState(false);
 
 
   const SyestemUserRole = localStorage.getItem("user")
@@ -1640,6 +1644,50 @@ const TrafficsaleList = () => {
     }
   };
 
+  const handleMainCheckboxChange = (e) => {
+    setSamePage(currentPage);
+    if (e.target.checked) {
+      Swal.fire({
+        title: "Select Records",
+        html: `
+            <div style="text-align: left;">
+              <label>
+                <input type="radio" name="selection" value="visible" checked />
+                Select visible records
+              </label>
+              <br />
+              <label>
+                <input type="radio" name="selection" value="all" />
+                Select all records
+              </label>
+            </div>
+          `,
+        confirmButtonText: "Apply",
+        showCancelButton: false,
+        preConfirm: () => {
+          const selectedOption = document.querySelector('input[name="selection"]:checked').value;
+          return selectedOption;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const selectedOption = result.value;
+          if (selectedOption === "visible") {
+            setIsSelectAll(false);
+            setSelectCheckBox(true);
+            setSelectedLandSales(trafficsaleList?.map((user) => user.id));
+          } else if (selectedOption === "all") {
+            setIsSelectAll(true);
+            setSelectCheckBox(true);
+            setSelectedLandSales(AllTrafficListExport?.map((user) => user.id));
+          }
+        }
+      });
+    } else {
+      setSelectCheckBox(false);
+      setSelectedLandSales([]);
+    }
+  };
+
   return (
     <Fragment>
       <MainPagetitle
@@ -1892,15 +1940,9 @@ const TrafficsaleList = () => {
                             <th>
                               <input
                                 type="checkbox"
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                                checked={selectedLandSales.length === trafficsaleList.length}
-                                onChange={(e) =>
-                                  e.target.checked
-                                    ? setSelectedLandSales(trafficsaleList.map((user) => user.id))
-                                    : setSelectedLandSales([])
-                                }
+                                style={{ cursor: "pointer" }}
+                                checked={(currentPage == samePage || isSelectAll) ? selectCheckBox : ""}
+                                onClick={(e) => handleMainCheckboxChange(e)}
                               />
                             </th>
                             <th>No.</th>
