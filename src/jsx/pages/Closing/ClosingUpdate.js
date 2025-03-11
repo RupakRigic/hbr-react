@@ -72,7 +72,7 @@ const ClosingUpdate = () => {
             }
             const data = await AdminClosingService.update(params.id, userData).json();
             if (data.status === true) {
-                swal("Closing Sale Update Succesfully").then((willDelete) => {
+                swal("Record Updated Succesfully.").then((willDelete) => {
                     if (willDelete) {
                         navigate('/closingsaleList');
                     }

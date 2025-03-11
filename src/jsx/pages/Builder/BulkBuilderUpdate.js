@@ -96,7 +96,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     const data = await AdminBuilderService.bulkupdate(selectedLandSales, userData).json();
 
                     if (data.status === true) {
-                        swal("Builder Update Succesfully").then((willDelete) => {
+                        swal("Records Updated Succesfully.").then((willDelete) => {
                             if (willDelete) {
                                 HandleUpdateCanvasClose();
                                 localStorage.setItem("UpdateBuilderName", JSON.stringify(event.target.name.value));

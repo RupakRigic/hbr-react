@@ -93,7 +93,7 @@ const ProductUpdate = () => {
       };
       const data = await AdminProductService.update(params.id, userData).json();
       if (data.status === true) {
-        swal("Product Update Succesfully").then((willDelete) => {
+        swal("Record Updated Succesfully.").then((willDelete) => {
           if (willDelete) {
             navigate("/productlist");
           }

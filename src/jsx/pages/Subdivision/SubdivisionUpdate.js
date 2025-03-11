@@ -177,7 +177,7 @@ const SubdivisionUpdate = () => {
       const data = await AdminSubdevisionService.update(params.id, userData).json();
 
       if (data.status === true) {
-        swal("Subdivision Update Succesfully").then((willDelete) => {
+        swal("Record Updated Succesfully.").then((willDelete) => {
           if (willDelete) {
             navigate("/subdivisionlist");
           }

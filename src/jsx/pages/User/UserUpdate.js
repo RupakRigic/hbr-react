@@ -163,7 +163,7 @@ const UserUpdate = () => {
         }
         const data = await AdminUserRoleService.update(params.id, userData).json();
         if (data.status === true) {
-          swal("User Update Succesfully").then((willDelete) => {
+          swal("Record Updated Succesfully.").then((willDelete) => {
             if (willDelete) {
               setRoleCode([]);
               setStandardUser([]);
@@ -200,7 +200,7 @@ const UserUpdate = () => {
         setSaveBtn(false);
         setRoleCode([]);
         setStandardUser([]);
-        swal("User Update Succesfully").then((willDelete) => {
+        swal("Record Updated Succesfully.").then((willDelete) => {
           if (willDelete) {
             navigate("/userlist");
           }

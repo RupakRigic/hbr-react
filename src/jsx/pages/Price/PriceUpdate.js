@@ -70,7 +70,7 @@ import MainPagetitle from "../../layouts/MainPagetitle";
         };
         const data = await AdminPriceService.update(params.id, userData).json();
         if (data.status === true) {
-            swal("Price Update Succesfully").then((willDelete) => {
+            swal("Record Updated Succesfully.").then((willDelete) => {
             if (willDelete) {
                 navigate("/pricelist");
             }

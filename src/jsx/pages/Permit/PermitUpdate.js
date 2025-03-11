@@ -77,7 +77,7 @@ const PermitUpdate = () => {
             const data = await AdminPermitService.update(params.id, userData).json();
             if (data.status === true) {
 
-                swal("Permit Update Succesfully").then((willDelete) => {
+                swal("Record Updated Succesfully.").then((willDelete) => {
                     if (willDelete) {
                         navigate('/permitlist')
                     }

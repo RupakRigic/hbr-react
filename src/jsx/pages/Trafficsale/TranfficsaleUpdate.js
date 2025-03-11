@@ -82,7 +82,7 @@ const TrafficsaleUpdate = () => {
             }
             const data = await AdminTrafficsaleService.update(params.id, userData).json();
             if (data.status === true) {
-                swal("Trafficsale Update Succesfully").then((willDelete) => {
+                swal("Record Updated Succesfully.").then((willDelete) => {
                     if (willDelete) {
                         navigate('/trafficsalelist')
                     }
