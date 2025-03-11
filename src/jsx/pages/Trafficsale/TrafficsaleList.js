@@ -712,10 +712,10 @@ const TrafficsaleList = () => {
       setIsLoading(false);
       setExcelLoading(false);
       setTrafficsaleList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setTrafficListCount(responseData.total);
-      if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setTrafficListCount(responseData.meta.total);
+      if (responseData.meta.total > 100) {
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
       } else {
         setAllTrafficistExport(responseData.data);
       }
