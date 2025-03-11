@@ -44,6 +44,7 @@ const LandsaleList = () => {
   };
   const [exportmodelshow, setExportModelShow] = useState(false);
 
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -509,19 +510,24 @@ const LandsaleList = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
 
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
-  }
-  function changeCPage(id) {
+  };
+
+  const changeCPage = (id) => {
     setCurrentPage(id);
-  }
-  function nextPage() {
+    setPageChange(true);
+  };
+
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   const landsale = useRef();
 
@@ -549,13 +555,18 @@ const LandsaleList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setExcelLoading(false);
+      setPageChange(false);
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setlandSaleListCount(responseData.meta.total);
       if (responseData.meta.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        }
       } else {
-        setAllBuilderExport(responseData.data);
+        if(!pageChange){
+          setAllBuilderExport(responseData.data);
+        }
       }
     } catch (error) {
       if (error.name === "HTTPError") {

@@ -76,6 +76,7 @@ const BuilderTable = () => {
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
 
   const [BuilderListCount, setBuilderListCount] = useState("");
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -581,14 +582,18 @@ const BuilderTable = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setExcelLoading(false);
-      setBuilderList(responseData.data)
+      setPageChange(false);
+      setBuilderList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderListCount(responseData.total);
       if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        }
       } else {
-        
-        setAllBuilderExport(responseData.data);
+        if(!pageChange){
+          setAllBuilderExport(responseData.data);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -655,22 +660,24 @@ const BuilderTable = () => {
     setExcelLoading(false);
   }
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
-    console.log(id);
-  }
+    setPageChange(true);
+  };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   const getAccesslist = async () => {
     try {

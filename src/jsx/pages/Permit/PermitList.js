@@ -653,19 +653,19 @@ const PermitList = () => {
     }
   }, []);
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
       setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
     setPageChange(true);
   };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
       setPageChange(true);
       setCurrentPage(currentPage + 1);

@@ -85,6 +85,7 @@ const SubdivisionList = () => {
     setSelectedColumns([]);
   };
 
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -755,21 +756,24 @@ const SubdivisionList = () => {
   //   setSelectedCheckboxes(sortConfig.map(col => col.key));
   // }, [sortConfig]);
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
-  }
+    setPageChange(true);
+  };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   // const HandleSortDetailClick = (e) => {
   //   setShowSort(true);
@@ -805,13 +809,18 @@ const SubdivisionList = () => {
       setLoading(false);
       setIsLoading(false);
       setExcelLoading(false);
+      setPageChange(false);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
       if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        }
       } else {
-        setAllBuilderExport(responseData.data);
+        if(!pageChange){
+          setAllBuilderExport(responseData.data);
+        }
       }
     } catch (error) {
       console.log(error);

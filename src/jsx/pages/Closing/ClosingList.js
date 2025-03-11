@@ -38,6 +38,7 @@ const ClosingList = () => {
   const [Error, setError] = useState("");
   const [ClosingList, setClosingList] = useState([]);
   const [closingListCount, setClosingListCount] = useState('');
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -535,18 +536,21 @@ const ClosingList = () => {
     }
   }, []);
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
+    setPageChange(true);
   };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
   };
@@ -577,13 +581,18 @@ const ClosingList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setExcelLoading(false);
+      setPageChange(false);
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
       if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+        }
       } else {
-        setAllClosingListExport(responseData.data);
+        if(!pageChange){
+          setAllClosingListExport(responseData.data);
+        }
       }
     } catch (error) {
       if (error.name === "HTTPError") {

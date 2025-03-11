@@ -322,6 +322,7 @@ const ProductList = () => {
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -423,18 +424,21 @@ const ProductList = () => {
     setValue(newValue);
   };
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
+    setPageChange(true);
   };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
   };
@@ -484,13 +488,18 @@ const ProductList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setExcelLoading(false);
+      setPageChange(false);
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductsListCount(responseData.meta.total);
       if (responseData.meta.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        }
       } else {
-        setAllBuilderExport(responseData.data);
+        if(!pageChange){
+          setAllBuilderExport(responseData.data);
+        }
       }
     } catch (error) {
       setIsLoading(false);

@@ -358,6 +358,7 @@ const PriceList = () => {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [ProductList, setProductList] = useState([]);
+  const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
@@ -609,18 +610,21 @@ const PriceList = () => {
     }
   }, []);
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== 1) {
+      setPageChange(true);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  function changeCPage(id) {
+  const changeCPage = (id) => {
     setCurrentPage(id);
+    setPageChange(true);
   };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== npage) {
+      setPageChange(true);
       setCurrentPage(currentPage + 1);
     }
   };
@@ -651,13 +655,18 @@ const PriceList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setExcelLoading(false);
+      setPageChange(false);
       setPriceList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductListCount(responseData.meta.total);
       if (responseData.meta.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        if(!pageChange){
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+        }
       } else {
-        setAllBuilderExport(responseData.data);
+        if(!pageChange){
+          setAllBuilderExport(responseData.data);
+        }
       }
     } catch (error) {
       if (error.name === "HTTPError") {
