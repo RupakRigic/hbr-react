@@ -550,10 +550,10 @@ const LandsaleList = () => {
       setIsLoading(false);
       setExcelLoading(false);
       setLandsaleList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setlandSaleListCount(responseData.total);
-      if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setlandSaleListCount(responseData.meta.total);
+      if (responseData.meta.total > 100) {
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
       } else {
         setAllBuilderExport(responseData.data);
       }

@@ -698,11 +698,11 @@ const PermitList = () => {
       setExcelLoading(false);
       setPageChange(false);
       setPermitList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setPermitListCount(responseData.total);
-      if (responseData.total > 100) {
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setPermitListCount(responseData.meta.total);
+      if (responseData.meta.total > 100) {
         if(!pageChange){
-          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
         }
       } else {
         if(!pageChange){

@@ -652,10 +652,10 @@ const PriceList = () => {
       setIsLoading(false);
       setExcelLoading(false);
       setPriceList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setProductListCount(responseData.total);
-      if (responseData.total > 100) {
-        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setProductListCount(responseData.meta.total);
+      if (responseData.meta.total > 100) {
+        FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
       } else {
         setAllBuilderExport(responseData.data);
       }
