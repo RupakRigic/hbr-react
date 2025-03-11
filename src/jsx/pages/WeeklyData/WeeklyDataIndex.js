@@ -77,7 +77,7 @@ const WeeklyDataIndex = () => {
 
       const response = await AdminWeeklyDataService.index(weekending, builder_id).json();
 
-      const updatedData = response?.map((element) => ({
+      const updatedData = response?.data?.map((element) => ({
         ...element,
         net_sales:
           element.trafic_sales[0].grosssales -
