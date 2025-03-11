@@ -1953,48 +1953,48 @@ const TrafficsaleList = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "week Ending" ? "weekending" :
-                                        column.id == "weekly Traffic" ? "weeklytraffic" :
-                                          column.id == "weekly Gross Sales" ? "grosssales" :
-                                            column.id == "weekly Cancellations" ? "cancelations" :
-                                              column.id == "weekly Net Sales" ? "netsales" :
-                                                column.id == "total Lots" ? "totallots" :
-                                                  column.id == "weekly Lots Release For Sale" ? "lotreleased" :
-                                                    column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
-                                                      column.id == "product Type" ? "product_type" :
-                                                        column.id == "area" ? "area" :
-                                                          column.id == "master Plan" ? "masterplan_id" :
-                                                            column.id == "zip Code" ? "zipcode" :
-                                                              column.id == "lot Width" ? "lotwidth" :
-                                                                column.id == "lot Size" ? "lotsize" :
-                                                                  column.id == "zoning" ? "zoning" :
-                                                                    column.id == "age Restricted" ? "age" :
-                                                                      column.id == "all Single Story" ? "single" :
-                                                                        column.id == "date Added" ? "created_at" :
-                                                                          column.id == "__pkRecordID" ? "id" :
-                                                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                      column.id == "weekly Traffic" ? "weeklytraffic" :
+                                      column.id == "weekly Gross Sales" ? "grosssales" :
+                                      column.id == "weekly Cancellations" ? "cancelations" :
+                                      column.id == "weekly Net Sales" ? "netsales" :
+                                      column.id == "total Lots" ? "totallots" :
+                                      column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                      column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
+                                      column.id == "product Type" ? "product_type" :
+                                      column.id == "area" ? "area" :
+                                      column.id == "master Plan" ? "masterplan_id" :
+                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "lot Width" ? "lotwidth" :
+                                      column.id == "lot Size" ? "lotsize" :
+                                      column.id == "zoning" ? "zoning" :
+                                      column.id == "age Restricted" ? "age" :
+                                      column.id == "all Single Story" ? "single" :
+                                      column.id == "date Added" ? "created_at" :
+                                      column.id == "__pkRecordID" ? "id" :
+                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (column.id == "week Ending" ? "weekending" :
                                             column.id == "weekly Traffic" ? "weeklytraffic" :
-                                              column.id == "weekly Gross Sales" ? "grosssales" :
-                                                column.id == "weekly Cancellations" ? "cancelations" :
-                                                  column.id == "weekly Net Sales" ? "netsales" :
-                                                    column.id == "total Lots" ? "totallots" :
-                                                      column.id == "weekly Lots Release For Sale" ? "lotreleased" :
-                                                        column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
-                                                          column.id == "product Type" ? "product_type" :
-                                                            column.id == "area" ? "area" :
-                                                              column.id == "master Plan" ? "masterplan_id" :
-                                                                column.id == "zip Code" ? "zipcode" :
-                                                                  column.id == "lot Width" ? "lotwidth" :
-                                                                    column.id == "lot Size" ? "lotsize" :
-                                                                      column.id == "zoning" ? "zoning" :
-                                                                        column.id == "age Restricted" ? "age" :
-                                                                          column.id == "all Single Story" ? "single" :
-                                                                            column.id == "date Added" ? "created_at" :
-                                                                              column.id == "__pkRecordID" ? "id" :
-                                                                                column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                            column.id == "weekly Gross Sales" ? "grosssales" :
+                                            column.id == "weekly Cancellations" ? "cancelations" :
+                                            column.id == "weekly Net Sales" ? "netsales" :
+                                            column.id == "total Lots" ? "totallots" :
+                                            column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                            column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
+                                            column.id == "product Type" ? "product_type" :
+                                            column.id == "area" ? "area" :
+                                            column.id == "master Plan" ? "masterplan_id" :
+                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "lot Width" ? "lotwidth" :
+                                            column.id == "lot Size" ? "lotsize" :
+                                            column.id == "zoning" ? "zoning" :
+                                            column.id == "age Restricted" ? "age" :
+                                            column.id == "all Single Story" ? "single" :
+                                            column.id == "date Added" ? "created_at" :
+                                            column.id == "__pkRecordID" ? "id" :
+                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -2011,14 +2011,14 @@ const TrafficsaleList = () => {
                                       <select className="custom-select"
                                         value={
                                           column.id == "weekly Traffic" ? weeklyTrafficOption :
-                                            column.id == "weekly Gross Sales" ? weeklyGrossSalesOption :
-                                              column.id == "weekly Cancellations" ? weeklyCancellationsOption :
-                                                column.id == "weekly Net Sales" ? weeklyNetSalesOption :
-                                                  column.id == "total Lots" ? totalLotsOption :
-                                                    column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption :
-                                                      column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption :
-                                                        column.id == "lot Width" ? lotWidthOption :
-                                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "weekly Gross Sales" ? weeklyGrossSalesOption :
+                                          column.id == "weekly Cancellations" ? weeklyCancellationsOption :
+                                          column.id == "weekly Net Sales" ? weeklyNetSalesOption :
+                                          column.id == "total Lots" ? totalLotsOption :
+                                          column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption :
+                                          column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption :
+                                          column.id == "lot Width" ? lotWidthOption :
+                                          column.id == "lot Size" ? lotSizeOption : ""
                                         }
 
                                         style={{
@@ -2033,13 +2033,13 @@ const TrafficsaleList = () => {
 
                                         onChange={(e) => column.id == "weekly Traffic" ? handleSelectChange(e, "weeklytraffic") :
                                           column.id == "weekly Gross Sales" ? handleSelectChange(e, "grosssales") :
-                                            column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
-                                              column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
-                                                column.id == "total Lots" ? handleSelectChange(e, "totallots") :
-                                                  column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
-                                                    column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
-                                                      column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                          column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
+                                          column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
+                                          column.id == "total Lots" ? handleSelectChange(e, "totallots") :
+                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
+                                          column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
+                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
