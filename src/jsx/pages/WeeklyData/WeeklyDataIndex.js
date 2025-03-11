@@ -20,7 +20,7 @@ const WeeklyDataIndex = () => {
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPage = 20;
+  const recordsPage = 50;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const records = BuilderList.slice(firstIndex, lastIndex);
