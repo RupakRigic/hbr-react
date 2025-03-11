@@ -115,7 +115,7 @@ const BuilderUpdate = () => {
             const data = await AdminBuilderService.update(params.id, userData).json();
             if (data.status === true) {
 
-                swal("Record Updated Succesfully.").then((willDelete) => {
+                swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
                         localStorage.setItem("UpdateBuilderName",JSON.stringify(event.target.name.value));
                         localStorage.setItem("UpdateID", params.id);

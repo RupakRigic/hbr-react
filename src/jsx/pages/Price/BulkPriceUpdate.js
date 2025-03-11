@@ -44,7 +44,7 @@ const BulkPriceUpdate = forwardRef((props, ref) => {
                     console.log(userData);
                     const data = await AdminPriceService.bulkupdate(selectedLandSales, userData).json();
                     if (data.status === true) {
-                        swal("Records Updated Succesfully.").then((willDelete) => {
+                        swal("Records Updated Successfully").then((willDelete) => {
                             if (willDelete) {
                                 HandleUpdateCanvasClose();
                                 props.parentCallback();

@@ -129,7 +129,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
 
             if (data.status === true) {
-              swal("Records Updated Succesfully.").then((willDelete) => {
+              swal("Records Updated Successfully").then((willDelete) => {
                 if (willDelete) {
                   HandleUpdateCanvasClose();
                   setRoleCode();
@@ -174,7 +174,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
         setSaveBtn(false);
         setRoleCode([]);
         setStandardUser([]);
-        swal("Records Updated Succesfully.").then((willDelete) => {
+        swal("Records Updated Successfully").then((willDelete) => {
           if (willDelete) {
             HandleUpdateCanvasClose();
             setFirstName("");
