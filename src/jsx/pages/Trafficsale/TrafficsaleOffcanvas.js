@@ -65,7 +65,7 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminTrafficsaleService.store(userData).json();
             if (data.status === true) {
-                swal("Weekly Traffic & Sale Record Created Succesfully").then((willDelete) => {
+                swal("Weekly Traffic & Sales Record Created Successfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         setAddProduct(false);

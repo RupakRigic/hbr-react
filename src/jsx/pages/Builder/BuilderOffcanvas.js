@@ -1,10 +1,10 @@
 import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
+import swal from "sweetalert";
 
 const BuilderOffcanvas = forwardRef((props, ref) => {
-    const nav = useNavigate();
     const [file, setFile] = useState('');
     const [isActive, setIsActive] = useState('0');
     const [company_type, setCompany_type] = useState('');
@@ -38,7 +38,6 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                // "builder_code": event.target.code.value ? event.target.code.value : '',
                 "name": event.target.name.value ? event.target.name.value : '',
                 "website": event.target.website.value ? event.target.website.value : '',
                 "phone": event.target.phone.value ? event.target.phone.value : '',
@@ -63,8 +62,12 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminBuilderService.store(userData).json();
             if (data.status === true) {
-                setAddBuilder(false)
-                props.parentCallback();
+                swal("Builders Record Created Successfully").then((willDelete) => {
+                    if (willDelete) {
+                        setAddBuilder(false);
+                        props.parentCallback();
+                    }
+                })
             }
         }
         catch (error) {
@@ -73,7 +76,6 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
-        nav("#");
     };
 
     return (
@@ -107,10 +109,6 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code <span className="text-danger">*</span></label>
-                                    <input type="text" name="code" className="form-control" id="exampleFormControlInput1" placeholder="" />
-                                </div> */}
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label">Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput2" placeholder="" />
@@ -122,26 +120,26 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Mobile</label>
                                     <input
-                                      type="tel"
-                                      name="phone"
-                                      className="form-control"
-                                      id="exampleFormControlInput4"
-                                      placeholder=""
-                                      maxLength="12"
-                                      onInput={(e) => {
-                                        let input = e.target.value.replace(/\D/g, '');
-                                        if (input.length > 0) {
-                                          input = input.substring(0, 10);
-                                          if (input.length > 3 && input.length <= 6) {
-                                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
-                                          } else if (input.length > 6) {
-                                            input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
-                                          } else {
-                                            input = input;
-                                          }
-                                        }
-                                        e.target.value = input;
-                                      }}
+                                        type="tel"
+                                        name="phone"
+                                        className="form-control"
+                                        id="exampleFormControlInput4"
+                                        placeholder=""
+                                        maxLength="12"
+                                        onInput={(e) => {
+                                            let input = e.target.value.replace(/\D/g, '');
+                                            if (input.length > 0) {
+                                                input = input.substring(0, 10);
+                                                if (input.length > 3 && input.length <= 6) {
+                                                    input = `${input.substring(0, 3)}-${input.substring(3, 6)}`;
+                                                } else if (input.length > 6) {
+                                                    input = `${input.substring(0, 3)}-${input.substring(3, 6)}-${input.substring(6, 10)}`;
+                                                } else {
+                                                    input = input;
+                                                }
+                                            }
+                                            e.target.value = input;
+                                        }}
                                     />
                                 </div>
                                 <div className="col-xl-6 mb-3">
@@ -152,7 +150,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Is Active</label>
                                     <select className="default-select form-control" onChange={handleActive} >
-                                        <option value="1">true</option>
+                                        <option value="1">True</option>
                                         <option value="0">False</option>
                                     </select>
                                 </div>
@@ -176,7 +174,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
 
 
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Company Type <span className="text-danger">*</span></label>
+                                    <label className="form-label">Company Type</label>
                                     <select className="default-select form-control" onChange={handleCompanyType} >
                                         <option value="">Please Select Company Type</option>
                                         <option value="public">Public</option>
