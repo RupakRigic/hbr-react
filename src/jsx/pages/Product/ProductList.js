@@ -1213,27 +1213,6 @@ const ProductList = () => {
     switch (field) {
       case "sqft":
         setSquareFootageOption(value);
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setSquareFootageResult(totalSumFields(field));
@@ -1244,27 +1223,6 @@ const ProductList = () => {
 
       case "stories":
         setStoriesOption(value);
-        setSquareFootageOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setStoriesResult(totalSumFields(field));
@@ -1275,27 +1233,6 @@ const ProductList = () => {
 
       case "bedroom":
         setBedRoomsOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setBedRoomsResult(totalSumFields(field));
@@ -1306,27 +1243,6 @@ const ProductList = () => {
 
       case "bathroom":
         setBathRoomsOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setBathRoomsResult(totalSumFields(field));
@@ -1337,27 +1253,6 @@ const ProductList = () => {
 
       case "garage":
         setGarageOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setGarageResult(totalSumFields(field));
@@ -1368,27 +1263,6 @@ const ProductList = () => {
 
       case "recentprice":
         setCurrentBasePriceOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setCurrentBasePriceResult(totalSumFields(field));
@@ -1399,27 +1273,6 @@ const ProductList = () => {
 
       case "recentpricesqft":
         setCurrentPricePerSQFTOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setCurrentPricePerSQFTResult(totalSumFields(field));
@@ -1430,27 +1283,6 @@ const ProductList = () => {
 
       case "lotwidth":
         setLotWidthOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
@@ -1461,27 +1293,6 @@ const ProductList = () => {
 
       case "lotsize":
         setLotSizeOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setPriceChangeSinceOpenOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setPriceChangeSinceOpenResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));
@@ -1492,27 +1303,6 @@ const ProductList = () => {
 
       case "price_changes_since_open":
         setPriceChangeSinceOpenOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeLast12MonthsOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeLast12MonthsResult(0);
 
         if (value === 'sum') {
           setPriceChangeSinceOpenResult(totalSumFields(field));
@@ -1523,27 +1313,6 @@ const ProductList = () => {
 
       case "price_changes_last_12_Month":
         setPriceChangeLast12MonthsOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedRoomsOption("");
-        setBathRoomsOption("");
-        setGarageOption("");
-        setCurrentBasePriceOption("");
-        setCurrentPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-        setPriceChangeSinceOpenOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedRoomsResult(0);
-        setBathRoomsResult(0);
-        setGarageResult(0);
-        setCurrentBasePriceResult(0);
-        setCurrentPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-        setPriceChangeSinceOpenResult(0);
 
         if (value === 'sum') {
           setPriceChangeLast12MonthsResult(totalSumFields(field));

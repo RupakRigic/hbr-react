@@ -1336,23 +1336,6 @@ const PriceList = () => {
     switch (field) {
       case "sqft":
         setSquareFootageOption(value);
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setSquareFootageResult(totalSumFields(field));
@@ -1363,23 +1346,6 @@ const PriceList = () => {
 
       case "stories":
         setStoriesOption(value);
-        setSquareFootageOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setStoriesResult(totalSumFields(field));
@@ -1390,23 +1356,6 @@ const PriceList = () => {
 
       case "bedroom":
         setBedroomsOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setBedroomsResult(totalSumFields(field));
@@ -1417,24 +1366,7 @@ const PriceList = () => {
 
       case "bathroom":
         setBathroomOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
-
+        
         if (value === 'sum') {
           setBathroomResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1444,23 +1376,6 @@ const PriceList = () => {
 
       case "garage":
         setGarageOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setGarageResult(totalSumFields(field));
@@ -1471,23 +1386,6 @@ const PriceList = () => {
 
       case "baseprice":
         setBasePriceOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setBasePriceResult(totalSumFields(field));
@@ -1498,23 +1396,6 @@ const PriceList = () => {
 
       case "price_per_sqft":
         setPricePerSQFTOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setPricePerSQFTResult(totalSumFields(field));
@@ -1525,23 +1406,6 @@ const PriceList = () => {
 
       case "lotwidth":
         setLotWidthOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
@@ -1552,23 +1416,6 @@ const PriceList = () => {
 
       case "lotsize":
         setLotSizeOption(value);
-        setSquareFootageOption("");
-        setStoriesOption("");
-        setBedroomsOption("");
-        setBathroomOption("");
-        setGarageOption("");
-        setBasePriceOption("");
-        setPricePerSQFTOption("");
-        setLotWidthOption("");
-
-        setSquareFootageResult(0);
-        setStoriesResult(0);
-        setBedroomsResult(0);
-        setBathroomResult(0);
-        setGarageResult(0);
-        setBasePriceResult(0);
-        setPricePerSQFTResult(0);
-        setLotWidthResult(0);
 
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));

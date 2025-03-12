@@ -1190,13 +1190,6 @@ const ClosingList = () => {
     switch (field) {
       case "closingprice":
         setClosingPriceOption(value);
-        setLoanAmountOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setLoanAmountResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setClosingPriceResult(totalSumFields(field));
@@ -1207,13 +1200,6 @@ const ClosingList = () => {
 
       case "loanamount":
         setLoanAmountOption(value);
-        setClosingPriceOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setClosingPriceResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setLoanAmountResult(totalSumFields(field));
@@ -1224,13 +1210,6 @@ const ClosingList = () => {
 
       case "lotwidth":
         setLotWidthOption(value);
-        setClosingPriceOption("");
-        setLoanAmountOption("");
-        setLotSizeOption("");
-
-        setClosingPriceResult(0);
-        setLoanAmountResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
@@ -1241,13 +1220,6 @@ const ClosingList = () => {
 
       case "lotsize":
         setLotSizeOption(value);
-        setClosingPriceOption("");
-        setLoanAmountOption("");
-        setLotWidthOption("");
-
-        setClosingPriceResult(0);
-        setLoanAmountResult(0);
-        setLotWidthResult(0);
 
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));

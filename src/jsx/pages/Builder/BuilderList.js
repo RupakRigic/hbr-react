@@ -1360,29 +1360,6 @@ const BuilderTable = () => {
     switch (field) {
       case "active_communities":
         setActiveCommunitiesOption(value);
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setActiveCommunitiesResult(totalSumFields(field));
@@ -1393,29 +1370,6 @@ const BuilderTable = () => {
 
       case "closing_this_year":
         setClosingThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setClosingThisYearResult(totalSumFields(field));
@@ -1426,29 +1380,6 @@ const BuilderTable = () => {
 
       case "permits_this_year":
         setPermitsThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setPermitsThisYearResult(totalSumFields(field));
@@ -1459,29 +1390,6 @@ const BuilderTable = () => {
 
       case "net_sales_this_year":
         setNetSalesThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setNetSalesThisYearResult(totalSumFields(field));
@@ -1492,29 +1400,6 @@ const BuilderTable = () => {
 
       case "current_avg_base_Price":
         setCurrentAvgBasePriceOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setCurrentAvgBasePriceResult(totalSumFields(field));
@@ -1525,29 +1410,6 @@ const BuilderTable = () => {
 
       case "median_closing_price_this_year":
         setMedianClosingPriceThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setMedianClosingPriceThisYearResult(totalSumFields(field));
@@ -1557,29 +1419,6 @@ const BuilderTable = () => {
         break;
       case "median_closing_price_last_year":
         setMedianClosingPriceLastYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setMedianClosingPriceLastYearResult(totalSumFields(field));
@@ -1589,29 +1428,6 @@ const BuilderTable = () => {
         break;
       case "avg_net_sales_per_month_this_year":
         setAvgNetSalesPerMonthThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setAvgNetSalesPerMonthThisYearResult(totalSumFields(field));
@@ -1621,29 +1437,6 @@ const BuilderTable = () => {
         break;
       case "avg_closings_per_month_this_year":
         setAvgClosingsPerMonthThisYearOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setAvgClosingsPerMonthThisYearResult(totalSumFields(field));
@@ -1653,29 +1446,6 @@ const BuilderTable = () => {
         break;
       case "total_closings":
         setTotalClosingsOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalPermitsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalPermitsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setTotalClosingsResult(totalSumFields(field));
@@ -1685,29 +1455,6 @@ const BuilderTable = () => {
         break;
       case "total_permits":
         setTotalPermitsOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalNetSalesOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalNetSalesResult(0);
 
         if (value === 'sum') {
           setTotalPermitsResult(totalSumFields(field));
@@ -1717,29 +1464,6 @@ const BuilderTable = () => {
         break;
       case "total_net_sales":
         setTotalNetSalesOption(value);
-        setActiveCommunitiesOption("");
-        setClosingThisYearOption("");
-        setPermitsThisYearOption("");
-        setNetSalesThisYearOption("");
-        setCurrentAvgBasePriceOption("");
-        setMedianClosingPriceThisYearOption("");
-        setMedianClosingPriceLastYearOption("");
-        setAvgNetSalesPerMonthThisYearOption("");
-        setAvgClosingsPerMonthThisYearOption("");
-        setTotalClosingsOption("");
-        setTotalPermitsOption("");
-
-        setActiveCommunitiesResult(0);
-        setClosingThisYearResult(0);
-        setPermitsThisYearResult(0);
-        setNetSalesThisYearResult(0);
-        setCurrentAvgBasePriceResult(0);
-        setMedianClosingPriceThisYearResult(0);
-        setMedianClosingPriceLastYearResult(0);
-        setAvgNetSalesPerMonthThisYearResult(0);
-        setAvgClosingsPerMonthThisYearResult(0);
-        setTotalClosingsResult(0);
-        setTotalPermitsResult(0);
 
         if (value === 'sum') {
           setTotalNetSalesResult(totalSumFields(field));

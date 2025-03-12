@@ -1268,23 +1268,6 @@ const TrafficsaleList = () => {
     switch (field) {
       case "weeklytraffic":
         setWeeklyTrafficOption(value);
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyTrafficResult(totalSumFields(field));
@@ -1295,23 +1278,6 @@ const TrafficsaleList = () => {
 
       case "grosssales":
         setWeeklyGrossSalesOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyGrossSalesResult(totalSumFields(field));
@@ -1322,23 +1288,6 @@ const TrafficsaleList = () => {
 
       case "cancelations":
         setWeeklyCancellationsOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyCancellationsResult(totalSumFields(field));
@@ -1349,23 +1298,6 @@ const TrafficsaleList = () => {
 
       case "netsales":
         setWeeklyNetSalesOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyNetSalesResult(totalSumFields(field));
@@ -1376,23 +1308,6 @@ const TrafficsaleList = () => {
 
       case "totallots":
         setTotalLotsOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setTotalLotsResult(totalSumFields(field));
@@ -1403,23 +1318,6 @@ const TrafficsaleList = () => {
 
       case "lotreleased":
         setWeeklyLotsReleaseForSaleOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyLotsReleaseForSaleResult(totalSumFields(field));
@@ -1430,23 +1328,6 @@ const TrafficsaleList = () => {
 
       case "unsoldinventory":
         setWeeklyUnsoldStandingInventoryOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setWeeklyUnsoldStandingInventoryResult(totalSumFields(field));
@@ -1457,23 +1338,6 @@ const TrafficsaleList = () => {
 
       case "lotwidth":
         setLotWidthOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotSizeOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
@@ -1484,23 +1348,6 @@ const TrafficsaleList = () => {
 
       case "lotsize":
         setLotSizeOption(value);
-        setWeeklyTrafficOption("");
-        setWeeklyGrossSalesOption("");
-        setWeeklyCancellationsOption("");
-        setWeeklyNetSalesOption("");
-        setTotalLotsOption("");
-        setWeeklyLotsReleaseForSaleOption("");
-        setWeeklyUnsoldStandingInventoryOption("");
-        setLotWidthOption("");
-
-        setWeeklyTrafficResult(0);
-        setWeeklyGrossSalesResult(0);
-        setWeeklyCancellationsResult(0);
-        setWeeklyNetSalesResult(0);
-        setTotalLotsResult(0);
-        setWeeklyLotsReleaseForSaleResult(0);
-        setWeeklyUnsoldStandingInventoryResult(0);
-        setLotWidthResult(0);
 
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));

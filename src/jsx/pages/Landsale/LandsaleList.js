@@ -858,11 +858,6 @@ const LandsaleList = () => {
     switch (field) {
       case "price":
         setPriceOption(value);
-        setPricePerOption("");
-        setSizeOption("");
-
-        setPricePerResult(0);
-        setSizeResult(0);
 
         if (value === 'sum') {
           setPriceResult(totalSumFields(field));
@@ -873,11 +868,6 @@ const LandsaleList = () => {
 
       case "price_per":
         setPricePerOption(value);
-        setPriceOption("");
-        setSizeOption("");
-
-        setPriceResult(0);
-        setSizeResult(0);
 
         if (value === 'sum') {
           setPricePerResult(totalSumFields(field));
@@ -888,11 +878,6 @@ const LandsaleList = () => {
 
       case "size":
         setSizeOption(value);
-        setPriceOption("");
-        setPricePerOption("");
-
-        setPriceResult(0);
-        setPricePerResult(0);
 
         if (value === 'sum') {
           setSizeResult(totalSumFields(field));

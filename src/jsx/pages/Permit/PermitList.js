@@ -1075,13 +1075,6 @@ const PermitList = () => {
     switch (field) {
       case "sqft":
         setSquareFootageOption(value);
-        setValueOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setValueResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setSquareFootageResult(totalSumFields(field));
@@ -1092,13 +1085,6 @@ const PermitList = () => {
 
       case "value":
         setValueOption(value);
-        setSquareFootageOption("");
-        setLotWidthOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setLotWidthResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setValueResult(totalSumFields(field));
@@ -1109,13 +1095,6 @@ const PermitList = () => {
 
       case "lotwidth":
         setLotWidthOption(value);
-        setSquareFootageOption("");
-        setValueOption("");
-        setLotSizeOption("");
-
-        setSquareFootageResult(0);
-        setValueResult(0);
-        setLotSizeResult(0);
 
         if (value === 'sum') {
           setLotWidthResult(totalSumFields(field));
@@ -1126,13 +1105,6 @@ const PermitList = () => {
 
       case "lotsize":
         setLotSizeOption(value);
-        setSquareFootageOption("");
-        setValueOption("");
-        setLotWidthOption("");
-
-        setSquareFootageResult(0);
-        setValueResult(0);
-        setLotWidthResult(0);
 
         if (value === 'sum') {
           setLotSizeResult(totalSumFields(field));
