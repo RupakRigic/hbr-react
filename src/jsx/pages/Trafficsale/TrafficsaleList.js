@@ -2215,13 +2215,13 @@ const TrafficsaleList = () => {
 
       <TrafficsaleOffcanvas
         ref={trafficsale}
-        Title="Add Weekly Traffic & Sale"
+        Title="Add Weekly Traffic & Sales"
         parentCallback={handleCallback}
       />
 
       <BulkTrafficUpdate
         ref={bulkTrafficsale}
-        Title="Bulk Edit Weekly Trafic sale"
+        Title="Bulk Edit Weekly Traffic & Sales"
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

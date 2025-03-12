@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
@@ -13,24 +13,18 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [addProduct, setAddProduct] = useState(false);
-    const [isActive, setIsActive] = useState([]);
     const [grossSale, setGrossSale] = useState(null);
     const [cancelation, setCancelation] = useState(null);
-
-    const isActiveData = [
-        { value: '0', label: 'De-active' },
-        { value: '1', label: 'Active' }
-    ];
-
-    const handleActive = (selectedOption) => {
-        setIsActive(selectedOption);
-    };
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
             setAddProduct(true)
         }
     }));
+
+    useEffect(() => {
+        GetSubdivisionDropDownList();
+    }, []);
 
     const GetSubdivisionDropDownList = async () => {
         try {
@@ -49,10 +43,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             }
         }
     };
-
-    useEffect(() => {
-        GetSubdivisionDropDownList();
-    }, []);
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
@@ -80,7 +70,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                         "netsales": grossSale - cancelation,
                         "lotreleased": event.target.lotreleased.value,
                         "unsoldinventory": event.target.unsoldinventory.value,
-                        "status": isActive?.value,
                     }
 
                     const data = await AdminTrafficsaleService.bulkupdate(selectedLandSales, userData).json();
@@ -105,10 +94,9 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     };
 
     const HandleUpdateCanvasClose = () => {
-        setAddProduct(false); 
+        setAddProduct(false);
         setError('');
         setSubdivisionCode([]);
-        setIsActive([]);
     };
 
     const handleGrossSales = (e) => {
@@ -161,12 +149,12 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Week Ending</label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label">Week Ending</label>
                                     <input type="date" name='weekending' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic</label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label">Weekly Traffic</label>
                                     <input type="number" name='weeklytraffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
 
@@ -176,17 +164,17 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations</label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Cancelations</label>
                                     <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales</label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">Net Sales</label>
                                     <input type="number" name='netsales' value={grossSale - cancelation} className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ cursor: "not-allowed", backgroundColor: "#e9ecef" }} />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released</label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label">Lot Released</label>
                                     <input type="number" name='lotreleased' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
@@ -195,32 +183,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                     <input type="number" name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
 
-                                <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Status</label>
-                                    <Select
-                                        options={isActiveData}
-                                        className=" react-select-container"
-                                        classNamePrefix="react-select"
-                                        value={isActive}
-                                        onChange={(selectedOption) => handleActive(selectedOption)}
-                                        placeholder={"Select Status"}
-                                        styles={{
-                                            container: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                            menu: (provided) => ({
-                                                ...provided,
-                                                width: '100%',
-                                                color: 'black'
-                                            }),
-                                        }}
-                                    />
-                                </div>
-
                                 <p className='text-danger fs-12'>{Error}</p>
-
                             </div>
 
                             <div>
