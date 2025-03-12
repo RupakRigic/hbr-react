@@ -110,7 +110,7 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-xl-6 mb-3">
-                                        <label className="form-label">Subdivision<span className="text-danger">*</span></label>
+                                        <label className="form-label">Subdivision <span className="text-danger">*</span></label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
                                                 options={SubdivisionList}
@@ -129,11 +129,11 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
                                         </Form.Group>
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput2" className="form-label"> Week Ending <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput2" className="form-label">Week Ending <span className="text-danger">*</span></label>
                                         <input type="date" name='weekending' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput3" className="form-label">Weekly Traffic <span className="text-danger">*</span></label>
                                         <input type="number" name='weeklytraffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
@@ -141,19 +141,19 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
                                         <input type="number" name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" onChange={(e) => handleGrossSales(e)} />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput5" className="form-label">Cancelations <span className="text-danger">*</span></label>
                                         <input type="number" name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput6" className="form-label">Net Sales <span className="text-danger">*</span></label>
                                         <input type="number" name='netsales' value={grossSale - cancelation} className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput7" className="form-label">Lot Released <span className="text-danger">*</span></label>
                                         <input type="number" name='lotreleased' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory<span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory <span className="text-danger">*</span></label>
                                         <input type="number" name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                     </div>
                                     <p className='text-danger fs-12'>{Error}</p>

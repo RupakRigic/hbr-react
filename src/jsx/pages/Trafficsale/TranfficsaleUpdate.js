@@ -6,63 +6,79 @@ import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSub
 import swal from "sweetalert";
 import Select from "react-select";
 import MainPagetitle from "../../layouts/MainPagetitle";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const TrafficsaleUpdate = () => {
+    const params = useParams();
+    const navigate = useNavigate();
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectSubdivision, setSelectSubdivision] = useState([]);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [Error, setError] = useState('');
-    const [isActive, setIsActive] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [TrafficsaleList, SetTrafficsaleList] = useState([]);
     const [grossSale, setGrossSale] = useState(null);
     const [cancelation, setCancelation] = useState(null);
-    const params = useParams();
-    const navigate = useNavigate()
-    const isActiveData = [
-        { value: '0', label: 'De-active' },
-        { value: '1', label: 'Active' }
-
-    ]
-    const GetSubdivision = async (id) => {
-        try {
-            let responseData1 = await AdminTrafficsaleService.show(id).json()
-            SetTrafficsaleList(responseData1);
-            setGrossSale(responseData1.grosssales);
-            setCancelation(responseData1.cancelations);
-            let Isactivedata = isActiveData.filter(function (item) {
-                return item.value === responseData1.status.toString();
-            });
-
-            setIsActive(Isactivedata)
-            let response = await AdminSubdevisionService.index()
-            let responseData = await response.json()
-            let getdata = responseData.filter(function (item) {
-                return item.id === responseData1.subdivision_id;
-            });
-            setSubdivisionCode(getdata)
-            SetSubdivisionList(responseData);
-        } catch (error) {
-            if (error.name === 'HTTPError') {
-                const errorJson = await error.response.json();
-                setError(errorJson.message)
-            }
-        }
-    };
 
     useEffect(() => {
         if (localStorage.getItem('usertoken')) {
             GetSubdivision(params.id);
+            GetSubdivisionDropDownList();
         }
         else {
             navigate('/');
         }
     }, []);
 
-    const handleSubdivisionCode = (code) => {
-        setSubdivisionCode(code);
+    useEffect(() => {
+        if (TrafficsaleList.subdivision_id && SubdivisionList?.length > 0) {
+            const SelectedSubdivision = SubdivisionList?.filter(data => data.value === TrafficsaleList?.subdivision_id);
+            handleSubdivisionCode(SelectedSubdivision[0]);
+        }
+
+    }, [TrafficsaleList, SubdivisionList]);
+
+    const GetSubdivision = async (id) => {
+        setIsLoading(true);
+        try {
+            let responseData1 = await AdminTrafficsaleService.show(id).json();
+            setIsLoading(false);
+            SetTrafficsaleList(responseData1);
+            setGrossSale(responseData1.grosssales);
+            setCancelation(responseData1.cancelations);
+        } catch (error) {
+            setIsLoading(false);
+            if (error.name === 'HTTPError') {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
     };
 
-    const handleActive = (e) => {
-        setIsActive(e);
+    const GetSubdivisionDropDownList = async () => {
+        setIsLoading(true);
+        try {
+            const response = await AdminSubdevisionService.subdivisionDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            setIsLoading(false);
+            SetSubdivisionList(formattedData);
+        } catch (error) {
+            setIsLoading(false);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
+
+    const handleSubdivisionCode = (code) => {
+        setSelectSubdivision(code);
+        setSubdivisionCode(code.value);
     };
 
     const handleSubmit = async (event) => {
@@ -70,7 +86,7 @@ const TrafficsaleUpdate = () => {
 
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode.id ? SubdivisionCode.id : TrafficsaleList.subdivision_id,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode : TrafficsaleList.subdivision_id,
                 "weekending": event.target.weekending.value,
                 "weeklytraffic": event.target.weeklytraffic.value,
                 "grosssales": grossSale,
@@ -78,13 +94,12 @@ const TrafficsaleUpdate = () => {
                 "netsales": grossSale - cancelation,
                 "lotreleased": event.target.lotreleased.value,
                 "unsoldinventory": event.target.unsoldinventory.value,
-                "status": isActive.value ? isActive.value : TrafficsaleList.status,
             }
             const data = await AdminTrafficsaleService.update(params.id, userData).json();
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/trafficsalelist')
+                        navigate('/trafficsalelist');
                     }
                 })
             }
@@ -107,81 +122,90 @@ const TrafficsaleUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Weekly Traffic & sale" pageTitle="Edit Weekly Traffic & sale" parentTitle="Weekly Traffic & sales" link="/trafficsalelist" />
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <h4 className="card-title">Edit Weekly Traffic & sale</h4>
-                            </div>
-                            <div className="card-body">
-                                <div className="form-validation">
-                                    <form onSubmit={handleSubmit}>
-                                        <div className="row">
-                                            <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Subdivision<span className="text-danger">*</span></label>
-                                                <Form.Group controlId="tournamentList">
-                                                    <Select
-                                                        options={SubdivisionList}
-                                                        onChange={handleSubdivisionCode}
-                                                        getOptionValue={(option) => option.name}
-                                                        getOptionLabel={(option) => option.name}
-                                                        value={SubdivisionCode}
-                                                    ></Select>
-                                                </Form.Group>
+            <MainPagetitle mainTitle="Edit Weekly Traffic & Sales" pageTitle="Edit Weekly Traffic & Sales" parentTitle="Weekly Traffic & Sales" link="/trafficsalelist" />
+            {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center mb-5">
+                    <ClipLoader color="#4474fc" />
+                </div>
+            ) : (
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    <h4 className="card-title">Edit Weekly Traffic & Sales</h4>
+                                </div>
+                                <div className="card-body">
+                                    <div className="form-validation">
+                                        <form onSubmit={handleSubmit}>
+                                            <div className="row">
+                                                <div className="col-xl-6 mb-3">
+                                                    <label className="form-label">Subdivision <span className="text-danger">*</span></label>
+                                                    <Form.Group controlId="tournamentList">
+                                                        <Select
+                                                            options={SubdivisionList}
+                                                            onChange={handleSubdivisionCode}
+                                                            getOptionValue={(option) => option.value}
+                                                            getOptionLabel={(option) => option.label}
+                                                            value={selectSubdivision}
+                                                            placeholder={"Select Subdivision..."}
+                                                            styles={{
+                                                                container: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                                menu: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                            }}
+                                                        ></Select>
+                                                    </Form.Group>
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput2" className="form-label">Week Ending <span className="text-danger">*</span></label>
+                                                    <input type="date" defaultValue={TrafficsaleList.weekending} name='weekending' className="form-control" id="exampleFormControlInput2" placeholder="" />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput3" className="form-label">Weekly Traffic <span className="text-danger">*</span></label>
+                                                    <input type="number" defaultValue={TrafficsaleList.weeklytraffic} name='weeklytraffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales <span className="text-danger">*</span></label>
+                                                    <input type="number" value={grossSale} name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" onChange={(e) => handleGrossSales(e)} />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput5" className="form-label">Cancelations <span className="text-danger">*</span></label>
+                                                    <input type="number" value={cancelation} name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput6" className="form-label">Net Sales <span className="text-danger">*</span></label>
+                                                    <input type="number" value={grossSale - cancelation} name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput7" className="form-label">Lot Released <span className="text-danger">*</span></label>
+                                                    <input type="number" defaultValue={TrafficsaleList.lotreleased} name='lotreleased' className="form-control" id="exampleFormControlInput7" placeholder="" />
+                                                </div>
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory <span className="text-danger">*</span></label>
+                                                    <input type="number" defaultValue={TrafficsaleList.unsoldinventory} name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
+                                                </div>
+                                                <p className='text-danger fs-12'>{Error}</p>
                                             </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Week Ending <span className="text-danger">*</span></label>
-                                                <input type="date" defaultValue={TrafficsaleList.weekending} name='weekending' className="form-control" id="exampleFormControlInput2" placeholder="" />
+                                            <div>
+                                                <button type="submit" className="btn btn-primary me-1">Submit</button>
+                                                <Link type="reset" to={"/trafficsalelist"} className="btn btn-danger light ms-1">Cancel</Link>
                                             </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic <span className="text-danger">*</span></label>
-                                                <input type="number" defaultValue={TrafficsaleList.weeklytraffic} name='weeklytraffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput4" className="form-label">Gross Sales <span className="text-danger">*</span></label>
-                                                <input type="number" value={grossSale} name='grosssales' className="form-control" id="exampleFormControlInput4" placeholder="" onChange={(e) => handleGrossSales(e)} />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Cancelations <span className="text-danger">*</span></label>
-                                                <input type="number" value={cancelation} name='cancelations' className="form-control" id="exampleFormControlInput5" placeholder="" onChange={(e) => handleCancelations(e)} />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput6" className="form-label"> Net Sales <span className="text-danger">*</span></label>
-                                                <input type="number" value={grossSale - cancelation} name='netsales' className="form-control" id="exampleFormControlInput6" placeholder="" disabled style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Lot Released <span className="text-danger">*</span></label>
-                                                <input type="number" defaultValue={TrafficsaleList.lotreleased} name='lotreleased' className="form-control" id="exampleFormControlInput7" placeholder="" />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput10" className="form-label">Unsold Inventory<span className="text-danger">*</span></label>
-                                                <input type="number" defaultValue={TrafficsaleList.unsoldinventory} name='unsoldinventory' className="form-control" id="exampleFormControlInput10" placeholder="" />
-                                            </div>
-                                            <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Status</label>
-                                                <Select
-                                                    options={isActiveData}
-                                                    className=" react-select-container"
-                                                    classNamePrefix="react-select"
-                                                    value={isActive}
-                                                    onChange={handleActive}
-                                                />
-                                            </div>
-                                            <p className='text-danger fs-12'>{Error}</p>
-                                        </div>
-                                        <div>
-                                            <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                            <Link type="reset" to={"/trafficsalelist"} className="btn btn-danger light ms-1">Cancel</Link>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div >
+                </div >
+            )}
         </Fragment >
     );
 };
