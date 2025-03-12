@@ -6,7 +6,7 @@ import swal from "sweetalert";
 
 const BuilderOffcanvas = forwardRef((props, ref) => {
     const [file, setFile] = useState('');
-    const [isActive, setIsActive] = useState('0');
+    const [isActive, setIsActive] = useState('1');
     const [company_type, setCompany_type] = useState('');
     const [Error, setError] = useState('');
     const [addBuilder, setAddBuilder] = useState(false);
@@ -149,7 +149,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
 
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Is Active</label>
-                                    <select className="default-select form-control" onChange={handleActive} >
+                                    <select className="default-select form-control" value={isActive} onChange={handleActive} >
                                         <option value="1">True</option>
                                         <option value="0">False</option>
                                     </select>
