@@ -4171,8 +4171,8 @@ const SubdivisionList = () => {
                                         <td>{element.name}</td>
                                         <td>{element.product_code}</td>
                                         <td>{element.stories}</td>
-                                        <td>{element.recentprice}</td>
-                                        <td>{element.recentpricesqft}</td>
+                                        <td>{element.recentprice ? <PriceComponent price={element.recentprice} /> : ""}</td>
+                                        <td>{element.current_price_per_sqft ? <PriceComponent price={element.current_price_per_sqft} /> : ""}</td>
                                       </tr>
                                     )
                                   )
