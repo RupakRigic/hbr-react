@@ -4,6 +4,7 @@ import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilder
 import MainPagetitle from '../../layouts/MainPagetitle';
 import ClipLoader from 'react-spinners/ClipLoader';
 import swal from "sweetalert";
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const ArchiveDataUpdate = () => {
     const params = useParams();
@@ -13,6 +14,7 @@ const ArchiveDataUpdate = () => {
     const [reset, setReset] = useState(false);
     const [archiveDataShow, setArchiveDataShow] = useState([]);
     const [archiveDataColumns, setArchiveDataColumns] = useState([]);
+    const [subdivisionDropDown, setSubdivisionDropDown] = useState([]);
     const [formData, setFormData] = useState({});
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -22,12 +24,11 @@ const ArchiveDataUpdate = () => {
     const records = archiveDataShow?.slice(firstIndex, lastIndex);
     const npage = Math.ceil(archiveDataShow?.length / recordsPage);
     const number = [...Array(npage + 1).keys()].slice(1);
-    console.log(formData);
-
 
     useEffect(() => {
         if (params?.id) {
             ArchiveDataShow(params?.id, reset);
+            GetSubdivisionDropDownList();
         }
     }, [params.id]);
 
@@ -47,6 +48,24 @@ const ArchiveDataUpdate = () => {
         if (currentPage !== npage) {
             setCurrentPage(currentPage + 1);
             setFormData(formData);
+        }
+    };
+
+    const GetSubdivisionDropDownList = async () => {
+        try {
+            const response = await AdminSubdevisionService.subdivisionDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            setSubdivisionDropDown(formattedData);
+        } catch (error) {
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                console.log(errorJson);
+                
+            }
         }
     };
 
@@ -124,6 +143,10 @@ const ArchiveDataUpdate = () => {
                 [name]: value,
             },
         }));
+    };
+
+    const subdivisionName = (filter) => {
+        return filter[0]?.label;
     };
 
     const handleReset = () => {
@@ -283,9 +306,9 @@ const ArchiveDataUpdate = () => {
                                                                             type="text"
                                                                             defaultValue={row[col]}
                                                                             disabled={col === "subdivision_id"}
-                                                                            value={formData[currentId]?.[col] ?? row[col] ?? ""}
+                                                                            value={col === "subdivision_id" ? subdivisionName(subdivisionDropDown?.filter(data => data.value == row[col])) : formData[currentId]?.[col] ?? row[col] ?? ""}
                                                                             className="form-control"
-                                                                            style={{ width: "auto", cursor: col === "subdivision_id" && "not-allowed", backgroundColor: col === "subdivision_id" && "#e9ecef" }}
+                                                                            style={{ width: col === "subdivision_id" ? "270px" : "auto", cursor: col === "subdivision_id" && "not-allowed", backgroundColor: col === "subdivision_id" && "#e9ecef" }}
                                                                             name={col}
                                                                             onChange={(event) => handleChange(event, currentId)}
                                                                         />
