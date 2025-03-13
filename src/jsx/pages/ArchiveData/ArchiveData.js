@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import MainPagetitle from '../../layouts/MainPagetitle';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Button } from 'react-bootstrap';
 import Modal from "react-bootstrap/Modal";
@@ -12,6 +12,7 @@ import { Form } from "react-bootstrap";
 import swal from "sweetalert";
 
 const ArchiveData = () => {
+    const navigate = useNavigate();
     const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -19,10 +20,11 @@ const ArchiveData = () => {
     const lastIndex = currentPage * recordsPage;
     const [npage, setNpage] = useState(0);
     const number = [...Array(npage + 1).keys()].slice(1);
-    const [showPopup, setShowPopup] = useState(false);
     const [fieldList, setFieldList] = useState([]);
     const [selectedFields, setSelectedFields] = useState([]);
     const [archiveList, setArchiveList] = useState([]);
+    const [monthData, setMonthData] = useState([]);
+    const [yearData, setYearData] = useState([]);
     const [archiveListCount, setArchiveListCount] = useState("");
     const [fromDate, setFromDate] = useState("");
     const [selectFromDate, setSelectFromDate] = useState("");
@@ -30,6 +32,21 @@ const ArchiveData = () => {
     const [selectToDate, setSelectToDate] = useState("");
     const [selectedType, setSelectedType] = useState("");
     const [message, setMessage] = useState("");
+    const [archiveDataId, setArchiveDataId] = useState("");
+    const [selectedYear, setSelectedYear] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState([]);
+    const [showFilterPopupLoading, setShowFilterPopupLoading] = useState(false);
+    const [showFilterPopup, setShowFilterPopup] = useState(false);
+    const HandleFilterPopupShow = (id) => {
+        setShowFilterPopup(true);
+        setArchiveDataId(id);
+        ArchiveDataDateRange(id);
+    };
+    const HandleFilterPopupClose = () => {
+        setShowFilterPopup(false);
+        setSelectedYear([]);
+        setSelectedMonth([]);
+    };
 
     const prePage = () => {
         if (currentPage !== 1) {
@@ -47,14 +64,15 @@ const ArchiveData = () => {
         }
     };
 
+    const [showPopup, setShowPopup] = useState(false);
     const HandlePopupDetailClick = (e) => {
         setShowPopup(true);
     };
-
     const HandlePopupClose = () =>{
         setShowPopup(false)
         setFromDate("");
         setToDate("");
+        setFieldList([]);
         setSelectedFields([]);
     } ;
 
@@ -77,6 +95,37 @@ const ArchiveData = () => {
             if (error.name === "HTTPError") {
                 console.log(error.name);
             }
+        }
+    };
+
+    const ArchiveDataDateRange = async (id) => {
+        setShowFilterPopupLoading(true);
+        try {
+            const response = await AdminBuilderService.archive_data_date_range(id).json();
+            if(response.status){
+                setMonthData(response.month);
+                setYearData(response.year);
+                setShowFilterPopupLoading(false);
+            } else {
+                setShowFilterPopupLoading(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setShowFilterPopupLoading(false);
+            if (error.name === "HTTPError") {
+                console.log(error.name);
+            }
+        }
+    };
+
+    const ArchiveDataShow = async () => {
+        debugger
+        if(selectedYear.length === 0 || selectedMonth.length === 0) {
+            setMessage("Please selecet required fields.");
+            return;
+        } else {
+            navigate(`/archivedata-update/${archiveDataId}`);
+            HandleFilterPopupClose();
         }
     };
 
@@ -210,10 +259,31 @@ const ArchiveData = () => {
         { value: 'landsales', label: 'Land Sales' }
     ];
 
-    const fieldsOptions = fieldList.map(element => ({
+    const fieldsOptions = fieldList?.map(element => ({
         value: element,
         label: element
     }));
+
+    const yearsOptions = yearData?.map(element => ({
+        value: element,
+        label: element
+    }));
+
+    const monthsOptions = monthData?.map(element => ({
+        value: element,
+        label: element
+    }));
+
+    const HandleYearSelect = (selectedOption) => {
+        setSelectedYear(selectedOption);
+        localStorage.setItem("selectedYear", JSON.stringify(selectedOption));
+    };
+
+    const HandleMonthSelect = (selectedOption) => {
+        setSelectedMonth(selectedOption);
+        localStorage.setItem("selectedMonth", JSON.stringify(selectedOption));
+    };
+
     function snakeToFirstUpperCase(str) {
         return str
           .split('_') // Split the string by underscores
@@ -377,6 +447,12 @@ const ArchiveData = () => {
                                                                 </td>
                                                                 <td key={element.id} style={{ textAlign: "center" }}>
                                                                     <div className="d-flex justify-content-center">
+                                                                        <Link
+                                                                            className="btn btn-success shadow btn-xs sharp me-2"
+                                                                            onClick={() => HandleFilterPopupShow(element.id)}
+                                                                        >
+                                                                            <i className="fas fa-pencil-alt"></i>
+                                                                        </Link>
                                                                         <Link
                                                                             onClick={() =>
                                                                                 swal({
@@ -572,6 +648,79 @@ const ArchiveData = () => {
                         Apply
                     </Button>
                     <Button variant="primary" onClick={HandlePopupClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Filter Archive Data Popup */}
+            <Modal show={showFilterPopup} onHide={HandleFilterPopupShow}>
+                <Modal.Header HandleFilterPopupClose>
+                    <Modal.Title>Filter Archive Data Update</Modal.Title>
+                    <button
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => HandleFilterPopupClose()}
+                    ></button>
+                </Modal.Header>
+                {showFilterPopupLoading ? (
+                    <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
+                        <ClipLoader color="#4474fc" />
+                    </div>
+                ) : (
+                    <Modal.Body>
+                        <div className="row">
+                            <div className="col-md-3 mt-1" style={{ width: "200px" }}>
+                                <label className="form-label">Select Year:{" "}<span className="text-danger">*</span></label>
+                                <Select
+                                    options={yearsOptions}
+                                    onChange={(selectedOption) => HandleYearSelect(selectedOption)}
+                                    placeholder="Select Year"
+                                    styles={{
+                                        container: (provided) => ({
+                                            ...provided,
+                                            width: '100%',
+                                            color: 'black'
+                                        }),
+                                        menu: (provided) => ({
+                                            ...provided,
+                                            width: '100%',
+                                            color: 'black'
+                                        }),
+                                    }}
+                                />
+                            </div>
+                            <div className="col-md-3 mt-1" style={{ width: "200px" }}>
+                                <label className="form-label">Select Month:{" "}<span className="text-danger">*</span></label>
+                                <Select
+                                    options={monthsOptions}
+                                    onChange={(selectedOption) => HandleMonthSelect(selectedOption)}
+                                    placeholder="Select Month"
+                                    styles={{
+                                        container: (provided) => ({
+                                            ...provided,
+                                            width: '100%',
+                                            color: 'black'
+                                        }),
+                                        menu: (provided) => ({
+                                            ...provided,
+                                            width: '100%',
+                                            color: 'black'
+                                        }),
+                                    }}
+                                />
+                            </div>
+                            <div className="text-danger" style={{ marginTop: "10px", fontSize: "13px" }}>
+                                {message}
+                            </div>
+                        </div>
+                    </Modal.Body>
+                )}
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => ArchiveDataShow()}>
+                        Apply
+                    </Button>
+                    <Button variant="primary" onClick={HandleFilterPopupClose}>
                         Close
                     </Button>
                 </Modal.Footer>

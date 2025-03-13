@@ -172,4 +172,11 @@ div#employee-tbl_wrapper table tr td:nth-child(3),
 div#employee-tbl_wrapper table tr td:nth-child(4){
   border-top: 1px solid #E6E6E6;
 }
+
+div#employee-tbl_wrapper table.archivedata-update-table tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.archivedata-update-table tr td {
+  position: static !important;
+}
 /* Table Scroll Css */

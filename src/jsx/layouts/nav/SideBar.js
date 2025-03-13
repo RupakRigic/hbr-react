@@ -56,7 +56,6 @@ const SideBar = () => {
   let path = window.location.pathname;
   path = path.split("/");
   path = path[path.length - 1];
-  console.log(444);
   return (
     <div
       className={`deznav  border-right ${iconHover} ${sidebarposition.value === "fixed" &&

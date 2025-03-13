@@ -59,6 +59,7 @@ import ThankYouPage from "./pages/ThankYouPage";
 import SubscriptionList from "./pages/SubscriptionPlan/SubscriptionList";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAnalyticsList from "./pages/UserAnalytics/UserAnalyticsList";
+import ArchiveDataUpdate from "./pages/ArchiveData/ArchiveDataUpdate";
 
 const allroutes = [
   // Dashboard
@@ -201,6 +202,11 @@ const allroutes = [
     url: "/downloading-archive-data",
     component: <ArchiveData />,
     allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
+  },
+  {
+    url: "/archivedata-update/:id",
+    component: <ArchiveDataUpdate />,
+    allowedRoles: ["Admin"],
   },
   {
     url: "/subscriberlist",

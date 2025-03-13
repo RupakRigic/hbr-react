@@ -18,6 +18,9 @@ export default {
     archiveDownloadData: (userData) => clientAuth.post(`admin/archive/download-data`, { json: userData }),
     getArchiveFieldList:(tableName)=> clientAuth.get(`admin/archive/get-fields/${tableName}`),
     getArchiveList:()=> clientAuth.get(`admin/archive/archive-data-list`),
+    archive_data_date_range:(id)=> clientAuth.get(`admin/archive/archive-data-date-range/${id}`),
+    archive_data_show:(id, userData)=> clientAuth.post(`admin/archive/archive-data/show/${id}`, { json: userData }),
+    archive_all_data_update:(id, userData)=> clientAuth.post(`admin/archive/archive-data/update-all-data/${id}`, { json: userData }),
     destroyArchive: (id) => clientAuth.delete(`admin/archive/destroy/${id}`),
     export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/builder/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };
