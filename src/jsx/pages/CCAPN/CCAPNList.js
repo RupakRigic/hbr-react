@@ -506,6 +506,7 @@ const CCAPNList = () => {
     });
     setSelectedBuilderNameFilter([]);
     setSelectedSubdivisionNameFilter([]);
+    GetCCAPNList(1, sortConfig, "");
   }
 
   return (

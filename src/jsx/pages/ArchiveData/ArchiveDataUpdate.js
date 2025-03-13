@@ -282,9 +282,10 @@ const ArchiveDataUpdate = () => {
                                                                         <input
                                                                             type="text"
                                                                             defaultValue={row[col]}
+                                                                            disabled={col === "subdivision_id"}
                                                                             value={formData[currentId]?.[col] ?? row[col] ?? ""}
                                                                             className="form-control"
-                                                                            style={{ width: "auto" }}
+                                                                            style={{ width: "auto", cursor: col === "subdivision_id" && "not-allowed", backgroundColor: col === "subdivision_id" && "#e9ecef" }}
                                                                             name={col}
                                                                             onChange={(event) => handleChange(event, currentId)}
                                                                         />
