@@ -664,27 +664,33 @@ const FilterSubdivision = () => {
                             placeholder="Select Gas Provider"
                         />
                     </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">From:{" "}</label>
-                        <DatePicker
-                            name="from"
-                            className="form-control"
-                            selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                            onChange={handleFilterDateFrom}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">To:{" "}</label>
-                        <DatePicker
-                            name="to"
-                            className="form-control"
-                            selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                            onChange={handleFilterDateTo}
-                            dateFormat="MM/dd/yyyy"
-                            placeholderText="mm/dd/yyyy"
-                        />
+                    <div className="d-flex flex-column mb-3" style={{ border: "1px solid #cccccc", borderRadius: "0.375rem", marginLeft: "12px", width: "48%" }}>
+                        <label className="form-label" style={{ marginTop: "10px" }}>OPEN SINCE</label>
+                        <hr style={{ marginTop: "0px" }} />
+                        <div className="d-flex gap-4 col-md-11 mb-3" style={{ width: "100%" }}>
+                            <div style={{ width: "100%" }}>
+                                <label className="form-label">From:</label>
+                                <DatePicker
+                                    name="from"
+                                    className="form-control"
+                                    selected={filterQuery.from ? parseDate(filterQuery.from) : null}
+                                    onChange={handleFilterDateFrom}
+                                    dateFormat="MM/dd/yyyy"
+                                    placeholderText="mm/dd/yyyy"
+                                />
+                            </div>
+                            <div style={{ width: "100%" }}>
+                                <label className="form-label">To:</label>
+                                <DatePicker
+                                    name="to"
+                                    className="form-control"
+                                    selected={filterQuery.to ? parseDate(filterQuery.to) : null}
+                                    onChange={handleFilterDateTo}
+                                    dateFormat="MM/dd/yyyy"
+                                    placeholderText="mm/dd/yyyy"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row mt-4">
