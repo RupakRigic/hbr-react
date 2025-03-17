@@ -786,7 +786,7 @@ const CCAPNList = () => {
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.builder?.name}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.name}</td>
                                 <td style={{ textAlign: "center" }}>{element?.parcel}</td>
-                                <td style={{ textAlign: "center" }}>{element?.loc_strno + " " + element?.loc_strname}{" "}</td>
+                                <td style={{ textAlign: "center" }}>{(element?.loc_strno == 0 || element?.loc_strno == null) ? "" : (element?.loc_strno + " " + element?.loc_strname)}</td>
                                 <td style={{ textAlign: "center" }}>{element?.ll_x}</td>
                                 <td style={{ textAlign: "center" }}>{element?.ll_y}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.subdivision_code}</td>
