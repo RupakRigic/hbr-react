@@ -2059,7 +2059,7 @@ const ClosingList = () => {
 
       <BulkClosingUpdate
         ref={bulkClosing}
-        Title="Bulk Edit Closings"
+        Title={selectedLandSales?.length  === 1 ? "Edit Closing" : "Bulk Edit Closings"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

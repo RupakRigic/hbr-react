@@ -957,7 +957,7 @@ const UserList = () => {
       />
       <BulkUserUpdateOffcanvas
         ref={bulkproduct}
-        Title="Bulk Edit Users"
+        Title={selectedUsers?.length === 1 ? "Edit User" : "Bulk Edit Users"}
         userSelectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
         parentCallback={handleCallback}

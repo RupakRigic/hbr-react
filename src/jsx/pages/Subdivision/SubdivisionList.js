@@ -3796,7 +3796,7 @@ const SubdivisionList = () => {
       />
       <BulkSubdivisionUpdate
         ref={bulkSubdivision}
-        Title="Bulk Edit Subdivision"
+        Title={selectedLandSales?.length  === 1 ? "Edit Subdivision" : "Bulk Edit Subdivisions"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
         setSelectedLandSales={setSelectedLandSales}

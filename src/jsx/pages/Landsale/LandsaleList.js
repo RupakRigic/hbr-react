@@ -1610,7 +1610,7 @@ const LandsaleList = () => {
       />
       <BulkLandsaleUpdate
         ref={bulklandsale}
-        Title="Bulk Edit Land Sales"
+        Title={selectedLandSales?.length  === 1 ? "Edit Land Sale" : "Bulk Edit Land Sales"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

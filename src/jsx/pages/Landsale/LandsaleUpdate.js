@@ -103,13 +103,13 @@ const LandsaleUpdate = () => {
     }
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Landsale" pageTitle="Edit Landsale" parentTitle="Land Sales" link="/landsalelist" />
+            <MainPagetitle mainTitle="Edit Land Sale" pageTitle="Edit Land Sale" parentTitle="Land Sales" link="/landsalelist" />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
                         <div className="card">
                             <div className="card-header">
-                                <h4 className="card-title">Edit Landsale</h4>
+                                <h4 className="card-title">Edit Land Sale</h4>
                             </div>
                             <div className="card-body">
                                 <div className="form-validation">

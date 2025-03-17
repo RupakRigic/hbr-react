@@ -2459,7 +2459,7 @@ const BuilderTable = () => {
           />
           <BulkBuilderUpdate
             ref={bulkBuilder}
-            Title="Bulk Edit Builders"
+            Title={selectedLandSales?.length  === 1 ? "Edit Builder" : "Bulk Edit Builders"}
             parentCallback={handleCallback}
             selectedLandSales={selectedLandSales}
           />

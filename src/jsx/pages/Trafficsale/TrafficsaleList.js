@@ -2221,7 +2221,7 @@ const TrafficsaleList = () => {
 
       <BulkTrafficUpdate
         ref={bulkTrafficsale}
-        Title="Bulk Edit Weekly Traffic & Sales"
+        Title={selectedLandSales?.length  === 1 ? "Edit Weekly Traffic & Sale" : "Bulk Edit Weekly Traffic & Sales"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

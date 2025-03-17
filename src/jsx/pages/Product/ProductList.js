@@ -2219,7 +2219,7 @@ const ProductList = () => {
 
       <BulkProductUpdate
         ref={bulkProduct}
-        Title="Bulk Edit Product sale"
+        Title={selectedLandSales?.length  === 1 ? "Edit Product" : "Bulk Edit Products"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
         SubdivisionList={SubdivisionList}

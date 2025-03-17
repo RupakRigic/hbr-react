@@ -1987,7 +1987,7 @@ const PermitList = () => {
 
       <BulkPermitUpdate
         ref={bulkPermit}
-        Title="Bulk Edit Permit sale"
+        Title={selectedLandSales?.length  === 1 ? "Edit Permit" : "Bulk Edit Permits"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />

@@ -119,7 +119,6 @@ const ArchiveData = () => {
     };
 
     const ArchiveDataShow = async () => {
-        debugger
         if(selectedYear.length === 0 || selectedMonth.length === 0) {
             setMessage("Please selecet required fields.");
             return;

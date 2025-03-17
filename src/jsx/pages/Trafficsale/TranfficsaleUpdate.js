@@ -122,7 +122,7 @@ const TrafficsaleUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Weekly Traffic & Sales" pageTitle="Edit Weekly Traffic & Sales" parentTitle="Weekly Traffic & Sales" link="/trafficsalelist" />
+            <MainPagetitle mainTitle="Edit Weekly Traffic & Sale" pageTitle="Edit Weekly Traffic & Sale" parentTitle="Weekly Traffic & Sales" link="/trafficsalelist" />
             {isLoading ? (
                 <div className="d-flex justify-content-center align-items-center mb-5">
                     <ClipLoader color="#4474fc" />
@@ -133,7 +133,7 @@ const TrafficsaleUpdate = () => {
                         <div className="col-lg-12">
                             <div className="card">
                                 <div className="card-header">
-                                    <h4 className="card-title">Edit Weekly Traffic & Sales</h4>
+                                    <h4 className="card-title">Edit Weekly Traffic & Sale</h4>
                                 </div>
                                 <div className="card-body">
                                     <div className="form-validation">
