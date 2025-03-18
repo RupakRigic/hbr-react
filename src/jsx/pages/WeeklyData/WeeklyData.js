@@ -15,23 +15,23 @@ const BuilderTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [BuilderList, setBuilderList] = useState([]);
-    const [BuilderCode, setBuilderCode] = useState('');
-    const [selectedEndDate, setSelectedEndDate] = useState();
+    const [BuilderCode, setBuilderCode] = useState(null);
+    const [selectedEndDate, setSelectedEndDate] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(false);
     const recordsPage = 5;
     const lastIndex = currentPage * recordsPage;
     const firstIndex = lastIndex - recordsPage;
 
     useEffect(() => {
         if (localStorage.getItem('usertoken')) {
+            localStorage.removeItem('enddate');
+            localStorage.removeItem('builderId');
             getWeekEndDate();
+            GetBuilderlist();
         }
         else {
             navigate('/');
         }
-    }, []);
-
-    useEffect(() => {
-        GetBuilderlist();
     }, []);
 
     const handleSelectChange = (event) => {
@@ -55,7 +55,6 @@ const BuilderTable = () => {
 
     const handleBuilderCode = (code) => {
         setBuilderCode(code.value);
-        console.log(code.value);
         localStorage.setItem('builderId', code.value);
     };
 
@@ -102,7 +101,7 @@ const BuilderTable = () => {
                                         </div>
                                     ) : (
                                         <div className='dataTables_wrapper no-footer'>
-                                            <p className='text-center'>Select Week ending date and click continue</p>
+                                            <p className='text-center' style={{color: errorMessage && "red"}}>Select the Week ending date and builder, and click continue.</p>
                                             <div className="d-flex justify-content-center mb-5">
                                                 <select onChange={handleSelectChange}>
                                                     {weekEndDates && weekEndDates.map((item) =>
@@ -130,7 +129,20 @@ const BuilderTable = () => {
                                                     }}
                                                 />
                                             </div>
-                                            <Link className='mt-4' to={"/weekly-data-index"}>Continue</Link>
+                                            <Link 
+                                                className='mt-4'
+                                                to={selectedEndDate && BuilderCode ? "/weekly-data-index" : "#"} 
+                                                onClick={(e) => {
+                                                    if (!selectedEndDate || !BuilderCode) {
+                                                      e.preventDefault(); // Prevents navigation if conditions are not met
+                                                      setErrorMessage(true);
+                                                    } else {
+                                                      setErrorMessage(false);
+                                                    }
+                                                }}
+                                            >
+                                                Continue
+                                            </Link>
                                         </div>
                                     )}
                                 </div>

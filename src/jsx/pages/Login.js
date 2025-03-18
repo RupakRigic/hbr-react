@@ -58,6 +58,11 @@ function Login(props) {
             alert(user.message);
             return;
           }
+          
+          // Weekly Data
+          localStorage.removeItem('enddate');
+          localStorage.removeItem('builderId');
+
           // Builder
           localStorage.removeItem("selectedBuilderNameByFilterBuilder");
           localStorage.removeItem("selectedStatusByBuilderFilterBuilder");

@@ -338,7 +338,11 @@ const WeeklyDataIndex = () => {
                         Cancel
                       </button>
                       <button className="btn btn-primary btn-sm me-1"
-                        onClick={() => navigate("/weekly-data")}
+                        onClick={() => {
+                          navigate("/weekly-data");
+                          localStorage.removeItem('enddate');
+                          localStorage.removeItem('builderId');
+                        }}
                       >
                         Go Back
                       </button>
