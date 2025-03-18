@@ -565,11 +565,16 @@ const TrafficsaleList = () => {
 
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
-        saveAs(data, 'weekly_trafficsales.xlsx');
-
-        resetSelection();
         setExportModelShow(false);
         setExcelDownload(false);
+        swal({
+          text: "Download Completed"
+        }).then((willDelete) => {
+          if (willDelete) {
+            saveAs(data, 'weekly_trafficsales.xlsx');
+            resetSelection();
+          }
+        });
       } else {
         setExportModelShow(false);
         setExcelDownload(false);
@@ -586,9 +591,16 @@ const TrafficsaleList = () => {
         a.href = downloadUrl;
         a.setAttribute('download', `weekly_trafficsales.xlsx`);
         document.body.appendChild(a);
-        a.click();
-        a.parentNode.removeChild(a);
         setExcelDownload(false);
+        setExportModelShow(false);
+        swal({
+          text: "Download Completed"
+        }).then((willDelete) => {
+          if (willDelete) {
+            a.click();
+            a.parentNode.removeChild(a);
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -1599,7 +1611,7 @@ const TrafficsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          <button disabled={excelDownload || trafficsaleList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
@@ -1631,7 +1643,7 @@ const TrafficsaleList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          <button disabled={excelDownload || trafficsaleList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}

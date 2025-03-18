@@ -572,9 +572,16 @@ const PermitList = () => {
       a.href = downloadUrl;
       a.setAttribute('download', `permits.xlsx`);
       document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
       setExcelDownload(false);
+      setExportModelShow(false);
+      swal({
+        text: "Download Completed"
+      }).then((willDelete) => {
+        if (willDelete) {
+          a.click();
+          a.parentNode.removeChild(a);
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -1341,7 +1348,7 @@ const PermitList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          <button disabled={excelDownload || permitList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
@@ -1373,7 +1380,7 @@ const PermitList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          <button disabled={excelDownload || permitList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
