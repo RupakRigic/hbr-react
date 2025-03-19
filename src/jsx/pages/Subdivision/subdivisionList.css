@@ -183,4 +183,11 @@ div#employee-tbl_wrapper table.archivedata-update-table tr th {
 div#employee-tbl_wrapper table.archivedata-update-table tr td {
   position: static !important;
 }
+
+div#employee-tbl_wrapper table.builder-table-subdivision tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.builder-table-subdivision tr td {
+  position: static !important;
+}
 /* Table Scroll Css */

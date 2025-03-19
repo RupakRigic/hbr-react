@@ -1718,6 +1718,41 @@ const BuilderTable = () => {
     }
   };
 
+  {/* Start Builder Detail page sorting for subdivision */}
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedData = [...(BuilderDetails.subdivisions || [])].sort((a, b) => {
+    if (!sortField) return 0;
+
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (typeof valA === "string") valA = valA.toLowerCase();
+    if (typeof valB === "string") valB = valB.toLowerCase();
+
+    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+    return 0;
+  });
+
+  const getSortIcon = (field) => {
+    if (sortField === field) {
+      return sortOrder === "asc" ? " ↑" : " ↓";
+    }
+    return "↑↓";
+  };
+  {/* End Builder Detail page sorting for subdivision */}
+
   return (
     <Fragment>
       <MainPagetitle mainTitle="Builders" pageTitle="Builders" parentTitle="Home" />
@@ -2773,44 +2808,42 @@ const BuilderTable = () => {
                             >
                               <table
                                 id="empoloyees-tblwrapper"
-                                className="table ItemsCheckboxSec dataTable no-footer mb-0 mt-5"
+                                className="table ItemsCheckboxSec dataTable no-footer builder-table-subdivision mb-0 mt-5"
                               >
-                                <thead>
-                                  <tr style={{ textAlign: "center" }}>
-                                    <th>
-                                      <strong>No.</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Status</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Name</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Type</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Area</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Master Plan</strong>
-                                    </th>
-                                    <th>
-                                      <strong>ZIP</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Avg Sqft All</strong>
-                                    </th>
-                                    <th>
-                                      <strong>Avg Base Price All</strong>
-                                    </th>
-                                  </tr>
-                                </thead>
+                                  <thead style={{cursor: "pointer"}}>
+                                    <tr style={{ textAlign: "center" }}>
+                                      <th><strong>No.</strong></th>
+                                      <th onClick={() => handleSort("status")}>
+                                        <strong>Status</strong> {getSortIcon("status")}
+                                      </th>
+                                      <th onClick={() => handleSort("name")}>
+                                        <strong>Name</strong> {getSortIcon("name")}
+                                      </th>
+                                      <th onClick={() => handleSort("product_type")}>
+                                        <strong>Type</strong> {getSortIcon("product_type")}
+                                      </th>
+                                      <th onClick={() => handleSort("area")}>
+                                        <strong>Area</strong> {getSortIcon("area")}
+                                      </th>
+                                      <th onClick={() => handleSort("masterplan_id")}>
+                                        <strong>Master Plan</strong> {getSortIcon("masterplan_id")}
+                                      </th>
+                                      <th onClick={() => handleSort("zipcode")}>
+                                        <strong>ZIP</strong> {getSortIcon("zipcode")}
+                                      </th>
+                                      <th onClick={() => handleSort("avg_sqft_all")}>
+                                        <strong>Avg Sqft All</strong> {getSortIcon("avg_sqft_all")}
+                                      </th>
+                                      <th onClick={() => handleSort("avg_base_price_all")}>
+                                        <strong>Avg Base Price All</strong> {getSortIcon("avg_base_price_all")}
+                                      </th>
+                                    </tr>
+                                  </thead>
                                 <tbody style={{ textAlign: "center" }}>
                                   {BuilderDetails.subdivisions &&
                                     Array.isArray(BuilderDetails.subdivisions) &&
                                     BuilderDetails.subdivisions.length > 0 ? (
-                                    BuilderDetails.subdivisions.map(
+                                      sortedData.map(
                                       (element, index) => (
                                         <tr
                                           onClick={() => handleDetailRedirectClick(element.id, element.name)}
