@@ -2772,7 +2772,7 @@ const BuilderTable = () => {
 
                           <div style={{ marginTop: "10px", width: "300px" }}>
                             <label style={{ fontSize: "18px" }}><b>CURRENT AVG BASE ASKING $:</b></label>
-                            <span style={{ marginLeft: "100px" }}>${BuilderDetails.current_avg_base_Price || "0.00"}</span>
+                            <span style={{ marginLeft: "100px" }}>&nbsp;{<PriceComponent price={BuilderDetails.current_avg_base_Price} /> || "NA"}</span>
                           </div>
 
                           <div style={{ border: "1px solid black", marginTop: "10px" }}>
@@ -2861,7 +2861,7 @@ const BuilderTable = () => {
                                           <td>{element.masterplan_id}</td>
                                           <td>{element.zipcode}</td>
                                           <td>{element.avg_sqft_all}</td>
-                                          <td>${element.avg_base_price_all}</td>
+                                          <td>{<PriceComponent price={element.avg_base_price_all} /> }</td>                         
                                         </tr>
                                       )
                                     )
