@@ -920,8 +920,11 @@ const BuilderTable = () => {
     localStorage.removeItem("setBuilderFilter");
   };
 
-  const handleDetailRedirectClick = () => {
-    navigate("/subdivisionlist");
+  const handleDetailRedirectClick = (id, name) => {
+    navigate("/filtersubdivision");
+    localStorage.setItem("subdivision_name_Subdivision", JSON.stringify(name));
+    localStorage.setItem("subdivision_id", JSON.stringify(id));
+    localStorage.setItem("setSubdivisionFilter", true);
   };
 
   useEffect(() => {
@@ -2734,7 +2737,7 @@ const BuilderTable = () => {
 
                           <div style={{ marginTop: "10px", width: "300px" }}>
                             <label style={{ fontSize: "18px" }}><b>CURRENT AVG BASE ASKING $:</b></label>
-                            <span style={{ marginLeft: "100px" }}>$000,000</span>
+                            <span style={{ marginLeft: "100px" }}>${BuilderDetails.current_avg_base_Price || "0.00"}</span>
                           </div>
 
                           <div style={{ border: "1px solid black", marginTop: "10px" }}>
@@ -2775,22 +2778,31 @@ const BuilderTable = () => {
                                 <thead>
                                   <tr style={{ textAlign: "center" }}>
                                     <th>
-                                      <strong> No.</strong>
+                                      <strong>No.</strong>
                                     </th>
                                     <th>
-                                      <strong> Subdivision Code</strong>
+                                      <strong>Status</strong>
                                     </th>
                                     <th>
-                                      <strong> Name</strong>
+                                      <strong>Name</strong>
                                     </th>
                                     <th>
-                                      <strong> Product Type</strong>
+                                      <strong>Type</strong>
                                     </th>
                                     <th>
-                                      <strong> Phone</strong>
+                                      <strong>Area</strong>
                                     </th>
                                     <th>
-                                      <strong> Gas Provider</strong>
+                                      <strong>Master Plan</strong>
+                                    </th>
+                                    <th>
+                                      <strong>ZIP</strong>
+                                    </th>
+                                    <th>
+                                      <strong>Avg Sqft All</strong>
+                                    </th>
+                                    <th>
+                                      <strong>Avg Base Price All</strong>
                                     </th>
                                   </tr>
                                 </thead>
@@ -2801,7 +2813,7 @@ const BuilderTable = () => {
                                     BuilderDetails.subdivisions.map(
                                       (element, index) => (
                                         <tr
-                                          onClick={handleDetailRedirectClick}
+                                          onClick={() => handleDetailRedirectClick(element.id, element.name)}
                                           key={element.id}
                                           style={{
                                             textAlign: "center",
@@ -2809,11 +2821,14 @@ const BuilderTable = () => {
                                           }}
                                         >
                                           <td>{index + 1}</td>
-                                          <td>{element.subdivision_code}</td>
+                                          <td>{(element.status === 1 && "Active") || (element.status === 0 && "Sold Out") || (element.status === 2 && "Future")}</td>
                                           <td>{element.name}</td>
                                           <td>{element.product_type}</td>
-                                          <td>{element.phone}</td>
-                                          <td>{element.gasprovider}</td>
+                                          <td>{element.area}</td>
+                                          <td>{element.masterplan_id}</td>
+                                          <td>{element.zipcode}</td>
+                                          <td>{element.avg_sqft_all}</td>
+                                          <td>${element.avg_base_price_all}</td>
                                         </tr>
                                       )
                                     )

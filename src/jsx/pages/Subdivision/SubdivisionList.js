@@ -834,6 +834,13 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
+    const subID = JSON.parse(localStorage.getItem("subdivision_id"));
+    if(subID){
+      handleRowClick(subID);
+    }
+  },[]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsSubdivisions", JSON.stringify(selectedFields));
     }
@@ -961,6 +968,7 @@ const SubdivisionList = () => {
       let responseData = await AdminSubdevisionService.show(id).json();
       setSubdivisionDetails(responseData);
       setIsFormLoading(false);
+      localStorage.removeItem("subdivision_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
