@@ -365,7 +365,22 @@ const PriceList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigBasePrices");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsBasePrices");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderBasePrices");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersBasePrices");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
@@ -401,9 +416,6 @@ const PriceList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -435,6 +447,18 @@ const PriceList = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsBasePrices", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderBasePrices", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersBasePrices", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedBuilderNameByFilter_BasePrice")) {
@@ -1511,7 +1535,8 @@ const PriceList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigBasePrices", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getpriceList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
