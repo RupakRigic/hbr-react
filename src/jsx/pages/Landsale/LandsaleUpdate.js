@@ -53,10 +53,13 @@ const LandsaleUpdate = () => {
         try {
             const response = await AdminSubdevisionService.subdivisionDropDown();
             const responseData = await response.json();
-            const formattedData = responseData.data.map((subdivision) => ({
-                label: subdivision.name,
-                value: subdivision.id,
-            }));
+            const formattedData = [
+                { label: "Select Subdivision", value: null }, // Default option
+                ...responseData.data.map((subdivision) => ({
+                    label: subdivision.name,
+                    value: subdivision.id,
+                })),
+            ];
             SetSubdivisionList(formattedData);
         } catch (error) {
             console.log("Error fetching subdivision list:", error);
@@ -133,7 +136,7 @@ const LandsaleUpdate = () => {
                                         <form onSubmit={handleSubmit}>
                                             <div className="row">
                                                 <div className="col-xl-6 mb-3">
-                                                    <label className="form-label">Subdivision<span className="text-danger">*</span></label>
+                                                    <label className="form-label">Subdivision <span className="text-danger">*</span></label>
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
                                                             options={SubdivisionList}

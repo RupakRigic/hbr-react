@@ -41,10 +41,16 @@ const BuilderTable = () => {
 
     const getWeekEndDate = async () => {
         try {
-            let responseData = await AdminWeeklyDataService.getdate().json()
+            let responseData = await AdminWeeklyDataService.getdate().json();
+            let datesArray = responseData.dates.map(date => new Date(date));
+            let today = new Date();
+            let nearestDate = datesArray.reduce((prev, curr) => 
+                Math.abs(curr - today) < Math.abs(prev - today) ? curr : prev
+            );
+            let nearestDateString = nearestDate.toISOString().split('T')[0];
             setWeekEndDates(responseData.dates);
-            setSelectedEndDate(responseData.dates[0]);
-            localStorage.setItem('enddate', responseData.dates[0]);
+            setSelectedEndDate(nearestDateString);
+            localStorage.setItem('enddate', nearestDateString);
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
@@ -103,7 +109,7 @@ const BuilderTable = () => {
                                         <div className='dataTables_wrapper no-footer'>
                                             <p className='text-center' style={{color: errorMessage && "red"}}>Select the Week ending date and builder, and click continue.</p>
                                             <div className="d-flex justify-content-center mb-5">
-                                                <select onChange={handleSelectChange}>
+                                                <select onChange={handleSelectChange} value={selectedEndDate}>
                                                     {weekEndDates && weekEndDates.map((item) =>
                                                         <option>{item}</option>
                                                     )}
