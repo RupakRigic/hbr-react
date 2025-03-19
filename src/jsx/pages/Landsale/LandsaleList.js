@@ -81,8 +81,20 @@ const LandsaleList = () => {
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
   const [sortConfig, setSortConfig] = useState(() => {
-    const savedSortConfig = localStorage.getItem("sortConfig");
+    const savedSortConfig = localStorage.getItem("sortConfigLandSales");
     return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsLandSales");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderLandSales");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersLandSales");
+    return saved ? JSON.parse(saved) : {};
   });
   
   const [AllProductListExport, setAllBuilderExport] = useState([]);
@@ -100,28 +112,16 @@ const LandsaleList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState(() => {
-    const saved = localStorage.getItem("selectedFields");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [selectionOrder, setSelectionOrder] = useState(() => {
-    const saved = localStorage.getItem("selectionOrder");
-    return saved ? JSON.parse(saved) : {};
-  });
-  const [sortOrders, setSortOrders] = useState(() => {
-    const saved = localStorage.getItem("sortOrders");
-    return saved ? JSON.parse(saved) : {};
-  });
 
   useEffect(() => {
     if(selectedFields){
-      localStorage.setItem("selectedFields", JSON.stringify(selectedFields));
+      localStorage.setItem("selectedFieldsLandSales", JSON.stringify(selectedFields));
     }
     if(selectionOrder){
-      localStorage.setItem("selectionOrder", JSON.stringify(selectionOrder));
+      localStorage.setItem("selectionOrderLandSales", JSON.stringify(selectionOrder));
     }
     if(sortOrders){
-      localStorage.setItem("sortOrders", JSON.stringify(sortOrders));
+      localStorage.setItem("sortOrdersLandSales", JSON.stringify(sortOrders));
     }
   }, [selectedFields, selectionOrder, sortOrders]);
   
@@ -963,7 +963,7 @@ const LandsaleList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    localStorage.setItem("sortConfig", JSON.stringify(sortingConfig));
+    localStorage.setItem("sortConfigLandSales", JSON.stringify(sortingConfig));
     setSortConfig(sortingConfig);
     getLandsaleList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();

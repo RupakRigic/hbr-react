@@ -27,7 +27,22 @@ import Swal from "sweetalert2";
 const ClosingList = () => {
   const [excelLoading, setExcelLoading] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigClosings");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsClosings");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderClosings");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersClosings");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
@@ -128,9 +143,18 @@ const ClosingList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsClosings", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderClosings", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersClosings", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("seletctedClosingTypeByFilter_Closing")) {
@@ -1325,7 +1349,8 @@ const ClosingList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigClosings", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getClosingList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };

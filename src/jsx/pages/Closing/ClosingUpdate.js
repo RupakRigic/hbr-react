@@ -9,30 +9,38 @@ import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
 
 const ClosingUpdate = () => {
-    const [SubdivisionCode, setSubdivisionCode] = useState('');
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [ClosingsaleList, SetClosingsaleList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const params = useParams();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    const GetSubdivision = async (id) => {
+    useEffect(() => {
+        if (localStorage.getItem('usertoken')) {
+            ShowClosings(params.id);
+            GetSubdivisionDropDownList();
+        }
+        else {
+            navigate('/');
+        }
+    }, []);
+
+    useEffect(() => {
+        if (ClosingsaleList?.subdivision_id && SubdivisionList?.length > 0) {
+            const filter = SubdivisionList?.filter(data => data.value === ClosingsaleList?.subdivision_id);
+            handleSubdivisionCode(filter);
+        }
+    }, [ClosingsaleList, SubdivisionList]);
+
+    const ShowClosings = async (id) => {
         setIsLoading(true);
         try {
-            let responseData1 = await AdminClosingService.show(id).json();
-            SetClosingsaleList(responseData1);
+            let responseData = await AdminClosingService.show(id).json();
             setIsLoading(false);
-            const response = await AdminSubdevisionService.index();
-            const responseData = await response.json();
-
-            let getdata = responseData.filter(function (item) {
-                return item.id === responseData1.subdivision_id;
-            });
-
-            setSubdivisionCode(getdata);
-            SetSubdivisionList(responseData);
+            SetClosingsaleList(responseData);
         } catch (error) {
             setIsLoading(false);
             if (error.name === 'HTTPError') {
@@ -42,14 +50,23 @@ const ClosingUpdate = () => {
         }
     };
 
-    useEffect(() => {
-        if (localStorage.getItem('usertoken')) {
-            GetSubdivision(params.id);
+    const GetSubdivisionDropDownList = async () => {
+        try {
+            const response = await AdminSubdevisionService.subdivisionDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            SetSubdivisionList(formattedData);
+        } catch (error) {
+            console.log("Error fetching subdivision list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
         }
-        else {
-            navigate('/');
-        }
-    }, []);
+    };
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
@@ -59,7 +76,7 @@ const ClosingUpdate = () => {
         event.preventDefault();
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode.id ? SubdivisionCode.id : ClosingsaleList.subdivision_id,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : ClosingsaleList.subdivision_id,
                 "sellerleagal": event.target.sellerleagal.value,
                 "address": event.target.address.value,
                 "buyer": event.target.buyer.value,
@@ -111,11 +128,22 @@ const ClosingUpdate = () => {
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
                                                             options={SubdivisionList}
-                                                            onChange={handleSubdivisionCode}
-                                                            getOptionValue={(option) => option.name}
-                                                            getOptionLabel={(option) => option.name}
                                                             value={SubdivisionCode}
-                                                        ></Select>
+                                                            placeholder={"Select Subdivision..."}
+                                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                                            styles={{
+                                                                container: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                                menu: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                            }}
+                                                        />
                                                     </Form.Group>
                                                 </div>
                                                 <div className="col-xl-6 mb-3">
