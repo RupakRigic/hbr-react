@@ -332,7 +332,22 @@ const ProductList = () => {
   const product = useRef();
 
   const [showOffcanvas, setShowOffcanvas] = useState(false);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigProducts");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsProducts");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderProducts");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersProducts");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -419,9 +434,6 @@ const ProductList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
   const [showPopup, setShowPopup] = useState(false);
 
   const checkFieldExist = (fieldName) => {
@@ -453,6 +465,18 @@ const ProductList = () => {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsProducts", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderProducts", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersProducts", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedStatusByProductFilter_Product")) {
@@ -1420,7 +1444,8 @@ const ProductList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigProducts", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getproductList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
