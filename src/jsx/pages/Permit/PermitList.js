@@ -774,6 +774,7 @@ const PermitList = () => {
 
   const handleCallback = () => {
     getPermitList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const handleFileChange = async (e) => {

@@ -742,6 +742,7 @@ const ClosingList = () => {
   const handleCallback = () => {
     // Update the name in the component's state
     getClosingList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
 

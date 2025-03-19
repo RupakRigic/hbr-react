@@ -738,6 +738,7 @@ const PriceList = () => {
 
   const handleCallback = () => {
     getpriceList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const handleRowClick = async (id) => {

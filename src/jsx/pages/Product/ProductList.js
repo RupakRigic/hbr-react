@@ -627,6 +627,7 @@ const ProductList = () => {
 
   const handleCallback = () => {
     getproductList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const HandleRole = (e) => {

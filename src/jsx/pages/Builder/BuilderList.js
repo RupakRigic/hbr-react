@@ -779,6 +779,7 @@ const BuilderTable = () => {
   const handleCallback = () => {
     getbuilderlist(currentPage, sortConfig, searchQuery);
     GetBuilderDropDownList();
+    setSelectedLandSales([]);
   };
 
   const handleRowClick = async (id) => {

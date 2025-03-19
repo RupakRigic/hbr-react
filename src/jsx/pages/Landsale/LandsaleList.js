@@ -632,6 +632,7 @@ const LandsaleList = () => {
 
   const handleCallback = () => {
     getLandsaleList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const handleRowClick = async (id) => {

@@ -796,6 +796,7 @@ const TrafficsaleList = () => {
 
   const handleCallback = () => {
     gettrafficsaleList(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const handleRowClick = async (id) => {

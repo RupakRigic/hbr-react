@@ -951,6 +951,7 @@ const SubdivisionList = () => {
 
   const handleCallback = () => {
     getbuilderlist(currentPage, sortConfig, searchQuery);
+    setSelectedLandSales([]);
   };
 
   const handleRowClick = async (id) => {

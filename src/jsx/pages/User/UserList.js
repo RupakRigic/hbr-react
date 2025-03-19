@@ -253,6 +253,7 @@ const UserList = () => {
 
   const handleCallback = () => {
     getuserList(currentPage, sortConfig, searchQuery);
+    setSelectedUsers([]);
   };
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);
@@ -959,7 +960,6 @@ const UserList = () => {
         ref={bulkproduct}
         Title={selectedUsers?.length === 1 ? "Edit User" : "Bulk Edit Users"}
         userSelectedUsers={selectedUsers}
-        setSelectedUsers={setSelectedUsers}
         parentCallback={handleCallback}
       />
       <Offcanvas
