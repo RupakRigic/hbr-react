@@ -30,7 +30,7 @@ const PermitUpdate = () => {
     useEffect(() => {
         if (PermitList?.subdivision_id && SubdivisionList?.length > 0) {
             const filter = SubdivisionList?.filter(data => data.value === PermitList?.subdivision_id);
-            handleSubdivisionCode(filter);
+            handleSubdivisionCode(filter[0]);
         }
     }, [PermitList, SubdivisionList]);
 

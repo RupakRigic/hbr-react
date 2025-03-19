@@ -74,7 +74,22 @@ const PermitList = () => {
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByPermitsFilter") ? JSON.parse(localStorage.getItem("searchQueryByPermitsFilter")) : "");
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigPermits");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsPermits");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderPermits");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersPermits");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false);
@@ -133,9 +148,6 @@ const PermitList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
 
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
@@ -211,6 +223,18 @@ const PermitList = () => {
     localStorage.removeItem("single_Permit");
     localStorage.removeItem("setPermitFilter");
   };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsPermits", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderPermits", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersPermits", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedBuilderNameByFilter_Permit")) {
@@ -1208,7 +1232,8 @@ const PermitList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigPermits", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getPermitList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
