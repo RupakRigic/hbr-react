@@ -230,12 +230,15 @@ const LogoutPage = () => {
         localStorage.removeItem("typeofunit_LandSale");
         localStorage.removeItem("searchQueryByLandSalesFilter");
         localStorage.removeItem("setLansSaleFilter");
+
+        localStorage.clear();
         navigate('/');
       } else {
         console.log(data.message);
+        localStorage.clear();
       }
     } catch (error) {
-
+      localStorage.clear();
     }
   };
   

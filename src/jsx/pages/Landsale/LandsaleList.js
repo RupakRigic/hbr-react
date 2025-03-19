@@ -80,7 +80,11 @@ const LandsaleList = () => {
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfig");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  
   const [AllProductListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
@@ -96,10 +100,31 @@ const LandsaleList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFields");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrder");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrders");
+    return saved ? JSON.parse(saved) : {};
+  });
 
+  useEffect(() => {
+    if(selectedFields){
+      localStorage.setItem("selectedFields", JSON.stringify(selectedFields));
+    }
+    if(selectionOrder){
+      localStorage.setItem("selectionOrder", JSON.stringify(selectionOrder));
+    }
+    if(sortOrders){
+      localStorage.setItem("sortOrders", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
+  
   useEffect(() => {
     if (localStorage.getItem("selectedBuilderNameByFilter_LandSale")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_LandSale"));
@@ -938,7 +963,8 @@ const LandsaleList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfig", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getLandsaleList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
