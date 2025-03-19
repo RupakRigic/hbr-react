@@ -106,11 +106,12 @@ const WeeklyDataIndex = () => {
     setNetSale(true);
     setReset(false);
     const { name, value } = event.target;
+    const numericValue = value.replace(/[^0-9]/g, "").replace(/^0+/, "");
     setFormData((prevState) => ({
       ...prevState,
       [id]: {
         ...prevState[id],
-        [name]: value,
+        [name]: numericValue,
       },
     }));
   };
@@ -457,7 +458,7 @@ const WeeklyDataIndex = () => {
                                   <td>{element.name}</td>
                                   <td>
                                     <input
-                                      type="number"
+                                      type="text"
                                       defaultValue={
                                         element.trafic_sales[0].weeklytraffic
                                       }
@@ -465,46 +466,37 @@ const WeeklyDataIndex = () => {
                                       className="form-control"
                                       name="weeklytraffic"
                                       onChange={(event) => handleChange(event, currentId)}
-                                    />{" "}
+                                    />
                                   </td>
                                   <td>
                                     <input
-                                      type="number"
-                                      // defaultValue={
-                                      //   element.trafic_sales[0].grosssales
-                                      // }
+                                      type="text"
                                       value={reset ? element.trafic_sales[0].grosssales : (netSale ? GrossSales(currentId, element.trafic_sales[0]) : element.trafic_sales[0].grosssales)}
                                       className="form-control"
                                       name="grosssales"
                                       onChange={(event) => handleChange(event, currentId)}
-                                    />{" "}
+                                    />
                                   </td>
                                   <td></td>
                                   <td>
                                     <input
-                                      type="number"
-                                      // defaultValue={
-                                      //   element.trafic_sales[0].cancelations
-                                      // }
+                                      type="text"
                                       value={reset ? element.trafic_sales[0].cancelations : (netSale ? Cancelations(currentId, element.trafic_sales[0]) : element.trafic_sales[0].cancelations)}
                                       className="form-control"
                                       name="cancelations"
                                       onChange={(event) => handleChange(event, currentId)}
-                                    />{" "}
+                                    />
                                   </td>
                                   <td></td>
                                   <td>{reset ? element.net_sales : (netSale ? calculateNetSales(currentId, element.trafic_sales[0]) : element.net_sales)}</td>
                                   <td>
                                     <input
-                                      type="number"
-                                      // defaultValue={
-                                      //   element.trafic_sales[0].lotreleased
-                                      // }
+                                      type="text"
                                       value={reset ? element.trafic_sales[0].lotreleased : (netSale ? LotReleased(currentId, element.trafic_sales[0]) : element.trafic_sales[0].lotreleased)}
                                       className="form-control"
                                       name="lotreleased"
                                       onChange={(event) => handleChange(event, currentId)}
-                                    />{" "}
+                                    />
                                   </td>
                                   <td>
                                     <td>
@@ -516,15 +508,12 @@ const WeeklyDataIndex = () => {
                                         }
                                       />
                                       <input
-                                        type="number"
-                                        // defaultValue={
-                                        //   element.trafic_sales[0].unsoldinventory
-                                        // }
+                                        type="text"
                                         value={reset ? element.trafic_sales[0].unsoldinventory : (netSale ? UnSoldInventory(currentId, element.trafic_sales[0]) : element.trafic_sales[0].unsoldinventory)}
                                         className="form-control"
                                         name="unsoldinventory"
                                         onChange={(event) => handleChange(event, currentId)}
-                                      />{" "}
+                                      />
                                     </td>
                                   </td>
                                 </tr>
