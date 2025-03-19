@@ -47,7 +47,22 @@ const TrafficsaleList = () => {
   const [trafficListCount, setTrafficListCount] = useState('');
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByWeeklyTrafficFilter") ? JSON.parse(localStorage.getItem("searchQueryByWeeklyTrafficFilter")) : "");
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigTraffics");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsTraffics");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderTraffics");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersTraffics");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [AllTrafficListExport, setAllTrafficistExport] = useState([]);
@@ -137,9 +152,6 @@ const TrafficsaleList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
   const [samePage, setSamePage] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [selectCheckBox, setSelectCheckBox] = useState(false);
@@ -173,7 +185,19 @@ const TrafficsaleList = () => {
       subdivision_name: selectedNames
     }));
     setNormalFilter(true);
-  }
+  };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsTraffics", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderTraffics", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersTraffics", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedBuilderNameByFilter_TrafficSale")) {
@@ -1465,7 +1489,8 @@ const TrafficsaleList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigTraffics", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     gettrafficsaleList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
