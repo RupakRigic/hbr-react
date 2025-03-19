@@ -145,9 +145,6 @@ const BuilderTable = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
   const [showPopup, setShowPopup] = useState(false);
 
   const checkFieldExist = (fieldName) => {
@@ -558,13 +555,22 @@ const BuilderTable = () => {
     });
   };
 
-  const [data, setData] = useState([]);
-  const [sortConfig, setSortConfig] = useState([]);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
-
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-  }, [sortConfig]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigBuilders");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsBuilders");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderBuilders");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersBuilders");
+    return saved ? JSON.parse(saved) : {};
+  });
 
   const builder = useRef();
   const [value, setValue] = React.useState("1");
@@ -618,6 +624,18 @@ const BuilderTable = () => {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsBuilders", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderBuilders", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersBuilders", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedBuilderNameByFilterBuilder")) {
@@ -953,20 +971,6 @@ const BuilderTable = () => {
         );
       }
     }
-  };
-  const requestSort = (key) => {
-    let direction = "asc";
-
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === "asc" ? "desc" : "asc";
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    getbuilderlist(currentPage, newSortConfig, searchQuery);
   };
 
   const HandleRole = (e) => {
@@ -1662,7 +1666,8 @@ const BuilderTable = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigBuilders", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getbuilderlist(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };

@@ -35,14 +35,6 @@ const SubdivisionList = () => {
   const [excelLoading, setExcelLoading] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
 
-  // const handleSortCheckboxChange = (e, key) => {
-  //   if (e.target.checked) {
-  //     setSelectedCheckboxes(prev => [...prev, key]);
-  //   } else {
-  //     setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-  //   }
-  // };
-
   const addToBuilderList = () => {
     navigate('/google-map-locator', {
       state: {
@@ -51,12 +43,6 @@ const SubdivisionList = () => {
       },
     });
   };
-
-  // const handleRemoveSelected = () => {
-  //   const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-  //   setSortConfig(newSortConfig);
-  //   setSelectedCheckboxes([]);
-  // };
 
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const bulkSubdivision = useRef();
@@ -69,8 +55,6 @@ const SubdivisionList = () => {
     }
   };
 
-  // const [showSort, setShowSort] = useState(false);
-  // const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryBySubdivisionFilter_Subdivision") ? JSON.parse(localStorage.getItem("searchQueryBySubdivisionFilter_Subdivision")) : "");
@@ -241,9 +225,6 @@ const SubdivisionList = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
 
   // Generate Report
   const today = new Date();
@@ -760,13 +741,23 @@ const SubdivisionList = () => {
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
-  const [sortConfig, setSortConfig] = useState([]);
+  const [sortConfig, setSortConfig] = useState(() => {
+    const savedSortConfig = localStorage.getItem("sortConfigSubdivisions");
+    return savedSortConfig ? JSON.parse(savedSortConfig) : [];
+  });
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsSubdivisions");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderSubdivisions");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersSubdivisions");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [subdivisionID, setSubdivisionID] = useState();
-  // const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
-
-  // useEffect(() => {
-  //   setSelectedCheckboxes(sortConfig.map(col => col.key));
-  // }, [sortConfig]);
 
   const prePage = () => {
     if (currentPage !== 1) {
@@ -786,10 +777,6 @@ const SubdivisionList = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-
-  // const HandleSortDetailClick = (e) => {
-  //   setShowSort(true);
-  // }
 
   const subdivision = useRef();
   const [show, setShow] = useState(false);
@@ -845,6 +832,18 @@ const SubdivisionList = () => {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsSubdivisions", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderSubdivisions", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersSubdivisions", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
@@ -2747,7 +2746,8 @@ const SubdivisionList = () => {
       key: field.value,
       direction: sortOrders[field.value] || 'asc',
     }));
-    setSortConfig(sortingConfig)
+    localStorage.setItem("sortConfigSubdivisions", JSON.stringify(sortingConfig));
+    setSortConfig(sortingConfig);
     getbuilderlist(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
