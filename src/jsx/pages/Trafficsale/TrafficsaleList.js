@@ -129,6 +129,11 @@ const TrafficsaleList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [weeklyTrafficOption, setWeeklyTrafficOption] = useState("");
   const [weeklyGrossSalesOption, setWeeklyGrossSalesOption] = useState("");
   const [weeklyCancellationsOption, setWeeklyCancellationsOption] = useState("");
@@ -186,6 +191,20 @@ const TrafficsaleList = () => {
     }));
     setNormalFilter(true);
   };
+
+  useEffect(() => {
+    if(handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+    });
+    }
+  },[handleCallBack, AllTrafficListExport, trafficsaleList]);
+
+  useEffect(() => {
+    if(selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  },[selectedLandSales]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -755,6 +774,7 @@ const TrafficsaleList = () => {
       setTrafficsaleList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setTrafficListCount(responseData.meta.total);
+      setHandleCallBack(true);
       if (responseData.meta.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
@@ -788,6 +808,7 @@ const TrafficsaleList = () => {
     }
     setAllTrafficistExport(allData);
     setExcelLoading(false);
+    setHandleCallBack(true);
   };
 
   const handleDelete = async (e) => {
@@ -1006,15 +1027,23 @@ const TrafficsaleList = () => {
       setTrafficsaleList(filtered.slice(0, 100));
       setTrafficListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     } else {
       setTrafficsaleList(filtered.slice(0, 100));
       setTrafficListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     }
   };
 
@@ -1061,9 +1090,11 @@ const TrafficsaleList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
+    if(canvasShowAdd || canvasShowEdit){
+      GetBuilderDropDownList();
+      GetSubdivisionDropDownList();
+    }
+  }, [canvasShowAdd, canvasShowEdit]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1233,9 +1264,15 @@ const TrafficsaleList = () => {
 
   const totalSumFields = (field) => {
     if (field == "weeklytraffic") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.weeklytraffic || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.weeklytraffic || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.weeklytraffic || 0);
+        }, 0);
+      }
     }
     if (field == "grosssales") {
       if (filter) {
@@ -1249,58 +1286,98 @@ const TrafficsaleList = () => {
       }
     }
     if (field == "cancelations") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.cancelations || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.cancelations || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.cancelations || 0);
+        }, 0);
+      }
     }
     if (field == "netsales") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.netsales || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.netsales || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.netsales || 0);
+        }, 0);
+      }
     }
     if (field == "totallots") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.subdivision && traficSales.subdivision.totallots || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.totallots || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.totallots || 0);
+        }, 0);
+      }
     }
     if (field == "lotreleased") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.lotreleased || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.lotreleased || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.lotreleased || 0);
+        }, 0);
+      }
     }
     if (field == "unsoldinventory") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.unsoldinventory || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.unsoldinventory || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.unsoldinventory || 0);
+        }, 0);
+      }
     }
     if (field == "lotwidth") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.subdivision && traficSales.subdivision.lotwidth || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.lotwidth || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.lotwidth || 0);
+        }, 0);
+      }
     }
     if (field == "lotsize") {
-      return AllTrafficListExport.reduce((sum, traficSales) => {
-        return sum + (traficSales.subdivision && traficSales.subdivision.lotsize || 0);
-      }, 0);
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.lotsize || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.lotsize || 0);
+        }, 0);
+      }
     }
   };
 
   const averageFields = (field) => {
     const sum = totalSumFields(field);
-    if (field == "grosssales") {
-      if (filter) {
-        return sum / trafficsaleList.length;
-      } else {
-        return sum / AllTrafficListExport.length;
-      }
+    if (filter) {
+      return sum / trafficsaleList.length;
     } else {
-      const sum = totalSumFields(field);
       return sum / AllTrafficListExport.length;
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "weeklytraffic":
@@ -1704,7 +1781,7 @@ const TrafficsaleList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => trafficsale.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1715,7 +1792,7 @@ const TrafficsaleList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkTrafficsale.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1925,15 +2002,15 @@ const TrafficsaleList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "weekly Traffic" ? handleSelectChange(e, "weeklytraffic") :
-                                          column.id == "weekly Gross Sales" ? handleSelectChange(e, "grosssales") :
-                                          column.id == "weekly Cancellations" ? handleSelectChange(e, "cancelations") :
-                                          column.id == "weekly Net Sales" ? handleSelectChange(e, "netsales") :
-                                          column.id == "total Lots" ? handleSelectChange(e, "totallots") :
-                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e, "lotreleased") :
-                                          column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e, "unsoldinventory") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                        onChange={(e) => column.id == "weekly Traffic" ? handleSelectChange(e.target.value, "weeklytraffic") :
+                                          column.id == "weekly Gross Sales" ? handleSelectChange(e.target.value, "grosssales") :
+                                          column.id == "weekly Cancellations" ? handleSelectChange(e.target.value, "cancelations") :
+                                          column.id == "weekly Net Sales" ? handleSelectChange(e.target.value, "netsales") :
+                                          column.id == "total Lots" ? handleSelectChange(e.target.value, "totallots") :
+                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e.target.value, "lotreleased") :
+                                          column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e.target.value, "unsoldinventory") :
+                                          column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2252,13 +2329,15 @@ const TrafficsaleList = () => {
       </div>
 
       <TrafficsaleOffcanvas
-        ref={trafficsale}
-        Title="Add Weekly Traffic & Sales"
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
+        Title="Add Weekly Traffic & Sale"
         parentCallback={handleCallback}
       />
 
       <BulkTrafficUpdate
-        ref={bulkTrafficsale}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Weekly Traffic & Sale" : "Bulk Edit Weekly Traffic & Sales"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}

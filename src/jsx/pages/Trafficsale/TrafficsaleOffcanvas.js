@@ -7,24 +7,21 @@ import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTra
 import Select from "react-select";
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const TrafficsaleOffcanvas = forwardRef((props, ref) => {
+const TrafficsaleOffcanvas = forwardRef((props) => {
+    const { canvasShowAdd, seCanvasShowAdd } = props;
+
     const [Error, setError] = useState('');
-    const [addProduct, setAddProduct] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [grossSale, setGrossSale] = useState(null);
     const [cancelation, setCancelation] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddProduct(true)
-        }
-    }));
-
     useEffect(() => {
-        GetSubdivisionDropDownList();
-    }, []);
+        if (canvasShowAdd) {
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowAdd]);
 
     const GetSubdivisionDropDownList = async () => {
         setIsLoading(true);
@@ -68,7 +65,7 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
                 swal("Weekly Traffic & Sales Created Successfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
-                        setAddProduct(false);
+                        seCanvasShowAdd(false);
                     }
                 })
             }
@@ -91,20 +88,20 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
 
     return (
         <Fragment>
-            {isLoading ? (
-                <div className="d-flex justify-content-center align-items-center mb-5">
-                    <ClipLoader color="#4474fc" />
+            <Offcanvas show={canvasShowAdd} onHide={seCanvasShowAdd} className="offcanvas-end customeoff" placement='end'>
+                <div className="offcanvas-header">
+                    <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
+                    <button type="button" className="btn-close"
+                        onClick={() => seCanvasShowAdd(false)}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-            ) : (
-                <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
-                    <div className="offcanvas-header">
-                        <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
-                        <button type="button" className="btn-close"
-                            onClick={() => setAddProduct(false)}
-                        >
-                            <i className="fa-solid fa-xmark"></i>
-                        </button>
+                {isLoading ? (
+                    <div className="d-flex justify-content-center align-items-center mb-5">
+                        <ClipLoader color="#4474fc" />
                     </div>
+                ) : (
                     <div className="offcanvas-body">
                         <div className="container-fluid">
                             <form onSubmit={handleSubmit}>
@@ -160,13 +157,13 @@ const TrafficsaleOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div>
                                     <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                    <Link to={"#"} onClick={() => setAddProduct(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                    <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>
                                 </div>
                             </form>
                         </div>
                     </div>
-                </Offcanvas>
-            )}
+                )}
+            </Offcanvas>
         </Fragment>
     );
 });

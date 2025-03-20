@@ -123,18 +123,18 @@ const TrafficsaleUpdate = () => {
     return (
         <Fragment>
             <MainPagetitle mainTitle="Edit Weekly Traffic & Sale" pageTitle="Edit Weekly Traffic & Sale" parentTitle="Weekly Traffic & Sales" link="/trafficsalelist" />
-            {isLoading ? (
-                <div className="d-flex justify-content-center align-items-center mb-5">
-                    <ClipLoader color="#4474fc" />
-                </div>
-            ) : (
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="card">
-                                <div className="card-header">
-                                    <h4 className="card-title">Edit Weekly Traffic & Sale</h4>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-lg-12">
+                        <div className="card">
+                            <div className="card-header">
+                                <h4 className="card-title">Edit Weekly Traffic & Sale</h4>
+                            </div>
+                            {isLoading ? (
+                                <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
+                                    <ClipLoader color="#4474fc" />
                                 </div>
+                            ) : (
                                 <div className="card-body">
                                     <div className="form-validation">
                                         <form onSubmit={handleSubmit}>
@@ -201,11 +201,11 @@ const TrafficsaleUpdate = () => {
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
-                </div >
-            )}
+                </div>
+            </div >
         </Fragment >
     );
 };
