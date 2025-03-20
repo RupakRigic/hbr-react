@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import AdminCSVFileService from "../../../API/Services/AdminService/AdminCSVFileService";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import FileOffcanvas from "./FileOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas, Form } from "react-bootstrap";
-import { debounce } from "lodash";
+import { Offcanvas } from "react-bootstrap";
 import ClipLoader from "react-spinners/ClipLoader";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
 import ColumnReOrderPopup from "../../popup/ColumnReOrderPopup";
@@ -17,7 +16,8 @@ const File = () => {
 
   const HandleSortDetailClick = (e) => {
     setShowSort(true);
-  }
+  };
+
   const handleSortCheckboxChange = (e, key) => {
     if (e.target.checked) {
       setSelectedCheckboxes(prev => [...prev, key]);
@@ -35,13 +35,13 @@ const File = () => {
     setSortConfig(newSortConfig);
     setSelectedCheckboxes([]);
   };
+
   const [showSort, setShowSort] = useState(false);
   const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [productList, setProductList] = useState([]);
   const [fileListCount, setFileListCount] = useState('');
-  const [TotalFileListCount, setTotalFileListCount] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
@@ -74,6 +74,7 @@ const File = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
+  const [canvasShowAddFile, seCanvasShowAddFile] = useState(false);
 
   useEffect(() => {
     console.log(fieldList); // You can now use fieldList in this component
@@ -158,12 +159,12 @@ const File = () => {
     }
   }, []);
 
-  const File = useRef();
   const stringifySortConfig = (sortConfig) => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
 
   const getproductList = async (currentPage) => {
+    setIsLoading(true);
     try {
 
       let sortConfigString = "";
@@ -173,17 +174,15 @@ const File = () => {
 
       const response = await AdminCSVFileService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
-
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
       setIsLoading(false);
-
     } catch (error) {
+      setIsLoading(false);
       console.log(error)
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
       }
     }
@@ -310,6 +309,20 @@ const File = () => {
     setColumns(mappedColumns);
   }, [fieldList]);
 
+  // const handleDownload = async (fileName) => {
+  //   const url = `${process.env.REACT_APP_IMAGE_URL}Files/${fileName}`;
+  //   const response = await fetch(url, { mode: "no-cors" });
+  //   const blob = await response.blob();
+  //   const blobUrl = window.URL.createObjectURL(blob);
+    
+  //   const link = document.createElement("a");
+  //   link.href = blobUrl;
+  //   link.setAttribute("download", fileName); // Ensures direct download
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+
   return (
     <>
       <MainPagetitle mainTitle="File" pageTitle="File" parentTitle="Home" />
@@ -405,7 +418,7 @@ const File = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => File.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAddFile(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -527,14 +540,19 @@ const File = () => {
                                     {column.id == "title" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.name}</td>
                                     }
+                                    {column.id == "preview" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        <img src={`${process.env.REACT_APP_IMAGE_URL}Files/${element.csv}`} width={25} height={25} />
+                                      </td>
+                                    }
                                     {column.id == "download" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <a
-                                          href={
-                                            process.env.REACT_APP_IMAGE_URL +
-                                            "Files/" +
-                                            element.csv
-                                          }
+                                          href={`${process.env.REACT_APP_IMAGE_URL}Files/${element.csv}`}
+                                          download={element.csv} // This suggests to the browser to download the file
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          style={{ color: "blue" }}
                                         >
                                           Click Here
                                         </a>
@@ -649,7 +667,8 @@ const File = () => {
         </div>
       </div>
       <FileOffcanvas
-        ref={File}
+        canvasShowAddFile={canvasShowAddFile}
+        seCanvasShowAddFile={seCanvasShowAddFile}
         Title="Add File"
         parentCallback={handleCallback}
       />

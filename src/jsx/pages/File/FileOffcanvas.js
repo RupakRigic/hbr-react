@@ -1,43 +1,47 @@
-import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import AdminCSVFileService from "../../../API/Services/AdminService/AdminCSVFileService";
 import swal from "sweetalert";
 
-const ProductOffcanvas = forwardRef((props, ref) => {
+const ProductOffcanvas = forwardRef((props) => {
+    const { canvasShowAddFile, seCanvasShowAddFile } = props;
+
     const [Error, setError] = useState('');
-    const [addProduct, setAddProduct] = useState(false);
     const [file, setFile] = useState([]);
 
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddProduct(true)
-        }
-    }));
-
     const handleChangeImage = (e) => {
-        const fileReader = new FileReader()
-        fileReader.readAsDataURL(e.target.files[0]);
+        const files = e.target.files;
+        const fileData = {};
 
-        fileReader.onload = () => {
-            var image = fileReader.result;
-            setFile(image);
-        }
+        Array.from(files).forEach((file, index) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                fileData[index] = {
+                    "filename": file.name,
+                    "file": fileReader.result
+                };
+
+                if (Object.keys(fileData).length === files.length) {
+                    setFile(fileData);
+                }
+            };
+        });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             var userData = {
-                "name": event.target.title.value,
-                "csv": file ? file.split(',')[1] : "",
+                "images": file,
             }
 
             const data = await AdminCSVFileService.store(userData).json();
             if (data.status === true) {
-                swal("File Upload!!!").then((willDelete) => {
+                swal("File(s) Uploaded Successfully").then((willDelete) => {
                     if (willDelete) {
-                        setAddProduct(false);
+                        seCanvasShowAddFile(false);
                         props.parentCallback();
                     }
                 })
@@ -46,18 +50,18 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
+                setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
     };
 
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowAddFile} onHide={seCanvasShowAddFile} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => setAddProduct(false)}
+                        onClick={() => seCanvasShowAddFile(false)}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -67,7 +71,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div>
-                                    <label>CSV File</label>
+                                    <label>Upload Files <span className="text-danger">*</span></label>
                                     <div className="dz-default dlab-message upload-img mb-3">
                                         <form action="#" className="dropzone">
                                             <svg width="41" height="40" viewBox="0 0 41 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,15 +86,11 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                                         </form>
                                     </div>
                                 </div>
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Title <span className="text-danger">*</span></label>
-                                    <input type="text" name='title' className="form-control" id="exampleFormControlInput2" placeholder="" />
-                                </div>
                                 <p className='text-danger fs-12'>{Error}</p>
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => setAddProduct(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => seCanvasShowAddFile(false)} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>
