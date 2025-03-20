@@ -101,6 +101,10 @@ const LandsaleList = () => {
   const [excelLoading, setExcelLoading] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
   
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
 
   const [priceOption, setPriceOption] = useState("");
   const [pricePerOption, setPricePerOption] = useState("");
@@ -112,6 +116,22 @@ const LandsaleList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedLandSales, setSelectedLandSales] = useState([]);
+  console.log("selectedLandSales", selectedLandSales);
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllProductListExport, LandsaleList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     if(selectedFields){
@@ -343,8 +363,6 @@ const LandsaleList = () => {
   const [columns, setColumns] = useState([]);
   console.log("columns", columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
-  const [selectedLandSales, setSelectedLandSales] = useState([]);
-  console.log("selectedLandSales", selectedLandSales);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
@@ -489,9 +507,11 @@ const LandsaleList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
+    if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+      GetBuilderDropDownList();
+      GetSubdivisionDropDownList();
+    }
+  }, [manageFilterOffcanvas, canvasShowAdd, canvasShowEdit]);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -591,6 +611,7 @@ const LandsaleList = () => {
       setLandsaleList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setlandSaleListCount(responseData.meta.total);
+      setHandleCallBack(true);
       if (responseData.meta.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
@@ -625,6 +646,7 @@ const LandsaleList = () => {
     }
     setAllBuilderExport(allData);
     setExcelLoading(false);
+    setHandleCallBack(true);
   }
 
   const handleDelete = async (e) => {
@@ -885,8 +907,11 @@ const LandsaleList = () => {
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "price":
@@ -1191,7 +1216,7 @@ const LandsaleList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => landsale.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1202,7 +1227,7 @@ const LandsaleList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulklandsale.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1377,9 +1402,9 @@ const LandsaleList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "price" ? handleSelectChange(e, "price") :
-                                          column.id == "price Per" ? handleSelectChange(e, "price_per") :
-                                            column.id == "size" ? handleSelectChange(e, "size") : ""}
+                                        onChange={(e) => column.id == "price" ? handleSelectChange(e.target.value, "price") :
+                                          column.id == "price Per" ? handleSelectChange(e.target.value, "price_per") :
+                                            column.id == "size" ? handleSelectChange(e.target.value, "size") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -1638,12 +1663,14 @@ const LandsaleList = () => {
         </div>
       </div>
       <LandsaleOffcanvas
-        ref={landsale}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Landsale"
         parentCallback={handleCallback}
       />
       <BulkLandsaleUpdate
-        ref={bulklandsale}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Land Sale" : "Bulk Edit Land Sales"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
