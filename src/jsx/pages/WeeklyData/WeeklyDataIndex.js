@@ -88,7 +88,7 @@ const WeeklyDataIndex = () => {
       setBuilderList(updatedData);
 
       if (reset) {
-        swal("Data reset successfully.");
+        swal("Data Reset Successfully");
       }
     } catch (error) {
       setIsLoading(false);
@@ -106,7 +106,7 @@ const WeeklyDataIndex = () => {
     setNetSale(true);
     setReset(false);
     const { name, value } = event.target;
-    const numericValue = value.replace(/[^0-9]/g, "").replace(/^0+/, "");
+    const numericValue = value === "0" ? "0" : value.replace(/^0+/, "").replace(/[^0-9]/g, "");
     setFormData((prevState) => ({
       ...prevState,
       [id]: {
@@ -247,7 +247,7 @@ const WeeklyDataIndex = () => {
       try {
         const data = await AdminWeeklyDataService.update_all_data(localStorage.getItem("enddate"), formData).json();
         if (data.status === true) {
-          swal("Data save successfully.").then((willDelete) => {
+          swal("Data Saved Successfully").then((willDelete) => {
             if (willDelete) {
               getWeeklyList();
             }

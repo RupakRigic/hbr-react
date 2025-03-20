@@ -85,7 +85,7 @@ const ArchiveDataUpdate = () => {
                 const data = response.data;
                 setArchiveDataShow(data);
                 if (reset) {
-                    swal("Data reset successfully.");
+                    swal("Data Reset Successfully");
                 }
 
                 if (Array.isArray(data) && data.length > 0) {
@@ -118,7 +118,7 @@ const ArchiveDataUpdate = () => {
             try {
                 const data = await AdminBuilderService.archive_all_data_update(params.id, formData).json();
                 if (data.status === true) {
-                    swal("Data save successfully.").then((willDelete) => {
+                    swal("Data Saved Successfully").then((willDelete) => {
                         if (willDelete) {
                             ArchiveDataShow(params.id, reset);
                         }
