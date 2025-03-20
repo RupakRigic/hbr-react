@@ -148,7 +148,7 @@ const SubdivisionUpdate = () => {
         opensince: event.target.opensince.value,
         age: age,
         single: single,
-        firstpermitdate: event.target.firstpermitdate.value,
+        // firstpermitdate: event.target.firstpermitdate.value,
         masterplan_id: masterplan,
         lat: event.target.lat.value,
         lng: event.target.lng.value,
@@ -165,13 +165,6 @@ const SubdivisionUpdate = () => {
         zoning: event.target.zoning.value,
         gasprovider: event.target.gasprovider.value,
         website: event.target.website.value,
-        unsoldlots: 0,
-        lotreleased: 0,
-        stadinginventory: 0,
-        permits: 0,
-        netsales: 0,
-        closing: 0,
-        monthsopen: 0,
       };
 
       const data = await AdminSubdevisionService.update(params.id, userData).json();
@@ -339,7 +332,7 @@ const SubdivisionUpdate = () => {
                           </select>
                         </div>
 
-                        <div className="col-xl-6 mb-3">
+                        {/* <div className="col-xl-6 mb-3">
                           <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
                           <input
                             type="date"
@@ -350,7 +343,7 @@ const SubdivisionUpdate = () => {
                             disabled
                             style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
                           />
-                        </div>
+                        </div> */}
 
                         <div className="col-xl-6 mb-3">
                           <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
