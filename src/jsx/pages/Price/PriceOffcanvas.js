@@ -38,7 +38,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminPriceService.store(userData).json();
             if (data.status === true) {
-                swal("Product Price Create Succesfully").then((willDelete) => {
+                swal("Product Price Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddProduct(false);
                         navigate('/priceList');

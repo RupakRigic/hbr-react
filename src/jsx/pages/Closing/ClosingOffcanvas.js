@@ -62,7 +62,7 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminClosingService.store(userData).json();
             if (data.status === true) {
-                swal("Closing Sale Create Succesfully").then((willDelete) => {
+                swal("Closingsale Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         setAddProduct(false);

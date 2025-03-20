@@ -4,6 +4,7 @@ import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import Select from "react-select";
+import swal from "sweetalert";
 
 const SubdivisionOffcanvas = forwardRef((props, ref) => {
     const [BuilderCode, setBuilderCode] = useState(null);
@@ -146,8 +147,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminSubdevisionService.store(userData).json();
             if (data.status === true) {
-                setAddSubdivision(false)
-                props.parentCallback();
+                swal("Subdivision Created Successfully").then((willDelete) => {
+                if (willDelete) {
+                    setAddSubdivision(false);
+                    props.parentCallback();
+                }})
             }
             else {
                 var error;

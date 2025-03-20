@@ -42,7 +42,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
       };
       const data = await AdminProductService.store(userData).json();
       if (data.status === true) {
-        swal("Product Create Succesfully").then((willDelete) => {
+        swal("Product Created Succesfully").then((willDelete) => {
           if (willDelete) {
             setAddProduct(false);
             props.parentCallback();

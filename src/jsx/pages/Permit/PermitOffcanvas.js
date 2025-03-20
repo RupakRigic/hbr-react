@@ -66,7 +66,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminPermitService.store(userData).json();
             if (data.status === true) {
-                swal("Permit Create Succesfully").then((willDelete) => {
+                swal("Permit Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         setAddProduct(false);

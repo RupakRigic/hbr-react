@@ -62,7 +62,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminBuilderService.store(userData).json();
             if (data.status === true) {
-                swal("Builders Record Created Successfully").then((willDelete) => {
+                swal("Builder Created Successfully").then((willDelete) => {
                     if (willDelete) {
                         setAddBuilder(false);
                         props.parentCallback();

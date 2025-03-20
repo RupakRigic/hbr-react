@@ -193,7 +193,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 }
                 const data = await AdminUserRoleService.store(userData).json();
                 if (data.status === true) {
-                    swal("User Create Succesfully").then((willDelete) => {
+                    swal("User Created Succesfully").then((willDelete) => {
                         if (willDelete) {
                             setAddUser(false);
                             setRoleCode([]);
@@ -234,7 +234,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 setSaveBtn(false);
                 setRoleCode([]);
                 setStandardUser([]);
-                swal("User Create Succesfully").then((willDelete) => {
+                swal("User Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddUser(false);
                         props.parentCallback();

@@ -70,7 +70,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
             }
             const data = await AdminLandsaleService.store(userData).json();
             if (data.status === true) {
-                swal("Landsale Create Succesfully").then((willDelete) => {
+                swal("Landsale Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         setAddProduct(false);
