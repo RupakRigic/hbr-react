@@ -2277,6 +2277,7 @@ const BuilderTable = () => {
                                     {column.id == "logo" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div>
+                                          {element.logo ? 
                                           <img
                                             src={
                                               element.logo
@@ -2287,7 +2288,8 @@ const BuilderTable = () => {
                                             width={50}
                                             height={50}
                                             alt=""
-                                          />
+                                          /> : ""}
+                                          
                                         </div>
                                       </td>
                                     }
