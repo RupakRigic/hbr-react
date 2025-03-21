@@ -146,7 +146,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
 
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput6" className="form-label">Parcel</label>
-                                        <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                        <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput7" className="form-label">Price</label>
@@ -193,7 +193,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                     </div>
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode</label>
-                                        <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                        <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <p className='text-danger fs-12'>{Error}</p>
                                 </div>

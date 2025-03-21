@@ -187,7 +187,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput12" className="form-label">Parcel Number</label>
-                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput12" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput12" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">

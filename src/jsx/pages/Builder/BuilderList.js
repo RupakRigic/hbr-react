@@ -27,7 +27,7 @@ import Swal from "sweetalert2";
 const BuilderTable = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const page = JSON.parse(queryParams.get("page"));
+  const page = JSON.parse(queryParams.get("page")) === 1 ? null : JSON.parse(queryParams.get("page"));
   
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 

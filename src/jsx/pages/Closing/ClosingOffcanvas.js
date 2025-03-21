@@ -147,7 +147,7 @@ const ClosingOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Parcel <span className="text-danger">*</span></label>
-                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput10" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                 </div>
                                 <p className='text-danger fs-12'>{Error}</p>
                             </div>

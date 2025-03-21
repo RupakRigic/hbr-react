@@ -119,7 +119,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label">Parcel</label>
-                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput2" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                    <input type="text" name='parcel' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput3" className="form-label">Contractor</label>

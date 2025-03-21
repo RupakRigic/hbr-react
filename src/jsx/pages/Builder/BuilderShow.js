@@ -160,7 +160,7 @@ const BuilderShow = forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput7" className="form-label"> Zipcode </label>
-                                    <input type="text" name='zipcode' className="form-control" id="exampleFormControlInput7" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
+                                    <input type="text" name='zipcode' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
 
