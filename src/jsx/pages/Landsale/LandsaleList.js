@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import LandsaleOffcanvas from "./LandsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -25,6 +25,10 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const LandsaleList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = JSON.parse(queryParams.get("page"));
+
   const SyestemUserRole = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).role
     : "";
@@ -162,7 +166,13 @@ const LandsaleList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getLandsaleList(currentPage, sortConfig, searchQuery);
+      if (!manageFilterOffcanvas) {
+        if(page === currentPage){
+          return;
+        } else {
+          getLandsaleList(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+        }
+      }
     } else {
       navigate("/");
     }
@@ -592,6 +602,7 @@ const LandsaleList = () => {
   const getLandsaleList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
     setExcelLoading(true);
+    setCurrentPage(currentPage);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByLandSalesFilter", JSON.stringify(searchQuery));
     try {
@@ -638,15 +649,28 @@ const LandsaleList = () => {
     setExcelLoading(true);
     const totalPages = Math.ceil(landSaleListCount / recordsPage);
     let allData = LandsaleList;
-    for (let page = 2; page <= totalPages; page++) {
-      // await delay(1000);
-      const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
+    if (page !== null) {
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // await delay(1000);
+        if (pageNum === page) continue;
+        const pageResponse = await AdminLandsaleService.index(pageNum, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
+    } else {
+      for (let page = 2; page <= totalPages; page++) {
+        // await delay(1000);
+        const pageResponse = await AdminLandsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
     }
-    setAllBuilderExport(allData);
-    setExcelLoading(false);
-    setHandleCallBack(true);
   }
 
   const handleDelete = async (e) => {
@@ -818,6 +842,7 @@ const LandsaleList = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsLandSales", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -841,11 +866,16 @@ const LandsaleList = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsLandSales"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const toCamelCase = (str) => {
@@ -1531,7 +1561,7 @@ const LandsaleList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div className="d-flex justify-content-center">
                                           <Link
-                                            to={`/landsaleupdate/${element.id}`}
+                                            to={`/landsaleupdate/${element.id}?page=${currentPage}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
                                             <i className="fas fa-pencil-alt"></i>

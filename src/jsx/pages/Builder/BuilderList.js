@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, Fragment } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 import BuilderOffcanvas from "./BuilderOffcanvas";
@@ -25,6 +25,10 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import Swal from "sweetalert2";
 
 const BuilderTable = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = JSON.parse(queryParams.get("page"));
+  
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
   const [excelLoading, setExcelLoading] = useState(false);
@@ -585,6 +589,7 @@ const BuilderTable = () => {
   const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
     setExcelLoading(true);
+    setCurrentPage(pageNumber);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryByBuilderFilter_Builder", JSON.stringify(searchQuery));
     try {
@@ -667,12 +672,16 @@ const BuilderTable = () => {
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       if (!manageFilterOffcanvas) {
-        getbuilderlist(currentPage, sortConfig, searchQuery);
+        if(page === currentPage){
+          return;
+        } else {
+          getbuilderlist(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+        }
       }
     } else {
       navigate("/");
     }
-  }, [currentPage, searchQuery]);
+  }, [currentPage]);
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -680,14 +689,26 @@ const BuilderTable = () => {
     setExcelLoading(true);
     const totalPages = Math.ceil(BuilderListCount / recordsPage);
     let allData = BuilderList;
-    for (let page = 2; page <= totalPages; page++) {
-      // await delay(1000);
-      const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
+    if (page !== null) {
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // await delay(1000);
+        if (pageNum === page) continue;
+        const pageResponse = await AdminBuilderService.index(pageNum, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
+    } else {
+      for (let page = 2; page <= totalPages; page++) {
+        // await delay(1000);
+        const pageResponse = await AdminBuilderService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
     }
-    setAllBuilderExport(allData);
-    setExcelLoading(false);
   }
 
   const prePage = () => {
@@ -1094,6 +1115,7 @@ const BuilderTable = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsBuilders", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -1109,11 +1131,16 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsBuilders"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const toCamelCase = (str) => {
@@ -1176,48 +1203,34 @@ const BuilderTable = () => {
     filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_first_closing, 'date_of_first_closing');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.date_of_latest_closing, 'date_of_latest_closing');
 
-    if (isAnyFilterApplied) {
+    if (isAnyFilterApplied && !normalFilter) {
       setBuilderList(filtered.slice(0, 100));
       setBuilderListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(true);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     } else {
       setBuilderList(filtered.slice(0, 100));
       setBuilderListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     }
-    setActiveCommunitiesOption("");
-    setClosingThisYearOption("");
-    setPermitsThisYearOption("");
-    setNetSalesThisYearOption("");
-    setCurrentAvgBasePriceOption("");
-    setMedianClosingPriceThisYearOption("");
-    setMedianClosingPriceLastYearOption("");
-    setAvgNetSalesPerMonthThisYearOption("");
-    setAvgClosingsPerMonthThisYearOption("");
-    setTotalClosingsOption("");
-    setTotalPermitsOption("");
-    setTotalNetSalesOption("");
-    setActiveCommunitiesResult(0);
-    setClosingThisYearResult(0);
-    setPermitsThisYearResult(0);
-    setNetSalesThisYearResult(0);
-    setCurrentAvgBasePriceResult(0);
-    setMedianClosingPriceThisYearResult(0);
-    setMedianClosingPriceLastYearResult(0);
-    setAvgNetSalesPerMonthThisYearResult(0);
-    setAvgClosingsPerMonthThisYearResult(0);
-    setTotalClosingsResult(0);
-    setTotalPermitsResult(0);
-    setTotalNetSalesResult(0);
   };
 
   useEffect(() => {
-    applyFilters();
+    if (filter) {
+      applyFilters();
+    }
   }, [filterQueryCalculation]);
 
   const handleInputChange = (e) => {
@@ -2391,7 +2404,7 @@ const BuilderTable = () => {
                                         ) : (
                                           <div className="d-flex justify-content-center">
                                             <Link
-                                              to={`/builderUpdate/${element.id}`}
+                                              to={`/builderUpdate/${element.id}?page=${currentPage}`}
                                               className="btn btn-primary shadow btn-xs sharp me-1"
                                             >
                                               <i className="fas fa-pencil-alt"></i>

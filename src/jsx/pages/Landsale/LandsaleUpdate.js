@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from 'react-bootstrap';
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -9,6 +9,10 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const LandsaleUpdate = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const [isLoading, setIsLoading] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
@@ -103,7 +107,7 @@ const LandsaleUpdate = () => {
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/landsalelist');
+                        navigate(`/landsalelist?page=${page}`);
                     }
                 })
             }
@@ -118,7 +122,7 @@ const LandsaleUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Land Sale" pageTitle="Edit Land Sale" parentTitle="Land Sales" link="/landsalelist" />
+            <MainPagetitle mainTitle="Edit Land Sale" pageTitle="Edit Land Sale" parentTitle="Land Sales" link={`/landsalelist?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
@@ -196,7 +200,7 @@ const LandsaleUpdate = () => {
 
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit</label>
-                                                    <input type="number" defaultValue={LandsaleList.price_per} name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
+                                                    <input type="number" defaultValue={LandsaleList.priceperunit} name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
@@ -243,7 +247,7 @@ const LandsaleUpdate = () => {
                                             </div>
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                                <Link to={"/landsalelist"} className="btn btn-danger light ms-1">Cancel</Link>
+                                                <Link to={`/landsalelist?page=${page}`} className="btn btn-danger light ms-1">Cancel</Link>
                                             </div>
                                         </form>
                                     </div>
