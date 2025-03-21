@@ -1090,11 +1090,11 @@ const TrafficsaleList = () => {
   };
 
   useEffect(() => {
-    if(canvasShowAdd || canvasShowEdit){
+    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
       GetBuilderDropDownList();
       GetSubdivisionDropDownList();
     }
-  }, [canvasShowAdd, canvasShowEdit]);
+  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

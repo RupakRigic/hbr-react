@@ -113,6 +113,11 @@ const BuilderTable = () => {
   console.log("columns", columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [activeCommunitiesOption, setActiveCommunitiesOption] = useState("");
   const [closingThisYearOption, setClosingThisYearOption] = useState("");
   const [permitsThisYearOption, setPermitsThisYearOption] = useState("");
@@ -150,6 +155,9 @@ const BuilderTable = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
@@ -609,6 +617,7 @@ const BuilderTable = () => {
       setBuilderList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderListCount(responseData.total);
+      setHandleCallBack(true);
       if (responseData.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
@@ -629,6 +638,20 @@ const BuilderTable = () => {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllBuilderListExport, BuilderList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -699,6 +722,7 @@ const BuilderTable = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     } else {
       for (let page = 2; page <= totalPages; page++) {
         // await delay(1000);
@@ -708,6 +732,7 @@ const BuilderTable = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     }
   }
 
@@ -760,11 +785,10 @@ const BuilderTable = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-  }, []);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(false);
+      if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
+        GetBuilderDropDownList();
+      }
+    }, [canvasShowAdd, canvasShowEdit || manageFilterOffcanvas]);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -1387,8 +1411,11 @@ const BuilderTable = () => {
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "active_communities":
@@ -1882,7 +1909,7 @@ const BuilderTable = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => builder.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1893,7 +1920,7 @@ const BuilderTable = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkBuilder.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -2091,18 +2118,18 @@ const BuilderTable = () => {
                                           color: "white",
                                           appearance: "auto"
                                         }}
-                                        onChange={(e) => column.id == "active Communities" ? handleSelectChange(e, "active_communities") :
-                                          column.id == "closing This Year" ? handleSelectChange(e, "closing_this_year") :
-                                          column.id == "permits This Year" ? handleSelectChange(e, "permits_this_year") :
-                                          column.id == "net Sales this year" ? handleSelectChange(e, "net_sales_this_year") :
-                                          column.id == "current Avg Base Price" ? handleSelectChange(e, "current_avg_base_Price") :
-                                          column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") :
-                                          column.id == "median Closing Price Last Year" ? handleSelectChange(e, "median_closing_price_last_year") :
-                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                          column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                          column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                          column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") : ""}>
+                                        onChange={(e) => column.id == "active Communities" ? handleSelectChange(e.target.value, "active_communities") :
+                                          column.id == "closing This Year" ? handleSelectChange(e.target.value, "closing_this_year") :
+                                          column.id == "permits This Year" ? handleSelectChange(e.target.value, "permits_this_year") :
+                                          column.id == "net Sales this year" ? handleSelectChange(e.target.value, "net_sales_this_year") :
+                                          column.id == "current Avg Base Price" ? handleSelectChange(e.target.value, "current_avg_base_Price") :
+                                          column.id == "median Closing Price This Year" ? handleSelectChange(e.target.value, "median_closing_price_this_year") :
+                                          column.id == "median Closing Price Last Year" ? handleSelectChange(e.target.value, "median_closing_price_last_year") :
+                                          column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e.target.value, "avg_net_sales_per_month_this_year") :
+                                          column.id == "avg Closings Per Month This Year" ? handleSelectChange(e.target.value, "avg_closings_per_month_this_year") :
+                                          column.id == "total Closings" ? handleSelectChange(e.target.value, "total_closings") :
+                                          column.id == "total Permits" ? handleSelectChange(e.target.value, "total_permits") :
+                                          column.id == "total Net Sales" ? handleSelectChange(e.target.value, "total_net_sales") : ""}>
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="avg">Avg</option>
@@ -2525,12 +2552,14 @@ const BuilderTable = () => {
       ) : (
         <>
           <BuilderOffcanvas
-            ref={builder}
+            canvasShowAdd={canvasShowAdd}
+            seCanvasShowAdd={seCanvasShowAdd}
             Title="Add Builder"
             parentCallback={handleCallback}
           />
           <BulkBuilderUpdate
-            ref={bulkBuilder}
+            canvasShowEdit={canvasShowEdit}
+            seCanvasShowEdit={seCanvasShowEdit}
             Title={selectedLandSales?.length  === 1 ? "Edit Builder" : "Bulk Edit Builders"}
             parentCallback={handleCallback}
             selectedLandSales={selectedLandSales}

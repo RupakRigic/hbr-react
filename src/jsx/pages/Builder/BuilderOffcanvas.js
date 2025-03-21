@@ -1,21 +1,16 @@
-import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import swal from "sweetalert";
 
-const BuilderOffcanvas = forwardRef((props, ref) => {
+const BuilderOffcanvas = forwardRef((props) => {
+    const { canvasShowAdd, seCanvasShowAdd } = props;
+
     const [file, setFile] = useState('');
     const [isActive, setIsActive] = useState('1');
     const [company_type, setCompany_type] = useState('');
     const [Error, setError] = useState('');
-    const [addBuilder, setAddBuilder] = useState(false);
-
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddBuilder(true)
-        }
-    }));
 
     const handleActive = (e) => {
         setIsActive(e.target.value);
@@ -64,7 +59,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
             if (data.status === true) {
                 swal("Builder Created Successfully").then((willDelete) => {
                     if (willDelete) {
-                        setAddBuilder(false);
+                        seCanvasShowAdd(false);
                         props.parentCallback();
                     }
                 })
@@ -80,11 +75,11 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
 
     return (
         <Fragment>
-            <Offcanvas show={addBuilder} onHide={setAddBuilder} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowAdd} onHide={seCanvasShowAdd} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => setAddBuilder(false)}
+                        onClick={() => seCanvasShowAdd(false)}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -229,7 +224,7 @@ const BuilderOffcanvas = forwardRef((props, ref) => {
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => setAddBuilder(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>

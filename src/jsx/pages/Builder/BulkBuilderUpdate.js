@@ -1,18 +1,17 @@
-import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas } from 'react-bootstrap';
 import swal from "sweetalert";
 import Select from "react-select";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
-const BulkLandsaleUpdate = forwardRef((props, ref) => {
-    const { selectedLandSales } = props;
+const BulkLandsaleUpdate = forwardRef((props) => {
+    const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [file, setFile] = useState('');
     const [isActive, setIsActive] = useState('');
     const [company_type, setCompany_type] = useState('');
     const [Error, setError] = useState('');
-    const [addProduct, setAddProduct] = useState(false);
 
     const isActiveData = [
         { value: "1", label: "True" },
@@ -29,7 +28,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     };
 
     const HandleUpdateCanvasClose = () => {
-        setAddProduct(false); 
+        seCanvasShowEdit(false); 
         setIsActive('');
         setCompany_type('');
         setError('');
@@ -49,12 +48,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
         }
     };
 
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddProduct(true)
-        }
-    }));
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (selectedLandSales.length === 0) {
@@ -69,7 +62,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
             if (willDelete) {
                 try {
                     var userData = {
-                        "builder_code": event.target.code.value,
+                        // "builder_code": event.target.code.value,
                         "name": event.target.name.value,
                         "website": event.target.website.value,
                         "phone": event.target.phone.value,
@@ -120,7 +113,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowEdit} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
@@ -133,11 +126,11 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                     <div className="container-fluid">
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                <div className="col-xl-6 mb-3">
+                                {/* <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code</label>
                                     <input type="text" name="code"
                                         className="form-control" id="exampleFormControlInput1" placeholder="" />
-                                </div>
+                                </div> */}
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label">Name</label>
