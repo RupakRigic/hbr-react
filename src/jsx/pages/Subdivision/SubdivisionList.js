@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import SubdivisionOffcanvas from "../../pages/WeeklyData/SubdivisionOffcanvas";
@@ -30,6 +30,10 @@ import './subdivisionList.css';
 import Swal from "sweetalert2";
 
 const SubdivisionList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = JSON.parse(queryParams.get("page")) === 1 ? null : JSON.parse(queryParams.get("page"));
+
   const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
   const [AllBuilderListExport, setAllBuilderExport] = useState([]);
   const [excelLoading, setExcelLoading] = useState(false);
@@ -139,6 +143,11 @@ const SubdivisionList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
+
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
 
   const [totalLotsOption, setTotalLotsOption] = useState("");
   const [lotWidthOption, setLotWidthOption] = useState("");
@@ -792,6 +801,7 @@ const SubdivisionList = () => {
   const getbuilderlist = async (pageNumber, sortConfig, searchQuery) => {
     setIsLoading(true);
     setExcelLoading(true);
+    setCurrentPage(pageNumber);
     setSearchQuery(searchQuery);
     localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery));
     try {
@@ -812,6 +822,7 @@ const SubdivisionList = () => {
       setNpage(Math.ceil(responseData.total / recordsPage));
       setBuilderList(responseData.data);
       setBuilderListCount(responseData.total);
+      setHandleCallBack(true);
       if (responseData.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
@@ -832,6 +843,20 @@ const SubdivisionList = () => {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllBuilderListExport, BuilderList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     const subID = JSON.parse(localStorage.getItem("subdivision_id"));
@@ -905,7 +930,11 @@ const SubdivisionList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getbuilderlist(currentPage, sortConfig, searchQuery);
+      if(page === currentPage){
+        return;
+      } else {
+        getbuilderlist(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
@@ -917,14 +946,28 @@ const SubdivisionList = () => {
     setExcelLoading(true);
     const totalPages = Math.ceil(BuilderListCount / recordsPage);
     let allData = BuilderList;
-    for (let page = 2; page <= totalPages; page++) {
-      // await delay(1000);
-      const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
+    if (page !== null) {
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // await delay(1000);
+        if (pageNum === page) continue;
+        const pageResponse = await AdminSubdevisionService.index(pageNum, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
+    } else {
+      for (let page = 2; page <= totalPages; page++) {
+        // await delay(1000);
+        const pageResponse = await AdminSubdevisionService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllBuilderExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
     }
-    setAllBuilderExport(allData);
-    setExcelLoading(false);
   }
 
   const handleDelete = async (e) => {
@@ -998,8 +1041,10 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-  }, []);
+      if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+        GetBuilderDropDownList();
+      }
+    }, [manageFilterOffcanvas, canvasShowAdd, canvasShowEdit]);
 
   const HandleFilterForm = (e) => {
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
@@ -1391,6 +1436,7 @@ const SubdivisionList = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsSubdivisions", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -1406,11 +1452,16 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsSubdivisions"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const toCamelCase = (str) => {
@@ -1493,72 +1544,34 @@ const SubdivisionList = () => {
       );
     }
 
-    if (isAnyFilterApplied) {
+    if (isAnyFilterApplied && !normalFilter) {
       setBuilderList(filtered.slice(0, 100));
       setBuilderListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(true);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     } else {
       setBuilderList(filtered.slice(0, 100));
       setBuilderListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     }
-    setTotalClosingsOption("");
-    setTotalPermitsOption("");
-    setTotalNetSalesOption("");
-    setMonthsOpenOption("");
-    setLatestLotsReleasedOption("");
-    setLatestStandingInventoryOption("");
-    setUnsoldLotsOption("");
-    setAvgSqftAllOption("");
-    setAvgSqftActiveOption("");
-    setAvgBasePriceAllOption("");
-    setAvgBasePriceActiveOption("");
-    setMinSqftAllOption("");
-    setMaxSqftAllOption("");
-    setMinBasePriceAllOption("");
-    setMinSqftActiveOption("");
-    setMaxBasePriceAllOption("");
-    setMaxSqftActiveOption("");
-    setAvgNetTrafficPerMonthThisYearOption("");
-    setAvgNetSalesPerMonthThisYearOption("");
-    setAvgClosingsPerMonthThisYearOption("");
-    setAvgNetSalesPerMonthSinceOpenOption("");
-    setAvgNetSalesPerMonthLastThreeMonthsOption("");
-    setMonthNetSoldOption("");
-    setYearNetSoldOption("");
-    setTotalClosingsResult(0);
-    setTotalPermitsResult(0);
-    setTotalNetSalesResult(0);
-    setMonthsOpenResult(0);
-    setLatestLotsReleasedResult(0);
-    setLatestStandingInventoryResult(0);
-    setUnsoldLotsResult(0);
-    setAvgSqftAllResult(0);
-    setAvgSqftActiveResult(0);
-    setAvgBasePriceAllResult(0);
-    setAvgBasePriceActiveResult(0);
-    setMinSqftAllResult(0);
-    setMaxSqftAllResult(0);
-    setMinBasePriceAllResult(0);
-    setMinSqftActiveResult(0);
-    setMaxBasePriceAllResult(0);
-    setMaxSqftActiveResult(0);
-    setAvgNetTrafficPerMonthThisYearResult(0);
-    setAvgNetSalesPerMonthThisYearResult(0);
-    setAvgClosingsPerMonthThisYearResult(0);
-    setAvgNetSalesPerMonthSinceOpenResult(0);
-    setAvgNetSalesPerMonthLastThreeMonthsResult(0);
-    setMonthNetSoldResult(0);
-    setYearNetSoldResult(0);
   };
 
   useEffect(() => {
-    applyFilters();
+    if (filter) {
+      applyFilters();
+    }
   }, [filterQueryCalculation]);
 
   const handleInputChange = (e) => {
@@ -1953,8 +1966,11 @@ const SubdivisionList = () => {
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "totallots":
@@ -2982,7 +2998,7 @@ const SubdivisionList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => subdivision.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -2993,7 +3009,7 @@ const SubdivisionList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkSubdivision.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -3212,39 +3228,39 @@ const SubdivisionList = () => {
                                         appearance: "auto"
                                       }}
 
-                                      onChange={(e) => column.id == "total Lots" ? handleSelectChange(e, "totallots") :
-                                        column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                        column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                        column.id == "master Plan Fee" ? handleSelectChange(e, "masterplanfee") :
-                                        column.id == "hOA Fee" ? handleSelectChange(e, "hoafee") :
-                                        column.id == "total Closings" ? handleSelectChange(e, "total_closings") :
-                                        column.id == "total Permits" ? handleSelectChange(e, "total_permits") :
-                                        column.id == "total Net Sales" ? handleSelectChange(e, "total_net_sales") :
-                                        column.id == "months Open" ? handleSelectChange(e, "months_open") :
-                                        column.id == "latest Lots Released" ? handleSelectChange(e, "latest_lots_released") :
-                                        column.id == "latest Standing Inventory" ? handleSelectChange(e, "latest_standing_inventory") :
-                                        column.id == "unsold Lots" ? handleSelectChange(e, "unsold_lots") :
-                                        column.id == "avg Sqft All" ? handleSelectChange(e, "avg_sqft_all") :
-                                        column.id == "avg Sqft Active" ? handleSelectChange(e, "avg_sqft_active") :
-                                        column.id == "avg Base Price All" ? handleSelectChange(e, "avg_base_price_all") :
-                                        column.id == "avg Base Price Active" ? handleSelectChange(e, "avg_base_price_active") :
-                                        column.id == "min Sqft All" ? handleSelectChange(e, "min_sqft_all") :
-                                        column.id == "max Sqft All" ? handleSelectChange(e, "max_sqft_all") :
-                                        column.id == "min Base Price All" ? handleSelectChange(e, "min_base_price_all") :
-                                        column.id == "min Sqft Active" ? handleSelectChange(e, "min_sqft_active") :
-                                        column.id == "max Base Price All" ? handleSelectChange(e, "max_base_price_all") :
-                                        column.id == "max Sqft Active" ? handleSelectChange(e, "max_sqft_active") :
-                                        column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e, "avg_net_traffic_per_month_this_year") :
-                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e, "avg_net_sales_per_month_this_year") :
-                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e, "avg_closings_per_month_this_year") :
-                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e, "avg_net_sales_per_month_since_open") :
-                                        column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e, "avg_net_sales_per_month_last_three_months") :
-                                        column.id == "month Net Sold" ? handleSelectChange(e, "month_net_sold") :
-                                        column.id == "year Net Sold" ? handleSelectChange(e, "year_net_sold") :
-                                        column.id == "avg Closing Price" ? handleSelectChange(e, "avg_closing_price") :
-                                        column.id == "permits This Year" ? handleSelectChange(e, "permit_this_year") :
-                                        column.id == "median Closing Price Since Open" ? handleSelectChange(e, "median_closing_price_since_open") :
-                                        column.id == "median Closing Price This Year" ? handleSelectChange(e, "median_closing_price_this_year") : ""
+                                      onChange={(e) => column.id == "total Lots" ? handleSelectChange(e.target.value, "totallots") :
+                                        column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                        column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") :
+                                        column.id == "master Plan Fee" ? handleSelectChange(e.target.value, "masterplanfee") :
+                                        column.id == "hOA Fee" ? handleSelectChange(e.target.value, "hoafee") :
+                                        column.id == "total Closings" ? handleSelectChange(e.target.value, "total_closings") :
+                                        column.id == "total Permits" ? handleSelectChange(e.target.value, "total_permits") :
+                                        column.id == "total Net Sales" ? handleSelectChange(e.target.value, "total_net_sales") :
+                                        column.id == "months Open" ? handleSelectChange(e.target.value, "months_open") :
+                                        column.id == "latest Lots Released" ? handleSelectChange(e.target.value, "latest_lots_released") :
+                                        column.id == "latest Standing Inventory" ? handleSelectChange(e.target.value, "latest_standing_inventory") :
+                                        column.id == "unsold Lots" ? handleSelectChange(e.target.value, "unsold_lots") :
+                                        column.id == "avg Sqft All" ? handleSelectChange(e.target.value, "avg_sqft_all") :
+                                        column.id == "avg Sqft Active" ? handleSelectChange(e.target.value, "avg_sqft_active") :
+                                        column.id == "avg Base Price All" ? handleSelectChange(e.target.value, "avg_base_price_all") :
+                                        column.id == "avg Base Price Active" ? handleSelectChange(e.target.value, "avg_base_price_active") :
+                                        column.id == "min Sqft All" ? handleSelectChange(e.target.value, "min_sqft_all") :
+                                        column.id == "max Sqft All" ? handleSelectChange(e.target.value, "max_sqft_all") :
+                                        column.id == "min Base Price All" ? handleSelectChange(e.target.value, "min_base_price_all") :
+                                        column.id == "min Sqft Active" ? handleSelectChange(e.target.value, "min_sqft_active") :
+                                        column.id == "max Base Price All" ? handleSelectChange(e.target.value, "max_base_price_all") :
+                                        column.id == "max Sqft Active" ? handleSelectChange(e.target.value, "max_sqft_active") :
+                                        column.id == "avg Net Traffic Per Month This Year" ? handleSelectChange(e.target.value, "avg_net_traffic_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month This Year" ? handleSelectChange(e.target.value, "avg_net_sales_per_month_this_year") :
+                                        column.id == "avg Closings Per Month This Year" ? handleSelectChange(e.target.value, "avg_closings_per_month_this_year") :
+                                        column.id == "avg Net Sales Per Month Since Open" ? handleSelectChange(e.target.value, "avg_net_sales_per_month_since_open") :
+                                        column.id == "avg Net Sales Per Month Last 3 Months" ? handleSelectChange(e.target.value, "avg_net_sales_per_month_last_three_months") :
+                                        column.id == "month Net Sold" ? handleSelectChange(e.target.value, "month_net_sold") :
+                                        column.id == "year Net Sold" ? handleSelectChange(e.target.value, "year_net_sold") :
+                                        column.id == "avg Closing Price" ? handleSelectChange(e.target.value, "avg_closing_price") :
+                                        column.id == "permits This Year" ? handleSelectChange(e.target.value, "permit_this_year") :
+                                        column.id == "median Closing Price Since Open" ? handleSelectChange(e.target.value, "median_closing_price_since_open") :
+                                        column.id == "median Closing Price This Year" ? handleSelectChange(e.target.value, "median_closing_price_this_year") : ""
                                       }
                                     >
                                       <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
@@ -3698,7 +3714,7 @@ const SubdivisionList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}>
                                       <div>
                                         <Link
-                                          to={`/subdivisionUpdate/${element.id}`}
+                                          to={`/subdivisionUpdate/${element.id}?page=${currentPage}`}
                                           className="btn btn-primary shadow btn-xs sharp me-1"
                                         >
                                           <i className="fas fa-pencil-alt"></i>
@@ -3811,12 +3827,14 @@ const SubdivisionList = () => {
       </div>
     </div >
       <SubdivisionOffcanvas
-        ref={subdivision}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />
       <BulkSubdivisionUpdate
-        ref={bulkSubdivision}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Subdivision" : "Bulk Edit Subdivisions"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}

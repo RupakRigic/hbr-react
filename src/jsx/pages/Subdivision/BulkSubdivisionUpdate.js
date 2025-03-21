@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useImperativeHandle, Fragment } from 'react';
+import React, { useState, forwardRef, useEffect, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -7,11 +7,10 @@ import Select from "react-select";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const BulkLandsaleUpdate = forwardRef((props, ref) => {
-  const { selectedLandSales } = props;
+const BulkLandsaleUpdate = forwardRef((props) => {
+  const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [addProduct, setAddProduct] = useState(false);
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState([]);
   const [masterplan, setMasterPlan] = useState([]);
@@ -25,12 +24,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const [gate, setGate] = useState("");
   const [options, setOptions] = useState([]);
   const navigate = useNavigate();
-
-  useImperativeHandle(ref, () => ({
-    showEmployeModal() {
-      setAddProduct(true)
-    }
-  }));
 
   const handleStatus = (e) => {
     setStatus(e.target.value);
@@ -70,7 +63,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      if (selectedLandSales.length > 0 && addProduct) {
+      if (selectedLandSales.length > 0 && canvasShowEdit) {
         GetBuilderlist();
       } else {
         return;
@@ -78,7 +71,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     } else {
       navigate("/");
     }
-  }, [selectedLandSales, addProduct]);
+  }, [selectedLandSales, canvasShowEdit]);
 
   const GetBuilderlist = async () => {
     setIsLoading(true);
@@ -171,7 +164,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   };
 
   const HandleUpdateCanvasClose = () => {
-    setAddProduct(false); 
+    seCanvasShowEdit(false); 
     setError('');
     setBuilderCode([]);
     setStatus("");
@@ -272,7 +265,7 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
 
   return (
     <Fragment>
-      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
+      <Offcanvas show={canvasShowEdit} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"

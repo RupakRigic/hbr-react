@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -6,10 +6,11 @@ import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilder
 import Select from "react-select";
 import swal from "sweetalert";
 
-const SubdivisionOffcanvas = forwardRef((props, ref) => {
+const SubdivisionOffcanvas = forwardRef((props) => {
+    const { canvasShowAdd, seCanvasShowAdd } = props;
+
     const [BuilderCode, setBuilderCode] = useState(null);
     const [Error, setError] = useState('');
-    const [addSubdivision, setAddSubdivision] = useState(false);
     const [status, setStatus] = useState('1');
     const [productType, setProductType] = useState('');
     const [reporting, setReporting] = useState('1');
@@ -88,16 +89,10 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
     };
 
     useEffect(() => {
-        if (addSubdivision) {
+        if (canvasShowAdd) {
             getbuilderlist();
         }
-    }, [addSubdivision]);
-
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddSubdivision(true)
-        }
-    }));
+    }, [canvasShowAdd]);
 
     const handleBuilderCode = (code) => {
         setBuilderCode(code);
@@ -149,7 +144,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             if (data.status === true) {
                 swal("Subdivision Created Successfully").then((willDelete) => {
                 if (willDelete) {
-                    setAddSubdivision(false);
+                    seCanvasShowAdd(false);
                     props.parentCallback();
                 }})
             }
@@ -172,11 +167,11 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
 
     return (
         <>
-            <Offcanvas show={addSubdivision} onHide={setAddSubdivision} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowAdd} onHide={seCanvasShowAdd} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => setAddSubdivision(false)}
+                        onClick={() => seCanvasShowAdd(false)}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -442,7 +437,7 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => setAddSubdivision(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>

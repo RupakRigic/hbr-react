@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
@@ -9,6 +9,10 @@ import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
 
 const SubdivisionUpdate = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get("page");
+
   const [isLoading, setIsLoading] = useState(false);
   const [BuilderList, setBuilderList] = useState([]);
   const [options, setOptions] = useState([]);
@@ -172,7 +176,7 @@ const SubdivisionUpdate = () => {
       if (data.status === true) {
         swal("Record Updated Successfully").then((willDelete) => {
           if (willDelete) {
-            navigate("/subdivisionlist");
+            navigate(`/subdivisionlist?page=${page}`);
           }
         });
       } else {
@@ -197,7 +201,7 @@ const SubdivisionUpdate = () => {
 
   return (
     <Fragment>
-      <MainPagetitle mainTitle="Edit Subdivision" pageTitle="Edit Subdivision" parentTitle="Subdivisions" link="/subdivisionlist" />
+      <MainPagetitle mainTitle="Edit Subdivision" pageTitle="Edit Subdivision" parentTitle="Subdivisions" link={`/subdivisionlist?page=${page}`} />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">
@@ -594,7 +598,7 @@ const SubdivisionUpdate = () => {
                         </button>
                         <Link
                           type="reset"
-                          to={"/subdivisionlist"}
+                          to={`/subdivisionlist?page=${page}`}
                           className="btn btn-danger light ms-1"
                         >
                           Cancel
