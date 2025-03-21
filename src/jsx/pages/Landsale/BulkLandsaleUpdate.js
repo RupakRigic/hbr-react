@@ -168,7 +168,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
 
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel </label>
-                                        <input type="number" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
+                                        <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                     </div>
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput7" className="form-label"> Price </label>
@@ -215,7 +215,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                     </div>
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
-                                        <input type="number" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
+                                        <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                     </div>
                                     <p className='text-danger fs-12'>{Error}</p>
                                 </div>

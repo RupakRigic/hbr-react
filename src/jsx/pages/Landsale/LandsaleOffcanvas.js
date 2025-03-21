@@ -32,6 +32,8 @@ const LandsaleOffcanvas = forwardRef((props) => {
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
+            } else {
+                setError("Something went wrong!");
             }
         }
     };
@@ -126,11 +128,11 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         </Form.Group>
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput2" className="form-label"> Seller <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput2" className="form-label">Seller <span className="text-danger">*</span></label>
                                         <input type="text" name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput3" className="form-label"> Buyer <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput3" className="form-label">Buyer <span className="text-danger">*</span></label>
                                         <input type="text" name='buyer' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
@@ -138,16 +140,16 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <input type="text" name='location' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput5" className="form-label"> Date <span className="text-danger">*</span></label>
+                                        <label htmlFor="exampleFormControlInput5" className="form-label">Date <span className="text-danger">*</span></label>
                                         <input type="date" name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel </label>
-                                        <input type="number" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
+                                        <label htmlFor="exampleFormControlInput6" className="form-label">Parcel</label>
+                                        <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput7" className="form-label"> Price </label>
+                                        <label htmlFor="exampleFormControlInput7" className="form-label">Price</label>
                                         <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                     </div>
 
@@ -182,16 +184,16 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Longitude </label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">Longitude</label>
                                         <input type="text" name='lng' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Area </label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">Area</label>
                                         <input type="text" name='area' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
-                                        <input type="number" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode</label>
+                                        <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                     </div>
                                     <p className='text-danger fs-12'>{Error}</p>
                                 </div>

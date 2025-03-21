@@ -708,7 +708,7 @@ const CCAPNList = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                            <th>
+                            {/* <th>
                               <input
                                 type="checkbox"
                                 style={{
@@ -725,7 +725,7 @@ const CCAPNList = () => {
                                     : setSelectedLandSales([])
                                 }
                               />
-                            </th>{" "}
+                            </th>{" "} */}
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -768,7 +768,7 @@ const CCAPNList = () => {
                           {ccapnList !== null && ccapnList.length > 0 ? (
                             ccapnList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
-                                <td>
+                                {/* <td>
                                   <input
                                     type="checkbox"
                                     checked={selectedLandSales.includes(
@@ -781,7 +781,7 @@ const CCAPNList = () => {
                                       cursor: "pointer",
                                     }}
                                   />
-                                </td>
+                                </td> */}
                                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.builder?.name}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.name}</td>

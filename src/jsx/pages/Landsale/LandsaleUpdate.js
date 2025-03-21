@@ -181,7 +181,7 @@ const LandsaleUpdate = () => {
 
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput6" className="form-label">Parcel</label>
-                                                    <input type="number" name='parcel' defaultValue={LandsaleList.parcel} className="form-control" id="exampleFormControlInput6" placeholder="" />
+                                                    <input type="text" name='parcel' defaultValue={LandsaleList.parcel} className="form-control" id="exampleFormControlInput6" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
@@ -196,7 +196,7 @@ const LandsaleUpdate = () => {
 
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit</label>
-                                                    <input type="number" defaultValue={LandsaleList.priceperunit} name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
+                                                    <input type="number" defaultValue={LandsaleList.price_per} name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
@@ -236,7 +236,7 @@ const LandsaleUpdate = () => {
 
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
-                                                    <input type="number" name='zip' defaultValue={LandsaleList.zip} className="form-control" id="exampleFormControlInput17" placeholder="" />
+                                                    <input type="text" name='zip' defaultValue={LandsaleList.zip} className="form-control" id="exampleFormControlInput17" placeholder="" onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} />
                                                 </div>
 
                                                 <p className='text-danger fs-12'>{Error}</p>
