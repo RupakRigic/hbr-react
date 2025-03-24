@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
@@ -9,6 +9,10 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const PriceUpdate = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const [isLoading, setIsLoading] = useState(false);
     const [Error, setError] = useState("");
     const [ProductCode, setProductCode] = useState([]);
@@ -85,7 +89,7 @@ const PriceUpdate = () => {
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate("/pricelist");
+                        navigate(`/pricelist?page=${page}`);
                     }
                 });
             }
@@ -99,7 +103,7 @@ const PriceUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Base Price" pageTitle="Edit Base Price" parentTitle="Base Prices" link="/priceList" />
+            <MainPagetitle mainTitle="Edit Base Price" pageTitle="Edit Base Price" parentTitle="Base Prices" link={`/priceList?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
@@ -174,7 +178,7 @@ const PriceUpdate = () => {
                                                 <button type="submit" className="btn btn-primary me-1">
                                                     Submit
                                                 </button>
-                                                <Link to={"/priceList"} className="btn btn-danger light ms-1">
+                                                <Link to={`/priceList?page=${page}`} className="btn btn-danger light ms-1">
                                                     Cancel
                                                 </Link>
                                             </div>
