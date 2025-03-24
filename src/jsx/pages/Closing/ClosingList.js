@@ -134,6 +134,11 @@ const ClosingList = () => {
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [closingPriceOption, setClosingPriceOption] = useState("");
   const [loanAmountOption, setLoanAmountOption] = useState("");
   const [lotWidthOption, setLotWidthOption] = useState("");
@@ -147,6 +152,20 @@ const ClosingList = () => {
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllClosingListExport, ClosingList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -625,6 +644,7 @@ const ClosingList = () => {
       setClosingList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setClosingListCount(responseData.total);
+      setHandleCallBack(true);
       if (responseData.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.total);
@@ -662,6 +682,7 @@ const ClosingList = () => {
       }
       setAllClosingListExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     } else {
       for (let page = 2; page <= totalPages; page++) {
         // await delay(1000);
@@ -671,6 +692,7 @@ const ClosingList = () => {
       }
       setAllClosingListExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     }
   }
 
@@ -1243,8 +1265,11 @@ const ClosingList = () => {
     return sum / AllClosingListExport.length;
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "closingprice":
@@ -1563,7 +1588,7 @@ const ClosingList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => closingsale.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1574,7 +1599,7 @@ const ClosingList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkClosing.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1776,10 +1801,10 @@ const ClosingList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "closing Price" ? handleSelectChange(e, "closingprice") :
-                                          column.id == "loan Amount" ? handleSelectChange(e, "loanamount") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                        onChange={(e) => column.id == "closing Price" ? handleSelectChange(e.target.value, "closingprice") :
+                                          column.id == "loan Amount" ? handleSelectChange(e.target.value, "loanamount") :
+                                          column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2112,13 +2137,15 @@ const ClosingList = () => {
       </div>
 
       <ClosingOffcanvas
-        ref={closingsale}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Closing"
         parentCallback={handleCallback}
       />
 
       <BulkClosingUpdate
-        ref={bulkClosing}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Closing" : "Bulk Edit Closings"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
