@@ -1,11 +1,15 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { Tabs, Tab } from 'react-bootstrap';
 import AdminUserRoleService from '../../../API/Services/AdminService/AdminUserRoleService';
 import MainPagetitle from '../../layouts/MainPagetitle';
 
 const UserAnalyticsList = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const navigate = useNavigate();
     const params = useParams();
 
@@ -81,7 +85,7 @@ const UserAnalyticsList = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="User Analytics List" pageTitle="User Analytics List" parentTitle="Users" link="/userlist" />
+            <MainPagetitle mainTitle="User Analytics List" pageTitle="User Analytics List" parentTitle="Users" link={`/userlist?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-xl-12">

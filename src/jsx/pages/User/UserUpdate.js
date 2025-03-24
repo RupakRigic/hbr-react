@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate, Form } from "react-router-dom";
+import { Link, useParams, useNavigate, Form, useLocation } from "react-router-dom";
 import Select from "react-select";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
@@ -11,6 +11,10 @@ import { FiRefreshCcw, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 import MainPagetitle from "../../layouts/MainPagetitle";
 
 const UserUpdate = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get("page");
+
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
   const [RoleCode, setRoleCode] = useState([]);
@@ -167,7 +171,7 @@ const UserUpdate = () => {
             if (willDelete) {
               setRoleCode([]);
               setStandardUser([]);
-              navigate("/userlist");
+              navigate(`/userlist?page=${page}`);
             }
           })
         }
@@ -202,7 +206,7 @@ const UserUpdate = () => {
         setStandardUser([]);
         swal("Record Updated Successfully").then((willDelete) => {
           if (willDelete) {
-            navigate("/userlist");
+            navigate(`/userlist?page=${page}`);
           }
         })
       }
@@ -264,7 +268,7 @@ const UserUpdate = () => {
 
   return (
     <Fragment>
-      <MainPagetitle mainTitle="Edit User" pageTitle="Edit User" parentTitle="Users" link="/userlist" />
+      <MainPagetitle mainTitle="Edit User" pageTitle="Edit User" parentTitle="Users" link={`/userlist?page=${page}`} />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">
@@ -444,7 +448,7 @@ const UserUpdate = () => {
                         <button type="submit" className="btn btn-primary me-1">
                           Submit
                         </button>
-                        <Link to={"/userlist"} className="btn btn-danger light ms-1">
+                        <Link to={`/userlist?page=${page}`} className="btn btn-danger light ms-1">
                           Cancel
                         </Link>
                       </div>

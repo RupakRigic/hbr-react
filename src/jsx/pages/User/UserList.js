@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import UserOffcanvas from "./UserOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -15,6 +15,10 @@ import Modal from "react-bootstrap/Modal";
 import { MultiSelect } from "react-multi-select-component";
 
 const UserList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = JSON.parse(queryParams.get("page")) === 1 ? null : JSON.parse(queryParams.get("page"));
+
   const navigate = useNavigate();
   const product = useRef();
   const bulkproduct = useRef();
@@ -72,9 +76,13 @@ const UserList = () => {
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [sortOrders, setSortOrders] = useState({});
 
-  useEffect((currentPage) => {
+  useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      getuserList(currentPage, sortConfig, searchQuery);
+      if(page === currentPage){
+        return;
+      } else {
+        getuserList(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
@@ -200,6 +208,7 @@ const UserList = () => {
 
   const getuserList = async (currentPage, sortConfig, searchQuery) => {
     setIsLoading(true);
+    setCurrentPage(currentPage);
     try {
       let sortConfigString = "";
 
@@ -837,13 +846,13 @@ const UserList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div className="d-flex justify-content-center">
                                           <Link
-                                            to={`/userupdate/${element.id}`}
+                                            to={`/userupdate/${element.id}?page=${currentPage}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
                                             <i className="fas fa-pencil-alt"></i>
                                           </Link>
                                           <Link
-                                            to={`/useranalytics/${element.id}`}
+                                            to={`/useranalytics/${element.id}?page=${currentPage}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
                                             <i class="fa-regular fa-eye"></i>
