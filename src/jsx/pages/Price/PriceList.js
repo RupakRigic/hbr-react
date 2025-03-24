@@ -397,6 +397,11 @@ const PriceList = () => {
   const [npage, setNpage] = useState(0);
   const number = [...Array(npage + 1).keys()].slice(1);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [squareFootageOption, setSquareFootageOption] = useState("");
   const [storiesOption, setStoriesOption] = useState("");
   const [bedroomsOption, setBedroomsOption] = useState("");
@@ -451,6 +456,20 @@ const PriceList = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllProductListExport, priceList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -588,24 +607,34 @@ const PriceList = () => {
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_per_sqft, 'price_per_sqft');
 
 
-    if (isAnyFilterApplied) {
+    if (isAnyFilterApplied && !normalFilter) {
       setPriceList(filtered.slice(0, 100));
       setProductListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(true);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     } else {
       setPriceList(filtered.slice(0, 100));
       setProductListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     }
   };
 
   useEffect(() => {
-    applyFilters();
+    if (filter) {
+      applyFilters();
+    }
   }, [filterQueryCalculation]);
 
   useEffect(() => {
@@ -704,6 +733,7 @@ const PriceList = () => {
       setPriceList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductListCount(responseData.meta.total);
+      setHandleCallBack(true);
       if (responseData.meta.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
@@ -740,6 +770,7 @@ const PriceList = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     } else {
       for (let page = 2; page <= totalPages; page++) {
         // await delay(1000);
@@ -749,6 +780,7 @@ const PriceList = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     }
   }
 
@@ -1163,8 +1195,10 @@ const PriceList = () => {
   };
 
   useEffect(() => {
-    GetProductDropDownList();
-  }, []);
+    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
+      GetProductDropDownList();
+    }
+  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
   useEffect(() => {
     const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsPrices"));
@@ -1328,34 +1362,70 @@ const PriceList = () => {
 
   const totalSumFields = (field) => {
     if (field == "sqft") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.sqft || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.sqft || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.sqft || 0);
+        }, 0);
+      }
     }
     if (field == "stories") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.stories || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.stories || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.stories || 0);
+        }, 0);
+      }
     }
     if (field == "bedroom") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.bedroom || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.bedroom || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.bedroom || 0);
+        }, 0);
+      }
     }
     if (field == "bathroom") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.bathroom || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.bathroom || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.bathroom || 0);
+        }, 0);
+      }
     }
     if (field == "garage") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.garage || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.garage || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.garage || 0);
+        }, 0);
+      }
     }
     if (field == "baseprice") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.baseprice || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.baseprice || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.baseprice || 0);
+        }, 0);
+      }
     }
     if (field == "price_per_sqft") {
       if (filter) {
@@ -1369,33 +1439,43 @@ const PriceList = () => {
       }
     }
     if (field == "lotwidth") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.subdivision.lotwidth || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.subdivision.lotwidth || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.subdivision.lotwidth || 0);
+        }, 0);
+      }
     }
     if (field == "lotsize") {
-      return AllProductListExport.reduce((sum, prices) => {
-        return sum + (prices.product && prices.product.subdivision.lotsize || 0);
-      }, 0);
+      if (filter) {
+        return priceList.reduce((sum, prices) => {
+          return sum + (prices.product.subdivision.lotsize || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, prices) => {
+          return sum + (prices.product && prices.product.subdivision.lotsize || 0);
+        }, 0);
+      }
     }
   };
 
   const averageFields = (field) => {
-    if (field == "price_per_sqft") {
-      const sum = totalSumFields(field);
-      if (filter) {
-        return sum / priceList.length;
-      } else {
-        return sum / AllProductListExport.length;
-      }
+    const sum = totalSumFields(field);
+    if (filter) {
+      return sum / priceList.length;
     } else {
-      const sum = totalSumFields(field);
       return sum / AllProductListExport.length;
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "sqft":
@@ -1737,7 +1817,7 @@ const PriceList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => product.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1748,7 +1828,7 @@ const PriceList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkPrice.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1947,15 +2027,15 @@ const PriceList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
-                                          column.id == "stories" ? handleSelectChange(e, "stories") :
-                                          column.id == "bedrooms" ? handleSelectChange(e, "bedroom") :
-                                          column.id == "bathroom" ? handleSelectChange(e, "bathroom") :
-                                          column.id == "garage" ? handleSelectChange(e, "garage") :
-                                          column.id == "base Price" ? handleSelectChange(e, "baseprice") :
-                                          column.id == "price Per SQFT" ? handleSelectChange(e, "price_per_sqft") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e.target.value, "sqft") :
+                                          column.id == "stories" ? handleSelectChange(e.target.value, "stories") :
+                                          column.id == "bedrooms" ? handleSelectChange(e.target.value, "bedroom") :
+                                          column.id == "bathroom" ? handleSelectChange(e.target.value, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e.target.value, "garage") :
+                                          column.id == "base Price" ? handleSelectChange(e.target.value, "baseprice") :
+                                          column.id == "price Per SQFT" ? handleSelectChange(e.target.value, "price_per_sqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2264,14 +2344,16 @@ const PriceList = () => {
       </div>
 
       <PriceOffcanvas
-        ref={product}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Base Price"
         parentCallback={handleCallback}
         productList={ProductList}
       />
 
       <BulkPriceUpdate
-        ref={bulkPrice}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Base Price" : "Bulk Edit Base Prices"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
