@@ -399,6 +399,9 @@ const LandsaleList = () => {
     { label: "Size", key: "Price" },
     { label: "Size MS", key: "Price" },
     { label: "Date", key: "Price" },
+    { label: "Latitude", key: "Latitude" },
+    { label: "Longitude", key: "Longitude" },
+    { label: "Area", key: "Area" },
   ];
 
   const handleSelectAllToggle = () => {
@@ -1411,7 +1414,8 @@ const LandsaleList = () => {
 
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
                                   column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" &&
-                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code") &&
+                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code" && 
+                                  column.id !== "latitude" && column.id !== "longitude" && column.id !== "area") &&
                                   (
                                     <>
                                       <br />
@@ -1499,6 +1503,15 @@ const LandsaleList = () => {
                                   {column.id == "zip Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
+                                  {column.id == "latitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "longitude" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
                                 </>
                               ))}
                             </tr>
@@ -1556,6 +1569,15 @@ const LandsaleList = () => {
                                     }
                                     {column.id == "date" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
+                                    }
+                                    {column.id == "latitude" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
+                                    }
+                                    {column.id == "longitude" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lng}</td>
+                                    }
+                                    {column.id == "area" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>

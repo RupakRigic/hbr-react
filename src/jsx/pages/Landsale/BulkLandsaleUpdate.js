@@ -13,6 +13,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [noOfUnit, setNoOfUnit] = useState(null);
+    const [price, setPrice] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const GetSubdivisionDropDownList = async () => {
@@ -67,7 +69,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "parcel": event.target.parcel.value,
                         "price": event.target.price.value,
                         "typeofunit": event.target.typeofunit.value,
-                        "priceperunit": event.target.priceperunit.value,
+                        // "priceperunit": event.target.priceperunit.value,
                         "noofunit": event.target.noofunit.value,
                         "notes": event.target.notes.value,
                         "doc": event.target.doc.value,
@@ -104,6 +106,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         seCanvasShowEdit(false);
         setError('');
         setSubdivisionCode([]);
+        setPrice(null);
+        setNoOfUnit(null);
     };
 
     return (
@@ -150,7 +154,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                         </Form.Group>
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput2" className="form-label"> Seller</label>
+                                        <label htmlFor="exampleFormControlInput2" className="form-label">Seller</label>
                                         <input type="text" name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
@@ -162,17 +166,17 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                         <input type="text" name='location' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput5" className="form-label"> Date</label>
+                                        <label htmlFor="exampleFormControlInput5" className="form-label">Date</label>
                                         <input type="date" name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput6" className="form-label"> Parcel </label>
+                                        <label htmlFor="exampleFormControlInput6" className="form-label">Parcel</label>
                                         <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput7" className="form-label"> Price </label>
-                                        <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" />
+                                        <label htmlFor="exampleFormControlInput7" className="form-label">Price ($)</label>
+                                        <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setPrice(e.target.value)} />
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
@@ -180,12 +184,12 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                         <input type="text" name='typeofunit' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit</label>
-                                        <input type="number" name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
+                                        <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit ($)</label>
+                                        <input type="number" name='priceperunit' disabled style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }} value={noOfUnit ? Math.floor(price / noOfUnit) : 0} className="form-control" id="exampleFormControlInput11" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput12" className="form-label">No. Of Unit</label>
-                                        <input type="number" name='noofunit' className="form-control" id="exampleFormControlInput12" placeholder="" />
+                                        <input type="number" name='noofunit' className="form-control" id="exampleFormControlInput12" placeholder="" onChange={(e) => setNoOfUnit(e.target.value)} />
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
