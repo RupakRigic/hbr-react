@@ -139,6 +139,11 @@ const PermitList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [squareFootageOption, setSquareFootageOption] = useState("");
   const [valueOption, setValueOption] = useState("");
   const [lotWidthOption, setLotWidthOption] = useState("");
@@ -227,6 +232,20 @@ const PermitList = () => {
     localStorage.removeItem("single_Permit");
     localStorage.removeItem("setPermitFilter");
   };
+
+  useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllPermitListExport, permitList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -740,6 +759,7 @@ const PermitList = () => {
       setPermitList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setPermitListCount(responseData.meta.total);
+      setHandleCallBack(true);
       if (responseData.meta.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
@@ -777,6 +797,7 @@ const PermitList = () => {
       }
       setAllPermitListExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     } else {
       for (let page = 2; page <= totalPages; page++) {
         // await delay(1000);
@@ -786,6 +807,7 @@ const PermitList = () => {
       }
       setAllPermitListExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     }
   };
 
@@ -1085,9 +1107,11 @@ const PermitList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
+    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
+      GetBuilderDropDownList();
+      GetSubdivisionDropDownList();
+    }
+  }, [canvasShowAdd, canvasShowEdit,manageFilterOffcanvas]);
 
   const addToBuilderList = () => {
     let subdivisionList = permitList.map((data) => data.subdivision)
@@ -1128,8 +1152,11 @@ const PermitList = () => {
     return sum / AllPermitListExport.length;
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "sqft":
@@ -1481,7 +1508,7 @@ const PermitList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => permit.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1492,7 +1519,7 @@ const PermitList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkPermit.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1699,10 +1726,10 @@ const PermitList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e, "sqft") :
-                                          column.id == "value" ? handleSelectChange(e, "value") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") : ""}
+                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e.target.value, "sqft") :
+                                          column.id == "value" ? handleSelectChange(e.target.value, "value") :
+                                          column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2040,13 +2067,15 @@ const PermitList = () => {
       </div>
 
       <PermitOffcanvas
-        ref={permit}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Permit"
         parentCallback={handleCallback}
       />
 
       <BulkPermitUpdate
-        ref={bulkPermit}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Permit" : "Bulk Edit Permits"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}

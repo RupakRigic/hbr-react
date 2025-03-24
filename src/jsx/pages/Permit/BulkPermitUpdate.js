@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect, Fragment } from 'react';
+import React, { useState, forwardRef, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -6,19 +6,12 @@ import swal from "sweetalert";
 import AdminPermitService from "../../../API/Services/AdminService/AdminPermitService";
 import Select from "react-select";
 
-const BulkLandsaleUpdate = forwardRef((props, ref) => {
-    const { selectedLandSales } = props;
+const BulkLandsaleUpdate = forwardRef((props) => {
+    const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
-    const [addProduct, setAddProduct] = useState(false);
-
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddProduct(true)
-        }
-    }));
 
     const GetSubdivisionDropDownList = async () => {
         try {
@@ -39,8 +32,10 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     };
 
     useEffect(() => {
-        GetSubdivisionDropDownList();
-    }, []);
+        if (canvasShowEdit) {
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowEdit]);
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
@@ -84,7 +79,6 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
                                 props.parentCallback();
                             }
                         })
-                        props.parentCallback();
                     }
                 }
                 catch (error) {
@@ -98,14 +92,14 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
     };
 
     const HandleUpdateCanvasClose = () => {
-        setAddProduct(false); 
+        seCanvasShowEdit(false); 
         setError('');
         setSubdivisionCode([]);
     };
 
     return (
         <Fragment>
-            <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowEdit} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"

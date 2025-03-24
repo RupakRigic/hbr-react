@@ -1,23 +1,17 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, forwardRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 import swal from "sweetalert";
 import AdminPermitService from '../../../API/Services/AdminService/AdminPermitService';
 import Select from "react-select";
 
-const PermitOffcanvas = forwardRef((props, ref) => {
-    const navigate = useNavigate();
+const PermitOffcanvas = forwardRef((props) => {
+    const { canvasShowAdd, seCanvasShowAdd } = props;
+
     const [Error, setError] = useState('');
-    const [addProduct, setAddProduct] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
-
-    useImperativeHandle(ref, () => ({
-        showEmployeModal() {
-            setAddProduct(true)
-        }
-    }));
 
     const GetSubdivisionDropDownList = async () => {
         try {
@@ -38,8 +32,10 @@ const PermitOffcanvas = forwardRef((props, ref) => {
     };
 
     useEffect(() => {
-        GetSubdivisionDropDownList();
-    }, []);
+        if(canvasShowAdd){
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowAdd]);
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
@@ -69,8 +65,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                 swal("Permit Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
-                        setAddProduct(false);
-                        navigate('/permitlist');
+                        seCanvasShowAdd(false);
                     }
                 })
             }
@@ -85,11 +80,11 @@ const PermitOffcanvas = forwardRef((props, ref) => {
 
     return (
         <>
-            <Offcanvas show={addProduct} onHide={setAddProduct} className="offcanvas-end customeoff" placement='end'>
+            <Offcanvas show={canvasShowAdd} onHide={seCanvasShowAdd} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => setAddProduct(false)}
+                        onClick={() => seCanvasShowAdd(false)}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -173,7 +168,7 @@ const PermitOffcanvas = forwardRef((props, ref) => {
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => setAddProduct(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>
