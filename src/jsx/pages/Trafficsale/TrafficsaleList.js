@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import TrafficsaleOffcanvas from "./TrafficsaleOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
@@ -23,6 +23,10 @@ import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
 
 const TrafficsaleList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = JSON.parse(queryParams.get("page")) === 1 ? null : JSON.parse(queryParams.get("page"));
+
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [excelLoading, setExcelLoading] = useState(false);
@@ -255,7 +259,11 @@ const TrafficsaleList = () => {
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      gettrafficsaleList(currentPage, sortConfig, searchQuery);
+      if(page === currentPage){
+        return;
+      } else {
+        gettrafficsaleList(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+      }
     } else {
       navigate("/");
     }
@@ -756,6 +764,7 @@ const TrafficsaleList = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
+    setCurrentPage(currentPage);
     localStorage.setItem("searchQueryByWeeklyTrafficFilter", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
@@ -800,15 +809,28 @@ const TrafficsaleList = () => {
     setExcelLoading(true);
     const totalPages = Math.ceil(trafficListCount / recordsPage);
     let allData = trafficsaleList;
-    for (let page = 2; page <= totalPages; page++) {
-      // await delay(1000);
-      const pageResponse = await AdminTrafficsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
-      const pageData = await pageResponse.json();
-      allData = allData.concat(pageData.data);
+    if (page !== null) {
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        // await delay(1000);
+        if (pageNum === page) continue;
+        const pageResponse = await AdminTrafficsaleService.index(pageNum, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllTrafficistExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
+    } else {
+      for (let page = 2; page <= totalPages; page++) {
+        // await delay(1000);
+        const pageResponse = await AdminTrafficsaleService.index(page, searchQuery, sortConfig ? `&sortConfig=${stringifySortConfig(sortConfig)}` : "");
+        const pageData = await pageResponse.json();
+        allData = allData.concat(pageData.data);
+      }
+      setAllTrafficistExport(allData);
+      setExcelLoading(false);
+      setHandleCallBack(true);
     }
-    setAllTrafficistExport(allData);
-    setExcelLoading(false);
-    setHandleCallBack(true);
   };
 
   const handleDelete = async (e) => {
@@ -2221,7 +2243,7 @@ const TrafficsaleList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div className="d-flex justify-content-center">
                                           <Link
-                                            to={`/trafficsaleupdate/${element.id}`}
+                                            to={`/trafficsaleupdate/${element.id}?page=${currentPage}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
                                             <i className="fas fa-pencil-alt"></i>

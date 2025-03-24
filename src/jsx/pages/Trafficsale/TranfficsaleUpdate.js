@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from 'react-bootstrap';
 import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTrafficsaleService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -9,6 +9,10 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const TrafficsaleUpdate = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const params = useParams();
     const navigate = useNavigate();
 
@@ -99,7 +103,7 @@ const TrafficsaleUpdate = () => {
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/trafficsalelist');
+                        navigate(`/trafficsalelist?page=${page}`);
                     }
                 })
             }
@@ -122,7 +126,7 @@ const TrafficsaleUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Weekly Traffic & Sale" pageTitle="Edit Weekly Traffic & Sale" parentTitle="Weekly Traffic & Sales" link="/trafficsalelist" />
+            <MainPagetitle mainTitle="Edit Weekly Traffic & Sale" pageTitle="Edit Weekly Traffic & Sale" parentTitle="Weekly Traffic & Sales" link={`/trafficsalelist?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
@@ -196,7 +200,7 @@ const TrafficsaleUpdate = () => {
                                             </div>
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                                <Link type="reset" to={"/trafficsalelist"} className="btn btn-danger light ms-1">Cancel</Link>
+                                                <Link type="reset" to={`/trafficsalelist?page=${page}`} className="btn btn-danger light ms-1">Cancel</Link>
                                             </div>
                                         </form>
                                     </div>
