@@ -1116,7 +1116,7 @@ const LandsaleList = () => {
   return (
     <Fragment>
       <MainPagetitle
-        mainTitle="Land sales"
+        mainTitle="Land Sales"
         pageTitle="Land Sales"
         parentTitle="Home"
       />
@@ -1799,7 +1799,7 @@ const LandsaleList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Manage Weekly Traffic & Sales List Fields Access{" "}
+            Manage Land Sale Fields Access{" "}
           </h5>
           <button
             type="button"
@@ -1867,7 +1867,7 @@ const LandsaleList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Filter Land sales{" "}
+            Filter Land Sales{" "}
           </h5>
           <button
             type="button"

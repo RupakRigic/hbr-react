@@ -680,7 +680,7 @@ const File = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Manage Files Fields Access{" "}
+            Manage File Fields Access{" "}
           </h5>
           <button
             type="button"

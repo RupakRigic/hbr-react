@@ -2208,7 +2208,7 @@ const ClosingList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Manage Closings Fields Access{" "}
+            Manage Closing Fields Access{" "}
           </h5>
           <button
             type="button"

@@ -2457,7 +2457,7 @@ const TrafficsaleList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Manage Weekly Traffic & Sales Fields Access{" "}
+            Manage Weekly Traffic & Sale Fields Access{" "}
           </h5>
           <button
             type="button"
