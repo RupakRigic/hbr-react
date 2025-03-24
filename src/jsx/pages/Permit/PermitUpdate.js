@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from 'react-bootstrap';
 import AdminPermitService from '../../../API/Services/AdminService/AdminPermitService';
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -9,6 +9,10 @@ import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const PermitUpdate = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const [isLoading, setIsLoading] = useState(false);
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
@@ -95,7 +99,7 @@ const PermitUpdate = () => {
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/permitlist');
+                        navigate(`/permitlist?page=${page}`);
                     }
                 })
             }
@@ -110,7 +114,7 @@ const PermitUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Permit" pageTitle="Edit Permit" parentTitle="Permits" link="/permitlist" />
+            <MainPagetitle mainTitle="Edit Permit" pageTitle="Edit Permit" parentTitle="Permits" link={`/permitlist?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
@@ -220,7 +224,7 @@ const PermitUpdate = () => {
                                             </div>
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                                <Link to={"/permitlist"} className="btn btn-danger light ms-1">Cancel</Link>
+                                                <Link to={`/permitlist?page=${page}`} className="btn btn-danger light ms-1">Cancel</Link>
                                             </div>
                                         </form>
                                     </div>

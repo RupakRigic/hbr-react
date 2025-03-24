@@ -70,7 +70,7 @@ const BuilderUpdate = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-debugger
+
         try {
             var userData = {
                 "builder_code": event.target.code.value,
