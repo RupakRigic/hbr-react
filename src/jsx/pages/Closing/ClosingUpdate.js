@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { Form } from 'react-bootstrap';
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
@@ -9,6 +9,10 @@ import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
 
 const ClosingUpdate = () => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get("page");
+
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
@@ -91,7 +95,7 @@ const ClosingUpdate = () => {
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
-                        navigate('/closingsaleList');
+                        navigate(`/closingsaleList?page=${page}`);
                     }
                 })
             }
@@ -106,7 +110,7 @@ const ClosingUpdate = () => {
 
     return (
         <Fragment>
-            <MainPagetitle mainTitle="Edit Closing" pageTitle="Edit Closing" parentTitle="Closings" link="/closingsalelist" />
+            <MainPagetitle mainTitle="Edit Closing" pageTitle="Edit Closing" parentTitle="Closings" link={`/closingsalelist?page=${page}`} />
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-lg-12">
@@ -187,7 +191,7 @@ const ClosingUpdate = () => {
                                             </div>
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                                <Link type="reset" to={"/closingsalelist"} className="btn btn-danger light ms-1">Cancel</Link>
+                                                <Link type="reset" to={`/closingsalelist?page=${page}`} className="btn btn-danger light ms-1">Cancel</Link>
                                             </div>
                                         </form>
                                     </div>
