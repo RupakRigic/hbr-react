@@ -346,6 +346,7 @@ console.log(userList)
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsAccountAdminUser", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -369,11 +370,16 @@ console.log(userList)
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsAccountAdminUser"));
+    if(draggedColumns){
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const roleOptions = [

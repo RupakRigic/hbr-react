@@ -303,6 +303,7 @@ const UserList = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsUsersList", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -326,11 +327,16 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsUsersList"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const roleOptions = [

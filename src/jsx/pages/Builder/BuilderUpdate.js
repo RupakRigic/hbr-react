@@ -70,7 +70,7 @@ const BuilderUpdate = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+debugger
         try {
             var userData = {
                 "builder_code": event.target.code.value,
@@ -91,7 +91,7 @@ const BuilderUpdate = () => {
                 "coporate_officeaddress_2": event.target.coporate_officeaddress_2.value,
                 "coporate_officeaddress_city": event.target.coporate_officeaddress_city.value,
                 "coporate_officeaddress_zipcode": event.target.coporate_officeaddress_zipcode.value,
-                "logo": file ? file.split(',')[1] : Builder.logo,
+                "logo": file ? file.split(',')[1] : "",
                 "coporate_officeaddress_lat": event.target.coporate_officeaddress_lat.value,
                 "coporate_officeaddress_lng": event.target.coporate_officeaddress_lng.value,
             }

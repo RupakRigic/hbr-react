@@ -846,6 +846,7 @@ const ClosingList = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsClosings", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -869,11 +870,16 @@ const ClosingList = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsClosings"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const toCamelCase = (str) => {

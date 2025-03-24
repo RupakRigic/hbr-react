@@ -955,6 +955,7 @@ const ProductList = () => {
   };
 
   const handleSaveDialog = () => {
+    localStorage.setItem("draggedColumnsProducts", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -970,11 +971,16 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    const mappedColumns = fieldList.map((data) => ({
-      id: data.charAt(0).toLowerCase() + data.slice(1),
-      label: data
-    }));
-    setColumns(mappedColumns);
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsProducts"));
+    if(draggedColumns) {
+      setColumns(draggedColumns);
+    } else {
+      const mappedColumns = fieldList.map((data) => ({
+        id: data.charAt(0).toLowerCase() + data.slice(1),
+        label: data
+      }));
+      setColumns(mappedColumns);
+    }
   }, [fieldList]);
 
   const toCamelCase = (str) => {
