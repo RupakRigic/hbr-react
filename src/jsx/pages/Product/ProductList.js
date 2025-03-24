@@ -411,6 +411,11 @@ const ProductList = () => {
   const [filter, setFilter] = useState(false);
   const [normalFilter, setNormalFilter] = useState(false);
 
+  const [calculationData, setCalculationData] = useState({});
+  const [handleCallBack, setHandleCallBack] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
+  const [canvasShowEdit, seCanvasShowEdit] = useState(false);
+
   const [squareFootageOption, setSquareFootageOption] = useState("");
   const [storiesOption, setStoriesOption] = useState("");
   const [bedRoomsOption, setBedRoomsOption] = useState("");
@@ -471,6 +476,20 @@ const ProductList = () => {
   };
 
   useEffect(() => {
+    if (handleCallBack && calculationData) {
+      Object.entries(calculationData).forEach(([field, value]) => {
+        handleSelectChange(value, field);
+      });
+    }
+  }, [handleCallBack, AllProductListExport, productList]);
+
+  useEffect(() => {
+    if (selectedLandSales?.length === 0) {
+      setHandleCallBack(false);
+    }
+  }, [selectedLandSales]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsProducts", JSON.stringify(selectedFields));
     }
@@ -513,7 +532,7 @@ const ProductList = () => {
     setIsLoading(true);
     setExcelLoading(true);
     setSearchQuery(searchQuery);
-    setCurrentPage(pageNumber)
+    setCurrentPage(pageNumber);
     localStorage.setItem("searchQueryByProductFilter_Product", JSON.stringify(searchQuery));
     try {
       let sortConfigString = "";
@@ -532,6 +551,7 @@ const ProductList = () => {
       setProductList(responseData.data);
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductsListCount(responseData.meta.total);
+      setHandleCallBack(true);
       if (responseData.meta.total > 100) {
         if(!pageChange){
           FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
@@ -569,6 +589,7 @@ const ProductList = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     } else {
       for (let page = 2; page <= totalPages; page++) {
         // await delay(1000);
@@ -578,6 +599,7 @@ const ProductList = () => {
       }
       setAllBuilderExport(allData);
       setExcelLoading(false);
+      setHandleCallBack(true);
     }
   }
 
@@ -586,9 +608,11 @@ const ProductList = () => {
   }, [filterQuery]);
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
+    if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+      GetBuilderDropDownList();
+      GetSubdivisionDropDownList();
+    }
+  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -639,7 +663,9 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    applyFilters();
+    if (filter) {
+      applyFilters();
+    }
   }, [filterQueryCalculation]);
 
   const handleDelete = async (e) => {
@@ -1054,19 +1080,27 @@ const ProductList = () => {
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_since_open, 'price_changes_since_open');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_last_12_Month, 'price_changes_last_12_Month');
 
-    if (isAnyFilterApplied) {
+    if (isAnyFilterApplied && !normalFilter) {
       setProductList(filtered.slice(0, 100));
       setProductsListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
-      setFilter(true);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     } else {
       setProductList(filtered.slice(0, 100));
       setProductsListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
-      setFilter(false);
       setNormalFilter(false);
+      if(isAnyFilterApplied){
+        setFilter(true);
+      } else {
+        setFilter(false);
+      }
     }
   };
 
@@ -1182,34 +1216,70 @@ const ProductList = () => {
 
   const totalSumFields = (field) => {
     if (field == "sqft") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.sqft || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.sqft || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.sqft || 0);
+        }, 0);
+      }
     }
     if (field == "stories") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.stories || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.stories || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.stories || 0);
+        }, 0);
+      }
     }
     if (field == "bedroom") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.bedroom || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.bedroom || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.bedroom || 0);
+        }, 0);
+      }
     }
     if (field == "bathroom") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.bathroom || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.bathroom || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.bathroom || 0);
+        }, 0);
+      }
     }
     if (field == "garage") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.garage || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.garage || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.garage || 0);
+        }, 0);
+      }
     }
     if (field == "recentprice") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + Math.floor(products.recentprice || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.recentprice || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + Math.floor(products.recentprice || 0);
+        }, 0);
+      }
     }
     if (field == "recentpricesqft") {
       if (filter) {
@@ -1223,14 +1293,26 @@ const ProductList = () => {
       }
     }
     if (field == "lotwidth") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.subdivision && products.subdivision.lotwidth || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.subdivision.lotwidth || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.subdivision && products.subdivision.lotwidth || 0);
+        }, 0);
+      }
     }
     if (field == "lotsize") {
-      return AllProductListExport.reduce((sum, products) => {
-        return sum + (products.subdivision && products.subdivision.lotsize || 0);
-      }, 0);
+      if (filter) {
+        return productList.reduce((sum, products) => {
+          return sum + Math.floor(products.subdivision.lotsize || 0);
+        }, 0);
+      } else {
+        return AllProductListExport.reduce((sum, products) => {
+          return sum + (products.subdivision && products.subdivision.lotsize || 0);
+        }, 0);
+      }
     }
     if (field == "price_changes_since_open") {
       if (filter) {
@@ -1257,21 +1339,19 @@ const ProductList = () => {
   };
 
   const averageFields = (field) => {
-    if (field == "recentpricesqft" || field == "price_changes_since_open" || field == "price_changes_last_12_Month") {
-      const sum = totalSumFields(field);
-      if (filter) {
-        return sum / productList.length;
-      } else {
-        return sum / AllProductListExport.length;
-      }
+    const sum = totalSumFields(field);
+    if (filter) {
+      return sum / productList.length;
     } else {
-      const sum = totalSumFields(field);
       return sum / AllProductListExport.length;
     }
   };
 
-  const handleSelectChange = (e, field) => {
-    const value = e.target.value;
+  const handleSelectChange = (value, field) => {
+    setCalculationData((prevData) => ({
+      ...prevData,
+      [field]: value,  // Store field and value together
+    }));
 
     switch (field) {
       case "sqft":
@@ -1702,7 +1782,7 @@ const ProductList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => product.current.showEmployeModal()}
+                            onClick={() => seCanvasShowAdd(true)}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-plus" />&nbsp;
@@ -1713,7 +1793,7 @@ const ProductList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => selectedLandSales.length > 0 ? bulkProduct.current.showEmployeModal() : swal({
+                            onClick={() => selectedLandSales.length > 0 ? seCanvasShowEdit(true) : swal({
                               text: "Please select at least one record.",
                               icon: "warning",
                               dangerMode: true,
@@ -1921,17 +2001,17 @@ const ProductList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "square Footage" ? handleSelectChange(e, "sqft") :
-                                          column.id == "stories" ? handleSelectChange(e, "stories") :
-                                          column.id == "bed Rooms" ? handleSelectChange(e, "bedroom") :
-                                          column.id == "bath Rooms" ? handleSelectChange(e, "bathroom") :
-                                          column.id == "garage" ? handleSelectChange(e, "garage") :
-                                          column.id == "current Base Price" ? handleSelectChange(e, "recentprice") :
-                                          column.id == "current Price Per SQFT" ? handleSelectChange(e, "recentpricesqft") :
-                                          column.id == "lot Width" ? handleSelectChange(e, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e, "lotsize") :
-                                          column.id == "price Change Since Open" ? handleSelectChange(e, "price_changes_since_open") :
-                                          column.id == "price Change Last 12 Months" ? handleSelectChange(e, "price_changes_last_12_Month") : ""}
+                                        onChange={(e) => column.id == "square Footage" ? handleSelectChange(e.target.value, "sqft") :
+                                          column.id == "stories" ? handleSelectChange(e.target.value, "stories") :
+                                          column.id == "bed Rooms" ? handleSelectChange(e.target.value, "bedroom") :
+                                          column.id == "bath Rooms" ? handleSelectChange(e.target.value, "bathroom") :
+                                          column.id == "garage" ? handleSelectChange(e.target.value, "garage") :
+                                          column.id == "current Base Price" ? handleSelectChange(e.target.value, "recentprice") :
+                                          column.id == "current Price Per SQFT" ? handleSelectChange(e.target.value, "recentpricesqft") :
+                                          column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") :
+                                          column.id == "price Change Since Open" ? handleSelectChange(e.target.value, "price_changes_since_open") :
+                                          column.id == "price Change Last 12 Months" ? handleSelectChange(e.target.value, "price_changes_last_12_Month") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2275,14 +2355,16 @@ const ProductList = () => {
       </div>
 
       <ProductOffcanvas
-        ref={product}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Product"
         parentCallback={handleCallback}
         SubdivisionList={SubdivisionList}
       />
 
       <BulkProductUpdate
-        ref={bulkProduct}
+        canvasShowEdit={canvasShowEdit}
+        seCanvasShowEdit={seCanvasShowEdit}
         Title={selectedLandSales?.length  === 1 ? "Edit Product" : "Bulk Edit Products"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}

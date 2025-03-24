@@ -788,7 +788,7 @@ const BuilderTable = () => {
       if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
         GetBuilderDropDownList();
       }
-    }, [canvasShowAdd, canvasShowEdit || manageFilterOffcanvas]);
+    }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {

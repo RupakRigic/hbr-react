@@ -1,22 +1,15 @@
-import React, { useState, forwardRef, useImperativeHandle, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import Select from "react-select";
 
-const BulkLandsaleUpdate = forwardRef((props, ref) => {
-  const { selectedLandSales, SubdivisionList } = props;
+const BulkLandsaleUpdate = forwardRef((props) => {
+  const { selectedLandSales, SubdivisionList, canvasShowEdit, seCanvasShowEdit } = props;
 
   const [SubdivisionCode, setSubdivisionCode] = useState([]);
   const [Error, setError] = useState('');
-  const [addProduct, setAddProduct] = useState(false);
-
-  useImperativeHandle(ref, () => ({
-    showEmployeModal() {
-      setAddProduct(true)
-    }
-  }));
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -68,14 +61,14 @@ const BulkLandsaleUpdate = forwardRef((props, ref) => {
   };
 
   const HandleUpdateCanvasClose = () => {
-    setAddProduct(false); 
+    seCanvasShowEdit(false); 
     setError('');
     setSubdivisionCode([]);
   };
 
   return (
     <Fragment>
-      <Offcanvas show={addProduct} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
+      <Offcanvas show={canvasShowEdit} onHide={() => HandleUpdateCanvasClose()} className="offcanvas-end customeoff" placement='end'>
         <div className="offcanvas-header">
           <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
           <button type="button" className="btn-close"

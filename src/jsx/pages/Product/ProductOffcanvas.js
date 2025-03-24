@@ -10,17 +10,10 @@ import swal from "sweetalert";
 import Select from "react-select";
 
 const ProductOffcanvas = forwardRef((props, ref) => {
-  const { SubdivisionList } = props;
+  const { SubdivisionList, canvasShowAdd, seCanvasShowAdd } = props;
   const navigate = useNavigate();
   const [Error, setError] = useState("");
-  const [addProduct, setAddProduct] = useState(false);
   const [SubdivisionCode, setSubdivisionCode] = useState("");
-
-  useImperativeHandle(ref, () => ({
-    showEmployeModal() {
-      setAddProduct(true);
-    },
-  }));
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -44,7 +37,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
       if (data.status === true) {
         swal("Product Created Succesfully").then((willDelete) => {
           if (willDelete) {
-            setAddProduct(false);
+            seCanvasShowAdd(false);
             props.parentCallback();
             navigate("/productlist");
           }
@@ -63,8 +56,8 @@ const ProductOffcanvas = forwardRef((props, ref) => {
   return (
     <>
       <Offcanvas
-        show={addProduct}
-        onHide={setAddProduct}
+        show={canvasShowAdd}
+        onHide={seCanvasShowAdd}
         className="offcanvas-end customeoff"
         placement="end"
       >
@@ -75,7 +68,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setAddProduct(false)}
+            onClick={() => seCanvasShowAdd(false)}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -235,7 +228,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                 </button>
                 <Link
                   to={"#"}
-                  onClick={() => setAddProduct(false)}
+                  onClick={() => seCanvasShowAdd(false)}
                   className="btn btn-danger light ms-1"
                 >
                   Cancel
