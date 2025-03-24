@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
@@ -9,6 +9,10 @@ import ClipLoader from "react-spinners/ClipLoader";
 import MainPagetitle from "../../layouts/MainPagetitle";
 
 const ProductUpdate = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get("page");
+
   const [SubdivisionCode, setSubdivisionCode] = useState([]);
   const [Error, setError] = useState("");
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
@@ -95,7 +99,7 @@ const ProductUpdate = () => {
       if (data.status === true) {
         swal("Record Updated Successfully").then((willDelete) => {
           if (willDelete) {
-            navigate("/productlist");
+            navigate(`/productlist?page=${page}`);
           }
         });
       }
@@ -112,7 +116,7 @@ const ProductUpdate = () => {
 
   return (
     <Fragment>
-      <MainPagetitle mainTitle="Edit Product" pageTitle="Edit Product" parentTitle="Products" link="/productlist" />
+      <MainPagetitle mainTitle="Edit Product" pageTitle="Edit Product" parentTitle="Products" link={`/productlist?page=${page}`} />
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">
@@ -131,7 +135,7 @@ const ProductUpdate = () => {
                       <div className="row">
                         <div className="col-xl-6 mb-3">
                           <label className="form-label">
-                            Subdivision<span className="text-danger">*</span>
+                            Subdivision <span className="text-danger">*</span>
                           </label>
                           <Form.Group controlId="tournamentList">
                             <Select
@@ -315,7 +319,7 @@ const ProductUpdate = () => {
                           Submit
                         </button>
                         <Link
-                          to={"/productlist"}
+                          to={`/productlist?page=${page}`}
                           className="btn btn-danger light ms-1"
                         >
                           Cancel
