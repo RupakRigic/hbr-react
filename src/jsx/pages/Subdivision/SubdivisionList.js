@@ -218,6 +218,7 @@ const SubdivisionList = () => {
   const [medianClosingPriceThisYearResult, setMedianClosingPriceThisYearResult] = useState(0);
 
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [selectedReporting, setSelectedReporting] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
@@ -225,6 +226,7 @@ const SubdivisionList = () => {
   const [selectedGated, setSelectedGated] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
@@ -748,6 +750,7 @@ const SubdivisionList = () => {
   };
 
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState(() => {
@@ -866,6 +869,12 @@ const SubdivisionList = () => {
   },[]);
 
   useEffect(() => {
+    if(selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    }
+  }, [selectedBuilderIDByFilter]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsSubdivisions", JSON.stringify(selectedFields));
     }
@@ -889,6 +898,10 @@ const SubdivisionList = () => {
     if (localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
       const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Subdivision"));
       handleSelectBuilderNameChange(selectedBuilderName);
+    }
+    if (localStorage.getItem("selectedSubdivisionNameByFilter_Subdivision")) {
+      const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Subdivision"));
+      handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
     if (localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
       const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Subdivision"));
@@ -1036,6 +1049,30 @@ const SubdivisionList = () => {
         const errorJson = await error.response.json();
 
         setError(errorJson.message);
+      }
+    }
+  };
+
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
+    try {
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+      setSubdivisionListDropDown(formattedData);
+    } catch (error) {
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        console.log(errorJson);
       }
     }
   };
@@ -1204,6 +1241,7 @@ const SubdivisionList = () => {
     setSelectedStatus([]);
     setSelectedReporting([]);
     setSelectedBuilderName([]);
+    setSelectedSubdivisionName([]);
     setProductTypeStatus([]);
     setSelectedArea([]);
     setSelectedMasterPlan([]);
@@ -2521,14 +2559,24 @@ const SubdivisionList = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setSelectedValues(selectedValues);
+    setSelectedBuilderIDByFilter(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
     }));
     setNormalFilter(true);
-  }
+  };
+
+  const handleSelectSubdivisionNameChange = (selectedItems) => {
+    const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionName(selectedItems);
+    setFilterQuery(prevState => ({
+        ...prevState,
+        name: selectedNames
+    }));
+    setNormalFilter(true);
+  };
 
   const handleSelectStatusChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
@@ -4629,13 +4677,6 @@ const SubdivisionList = () => {
                       placeholder={"Select Reporting"}
                     />
                   </div>
-                  <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      NAME :{" "}
-                    </label>
-                    <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
-                  </div>
-
 
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
@@ -4648,6 +4689,19 @@ const SubdivisionList = () => {
                         value={selectedBuilderName}
                         onChange={handleSelectBuilderNameChange}
                         placeholder={"Select Builder Name"}
+                      />
+                    </Form.Group>
+                  </div>
+
+                  <div className="col-md-3 mt-3">
+                    <label className="form-label">NAME:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="name"
+                        options={subdivisionListDropDown}
+                        value={selectedSubdivisionName}
+                        onChange={handleSelectSubdivisionNameChange}
+                        placeholder={"Select Subdivision Name"}
                       />
                     </Form.Group>
                   </div>

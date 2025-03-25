@@ -5,13 +5,17 @@ import { MultiSelect } from 'react-multi-select-component';
 import DatePicker from "react-datepicker";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import { useNavigate } from 'react-router-dom';
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const FilterSubdivision = () => {
     const navigate = useNavigate();
     const [selectedStatusByFilter, setSelectedStatusByFilter] = useState([]);
     const [selectedReportingByFilter, setSelectedReportingByFilter] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
+    const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
+    const [selectedSubdivisionNameByFilter, setSelectedSubdivisionNameByFilter] = useState([]);
     const [productTypeStatusByFilter, setProductTypeStatusByFilter] = useState([]);
     const [selectedAreaByFilter, setSelectedAreaByFilter] = useState([]);
     const [selectedMasterPlanByFilter, setSelectedMasterPlanByFilter] = useState([]);
@@ -42,47 +46,51 @@ const FilterSubdivision = () => {
     });
 
     useEffect(() => {
-        if(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
+        if (localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision")) {
             const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusBySubdivisionFilter_Subdivision"));
             handleSelectStatusChange(selectedStatus);
         }
-        if(localStorage.getItem("selectedReportingByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedReportingByFilter_Subdivision")) {
             const selectedReporting = JSON.parse(localStorage.getItem("selectedReportingByFilter_Subdivision"));
             handleSelectReportingChange(selectedReporting);
         }
-        if(localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedBuilderNameByFilter_Subdivision")) {
             const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Subdivision"));
             handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedSubdivisionNameByFilter_Subdivision")) {
+            const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Subdivision"));
+            handleSelectSubdivisionNameChange(selectedSubdivisionName);
+        }
+        if (localStorage.getItem("productTypeStatusByFilter_Subdivision")) {
             const productTypeStatus = JSON.parse(localStorage.getItem("productTypeStatusByFilter_Subdivision"));
             handleSelectProductTypeChange(productTypeStatus);
         }
-        if(localStorage.getItem("selectedAreaByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedAreaByFilter_Subdivision")) {
             const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
             handleSelectAreaChange(selectedArea);
         }
-        if(localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
             const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
             handleSelectMasterPlanChange(selectedMasterPlan);
         }
-        if(localStorage.getItem("selectedAgeByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedAgeByFilter_Subdivision")) {
             const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Subdivision"));
             handleSelectAgeChange(selectedAge);
         }
-        if(localStorage.getItem("selectedSingleByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedSingleByFilter_Subdivision")) {
             const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Subdivision"));
             handleSelectSingleChange(selectedSingle);
         }
-        if(localStorage.getItem("selectedGatedByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedGatedByFilter_Subdivision")) {
             const selectedGated = JSON.parse(localStorage.getItem("selectedGatedByFilter_Subdivision"));
             handleSelectGatedChange(selectedGated);
         }
-        if(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision")) {
+        if (localStorage.getItem("selectedJurisdicitionByFilter_Subdivision")) {
             const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter_Subdivision"));
             handleSelectJurisdictionChange(selectedJurisdicition);
         }
-        if(localStorage.getItem("seletctedGasProviderByFilter_Subdivision")) {
+        if (localStorage.getItem("seletctedGasProviderByFilter_Subdivision")) {
             const seletctedGasProvider = JSON.parse(localStorage.getItem("seletctedGasProviderByFilter_Subdivision"));
             handleGasProviderChange(seletctedGasProvider);
         }
@@ -95,6 +103,12 @@ const FilterSubdivision = () => {
             navigate("/");
         }
     }, []);
+
+    useEffect(() => {
+        if (selectedBuilderIDByFilter?.length > 0) {
+            SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+        }
+    }, [selectedBuilderIDByFilter]);
 
     useEffect(() => {
         setSearchQuery(filterString());
@@ -128,15 +142,40 @@ const FilterSubdivision = () => {
         }
     };
 
+    const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
+        try {
+            var userData = {
+                builder_ids: selectedBuilderIDByFilter
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            const validSubdivisionIds = formattedData.map(item => item.value);
+            setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+
+            setSubdivisionListDropDown(formattedData);
+        } catch (error) {
+            console.log("Error fetching subdivision list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                console.log(errorJson);
+            }
+        }
+    };
+
     useEffect(() => {
-        if(localStorage.getItem("setSubdivisionFilter") == "true") {
-            if((searchQuery == "") || (searchQuery == "&status=&reporting=&name=&builder_name=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&gated=&juridiction=&gasprovider=&from=&to=")){
+        if (localStorage.getItem("setSubdivisionFilter") == "true") {
+            if ((searchQuery == "") || (searchQuery == "&status=&reporting=&name=&builder_name=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=&gated=&juridiction=&gasprovider=&from=&to=")) {
                 return;
             } else {
                 navigate("/subdivisionlist");
                 localStorage.setItem("selectedStatusBySubdivisionFilter_Subdivision", JSON.stringify(selectedStatusByFilter));
                 localStorage.setItem("selectedReportingByFilter_Subdivision", JSON.stringify(selectedReportingByFilter));
                 localStorage.setItem("selectedBuilderNameByFilter_Subdivision", JSON.stringify(selectedBuilderNameByFilter));
+                localStorage.setItem("selectedSubdivisionNameByFilter_Subdivision", JSON.stringify(selectedSubdivisionNameByFilter));
                 localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatusByFilter));
                 localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedAreaByFilter));
                 localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlanByFilter));
@@ -165,7 +204,7 @@ const FilterSubdivision = () => {
                 localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
             }
         }
-        
+
     }, [searchQuery]);
 
     const HandleFilterForm = (e) => {
@@ -174,6 +213,7 @@ const FilterSubdivision = () => {
         localStorage.setItem("selectedStatusBySubdivisionFilter_Subdivision", JSON.stringify(selectedStatusByFilter));
         localStorage.setItem("selectedReportingByFilter_Subdivision", JSON.stringify(selectedReportingByFilter));
         localStorage.setItem("selectedBuilderNameByFilter_Subdivision", JSON.stringify(selectedBuilderNameByFilter));
+        localStorage.setItem("selectedSubdivisionNameByFilter_Subdivision", JSON.stringify(selectedSubdivisionNameByFilter));
         localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatusByFilter));
         localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedAreaByFilter));
         localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlanByFilter));
@@ -223,12 +263,23 @@ const FilterSubdivision = () => {
 
     const handleSelectBuilderNameChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.label).join(', ');
+        const selectedValues = selectedItems.map(item => item.value);
         setSelectedBuilderNameByFilter(selectedItems);
+        setSelectedBuilderIDByFilter(selectedValues);
         setFilterQuery(prevState => ({
             ...prevState,
             builder_name: selectedNames
         }));
-    }
+    };
+
+    const handleSelectSubdivisionNameChange = (selectedItems) => {
+        const selectedNames = selectedItems.map(item => item.label).join(', ');
+        setSelectedSubdivisionNameByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            name: selectedNames
+        }));
+    };
 
     const handleSelectProductTypeChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.value).join(', ');
@@ -376,6 +427,7 @@ const FilterSubdivision = () => {
         setSelectedGatedByFilter([]);
         setSelectedJurisdictionByFilter([]);
         setSelectedGasProviderByFilter([]);
+        setSelectedBuilderIDByFilter([]);
     };
 
     const statusOptions = [
@@ -505,9 +557,7 @@ const FilterSubdivision = () => {
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            STATUS:{" "}
-                        </label>
+                        <label className="form-label">STATUS:</label>
                         <MultiSelect
                             name="status"
                             options={statusOptions}
@@ -517,9 +567,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            REPORTING:{" "}
-                        </label>
+                        <label className="form-label">REPORTING:</label>
                         <MultiSelect
                             name="reporting"
                             options={reportingOptions}
@@ -529,15 +577,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            NAME :{" "}
-                        </label>
-                        <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
-                    </div>
-                    <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            BUILDER NAME :{" "}
-                        </label>
+                        <label className="form-label">BUILDER NAME:</label>
                         <Form.Group controlId="tournamentList">
                             <MultiSelect
                                 name="builder_name"
@@ -549,7 +589,19 @@ const FilterSubdivision = () => {
                         </Form.Group>
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:</label>
+                        <label className="form-label">NAME:</label>
+                        <Form.Group controlId="tournamentList">
+                            <MultiSelect
+                                name="name"
+                                options={subdivisionListDropDown}
+                                value={selectedSubdivisionNameByFilter}
+                                onChange={handleSelectSubdivisionNameChange}
+                                placeholder={"Select Subdivision Name"}
+                            />
+                        </Form.Group>
+                    </div>
+                    <div className="col-md-3 mt-3">
+                        <label htmlFor="exampleFormControlInput6" className="form-label">Product Type:</label>
                         <MultiSelect
                             name="product_type"
                             options={productTypeOptions}
@@ -559,9 +611,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            AREA:{" "}
-                        </label>
+                        <label className="form-label">AREA:</label>
                         <MultiSelect
                             name="area"
                             options={areaOption}
@@ -571,9 +621,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            MASTER PLAN:{" "}
-                        </label>
+                        <label className="form-label">MASTER PLAN:</label>
                         <MultiSelect
                             name="masterplan_id"
                             options={masterPlanOption}
@@ -583,15 +631,13 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            ZIP CODE:{" "}
-                        </label>
-                        <input 
-                            type="text" 
-                            name="zipcode" 
-                            value={filterQuery.zipcode} 
-                            className="form-control" 
-                            onChange={HandleFilter} 
+                        <label className="form-label">ZIP CODE:</label>
+                        <input
+                            type="text"
+                            name="zipcode"
+                            value={filterQuery.zipcode}
+                            className="form-control"
+                            onChange={HandleFilter}
                             pattern="[0-9, ]*"
                             onInput={(e) => {
                                 e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
@@ -599,19 +645,15 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            LOT WIDTH:{" "}
-                        </label>
+                        <label className="form-label">LOT WIDTH:</label>
                         <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">
-                            LOT SIZE:{" "}
-                        </label>
+                        <label className="form-label">LOT SIZE:</label>
                         <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                        <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:</label>
                         <MultiSelect
                             name="age"
                             options={ageOptions}
@@ -621,7 +663,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 ">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                        <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:</label>
                         <MultiSelect
                             name="single"
                             options={singleOptions}
@@ -631,7 +673,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label htmlFor="exampleFormControlInput28" className="form-label">GATED:{" "}</label>
+                        <label htmlFor="exampleFormControlInput28" className="form-label">GATED:</label>
                         <MultiSelect
                             name="gated"
                             options={gatedOptions}
@@ -641,9 +683,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">
-                            JURISDICTION:{" "}
-                        </label>
+                        <label className="form-label">JURISDICTION:</label>
                         <MultiSelect
                             name="juridiction"
                             options={jurisdictionOption}
@@ -653,9 +693,7 @@ const FilterSubdivision = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">
-                            GAS PROVIDER:{" "}
-                        </label>
+                        <label className="form-label">GAS PROVIDER:</label>
                         <MultiSelect
                             name="gasprovider"
                             options={gasProviderOption}

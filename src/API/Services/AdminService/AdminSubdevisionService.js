@@ -16,6 +16,7 @@ export default {
     bulkdestroy: (id) => clientAuth.delete(`admin/subdivision/bulkdestroy/${id}`),
     getByBuilderId: (builderId) => clientAuth.get(`admin/subdivision/bybuilder/${builderId}`),
     subdivisionDropDown: () => clientAuth.get(`admin/subdivision/builder/subdivision/list`),
+    subdivisionbybuilderidlist: (userData) => clientAuth.post(`admin/subdivision/subdivisionbybuilderidlist`,{ json: userData }),
     Subdivisionbybuilderid: (builderId) => clientAuth.get(`admin/subdivision/subdivisionbybuilderid/${builderId}`),
     export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/subdivision/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };
