@@ -472,6 +472,13 @@ const PriceList = () => {
   }, [selectedLandSales]);
 
   useEffect(() => {
+    const priceID = JSON.parse(localStorage.getItem("price_id"));
+    if (priceID) {
+      handleRowClick(priceID);
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsBasePrices", JSON.stringify(selectedFields));
     }

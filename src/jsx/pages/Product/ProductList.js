@@ -880,8 +880,18 @@ const ProductList = () => {
     localStorage.removeItem("setProductFilter_Product");
   };
 
-  const handlePriceClick = () => {
-    navigate("/pricelist");
+  const formatDate = (inputDate) => {
+    const dateObj = new Date(inputDate);
+    return `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+  };
+
+  const handlePriceClick = (id, date) => {
+    const formattedDate = formatDate(date);
+    navigate("/filterbaseprice");
+    localStorage.setItem("from_BasePrice", JSON.stringify(formattedDate));
+    localStorage.setItem("to_BasePrice", JSON.stringify(formattedDate));
+    localStorage.setItem("price_id", JSON.stringify(id));
+    localStorage.setItem("setBasePriceFilter", true);
   };
 
   const handleFileChange = async (e) => {
@@ -2734,7 +2744,7 @@ const ProductList = () => {
                                   ProductDetails.base_price.map(
                                     (element, index) => (
                                       <tr
-                                        onClick={handlePriceClick}
+                                        onClick={() => handlePriceClick(element.id, element.date)}
                                         key={element.id}
                                         style={{
                                           textAlign: "center",
