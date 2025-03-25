@@ -21,6 +21,7 @@ import DatePicker from "react-datepicker";
 import moment from 'moment';
 import '../../pages/Subdivision/subdivisionList.css';
 import Swal from "sweetalert2";
+import PriceComponent from "../../components/Price/PriceComponent";
 
 const TrafficsaleList = () => {
   const location = useLocation();
@@ -147,6 +148,10 @@ const TrafficsaleList = () => {
   const [weeklyUnsoldStandingInventoryOption, setWeeklyUnsoldStandingInventoryOption] = useState("");
   const [lotWidthOption, setLotWidthOption] = useState("");
   const [lotSizeOption, setLotSizeOption] = useState("");
+  const [avgBasePriceAllOption, setAvgBasePriceAllOption] = useState("");
+  const [avgBasePriceActiveOption, setAvgBasePriceActiveOption] = useState("");
+  const [avgSqftAllOption, setAvgSqftAllOption] = useState("");
+  const [avgSqftActiveOption, setAvgSqftActiveOption] = useState("");
 
   const [weeklyTrafficResult, setWeeklyTrafficResult] = useState(0);
   const [weeklyGrossSalesResult, setWeeklyGrossSalesResult] = useState(0);
@@ -157,6 +162,10 @@ const TrafficsaleList = () => {
   const [weeklyUnsoldStandingInventoryResult, setWeeklyUnsoldStandingInventoryResult] = useState(0);
   const [lotWidthResult, setLotWidthResult] = useState(0);
   const [lotSizeResult, setLotSizeResult] = useState(0);
+  const [avgBasePriceAllResult, setAvgBasePriceAllResult] = useState(0);
+  const [avgBasePriceActiveResult, setAvgBasePriceActiveResult] = useState(0);
+  const [avgSqftAllResult, setAvgSqftAllResult] = useState(0);
+  const [avgSqftActiveResult, setAvgSqftActiveResult] = useState(0);
 
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
@@ -486,7 +495,12 @@ const TrafficsaleList = () => {
     { label: 'All Single Story', key: 'AllSingleStory' },
     { label: 'Pk Record id', key: 'pkRecordID' },
     { label: 'Fk Sub id', key: 'fkSubID' },
-
+    { label: 'Avg Base Price All', key: 'avg_base_price_all' },
+    { label: 'Avg Base Price Active', key: 'avg_base_price_active' },
+    { label: 'Avg Sqft All', key: 'avg_sqft_all' },
+    { label: 'Avg Sqft Active', key: 'avg_sqft_active' },
+    { label: 'Sqft Group', key: 'sqft_group' },
+    { label: 'Price Group', key: 'price_group' },
   ];
 
   const exportColumns = [
@@ -511,6 +525,12 @@ const TrafficsaleList = () => {
     { label: 'All Single Story', key: 'AllSingleStory' },
     { label: 'Pk Record id', key: 'pkRecordID' },
     { label: 'Fk Sub id', key: 'fkSubID' },
+    { label: 'Avg Base Price All', key: 'avg_base_price_all' },
+    { label: 'Avg Base Price Active', key: 'avg_base_price_active' },
+    { label: 'Avg Sqft All', key: 'avg_sqft_all' },
+    { label: 'Avg Sqft Active', key: 'avg_sqft_active' },
+    { label: 'Sqft Group', key: 'sqft_group' },
+    { label: 'Price Group', key: 'price_group' },
   ];
 
   const handleSelectAllToggle = () => {
@@ -595,6 +615,18 @@ const TrafficsaleList = () => {
                 return row.id || '';
               case "Fk sub id":
                 return row.subdivision?.subdivision_code || '';
+              case "Avg Base Price All":
+                return row.subdivision?.avg_base_price_all || '';
+              case "Avg Base Price Active":
+                return row.subdivision?.avg_base_price_active || '';
+              case "Avg Sqft All":
+                return row.subdivision?.avg_sqft_all || '';
+              case "Avg Sqft Active":
+                return row.subdivision?.avg_sqft_active || '';
+              case "Sqft Group":
+                return row.subdivision?.sqft_group || '';
+              case "Price Group":
+                return row.subdivision?.price_group?.group || '';
               default:
                 return '';
             }
@@ -1390,6 +1422,50 @@ const TrafficsaleList = () => {
         }, 0);
       }
     }
+    if (field == "avg_base_price_all") {
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_base_price_all || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_base_price_all || 0);
+        }, 0);
+      }
+    }
+    if (field == "avg_base_price_active") {
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_base_price_active || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_base_price_active || 0);
+        }, 0);
+      }
+    }
+    if (field == "avg_sqft_all") {
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_sqft_all || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_sqft_all || 0);
+        }, 0);
+      }
+    }
+    if (field == "avg_sqft_active") {
+      if (filter) {
+        return trafficsaleList.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_sqft_active || 0);
+        }, 0);
+      } else {
+        return AllTrafficListExport.reduce((sum, traficSales) => {
+          return sum + (traficSales.subdivision && traficSales.subdivision.avg_sqft_active || 0);
+        }, 0);
+      }
+    }
   };
 
   const averageFields = (field) => {
@@ -1498,6 +1574,46 @@ const TrafficsaleList = () => {
         }
         break;
 
+      case "avg_base_price_all":
+        setAvgBasePriceAllOption(value);
+
+        if (value === 'sum') {
+          setAvgBasePriceAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgBasePriceAllResult(averageFields(field));
+        }
+        break;
+
+      case "avg_base_price_active":
+        setAvgBasePriceActiveOption(value);
+
+        if (value === 'sum') {
+          setAvgBasePriceActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgBasePriceActiveResult(averageFields(field));
+        }
+        break;
+
+      case "avg_sqft_all":
+        setAvgSqftAllOption(value);
+
+        if (value === 'sum') {
+          setAvgSqftAllResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgSqftAllResult(averageFields(field));
+        }
+        break;
+
+      case "avg_sqft_active":
+        setAvgSqftActiveOption(value);
+
+        if (value === 'sum') {
+          setAvgSqftActiveResult(totalSumFields(field));
+        } else if (value === 'avg') {
+          setAvgSqftActiveResult(averageFields(field));
+        }
+        break;
+
       default:
         break;
     }
@@ -1505,7 +1621,7 @@ const TrafficsaleList = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action')
+      .filter((field) => field !== 'Action' && field !== 'Avg Base Price All' && field !== 'Avg Base Price Active' && field !== 'Avg Sqft All' && field !== 'Avg Sqft Active' && field !== 'Sqft Group' && field !== 'Price Group')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 
@@ -2002,7 +2118,8 @@ const TrafficsaleList = () => {
                                 {(!excelLoading) && (column.id !== "week Ending" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Type" &&
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
-                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action" &&
+                                  column.id !== "sqft Group" && column.id !== "price Group"
                                 ) &&
                                   (
                                     <>
@@ -2016,8 +2133,9 @@ const TrafficsaleList = () => {
                                           column.id == "total Lots" ? totalLotsOption :
                                           column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption :
                                           column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption :
-                                          column.id == "lot Width" ? lotWidthOption :
-                                          column.id == "lot Size" ? lotSizeOption : ""
+                                          column.id == "lot Width" ? lotWidthOption : column.id == "lot Size" ? lotSizeOption : 
+                                          column.id == "avg Base Price All" ? avgBasePriceAllOption : column.id == "avg Base Price Active" ? avgBasePriceActiveOption:
+                                          column.id == "avg Sqft All" ? avgSqftAllOption : column.id == "avg Sqft Active" ? avgSqftActiveOption :""
                                         }
 
                                         style={{
@@ -2038,7 +2156,11 @@ const TrafficsaleList = () => {
                                           column.id == "weekly Lots Release For Sale" ? handleSelectChange(e.target.value, "lotreleased") :
                                           column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e.target.value, "unsoldinventory") :
                                           column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
-                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
+                                          column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : 
+                                          column.id == "avg Base Price All" ? handleSelectChange(e.target.value, "avg_base_price_all") : 
+                                          column.id == "avg Base Price Active" ? handleSelectChange(e.target.value, "avg_base_price_active") : 
+                                          column.id == "avg Sqft All" ? handleSelectChange(e.target.value, "avg_sqft_all"): 
+                                          column.id == "avg Sqft Active" ? handleSelectChange(e.target.value, "avg_sqft_active") : ""}
                                       >
                                         <option style={{ color: "black", fontSize: "10px" }} value="" disabled>CALCULATION</option>
                                         <option style={{ color: "black", fontSize: "10px" }} value="sum">Sum</option>
@@ -2122,6 +2244,24 @@ const TrafficsaleList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "_fkSubID" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "avg Base Price All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={avgBasePriceAllResult} />}</td>
+                                  }
+                                  {column.id == "avg Base Price Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={avgBasePriceActiveResult} />}</td>
+                                  }
+                                  {column.id == "avg Sqft All" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftAllResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "avg Sqft Active" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}>{avgSqftActiveResult.toFixed(2)}</td>
+                                  }
+                                  {column.id == "sqft Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "price Group" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "action" &&
@@ -2238,6 +2378,24 @@ const TrafficsaleList = () => {
                                     }
                                     {column.id == "_fkSubID" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.subdivision_code}</td>
+                                    }
+                                    {column.id == "avg Base Price All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.subdivision.avg_base_price_all} /> || "NA"}</td>
+                                    }
+                                    {column.id == "avg Base Price Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{<PriceComponent price={element.subdivision.avg_base_price_active} /> || "NA"}</td>
+                                    }
+                                    {column.id == "avg Sqft All" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.avg_sqft_all}</td>
+                                    }
+                                    {column.id == "avg Sqft Active" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.avg_sqft_active}</td>
+                                    }
+                                    {column.id == "sqft Group" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.sqft_group}</td>
+                                    }
+                                    {column.id == "price Group" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.price_group.group}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
