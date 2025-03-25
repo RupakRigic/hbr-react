@@ -450,7 +450,7 @@ const ProductList = () => {
   };
 
 
-  const [value, setValue] = React.useState("1");
+  const [value, setValue] = useState("1");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -2623,13 +2623,13 @@ const ProductList = () => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => { setShowOffcanvas(false); clearProductDetails(); }}
+            onClick={() => { setShowOffcanvas(false); clearProductDetails(); setValue("1"); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex justify-content-center align-items-center mt-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (

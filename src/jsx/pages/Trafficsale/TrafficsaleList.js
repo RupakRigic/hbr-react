@@ -2462,16 +2462,6 @@ const TrafficsaleList = () => {
                     </span>
                   </div>
                 </div>
-
-                <div className="col-xl-4 mt-4">
-                  <label className="">Status :</label>
-                  <div>
-                    <span className="fw-bold">
-                      {TrafficDetails.status === 1 && "Active"}
-                      {TrafficDetails.status === 0 && "De-acitve"}
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>)}
