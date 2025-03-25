@@ -138,6 +138,13 @@ const LandsaleList = () => {
   }, [selectedLandSales]);
 
   useEffect(() => {
+    const landsaleID = JSON.parse(localStorage.getItem("landsale_id"));
+    if (landsaleID) {
+      handleRowClick(landsaleID);
+    }
+  }, []);
+
+  useEffect(() => {
     if(selectedFields){
       localStorage.setItem("selectedFieldsLandSales", JSON.stringify(selectedFields));
     }
@@ -1772,7 +1779,7 @@ const LandsaleList = () => {
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center mb-5">
+          <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (

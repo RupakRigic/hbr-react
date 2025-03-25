@@ -1251,25 +1251,48 @@ const SubdivisionList = () => {
     setValue(newValue);
   };
 
-  const handleProductRedirect = () => {
-    navigate("/productlist");
+  const handleProductRedirect = (id, name) => {
+    navigate("/filterproducts");
+    localStorage.setItem("product_name_Product", JSON.stringify(name));
+    localStorage.setItem("product_id", JSON.stringify(id));
+    localStorage.setItem("setProductFilter", true);
   };
 
-  const handlePermitRedirect = () => {
-    navigate("/permitlist");
+  const formatDate = (inputDate) => {
+    const dateObj = new Date(inputDate);
+    return `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
   };
 
-  const handleClosingRedirect = () => {
-    navigate("/closingsalelist");
+  const handlePermitRedirect = (id, date) => {
+    const formattedDate = formatDate(date);
+    navigate("/filterpermits");
+    localStorage.setItem("from_Permit", JSON.stringify(formattedDate));
+    localStorage.setItem("to_Permit", JSON.stringify(formattedDate));
+    localStorage.setItem("permit_id", JSON.stringify(id));
+    localStorage.setItem("setPermitFilter", true);
   };
 
-  const handleTraficRedirect = () => {
-    navigate("/trafficsalelist");
+  const handleClosingRedirect = (id, date) => {
+    const formattedDate = formatDate(date);
+    navigate("/filterclosings");
+    localStorage.setItem("from_Closing", JSON.stringify(formattedDate));
+    localStorage.setItem("to_Closing", JSON.stringify(formattedDate));
+    localStorage.setItem("closing_id", JSON.stringify(id));
+    localStorage.setItem("setClosingFilter", true);
   };
 
-  const handleLandRedirect = () => {
-    navigate("/landsalelist");
+  const handleLandRedirect = (id, date) => {
+    const formattedDate = formatDate(date);
+    navigate("/filterlandsales");
+    localStorage.setItem("from_LandSale", JSON.stringify(formattedDate));
+    localStorage.setItem("to_LandSale", JSON.stringify(formattedDate));
+    localStorage.setItem("landsale_id", JSON.stringify(id));
+    localStorage.setItem("setLansSaleFilter", true);
   };
+
+  // const handleTraficRedirect = () => {
+  //   navigate("/trafficsalelist");
+  // };
 
   const HandleRole = (e) => {
     setRole(e.target.value);
@@ -4191,7 +4214,7 @@ const SubdivisionList = () => {
                                   SubdivisionDetails.products.map(
                                     (element, index) => (
                                       <tr
-                                        onClick={handleProductRedirect}
+                                        onClick={() => handleProductRedirect(element.id, element.name)}
                                         key={element.id}
                                         style={{
                                           textAlign: "center",
@@ -4256,7 +4279,7 @@ const SubdivisionList = () => {
                                     (element, index) => (
                                       <tr
                                         onClick={() =>
-                                          handlePermitRedirect(element.id)
+                                          handlePermitRedirect(element.id, element.date)
                                         }
                                         key={element.id}
                                         style={{
@@ -4319,7 +4342,7 @@ const SubdivisionList = () => {
                                   SubdivisionDetails.get_closing.map(
                                     (element, index) => (
                                       <tr
-                                        onClick={handleClosingRedirect}
+                                        onClick={() => handleClosingRedirect(element.id, element.closingdate)}
                                         key={element.id}
                                         style={{
                                           textAlign: "center",
@@ -4377,13 +4400,13 @@ const SubdivisionList = () => {
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
-                                {SubdivisionDetails.landsales &&
-                                  Array.isArray(SubdivisionDetails.landsales) &&
-                                  SubdivisionDetails.landsales.length > 0 ? (
-                                  SubdivisionDetails.landsales.map(
+                                {SubdivisionDetails.land_sales &&
+                                  Array.isArray(SubdivisionDetails.land_sales) &&
+                                  SubdivisionDetails.land_sales.length > 0 ? (
+                                  SubdivisionDetails.land_sales.map(
                                     (element, index) => (
                                       <tr
-                                        onClick={handleLandRedirect}
+                                        onClick={() => handleLandRedirect(element.id, element.date)}
                                         key={element.id}
                                         style={{
                                           textAlign: "center",

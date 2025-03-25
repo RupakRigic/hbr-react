@@ -248,6 +248,13 @@ const PermitList = () => {
   }, [selectedLandSales]);
 
   useEffect(() => {
+    const permitID = JSON.parse(localStorage.getItem("permit_id"));
+    if (permitID) {
+      handleRowClick(permitID);
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsPermits", JSON.stringify(selectedFields));
     }
@@ -2226,7 +2233,7 @@ const PermitList = () => {
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center mb-5">
+          <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (

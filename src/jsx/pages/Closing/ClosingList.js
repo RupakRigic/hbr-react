@@ -168,6 +168,13 @@ const ClosingList = () => {
   }, [selectedLandSales]);
 
   useEffect(() => {
+    const closingID = JSON.parse(localStorage.getItem("closing_id"));
+    if (closingID) {
+      handleRowClick(closingID);
+    }
+  }, []);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsClosings", JSON.stringify(selectedFields));
     }
@@ -2196,7 +2203,7 @@ const ClosingList = () => {
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center mb-5">
+          <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (

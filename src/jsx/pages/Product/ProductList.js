@@ -490,6 +490,13 @@ const ProductList = () => {
   }, [selectedLandSales]);
 
   useEffect(() => {
+    const productID = JSON.parse(localStorage.getItem("product_id"));
+    if(productID){
+      handleRowClick(productID);
+    }
+  },[]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsProducts", JSON.stringify(selectedFields));
     }
