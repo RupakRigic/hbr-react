@@ -231,4 +231,11 @@ div#employee-tbl_wrapper table.subdivision-table-landsale tr th {
 div#employee-tbl_wrapper table.subdivision-table-landsale tr td {
   position: static !important;
 }
+
+div#employee-tbl_wrapper table.product-table-price tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.product-table-price tr td {
+  position: static !important;
+}
 /* Table Scroll Css */

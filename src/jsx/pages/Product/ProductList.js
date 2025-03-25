@@ -2711,22 +2711,13 @@ const ProductList = () => {
                           >
                             <table
                               id="empoloyees-tblwrapper"
-                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                              className="table ItemsCheckboxSec dataTable no-footer product-table-price mb-0"
                             >
                               <thead>
                                 <tr style={{ textAlign: "center" }}>
-                                  <th>
-                                    <strong>No.</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Product Code</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Base Price</strong>
-                                  </th>
-                                  <th className="d-flex justify-content-end">
-                                    <strong>Date</strong>
-                                  </th>
+                                  <th><strong>No.</strong></th>
+                                  <th><strong>Base Price</strong></th>
+                                  <th><strong>Date</strong></th>
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
@@ -2744,24 +2735,15 @@ const ProductList = () => {
                                         }}
                                       >
                                         <td>{index + 1}</td>
-
-                                        <td>{ProductDetails.product_code}</td>
-                                        <td>
-                                          <PriceComponent
-                                            price={element.baseprice}
-                                          />{" "}
-                                        </td>
-                                        <td>
-                                          <DateComponent date={element.date} />
-                                        </td>
-
+                                        <td>{element.baseprice ? <PriceComponent price={element.baseprice} /> : ""}</td>
+                                        <td style={{ textAlign: "center" }}>{element.date ? <DateComponent date={element.date} /> : ""}</td>
                                       </tr>
                                     )
                                   )
                                 ) : (
                                   <tr>
                                     <td
-                                      colSpan="7"
+                                      colSpan="3"
                                       style={{ textAlign: "center" }}
                                     >
                                       No data found
