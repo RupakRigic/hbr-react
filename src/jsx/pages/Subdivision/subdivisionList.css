@@ -203,4 +203,32 @@ div#employee-tbl_wrapper table.builder-table-subdivision tr th {
 div#employee-tbl_wrapper table.builder-table-subdivision tr td {
   position: static !important;
 }
+
+div#employee-tbl_wrapper table.subdivision-table-product tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.subdivision-table-product tr td {
+  position: static !important;
+}
+
+div#employee-tbl_wrapper table.subdivision-table-permit tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.subdivision-table-permit tr td {
+  position: static !important;
+}
+
+div#employee-tbl_wrapper table.subdivision-table-closing tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.subdivision-table-closing tr td {
+  position: static !important;
+}
+
+div#employee-tbl_wrapper table.subdivision-table-landsale tr th {
+  position: static !important;
+}
+div#employee-tbl_wrapper table.subdivision-table-landsale tr td {
+  position: static !important;
+}
 /* Table Scroll Css */

@@ -2865,6 +2865,7 @@ const SubdivisionList = () => {
       setSelectedLandSales([]);
     }
   };
+
   return (
     <Fragment>
       <MainPagetitle
@@ -4002,7 +4003,7 @@ const SubdivisionList = () => {
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center mb-5">
+          <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (
@@ -4018,9 +4019,9 @@ const SubdivisionList = () => {
                       <Tab label="Subdivision Details" value="1" />
                       <Tab label="Products" value="2" />
                       <Tab label="Permits" value="3" />
-                      <Tab label="Traffic & Sales" value="4" />
-                      <Tab label="Closings" value="5" />
-                      <Tab label="Land Sales" value="6" />
+                      <Tab label="Closings" value="4" />
+                      <Tab label="Land Sales" value="5" />
+                      {/* <Tab label="Traffic & Sales" value="6" /> */}
                     </TabList>
                   </Box>
                   <TabPanel value="1" className="p-0">
@@ -4168,28 +4169,19 @@ const SubdivisionList = () => {
                           >
                             <table
                               id="empoloyees-tblwrapper"
-                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                              className="table ItemsCheckboxSec dataTable no-footer subdivision-table-product mb-0"
                             >
                               <thead>
                                 <tr style={{ textAlign: "center" }}>
-                                  <th>
-                                    <strong>No.</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Name</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Product Code</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Stories</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Recent Price</strong>
-                                  </th>
-                                  <th>
-                                    <strong>Recent Price SQFT</strong>
-                                  </th>
+                                  <th><strong>No.</strong></th>
+                                  <th><strong>Name</strong></th>
+                                  <th><strong>SqFt</strong></th>
+                                  <th><strong>Stories</strong></th>
+                                  <th><strong>Bedrooms</strong></th>
+                                  <th><strong>Baths</strong></th>
+                                  <th><strong>Garage</strong></th>
+                                  <th><strong>Base Price</strong></th>
+                                  <th><strong>$/Sqft</strong></th>
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
@@ -4208,8 +4200,11 @@ const SubdivisionList = () => {
                                       >
                                         <td>{index + 1}</td>
                                         <td>{element.name}</td>
-                                        <td>{element.product_code}</td>
+                                        <td>{element.sqft}</td>
                                         <td>{element.stories}</td>
+                                        <td>{element.bedroom}</td>
+                                        <td>{element.bathroom}</td>
+                                        <td>{element.garage}</td>
                                         <td>{element.recentprice ? <PriceComponent price={element.recentprice} /> : ""}</td>
                                         <td>{element.current_price_per_sqft ? <PriceComponent price={element.current_price_per_sqft} /> : ""}</td>
                                       </tr>
@@ -4218,7 +4213,7 @@ const SubdivisionList = () => {
                                 ) : (
                                   <tr>
                                     <td
-                                      colSpan="7"
+                                      colSpan="9"
                                       style={{ textAlign: "center" }}
                                     >
                                       No data found
@@ -4242,16 +4237,15 @@ const SubdivisionList = () => {
                           >
                             <table
                               id="empoloyees-tblwrapper"
-                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
+                              className="table ItemsCheckboxSec dataTable no-footer subdivision-table-permit mb-0"
                             >
                               <thead>
                                 <tr style={{ textAlign: "center" }}>
                                   <th>No.</th>
-                                  <th>Permit Number</th>
-                                  <th>Owner</th>
-                                  <th>Contractor</th>
-                                  <th>Description</th>
-                                  <th>Address</th>
+                                  <th>Date</th>
+                                  <th>Address Number</th>
+                                  <th>Address Name</th>
+                                  <th>Parcel</th>
                                 </tr>
                               </thead>
                               <tbody style={{ textAlign: "center" }}>
@@ -4271,11 +4265,74 @@ const SubdivisionList = () => {
                                         }}
                                       >
                                         <td>{index + 1}</td>
-                                        <td>{element.permitnumber}</td>
-                                        <td>{element.owner}</td>
-                                        <td>{element.contractor}</td>
-                                        <td>{element.description}</td>
+                                        <td>{<DateComponent date={element.date} />}</td>
+                                        <td>{element.address2}</td>
                                         <td>{element.address1}</td>
+                                        <td>{element.parcel}</td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="5"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+                  <TabPanel value="4" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer subdivision-table-closing mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th>No.</th>
+                                  <th>Date</th>
+                                  <th>Parcel</th>
+                                  <th>Price</th>
+                                  <th>Buyer</th>
+                                  <th>Lender</th>
+                                  <th>Loan Amt</th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.get_closing &&
+                                  Array.isArray(SubdivisionDetails.get_closing) &&
+                                  SubdivisionDetails.get_closing.length > 0 ? (
+                                  SubdivisionDetails.get_closing.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleClosingRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.closingdate ? <DateComponent date={element.closingdate} /> : ""}</td>
+                                        <td>{element.parcel}</td>
+                                        <td>{element.closingprice ? <PriceComponent price={element.closingprice} /> : ""}</td>
+                                        <td>{element.buyer}</td>
+                                        <td>{element.lender}</td>
+                                        <td>{element.loanamount ? <PriceComponent price={element.loanamount} /> : ""}</td>
                                       </tr>
                                     )
                                   )
@@ -4296,7 +4353,71 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                   </TabPanel>
-                  <TabPanel value="4" className="p-0">
+                  <TabPanel value="5" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer subdivision-table-landsale mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th><strong>No.</strong></th>
+                                  <th><strong>Date</strong></th>
+                                  <th><strong>Parcel</strong></th>
+                                  <th><strong>Price</strong></th>
+                                  <th><strong>Size</strong></th>
+                                  <th><strong>Size MS</strong></th>
+                                  <th><strong>Price Per</strong></th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.landsales &&
+                                  Array.isArray(SubdivisionDetails.landsales) &&
+                                  SubdivisionDetails.landsales.length > 0 ? (
+                                  SubdivisionDetails.landsales.map(
+                                    (element, index) => (
+                                      <tr
+                                        onClick={handleLandRedirect}
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.date ? <DateComponent date={element.date} /> : ""}</td>
+                                        <td>{element.parcel}</td>
+                                        <td>{element.price ? <PriceComponent price={element.price} /> : ""}</td>
+                                        <td>{element.noofunit}</td>
+                                        <td>{element.typeofunit}</td>
+                                        <td>{element.price_per ? <PriceComponent price={element.price_per} /> : ""}</td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+                  {/* <TabPanel value="6" className="p-0">
                     <div className="card">
                       <div className="card-body p-0">
                         <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
@@ -4362,214 +4483,7 @@ const SubdivisionList = () => {
                         </div>
                       </div>
                     </div>
-                  </TabPanel>
-                  <TabPanel value="5" className="p-0">
-                    <div className="card">
-                      <div className="card-body p-0">
-                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                          <div
-                            id="employee-tbl_wrapper"
-                            className="dataTables_wrapper no-footer"
-                          >
-                            <table
-                              id="empoloyees-tblwrapper"
-                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                            >
-                              <thead>
-                                <tr style={{ textAlign: "center" }}>
-                                  <th>No.</th>
-                                  <th>Seller Legal</th>
-                                  <th>Address</th>
-                                  <th>Buyer</th>
-                                  <th>Closing Date</th>
-                                  <th>Closing Price</th>
-                                  <th>Loan Amount</th>
-                                  <th>Document</th>
-                                  <th>Action</th>
-                                </tr>
-                              </thead>
-                              <tbody style={{ textAlign: "center" }}>
-                                {SubdivisionDetails.get_closing &&
-                                  Array.isArray(SubdivisionDetails.get_closing) &&
-                                  SubdivisionDetails.get_closing.length > 0 ? (
-                                  SubdivisionDetails.get_closing.map(
-                                    (element, index) => (
-                                      <tr
-                                        onClick={handleClosingRedirect}
-                                        key={element.id}
-                                        style={{
-                                          textAlign: "center",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        <td>{index + 1}</td>
-                                        <td>{element.sellerleagal}</td>
-                                        <td>{element.address}</td>
-                                        <td>{element.buyer}</td>
-                                        <td>{element.closingdate}</td>
-                                        <td>{element.closingprice}</td>
-                                        <td>{element.loanamount}</td>
-                                        <td>{element.document}</td>
-                                        <td>
-                                          <div className="d-flex justify-content-center">
-                                            <Link
-                                              to={`/closingsaleupdate/${element.id}`}
-                                              className="btn btn-primary shadow btn-xs sharp me-1"
-                                            >
-                                              <i className="fas fa-pencil-alt"></i>
-                                            </Link>
-                                            <Link
-                                              onClick={() =>
-                                                swal({
-                                                  title: "Are you sure?",
-
-                                                  icon: "warning",
-                                                  buttons: true,
-                                                  dangerMode: true,
-                                                }).then((willDelete) => {
-                                                  if (willDelete) {
-                                                    handleDelete(element.id);
-                                                  }
-                                                })
-                                              }
-                                              className="btn btn-danger shadow btn-xs sharp"
-                                            >
-                                              <i className="fa fa-trash"></i>
-                                            </Link>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    )
-                                  )
-                                ) : (
-                                  <tr>
-                                    <td
-                                      colSpan="7"
-                                      style={{ textAlign: "center" }}
-                                    >
-                                      No data found
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabPanel>
-                  <TabPanel value="6" className="p-0">
-                    <div className="card">
-                      <div className="card-body p-0">
-                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
-                          <div
-                            id="employee-tbl_wrapper"
-                            className="dataTables_wrapper no-footer"
-                          >
-                            <table
-                              id="empoloyees-tblwrapper"
-                              className="table ItemsCheckboxSec dataTable no-footer mb-0"
-                            >
-                              <thead>
-                                <tr style={{ textAlign: "center" }}>
-                                  <th>
-                                    <strong> No. </strong>
-                                  </th>
-                                  <th>
-                                    <strong>Seller</strong>
-                                  </th>
-                                  <th>
-                                    <strong> Buyer</strong>
-                                  </th>
-                                  <th>
-                                    <strong> Location</strong>
-                                  </th>
-                                  <th>
-                                    <strong> Notes</strong>
-                                  </th>
-                                  <th>
-                                    <strong> Price</strong>
-                                  </th>
-                                  <th>
-                                    <strong> date</strong>
-                                  </th>
-
-                                  <th>
-                                    {" "}
-                                    <strong>Action</strong>
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody style={{ textAlign: "center" }}>
-                                {SubdivisionDetails.landsales &&
-                                  Array.isArray(SubdivisionDetails.landsales) &&
-                                  SubdivisionDetails.landsales.length > 0 ? (
-                                  SubdivisionDetails.landsales.map(
-                                    (element, index) => (
-                                      <tr
-                                        onClick={handleLandRedirect}
-                                        key={element.id}
-                                        style={{
-                                          textAlign: "center",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        {" "}
-                                        <td>{index + 1}</td>
-                                        <td>{element.seller}</td>
-                                        <td>{element.buyer}</td>
-                                        <td>{element.location}</td>
-                                        <td>{element.notes}</td>
-                                        <td>{element.price}</td>
-                                        <td>{element.date}</td>
-                                        <td>
-                                          <div className="d-flex justify-content-center">
-                                            <Link
-                                              to={`/landsaleupdate/${element.id}`}
-                                              className="btn btn-primary shadow btn-xs sharp me-1"
-                                            >
-                                              <i className="fas fa-pencil-alt"></i>
-                                            </Link>
-                                            <Link
-                                              onClick={() =>
-                                                swal({
-                                                  title: "Are you sure?",
-
-                                                  icon: "warning",
-                                                  buttons: true,
-                                                  dangerMode: true,
-                                                }).then((willDelete) => {
-                                                  if (willDelete) {
-                                                    handleDelete(element.id);
-                                                  }
-                                                })
-                                              }
-                                              className="btn btn-danger shadow btn-xs sharp"
-                                            >
-                                              <i className="fa fa-trash"></i>
-                                            </Link>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    )
-                                  )
-                                ) : (
-                                  <tr>
-                                    <td
-                                      colSpan="7"
-                                      style={{ textAlign: "center" }}
-                                    >
-                                      No data found
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabPanel>
+                  </TabPanel> */}
                 </TabContext>
               </Box>
             </div>
@@ -4917,7 +4831,7 @@ const SubdivisionList = () => {
                       <label className="form-label">MIN SQFT ALL:{" "}</label>
                       <input value={filterQueryCalculation.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
-                    <div className="col-md-3 mt-3 mb-3">
+                    <div className="col-md-3 mt-4 mb-3">
                       <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
                       <input value={filterQueryCalculation.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>

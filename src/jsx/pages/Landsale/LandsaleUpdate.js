@@ -144,7 +144,7 @@ const LandsaleUpdate = () => {
                                         <form onSubmit={handleSubmit}>
                                             <div className="row">
                                                 <div className="col-xl-6 mb-3">
-                                                    <label className="form-label">Subdivision <span className="text-danger">*</span></label>
+                                                    <label className="form-label">Subdivision</label>
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
                                                             options={SubdivisionList}
