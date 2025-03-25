@@ -7,6 +7,7 @@ import swal from "sweetalert";
 import Select from "react-select";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
+import AdminBuilderService from "../../../API/Services/AdminService/AdminBuilderService";
 
 const LandsaleUpdate = () => {
     const location = useLocation();
@@ -14,9 +15,11 @@ const LandsaleUpdate = () => {
     const page = queryParams.get("page");
 
     const [isLoading, setIsLoading] = useState(false);
+    const [builderCode, setBuilderCode] = useState([]);
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [LandsaleList, SetLandsaleList] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
@@ -26,6 +29,7 @@ const LandsaleUpdate = () => {
     useEffect(() => {
         if (localStorage.getItem('usertoken')) {
             ShowLandSales(params.id);
+            GetBuilderDropDownList();
             GetSubdivisionDropDownList();
         }
         else {
@@ -34,11 +38,15 @@ const LandsaleUpdate = () => {
     }, []);
 
     useEffect(() => {
+        if (LandsaleList?.builder_id && builderListDropDown?.length > 0) {
+            const filter = builderListDropDown?.filter(data => data.value === LandsaleList?.builder_id);
+            handleBuilderCode(filter);
+        }
         if (LandsaleList?.subdivision_id && SubdivisionList?.length > 0) {
             const filter = SubdivisionList?.filter(data => data.value === LandsaleList?.subdivision_id);
             handleSubdivisionCode(filter);
         }
-    }, [LandsaleList, SubdivisionList]);
+    }, [LandsaleList, SubdivisionList, builderListDropDown]);
 
     const ShowLandSales = async (id) => {
         setIsLoading(true);
@@ -78,6 +86,31 @@ const LandsaleUpdate = () => {
         }
     };
 
+    const GetBuilderDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.builderDropDown();
+            const responseData = await response.json();
+            const formattedData = [
+                { label: "Select Builder", value: null }, // Default option
+                ...responseData.map((builder) => ({
+                    label: builder.name,
+                    value: builder.id,
+                })),
+            ];
+            setBuilderListDropDown(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError("Something went wrong!");
+            }
+        }
+    };
+
+    const handleBuilderCode = (code) => {
+        setBuilderCode(code);
+    };
+
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
     };
@@ -104,6 +137,7 @@ const LandsaleUpdate = () => {
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
                 "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : LandsaleList.subdivision_id,
+                "builder_id": builderCode ? builderCode?.value : LandsaleList.builder_id,
             }
 
             const data = await AdminLandsaleService.update(params.id, userData).json();
@@ -143,6 +177,30 @@ const LandsaleUpdate = () => {
                                     <div className="form-validation">
                                         <form onSubmit={handleSubmit}>
                                             <div className="row">
+                                                <div className="col-xl-6 mb-3">
+                                                    <label className="form-label">Builder</label>
+                                                    <Form.Group controlId="tournamentList">
+                                                        <Select
+                                                            options={builderListDropDown}
+                                                            value={builderCode}
+                                                            placeholder={"Select Builder..."}
+                                                            onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                                            styles={{
+                                                                container: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                                menu: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                            }}
+                                                        />
+                                                    </Form.Group>
+                                                </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label className="form-label">Subdivision</label>
                                                     <Form.Group controlId="tournamentList">

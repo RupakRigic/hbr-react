@@ -6,16 +6,26 @@ import swal from "sweetalert";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 import Select from "react-select";
 import ClipLoader from 'react-spinners/ClipLoader';
+import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
 const LandsaleOffcanvas = forwardRef((props) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [Error, setError] = useState('');
-    const [SubdivisionCode, setSubdivisionCode] = useState('');
+    const [builderCode, setBuilderCode] = useState([]);
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (canvasShowAdd) {
+            GetBuilderDropDownList();
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowAdd]);
 
     const GetSubdivisionDropDownList = async () => {
         setIsLoading(true);
@@ -40,15 +50,31 @@ const LandsaleOffcanvas = forwardRef((props) => {
         }
     };
 
-    useEffect(() => {
-        if (canvasShowAdd) {
-            GetSubdivisionDropDownList();
+    const GetBuilderDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.builderDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
+            }));
+            setBuilderListDropDown(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError("Something went wrong!");
+            }
         }
-    }, [canvasShowAdd])
+    };
+
+    const handleBuilderCode = (code) => {
+        setBuilderCode(code);
+    };
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
-    }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -71,6 +97,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
                 "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
+                "builder_id": builderCode ? builderCode.value : '',
             }
             const data = await AdminLandsaleService.store(userData).json();
             if (data.status === true) {
@@ -90,7 +117,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")))
             }
         }
-    }
+    };
 
     return (
         <Fragment>
@@ -98,7 +125,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => {seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null);}}
+                        onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); }}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -113,11 +140,32 @@ const LandsaleOffcanvas = forwardRef((props) => {
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Builder</label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                options={builderListDropDown}
+                                                onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                                placeholder={"Select Builder..."}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    <div className="col-xl-6 mb-3">
                                         <label className="form-label">Subdivision</label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
                                                 options={SubdivisionList}
                                                 onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                                placeholder={"Select Subdivision..."}
                                                 styles={{
                                                     container: (provided) => ({
                                                         ...provided,
@@ -203,7 +251,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div>
                                     <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                    <Link to={"#"} onClick={() => {seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null);}} className="btn btn-danger light ms-1">Cancel</Link>
+                                    <Link to={"#"} onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); }} className="btn btn-danger light ms-1">Cancel</Link>
                                 </div>
                             </form>
                         </div>

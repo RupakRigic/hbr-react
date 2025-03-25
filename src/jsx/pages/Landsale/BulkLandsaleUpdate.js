@@ -6,16 +6,26 @@ import swal from "sweetalert";
 import Select from "react-select";
 import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsaleService";
 import ClipLoader from 'react-spinners/ClipLoader';
+import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
 const BulkLandsaleUpdate = forwardRef((props) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
+    const [builderCode, setBuilderCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (canvasShowEdit) {
+            GetBuilderDropDownList();
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowEdit]);
 
     const GetSubdivisionDropDownList = async () => {
         setIsLoading(true);
@@ -38,11 +48,27 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         }
     };
 
-    useEffect(() => {
-        if (canvasShowEdit) {
-            GetSubdivisionDropDownList();
+    const GetBuilderDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.builderDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
+            }));
+            setBuilderListDropDown(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError("Something went wrong!");
+            }
         }
-    }, [canvasShowEdit]);
+    };
+
+    const handleBuilderCode = (code) => {
+        setBuilderCode(code);
+    };
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);
@@ -78,7 +104,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "lng": event.target.lng.value,
                         "area": event.target.area.value,
                         "zip": event.target.zip.value,
-                        "subdivision_id": SubdivisionCode?.value,
+                        "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : "",
+                        "builder_id": builderCode ? builderCode?.value : "",
                     }
 
                     const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
@@ -130,6 +157,29 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         <div className="container-fluid">
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
+                                    <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Builder</label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                options={builderListDropDown}
+                                                value={builderCode}
+                                                placeholder={"Select Builder..."}
+                                                onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        width: '100%',
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        width: '100%',
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
                                     <div className="col-xl-6 mb-3">
                                         <label className="form-label">Subdivision</label>
                                         <Form.Group controlId="tournamentList">
