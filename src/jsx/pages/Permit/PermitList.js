@@ -933,8 +933,8 @@ const PermitList = () => {
     try {
       let responseData = await AdminPermitService.show(id).json();
       SetPermitDetails(responseData);
-      console.log(responseData);
       setIsFormLoading(false);
+      localStorage.removeItem("permit_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);

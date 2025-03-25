@@ -723,7 +723,7 @@ const LandsaleList = () => {
       let responseData = await AdminLandsaleService.show(id).json();
       setLandSaleDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
+      localStorage.removeItem("landsale_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);

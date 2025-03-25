@@ -832,7 +832,7 @@ const PriceList = () => {
       let responseData = await AdminPriceService.show(id).json();
       setPriceDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
+      localStorage.removeItem("price_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);

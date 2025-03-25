@@ -791,7 +791,7 @@ const ProductList = () => {
       let responseData = await AdminProductService.show(id).json();
       SetProductDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
+      localStorage.removeItem("product_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);

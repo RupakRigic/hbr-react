@@ -827,7 +827,7 @@ const ClosingList = () => {
       let responseData = await AdminClosingService.show(id).json();
       setClosingDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
+      localStorage.removeItem("closing_id");
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
