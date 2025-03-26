@@ -16,6 +16,7 @@ const WeeklyDataIndex = () => {
   const navigate = useNavigate();
 
   const [showModal, setShowModal] = useState(false);
+  const [canvasShowAdd, seCanvasShowAdd] = useState(false);
   const [builderId, setBuilderId] = useState('');
   const [Error, setError] = useState("");
   const [BuilderList, setBuilderList] = useState([]);
@@ -309,7 +310,7 @@ const WeeklyDataIndex = () => {
                         to={"#"}
                         className="btn btn-primary btn-sm ms-1"
                         data-bs-toggle="offcanvas"
-                        onClick={() => subdivision.current.showEmployeModal()}
+                        onClick={() => seCanvasShowAdd(true)}
                       >
                         + Add Subdivision
                       </Link>
@@ -605,7 +606,8 @@ const WeeklyDataIndex = () => {
       </div>
 
       <SubdivisionOffcanvas
-        ref={subdivision}
+        canvasShowAdd={canvasShowAdd}
+        seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Subdivision"
         parentCallback={handleCallback}
       />

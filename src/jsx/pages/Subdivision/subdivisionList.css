@@ -174,13 +174,11 @@ div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(2){
 }
 div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(3),
 div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(3){
-  left: 189px;
-  z-index: 4;
+  left: 165px;
 }
 div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(4){
-  left: 442px;
-  z-index: 4;
+  left: 418px;
 }
 
 div#employee-tbl_wrapper table tr td:first-child,
