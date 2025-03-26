@@ -13,6 +13,12 @@ const BulkLandsaleUpdate = forwardRef((props) => {
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
 
+    useEffect(() => {
+        if (canvasShowEdit) {
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowEdit]);
+
     const GetSubdivisionDropDownList = async () => {
         try {
             const response = await AdminSubdevisionService.subdivisionDropDown();
@@ -30,12 +36,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             }
         }
     };
-
-    useEffect(() => {
-        if (canvasShowEdit) {
-            GetSubdivisionDropDownList();
-        }
-    }, [canvasShowEdit]);
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);

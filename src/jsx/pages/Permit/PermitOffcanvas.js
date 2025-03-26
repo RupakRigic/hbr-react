@@ -13,6 +13,12 @@ const PermitOffcanvas = forwardRef((props) => {
     const [SubdivisionCode, setSubdivisionCode] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
 
+    useEffect(() => {
+        if(canvasShowAdd){
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowAdd]);
+
     const GetSubdivisionDropDownList = async () => {
         try {
             const response = await AdminSubdevisionService.subdivisionDropDown();
@@ -30,12 +36,6 @@ const PermitOffcanvas = forwardRef((props) => {
             }
         }
     };
-
-    useEffect(() => {
-        if(canvasShowAdd){
-            GetSubdivisionDropDownList();
-        }
-    }, [canvasShowAdd]);
 
     const handleSubdivisionCode = (code) => {
         setSubdivisionCode(code);

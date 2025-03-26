@@ -34,9 +34,9 @@ const PermitList = () => {
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
@@ -255,6 +255,15 @@ const PermitList = () => {
   }, []);
 
   useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      SetSubdivisionList([]);
+    }
+  }, [selectedBuilderIDByFilter]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsPermits", JSON.stringify(selectedFields));
     }
@@ -414,11 +423,9 @@ const PermitList = () => {
 
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
-
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedBuilderName(selectedItems);
+    setSelectedBuilderIDByFilter(selectedValues);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -426,12 +433,8 @@ const PermitList = () => {
   }
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-
-    setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
@@ -472,10 +475,7 @@ const PermitList = () => {
   ];
 
   const handleSelectProductTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
-    setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1055,10 +1055,8 @@ const PermitList = () => {
   ];
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedAge(selectedItems);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
@@ -1066,11 +1064,8 @@ const PermitList = () => {
   };
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSingle(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -1095,14 +1090,20 @@ const PermitList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       SetSubdivisionList(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
@@ -1116,7 +1117,6 @@ const PermitList = () => {
   useEffect(() => {
     if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
       GetBuilderDropDownList();
-      GetSubdivisionDropDownList();
     }
   }, [canvasShowAdd, canvasShowEdit,manageFilterOffcanvas]);
 
