@@ -95,7 +95,9 @@ const PermitUpdate = () => {
                 "address1": event.target.address1.value,
                 "address2": event.target.address2.value
             }
+
             const data = await AdminPermitService.update(params.id, userData).json();
+            
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {

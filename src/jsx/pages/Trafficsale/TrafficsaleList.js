@@ -38,13 +38,13 @@ const TrafficsaleList = () => {
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const navigate = useNavigate();
   const [Error, setError] = useState("");
@@ -180,11 +180,10 @@ const TrafficsaleList = () => {
     : "";
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedBuilderName(selectedItems);
+    setSelectedBuilderIDByFilter(selectedValues);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -193,11 +192,8 @@ const TrafficsaleList = () => {
   }
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSubdivisionName(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
@@ -218,6 +214,15 @@ const TrafficsaleList = () => {
       setHandleCallBack(false);
     }
   },[selectedLandSales]);
+
+  useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
+    }
+  }, [selectedBuilderIDByFilter]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -405,10 +410,7 @@ const TrafficsaleList = () => {
   ];
 
   const handleSelectProductTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
-    setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1131,20 +1133,26 @@ const TrafficsaleList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
-      SetSubdivisionList(formattedData);
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+      setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        console.log(errorJson);
       }
     }
   };
@@ -1152,7 +1160,6 @@ const TrafficsaleList = () => {
   useEffect(() => {
     if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
       GetBuilderDropDownList();
-      GetSubdivisionDropDownList();
     }
   }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
@@ -1176,11 +1183,8 @@ const TrafficsaleList = () => {
   ];
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedAge(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
@@ -1189,11 +1193,8 @@ const TrafficsaleList = () => {
   };
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSingle(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -2764,7 +2765,7 @@ const TrafficsaleList = () => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
                         onChange={handleSelectSubdivisionNameChange}
                         placeholder={"Select Subdivision Name"}

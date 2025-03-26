@@ -17,8 +17,7 @@ const TrafficsaleUpdate = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [selectSubdivision, setSelectSubdivision] = useState([]);
-    const [SubdivisionCode, setSubdivisionCode] = useState('');
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [TrafficsaleList, SetTrafficsaleList] = useState([]);
@@ -81,8 +80,7 @@ const TrafficsaleUpdate = () => {
     };
 
     const handleSubdivisionCode = (code) => {
-        setSelectSubdivision(code);
-        setSubdivisionCode(code.value);
+        setSubdivisionCode(code);
     };
 
     const handleSubmit = async (event) => {
@@ -90,7 +88,7 @@ const TrafficsaleUpdate = () => {
 
         try {
             var userData = {
-                "subdivision_id": SubdivisionCode ? SubdivisionCode : TrafficsaleList.subdivision_id,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : TrafficsaleList.subdivision_id,
                 "weekending": event.target.weekending.value,
                 "weeklytraffic": event.target.weeklytraffic.value,
                 "grosssales": grossSale,
@@ -99,7 +97,9 @@ const TrafficsaleUpdate = () => {
                 "lotreleased": event.target.lotreleased.value,
                 "unsoldinventory": event.target.unsoldinventory.value,
             }
+
             const data = await AdminTrafficsaleService.update(params.id, userData).json();
+            
             if (data.status === true) {
                 swal("Record Updated Successfully").then((willDelete) => {
                     if (willDelete) {
@@ -148,11 +148,9 @@ const TrafficsaleUpdate = () => {
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
                                                             options={SubdivisionList}
-                                                            onChange={handleSubdivisionCode}
-                                                            getOptionValue={(option) => option.value}
-                                                            getOptionLabel={(option) => option.label}
-                                                            value={selectSubdivision}
+                                                            value={SubdivisionCode}
                                                             placeholder={"Select Subdivision..."}
+                                                            onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                                             styles={{
                                                                 container: (provided) => ({
                                                                     ...provided,
@@ -165,7 +163,7 @@ const TrafficsaleUpdate = () => {
                                                                     color: 'black'
                                                                 }),
                                                             }}
-                                                        ></Select>
+                                                        />
                                                     </Form.Group>
                                                 </div>
                                                 <div className="col-xl-6 mb-3">

@@ -30,7 +30,7 @@ const PermitList = () => {
 
   const [excelLoading, setExcelLoading] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
@@ -259,7 +259,7 @@ const PermitList = () => {
       SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
     } else {
       setSelectedSubdivisionName([]);
-      SetSubdivisionList([]);
+      setSubdivisionListDropDown([]);
     }
   }, [selectedBuilderIDByFilter]);
 
@@ -1104,7 +1104,7 @@ const PermitList = () => {
 
       const validSubdivisionIds = formattedData.map(item => item.value);
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
-      SetSubdivisionList(formattedData);
+      setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
@@ -2426,7 +2426,7 @@ const PermitList = () => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
                         onChange={handleSelectSubdivisionNameChange}
                         placeholder={"Select Subdivision Name"}
