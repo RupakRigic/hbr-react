@@ -14,7 +14,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [builderCode, setBuilderCode] = useState([]);
     const [Error, setError] = useState('');
-    const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
@@ -23,41 +23,25 @@ const BulkLandsaleUpdate = forwardRef((props) => {
     useEffect(() => {
         if (canvasShowEdit) {
             GetBuilderDropDownList();
-            GetSubdivisionDropDownList();
         }
     }, [canvasShowEdit]);
 
-    const GetSubdivisionDropDownList = async () => {
-        setIsLoading(true);
-        try {
-            const response = await AdminSubdevisionService.subdivisionDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.data.map((subdivision) => ({
-                label: subdivision.name,
-                value: subdivision.id,
-            }));
-            setIsLoading(false);
-            SetSubdivisionList(formattedData);
-        } catch (error) {
-            setIsLoading(false);
-            console.log("Error fetching subdivision list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
     const GetBuilderDropDownList = async () => {
+        setIsLoading(true);
         try {
             const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
-            const formattedData = responseData.map((builder) => ({
-                label: builder.name,
-                value: builder.id,
-            }));
+            const formattedData = [
+                { label: "Select Builder None", value: "none" }, // Default option
+                ...responseData.map((builder) => ({
+                    label: builder.name,
+                    value: builder.id,
+                })),
+            ];
+            setIsLoading(false);
             setBuilderListDropDown(formattedData);
         } catch (error) {
+            setIsLoading(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -66,8 +50,37 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         }
     };
 
+    const GetSubdivisionDropDownList = async (builderId) => {
+        try {
+            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+            const responseData = await response.json();
+            const formattedData = [
+                { label: "Select Subdivision None", value: "none" }, // Default option
+                ...responseData.data.map((subdivision) => ({
+                    label: subdivision.name,
+                    value: subdivision.id,
+                })),
+            ];
+            setSubdivisionListDropDown(formattedData);
+        } catch (error) {
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
+
     const handleBuilderCode = (code) => {
         setBuilderCode(code);
+        if (code.value !== "none") {
+            GetSubdivisionDropDownList(code.value);
+        } else {
+            const formattedData = [
+                { label: "Select Subdivision None", value: "none" },
+            ]
+            setSubdivisionListDropDown(formattedData);
+            setSubdivisionCode([]);
+        }
     };
 
     const handleSubdivisionCode = (code) => {
@@ -95,7 +108,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "parcel": event.target.parcel.value,
                         "price": event.target.price.value,
                         "typeofunit": event.target.typeofunit.value,
-                        // "priceperunit": event.target.priceperunit.value,
                         "noofunit": event.target.noofunit.value,
                         "notes": event.target.notes.value,
                         "doc": event.target.doc.value,
@@ -104,8 +116,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "lng": event.target.lng.value,
                         "area": event.target.area.value,
                         "zip": event.target.zip.value,
-                        "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : "",
-                        "builder_id": builderCode ? builderCode?.value : "",
+                        "subdivision_id": SubdivisionCode?.value === "none" ? "none" : SubdivisionCode?.value,
+                        "builder_id": builderCode?.value === "none" ?  "none" : builderCode?.value,
                     }
 
                     const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();
@@ -135,6 +147,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         setSubdivisionCode([]);
         setPrice(null);
         setNoOfUnit(null);
+        setBuilderCode([]);
+        setSubdivisionListDropDown([]);
     };
 
     return (
@@ -184,7 +198,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                         <label className="form-label">Subdivision</label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
-                                                options={SubdivisionList}
+                                                options={subdivisionListDropDown}
                                                 value={SubdivisionCode}
                                                 placeholder={"Select Subdivision..."}
                                                 onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}

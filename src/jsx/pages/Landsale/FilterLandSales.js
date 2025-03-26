@@ -15,6 +15,7 @@ const FilterLandSales = () => {
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
     const [selectedSubdivisionNameByFilter, setSelectedSubdivisionNameByFilter] = useState([]);
+    const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState(false);
@@ -50,11 +51,19 @@ const FilterLandSales = () => {
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
-            GetSubdivisionDropDownList();
         } else {
             navigate("/");
         }
     }, []);
+
+    useEffect(() => {
+        if (selectedBuilderIDByFilter?.length > 0) {
+            SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+        } else {
+            setSelectedSubdivisionNameByFilter([]);
+            setSubdivisionListDropDown([]);
+        }
+    }, [selectedBuilderIDByFilter]);
 
     useEffect(() => {
         setSearchQuery(filterString());
@@ -88,19 +97,25 @@ const FilterLandSales = () => {
         }
     };
 
-    const GetSubdivisionDropDownList = async () => {
+    const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
         try {
-            const response = await AdminSubdevisionService.subdivisionDropDown();
+            var userData = {
+                builder_ids: selectedBuilderIDByFilter
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
             const responseData = await response.json();
             const formattedData = responseData.data.map((subdivision) => ({
                 label: subdivision.name,
                 value: subdivision.id,
             }));
+            const validSubdivisionIds = formattedData.map(item => item.value);
+            setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
             console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
+                console.log(errorJson);
             }
         }
     };
@@ -242,8 +257,9 @@ const FilterLandSales = () => {
 
     const handleSelectBuilderNameChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.label).join(', ');
-
+        const selectedValues = selectedItems.map(item => item.value);
         setSelectedBuilderNameByFilter(selectedItems);
+        setSelectedBuilderIDByFilter(selectedValues);
         setFilterQuery(prevState => ({
             ...prevState,
             builder_name: selectedNames
@@ -287,6 +303,7 @@ const FilterLandSales = () => {
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);
+        setSelectedBuilderIDByFilter([]);
     };
 
     return (

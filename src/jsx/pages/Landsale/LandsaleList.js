@@ -84,6 +84,7 @@ const LandsaleList = () => {
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [sortConfig, setSortConfig] = useState(() => {
     const savedSortConfig = localStorage.getItem("sortConfigLandSales");
     return savedSortConfig ? JSON.parse(savedSortConfig) : [];
@@ -143,6 +144,15 @@ const LandsaleList = () => {
       handleRowClick(landsaleID);
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
+    }
+  }, [selectedBuilderIDByFilter]);
 
   useEffect(() => {
     if(selectedFields){
@@ -304,6 +314,7 @@ const LandsaleList = () => {
     });
     setSelectedBuilderName([]);
     setSelectedSubdivisionName([]);
+    setSelectedBuilderIDByFilter([]);
     getLandsaleList(1, sortConfig, "");
     setManageFilterOffcanvas(false);
     localStorage.removeItem("selectedBuilderNameByFilter_LandSale");
@@ -509,29 +520,35 @@ const LandsaleList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
+        console.log(errorJson);
       }
     }
   };
 
   useEffect(() => {
-    if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+    if(manageFilterOffcanvas){
       GetBuilderDropDownList();
-      GetSubdivisionDropDownList();
     }
-  }, [manageFilterOffcanvas, canvasShowAdd, canvasShowEdit]);
+  }, [manageFilterOffcanvas]);
 
   useEffect(() => {
     if (Array.isArray(accessList)) {
@@ -742,8 +759,10 @@ const LandsaleList = () => {
   };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    setSelectedBuilderName(selectedItems);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedBuilderName(selectedItems);
+    setSelectedBuilderIDByFilter(selectedValues);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -1721,12 +1740,14 @@ const LandsaleList = () => {
           </div>
         </div>
       </div>
+
       <LandsaleOffcanvas
         canvasShowAdd={canvasShowAdd}
         seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Landsale"
         parentCallback={handleCallback}
       />
+
       <BulkLandsaleUpdate
         canvasShowEdit={canvasShowEdit}
         seCanvasShowEdit={seCanvasShowEdit}

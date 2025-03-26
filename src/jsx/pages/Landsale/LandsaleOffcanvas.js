@@ -11,10 +11,10 @@ import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilder
 const LandsaleOffcanvas = forwardRef((props) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
-    const [Error, setError] = useState('');
-    const [builderCode, setBuilderCode] = useState([]);
-    const [SubdivisionCode, setSubdivisionCode] = useState([]);
-    const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [error, setError] = useState('');
+    const [selectedBuilderName, setSelectedBuilderName] = useState("");
+    const [subdivisionCode, setSubdivisionCode] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
@@ -23,34 +23,11 @@ const LandsaleOffcanvas = forwardRef((props) => {
     useEffect(() => {
         if (canvasShowAdd) {
             GetBuilderDropDownList();
-            GetSubdivisionDropDownList();
         }
     }, [canvasShowAdd]);
 
-    const GetSubdivisionDropDownList = async () => {
-        setIsLoading(true);
-        try {
-            const response = await AdminSubdevisionService.subdivisionDropDown();
-            const responseData = await response.json();
-            const formattedData = responseData.data.map((subdivision) => ({
-                label: subdivision.name,
-                value: subdivision.id,
-            }));
-            setIsLoading(false);
-            SetSubdivisionList(formattedData);
-        } catch (error) {
-            setIsLoading(false);
-            console.log("Error fetching subdivision list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            } else {
-                setError("Something went wrong!");
-            }
-        }
-    };
-
     const GetBuilderDropDownList = async () => {
+        setIsLoading(true);
         try {
             const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
@@ -59,7 +36,9 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 value: builder.id,
             }));
             setBuilderListDropDown(formattedData);
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -68,8 +47,27 @@ const LandsaleOffcanvas = forwardRef((props) => {
         }
     };
 
-    const handleBuilderCode = (code) => {
-        setBuilderCode(code);
+    const GetSubdivisionDropDownList = async (builderId) => {
+        try {
+            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            setSubdivisionListDropDown(formattedData);
+            setIsLoading(false);
+        } catch (error) {
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
+
+    const handleSelectBuilderNameChange = (e) => {
+        setSelectedBuilderName(e);
+        GetSubdivisionDropDownList(e.value);
     };
 
     const handleSubdivisionCode = (code) => {
@@ -87,7 +85,6 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 "parcel": event.target.parcel.value,
                 "price": event.target.price.value,
                 "typeofunit": event.target.typeofunit.value,
-                // "priceperunit": event.target.priceperunit.value,
                 "noofunit": event.target.noofunit.value,
                 "notes": event.target.notes.value,
                 "doc": event.target.doc.value,
@@ -96,17 +93,21 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode ? SubdivisionCode.value : '',
-                "builder_id": builderCode ? builderCode.value : '',
+                "subdivision_id": subdivisionCode ? subdivisionCode.value : '',
+                "builder_id": selectedBuilderName ? selectedBuilderName.value : '',
             }
+
             const data = await AdminLandsaleService.store(userData).json();
+            
             if (data.status === true) {
                 swal("Landsale Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         seCanvasShowAdd(false);
+                        setSelectedBuilderName("");
                         setPrice(null);
                         setNoOfUnit(null);
+                        setSubdivisionListDropDown([]);
                     }
                 })
             }
@@ -125,7 +126,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); }}
+                        onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setSelectedBuilderName(""); setSubdivisionListDropDown([]); }}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -143,9 +144,11 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <label className="form-label">Builder</label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
+                                                name="builder_name"
                                                 options={builderListDropDown}
-                                                onChange={(selectedOption) => handleBuilderCode(selectedOption)}
-                                                placeholder={"Select Builder..."}
+                                                value={selectedBuilderName}
+                                                onChange={handleSelectBuilderNameChange}
+                                                placeholder={"Select Builder Name"}
                                                 styles={{
                                                     container: (provided) => ({
                                                         ...provided,
@@ -159,11 +162,12 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                             />
                                         </Form.Group>
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label className="form-label">Subdivision</label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
-                                                options={SubdivisionList}
+                                                options={subdivisionListDropDown}
                                                 onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                                 placeholder={"Select Subdivision..."}
                                                 styles={{
@@ -179,18 +183,22 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                             />
                                         </Form.Group>
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput2" className="form-label">Seller <span className="text-danger">*</span></label>
                                         <input type="text" name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput3" className="form-label">Buyer <span className="text-danger">*</span></label>
                                         <input type="text" name='buyer' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput4" className="form-label">Location <span className="text-danger">*</span></label>
                                         <input type="text" name='location' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput5" className="form-label">Date <span className="text-danger">*</span></label>
                                         <input type="date" name='date' className="form-control" id="exampleFormControlInput5" placeholder="" />
@@ -200,6 +208,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <label htmlFor="exampleFormControlInput6" className="form-label">Parcel</label>
                                         <input type="text" name='parcel' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput7" className="form-label">Price ($)</label>
                                         <input type="number" name='price' className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setPrice(e.target.value)} />
@@ -209,10 +218,12 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <label htmlFor="exampleFormControlInput10" className="form-label">Type of Unit</label>
                                         <input type="text" name='typeofunit' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput11" className="form-label">Price Per Unit ($)</label>
                                         <input type="number" disabled style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }} value={noOfUnit ? Math.floor(price / noOfUnit) : 0} name='priceperunit' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput12" className="form-label">No. Of Unit</label>
                                         <input type="number" name='noofunit' className="form-control" id="exampleFormControlInput12" placeholder="" onChange={(e) => setNoOfUnit(e.target.value)} />
@@ -222,14 +233,17 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <label htmlFor="exampleFormControlInput16" className="form-label">Notes</label>
                                         <input type="text" name='notes' className="form-control" id="exampleFormControlInput16" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Doc</label>
                                         <input type="text" name='doc' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Zoning</label>
                                         <input type="text" name='zoning' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Latitude</label>
                                         <input type="text" name='lat' className="form-control" id="exampleFormControlInput17" placeholder="" />
@@ -239,19 +253,23 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Longitude</label>
                                         <input type="text" name='lng' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Area</label>
                                         <input type="text" name='area' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
+
                                     <div className="col-xl-6 mb-3">
                                         <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode</label>
                                         <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
-                                    <p className='text-danger fs-12'>{Error}</p>
+
+                                    <p className='text-danger fs-12'>{error}</p>
                                 </div>
+
                                 <div>
                                     <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                    <Link to={"#"} onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); }} className="btn btn-danger light ms-1">Cancel</Link>
+                                    <Link to={"#"} onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setSelectedBuilderName(""); setSubdivisionListDropDown([]); }} className="btn btn-danger light ms-1">Cancel</Link>
                                 </div>
                             </form>
                         </div>

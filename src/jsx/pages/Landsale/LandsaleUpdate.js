@@ -14,23 +14,25 @@ const LandsaleUpdate = () => {
     const queryParams = new URLSearchParams(location.search);
     const page = queryParams.get("page");
 
-    const [isLoading, setIsLoading] = useState(false);
+    const params = useParams();
+    const navigate = useNavigate();
+
+    const [isLoadingLandSale, setIsLoadingLandSale] = useState(false);
+    const [isLoadingBuilder, setIsLoadingBuilder] = useState(false);
+    const [isLoadingSubdivision, setIsLoadingSubdivision] = useState(false);
     const [builderCode, setBuilderCode] = useState([]);
     const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
-    const [SubdivisionList, SetSubdivisionList] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [LandsaleList, SetLandsaleList] = useState([]);
     const [noOfUnit, setNoOfUnit] = useState(null);
     const [price, setPrice] = useState(null);
-    const params = useParams();
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (localStorage.getItem('usertoken')) {
             ShowLandSales(params.id);
             GetBuilderDropDownList();
-            GetSubdivisionDropDownList();
         }
         else {
             navigate('/');
@@ -40,24 +42,20 @@ const LandsaleUpdate = () => {
     useEffect(() => {
         if (LandsaleList?.builder_id && builderListDropDown?.length > 0) {
             const filter = builderListDropDown?.filter(data => data.value === LandsaleList?.builder_id);
-            handleBuilderCode(filter);
+            handleBuilderCode(filter[0]);
         }
-        if (LandsaleList?.subdivision_id && SubdivisionList?.length > 0) {
-            const filter = SubdivisionList?.filter(data => data.value === LandsaleList?.subdivision_id);
-            handleSubdivisionCode(filter);
-        }
-    }, [LandsaleList, SubdivisionList, builderListDropDown]);
+    }, [LandsaleList, builderListDropDown]);
 
     const ShowLandSales = async (id) => {
-        setIsLoading(true);
+        setIsLoadingLandSale(true);
         try {
             let responseData = await AdminLandsaleService.show(id).json();
             SetLandsaleList(responseData);
             setPrice(responseData.price);
             setNoOfUnit(responseData.noofunit);
-            setIsLoading(false);
+            setIsLoadingLandSale(false);
         } catch (error) {
-            setIsLoading(false);
+            setIsLoadingLandSale(false);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -65,40 +63,22 @@ const LandsaleUpdate = () => {
         }
     };
 
-    const GetSubdivisionDropDownList = async () => {
-        try {
-            const response = await AdminSubdevisionService.subdivisionDropDown();
-            const responseData = await response.json();
-            const formattedData = [
-                { label: "Select Subdivision", value: null }, // Default option
-                ...responseData.data.map((subdivision) => ({
-                    label: subdivision.name,
-                    value: subdivision.id,
-                })),
-            ];
-            SetSubdivisionList(formattedData);
-        } catch (error) {
-            console.log("Error fetching subdivision list:", error);
-            if (error.name === "HTTPError") {
-                const errorJson = await error.response.json();
-                setError(errorJson.message);
-            }
-        }
-    };
-
     const GetBuilderDropDownList = async () => {
+        setIsLoadingBuilder(true);
         try {
             const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
             const formattedData = [
-                { label: "Select Builder", value: null }, // Default option
+                { label: "Select Builder", value: "" }, // Default option
                 ...responseData.map((builder) => ({
                     label: builder.name,
                     value: builder.id,
                 })),
             ];
+            setIsLoadingBuilder(false);
             setBuilderListDropDown(formattedData);
         } catch (error) {
+            setIsLoadingBuilder(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -107,8 +87,39 @@ const LandsaleUpdate = () => {
         }
     };
 
+    const GetSubdivisionDropDownList = async (builderId) => {
+        setIsLoadingSubdivision(true);
+        try {
+            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+            const responseData = await response.json();
+            const formattedData = [
+                { label: "Select Subdivision", value: "" }, // Default option
+                ...responseData.data.map((subdivision) => ({
+                    label: subdivision.name,
+                    value: subdivision.id,
+                })),
+            ];
+            const filter = formattedData?.filter(data => data.value === LandsaleList?.subdivision_id);
+            handleSubdivisionCode(filter?.length > 0 ? filter[0] : formattedData[0]);
+            setSubdivisionListDropDown(formattedData);
+            setIsLoadingSubdivision(false);
+        } catch (error) {
+            setIsLoadingSubdivision(false);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
+
     const handleBuilderCode = (code) => {
         setBuilderCode(code);
+        if (code.value) {
+            GetSubdivisionDropDownList(code.value);
+        } else {
+            setSubdivisionListDropDown([]);
+            setSubdivisionCode([]);
+        }
     };
 
     const handleSubdivisionCode = (code) => {
@@ -127,7 +138,6 @@ const LandsaleUpdate = () => {
                 "parcel": event.target.parcel.value,
                 "price": event.target.price.value,
                 "typeofunit": event.target.typeofunit.value,
-                // "priceperunit": event.target.priceperunit.value,
                 "noofunit": event.target.noofunit.value,
                 "notes": event.target.notes.value,
                 "doc": event.target.doc.value,
@@ -136,8 +146,8 @@ const LandsaleUpdate = () => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : LandsaleList.subdivision_id,
-                "builder_id": builderCode ? builderCode?.value : LandsaleList.builder_id,
+                "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : null,
+                "builder_id": builderCode ? builderCode?.value : null,
             }
 
             const data = await AdminLandsaleService.update(params.id, userData).json();
@@ -168,7 +178,7 @@ const LandsaleUpdate = () => {
                             <div className="card-header">
                                 <h4 className="card-title">Edit Land Sale</h4>
                             </div>
-                            {isLoading ? (
+                            {(isLoadingLandSale || isLoadingBuilder || isLoadingSubdivision) ? (
                                 <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
                                     <ClipLoader color="#4474fc" />
                                 </div>
@@ -181,6 +191,7 @@ const LandsaleUpdate = () => {
                                                     <label className="form-label">Builder</label>
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
+                                                            name="builder_id"
                                                             options={builderListDropDown}
                                                             value={builderCode}
                                                             placeholder={"Select Builder..."}
@@ -205,7 +216,8 @@ const LandsaleUpdate = () => {
                                                     <label className="form-label">Subdivision</label>
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
-                                                            options={SubdivisionList}
+                                                            name="subdivision_id"
+                                                            options={subdivisionListDropDown}
                                                             value={SubdivisionCode}
                                                             placeholder={"Select Subdivision..."}
                                                             onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
@@ -307,6 +319,7 @@ const LandsaleUpdate = () => {
 
                                                 <p className='text-danger fs-12'>{Error}</p>
                                             </div>
+
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
                                                 <Link to={`/landsalelist?page=${page}`} className="btn btn-danger light ms-1">Cancel</Link>
