@@ -13,8 +13,8 @@ const ClosingUpdate = () => {
     const queryParams = new URLSearchParams(location.search);
     const page = queryParams.get("page");
 
-    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [ClosingsaleList, SetClosingsaleList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -150,38 +150,47 @@ const ClosingUpdate = () => {
                                                         />
                                                     </Form.Group>
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput2" className="form-label">Seller Legal</label>
                                                     <input type="text" defaultValue={ClosingsaleList.sellerleagal} name='sellerleagal' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput3" className="form-label">Address</label>
                                                     <textarea rows="2" defaultValue={ClosingsaleList.address || "NA"} name='address' className="form-control"></textarea>
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput4" className="form-label">Buyer</label>
                                                     <input type="text" defaultValue={ClosingsaleList.buyer || "NA"} name='buyer' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput5" className="form-label">Lender</label>
                                                     <input type="text" defaultValue={ClosingsaleList.lender || "NA"} name='lender' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput6" className="form-label">Closing Date <span className="text-danger">*</span></label>
                                                     <input type="date" defaultValue={ClosingsaleList.closingdate} name='closingdate' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput7" className="form-label">Closing Price</label>
                                                     <input type="number" defaultValue={ClosingsaleList.closingprice} name='closingprice' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput10" className="form-label">Loan Amount</label>
                                                     <input type="number" defaultValue={ClosingsaleList.loanamount} name='loanamount' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput10" className="form-label">Document</label>
                                                     <input type="text" defaultValue={ClosingsaleList.document || "NA"} name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput10" className="form-label">Parcel <span className="text-danger">*</span></label>
                                                     <input type="text" defaultValue={ClosingsaleList.parcel || "NA"} name='parcel' className="form-control" id="exampleFormControlInput10" placeholder="" />

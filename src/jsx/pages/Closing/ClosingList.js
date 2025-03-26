@@ -127,12 +127,12 @@ const ClosingList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
 
   const [calculationData, setCalculationData] = useState({});
   const [handleCallBack, setHandleCallBack] = useState(false);
@@ -173,6 +173,15 @@ const ClosingList = () => {
       handleRowClick(closingID);
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
+    }
+  }, [selectedBuilderIDByFilter]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -356,6 +365,7 @@ const ClosingList = () => {
     setSelectedMasterPlan([]);
     setSelectedAge([]);
     setSelectedSingle([]);
+    setSelectedBuilderIDByFilter([]);
     setManageFilterOffcanvas(false);
     getClosingList(1, sortConfig, "");
     localStorage.removeItem("seletctedClosingTypeByFilter_Closing");
@@ -963,20 +973,26 @@ const ClosingList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
-      SetSubdivisionList(formattedData);
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+      setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        console.log(errorJson);
       }
     }
   };
@@ -999,10 +1015,11 @@ const ClosingList = () => {
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-    GetLenderList();
-  }, []);
+    if (manageFilterOffcanvas) {
+      GetBuilderDropDownList();
+      GetLenderList();
+    }
+  }, [manageFilterOffcanvas]);
 
   const ageOptions = [
     { value: "1", label: "Yes" },
@@ -1015,10 +1032,10 @@ const ClosingList = () => {
   ];
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedBuilderName(selectedItems);
+    setSelectedBuilderIDByFilter(selectedValues);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -1026,10 +1043,8 @@ const ClosingList = () => {
   }
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSubdivisionName(selectedItems);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
@@ -1037,11 +1052,8 @@ const ClosingList = () => {
   }
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedAge(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
@@ -1049,10 +1061,8 @@ const ClosingList = () => {
   };
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSingle(selectedItems);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -1093,10 +1103,7 @@ const ClosingList = () => {
   ];
 
   const handleSelectProductTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-
-    setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1176,10 +1183,8 @@ const ClosingList = () => {
   ];
 
   const handleSelectClosingTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedClosingType(selectedItems);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedClosingType(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       closing_type: selectedNames
@@ -2412,7 +2417,7 @@ const ClosingList = () => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
                         onChange={handleSelectSubdivisionNameChange}
                         placeholder={"Select Subdivision Name"}

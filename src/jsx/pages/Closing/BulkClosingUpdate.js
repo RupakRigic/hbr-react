@@ -9,9 +9,15 @@ import AdminClosingService from "../../../API/Services/AdminService/AdminClosing
 const BulkLandsaleUpdate = forwardRef((props) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
-    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [Error, setError] = useState('');
+    const [SubdivisionCode, setSubdivisionCode] = useState([]);
     const [SubdivisionList, SetSubdivisionList] = useState([]);
+
+    useEffect(() => {
+        if (canvasShowEdit) {
+            GetSubdivisionDropDownList();
+        }
+    }, [canvasShowEdit]);
 
     const GetSubdivisionDropDownList = async () => {
         try {
@@ -30,12 +36,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             }
         }
     };
-
-    useEffect(() => {
-        if(canvasShowEdit){
-            GetSubdivisionDropDownList();
-        }
-    }, [canvasShowEdit]);
 
     const handleSubdivisionCode = (selectedOption) => {
         setSubdivisionCode(selectedOption);
@@ -69,8 +69,9 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "sublegal_name": event.target.sublegal_name.value,
                         "type": event.target.type.value
                     }
-                    console.log(userData);
+
                     const data = await AdminClosingService.bulkupdate(selectedLandSales, userData).json();
+
                     if (data.status === true) {
                         swal("Records Updated Successfully").then((willDelete) => {
                             if (willDelete) {
@@ -91,7 +92,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
     };
 
     const HandleUpdateCanvasClose = () => {
-        seCanvasShowEdit(false); 
+        seCanvasShowEdit(false);
         setError('');
         setSubdivisionCode([]);
     };
