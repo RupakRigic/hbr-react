@@ -490,6 +490,7 @@ const FilterWeeklyTrafficAndSales = () => {
         setSelectedMasterPlanByFilter([]);
         setSelectedAgeByFilter([]);
         setSelectedSingleByFilter([]);
+        setSelectedBuilderIDByFilter([]);
     };
 
     return (

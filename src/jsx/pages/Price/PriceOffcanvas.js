@@ -1,15 +1,41 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
 import Select from "react-select";
+import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 
 const ProductOffcanvas = forwardRef((props) => {
-    const { productList, canvasShowAdd, seCanvasShowAdd } = props;
+    const { canvasShowAdd, seCanvasShowAdd } = props;
 
-    const [Error, setError] = useState('');
-    const [ProductCode, setProductCode] = useState('');
+    const [error, setError] = useState('');
+    const [productCode, setProductCode] = useState([]);
+    const [productList, setProductList] = useState([]);
+
+    useEffect(() => {
+        if (canvasShowAdd) {
+            GetProductDropDownList();
+        }
+    }, [canvasShowAdd]);
+
+    const GetProductDropDownList = async () => {
+        try {
+            const response = await AdminProductService.productDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((product) => ({
+                label: product.name,
+                value: product.id,
+            }));
+            setProductList(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
 
     const handleProductCode = (code) => {
         setProductCode(code);
@@ -19,7 +45,7 @@ const ProductOffcanvas = forwardRef((props) => {
         event.preventDefault();
         try {
             var userData = {
-                "product_id": ProductCode ? ProductCode.value : '',
+                "product_id": productCode?.value,
                 "baseprice": event.target.baseprice.value,
                 "date": event.target.date.value,
             }
@@ -57,7 +83,7 @@ const ProductOffcanvas = forwardRef((props) => {
                     <div className="container-fluid">
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                <div className="col-xl-4 mb-3">
+                                <div className="col-xl-6 mb-3">
                                     <label className="form-label">Product<span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
                                         <Select
@@ -77,16 +103,20 @@ const ProductOffcanvas = forwardRef((props) => {
                                         />
                                     </Form.Group>
                                 </div>
+
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label"> Base Price: <span className="text-danger">*</span></label>
                                     <input type="number" name='baseprice' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
+
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
                                     <input type="date" name='date' className="form-control" id="exampleFormControlInput9" placeholder="" />
                                 </div>
-                                <p className='text-danger fs-12'>{Error}</p>
+
+                                <p className='text-danger fs-12'>{error}</p>
                             </div>
+
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
                                 <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>

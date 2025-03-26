@@ -369,6 +369,15 @@ const PriceList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
+
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+
   const [sortConfig, setSortConfig] = useState(() => {
     const savedSortConfig = localStorage.getItem("sortConfigBasePrices");
     return savedSortConfig ? JSON.parse(savedSortConfig) : [];
@@ -388,7 +397,6 @@ const PriceList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [AllProductListExport, setAllBuilderExport] = useState([]);
-  const [ProductList, setProductList] = useState([]);
   const [pageChange, setPageChange] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
@@ -479,6 +487,15 @@ const PriceList = () => {
   }, []);
 
   useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
+    }
+  }, [selectedBuilderIDByFilter]);
+
+  useEffect(() => {
     if (selectedFields) {
       localStorage.setItem("selectedFieldsBasePrices", JSON.stringify(selectedFields));
     }
@@ -555,28 +572,35 @@ const PriceList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
-      SetSubdivisionList(formattedData);
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+      setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        console.log(errorJson);
       }
     }
   };
 
   useEffect(() => {
-    GetBuilderDropDownList();
-    GetSubdivisionDropDownList();
-  }, []);
+    if (manageFilterOffcanvas) {
+      GetBuilderDropDownList();
+    }
+  }, [canvasShowAdd]);
 
   const applyFilters = () => {
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
@@ -842,14 +866,6 @@ const PriceList = () => {
     }
   };
 
-  const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
-  const [selectedAge, setSelectedAge] = useState([]);
-  const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
-
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({
@@ -869,11 +885,10 @@ const PriceList = () => {
   };
 
   const handleSelectBuilderNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedBuilderName(selectedItems);
-
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    const selectedValues = selectedItems.map(item => item.value);
+    setSelectedBuilderName(selectedItems);
+    setSelectedBuilderIDByFilter(selectedValues);
     setFilterQuery(prevState => ({
       ...prevState,
       builder_name: selectedNames
@@ -882,10 +897,8 @@ const PriceList = () => {
   };
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSubdivisionName(selectedItems);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
+    setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       subdivision_name: selectedNames
@@ -937,6 +950,7 @@ const PriceList = () => {
     setSelectedMasterPlan([]);
     setSelectedAge([]);
     setSelectedSingle([]);
+    setSelectedBuilderIDByFilter([]);
     getpriceList(1, sortConfig, "");
     setManageFilterOffcanvas(false);
     localStorage.removeItem("selectedBuilderNameByFilter_BasePrice");
@@ -1183,30 +1197,6 @@ const PriceList = () => {
     }
   };
 
-  const GetProductDropDownList = async () => {
-    try {
-      const response = await AdminProductService.productDropDown();
-      const responseData = await response.json();
-      const formattedData = responseData.map((product) => ({
-        label: product.name,
-        value: product.id,
-      }));
-      setProductList(formattedData);
-    } catch (error) {
-      console.log("Error fetching builder list:", error);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
-      GetProductDropDownList();
-    }
-  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
-
   useEffect(() => {
     const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsPrices"));
     if(draggedColumns) {
@@ -1243,10 +1233,8 @@ const PriceList = () => {
   ];
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedAge(selectedItems);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       age: selectedNames
@@ -1255,10 +1243,8 @@ const PriceList = () => {
   };
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
-    setSelectedValues(selectedValues);
-    setSelectedSingle(selectedItems);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
+    setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -1300,9 +1286,7 @@ const PriceList = () => {
     { value: "AC", label: "AC" }
   ];
   const handleSelectProductTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2355,7 +2339,6 @@ const PriceList = () => {
         seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Base Price"
         parentCallback={handleCallback}
-        productList={ProductList}
       />
 
       <BulkPriceUpdate
@@ -2364,7 +2347,6 @@ const PriceList = () => {
         Title={selectedLandSales?.length  === 1 ? "Edit Base Price" : "Bulk Edit Base Prices"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
-        productList={ProductList}
       />
 
       <Offcanvas
@@ -2521,7 +2503,7 @@ const PriceList = () => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
                         onChange={handleSelectSubdivisionNameChange}
                         placeholder={"Select Subdivision Name"}

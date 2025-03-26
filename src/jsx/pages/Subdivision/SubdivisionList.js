@@ -1103,11 +1103,11 @@ const SubdivisionList = () => {
   };
 
   useEffect(() => {
-      if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+      if(manageFilterOffcanvas){
         GetBuilderDropDownList();
         GetZipCodeList();
       }
-    }, [manageFilterOffcanvas, canvasShowAdd, canvasShowEdit]);
+    }, [manageFilterOffcanvas]);
 
   const HandleFilterForm = (e) => {
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
@@ -1278,6 +1278,7 @@ const SubdivisionList = () => {
     setSelectedGated([]);
     setSelectedJurisdiction([]);
     setSelectedGasProvider([]);
+    setSelectedBuilderIDByFilter([]);
     getbuilderlist(1, sortConfig, "");
     setManageFilterOffcanvas(false);
     localStorage.removeItem("selectedStatusBySubdivisionFilter_Subdivision");

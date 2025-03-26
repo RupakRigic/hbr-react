@@ -626,10 +626,10 @@ const ProductList = () => {
   }, [filterQuery]);
 
   useEffect(() => {
-    if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
+    if(manageFilterOffcanvas){
       GetBuilderDropDownList();
     }
-  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
+  }, [manageFilterOffcanvas]);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -868,6 +868,7 @@ const ProductList = () => {
     setSelectedSubdivisionName([]);
     setSelectedAge([]);
     setSelectedSingle([]);
+    setSelectedBuilderIDByFilter([]);
     setManageFilterOffcanvas(false);
     getproductList(1, sortConfig, "");
     localStorage.removeItem("selectedStatusByProductFilter_Product");

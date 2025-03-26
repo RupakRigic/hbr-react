@@ -121,9 +121,7 @@ const PriceUpdate = () => {
                                         <form onSubmit={handleSubmit}>
                                             <div className="row">
                                                 <div className="col-xl-6 mb-3">
-                                                    <label className="form-label">
-                                                        Product <span className="text-danger">*</span>
-                                                    </label>
+                                                    <label className="form-label">Product <span className="text-danger">*</span></label>
                                                     <Form.Group controlId="tournamentList">
                                                         <Select
                                                             options={ProductList}
@@ -145,10 +143,9 @@ const PriceUpdate = () => {
                                                         />
                                                     </Form.Group>
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput2" className="form-label">
-                                                        Base Price <span className="text-danger">*</span>
-                                                    </label>
+                                                    <label htmlFor="exampleFormControlInput2" className="form-label">Base Price <span className="text-danger">*</span></label>
                                                     <input
                                                         type="number"
                                                         name="baseprice"
@@ -158,10 +155,9 @@ const PriceUpdate = () => {
                                                         defaultValue={PriceList.baseprice}
                                                     />
                                                 </div>
+
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput9" className="form-label">
-                                                        Date
-                                                    </label>
+                                                    <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
                                                     <input
                                                         type="date"
                                                         name="date"
@@ -174,6 +170,7 @@ const PriceUpdate = () => {
 
                                                 <p className="text-danger fs-12">{Error}</p>
                                             </div>
+
                                             <div>
                                                 <button type="submit" className="btn btn-primary me-1">
                                                     Submit

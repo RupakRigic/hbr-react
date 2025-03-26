@@ -202,6 +202,7 @@ const PermitList = () => {
     setSelectedMasterPlan([]);
     setSelectedAge([]);
     setSelectedSingle([]);
+    setSelectedBuilderIDByFilter([]);
     setManageFilterOffcanvas(false);
     getPermitList(1, sortConfig, "");
     localStorage.removeItem("selectedBuilderNameByFilter_Permit");
@@ -1115,10 +1116,10 @@ const PermitList = () => {
   };
 
   useEffect(() => {
-    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
+    if(manageFilterOffcanvas){
       GetBuilderDropDownList();
     }
-  }, [canvasShowAdd, canvasShowEdit,manageFilterOffcanvas]);
+  }, [manageFilterOffcanvas]);
 
   const addToBuilderList = () => {
     let subdivisionList = permitList.map((data) => data.subdivision)

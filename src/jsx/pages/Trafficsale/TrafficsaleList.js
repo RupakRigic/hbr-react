@@ -967,6 +967,7 @@ const TrafficsaleList = () => {
     setSelectedMasterPlan([]);
     setSelectedAge([]);
     setSelectedSingle([]);
+    setSelectedBuilderIDByFilter([]);
     setManageFilterOffcanvas(false);
     gettrafficsaleList(1, sortConfig, "");
     localStorage.removeItem("selectedBuilderNameByFilter_TrafficSale");
@@ -1158,10 +1159,10 @@ const TrafficsaleList = () => {
   };
 
   useEffect(() => {
-    if(canvasShowAdd || canvasShowEdit || manageFilterOffcanvas){
+    if(manageFilterOffcanvas){
       GetBuilderDropDownList();
     }
-  }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
+  }, [manageFilterOffcanvas]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

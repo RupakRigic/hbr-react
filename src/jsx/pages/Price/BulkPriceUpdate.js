@@ -1,16 +1,41 @@
-import React, { useState, forwardRef, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import Select from "react-select";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
-
+import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 
 const BulkPriceUpdate = forwardRef((props) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
-    const [Error, setError] = useState('');
-    const [ProductCode, setProductCode] = useState([]);
+    const [error, setError] = useState('');
+    const [productList, setProductList] = useState([]);
+    const [productCode, setProductCode] = useState([]);
+
+    useEffect(() => {
+        if (canvasShowEdit) {
+            GetProductDropDownList();
+        }
+    }, [canvasShowEdit]);
+
+    const GetProductDropDownList = async () => {
+        try {
+            const response = await AdminProductService.productDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((product) => ({
+                label: product.name,
+                value: product.id,
+            }));
+            setProductList(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
 
     const handleProductCode = (code) => {
         setProductCode(code);
@@ -30,7 +55,7 @@ const BulkPriceUpdate = forwardRef((props) => {
             if (willDelete) {
                 try {
                     var userData = {
-                        product_id: ProductCode?.value,
+                        product_id: productCode?.value,
                         baseprice: event.target.baseprice.value,
                         date: event.target.date.value,
                     };
@@ -56,7 +81,7 @@ const BulkPriceUpdate = forwardRef((props) => {
     };
 
     const HandleUpdateCanvasClose = () => {
-        seCanvasShowEdit(false); 
+        seCanvasShowEdit(false);
         setError('');
         setProductCode([]);
     };
@@ -82,8 +107,8 @@ const BulkPriceUpdate = forwardRef((props) => {
                                     </label>
                                     <Form.Group controlId="tournamentList">
                                         <Select
-                                            options={props.productList}
-                                            value={ProductCode}
+                                            options={productList}
+                                            value={productCode}
                                             placeholder={"Select Product..."}
                                             onChange={(selectedOption) => handleProductCode(selectedOption)}
                                             styles={{
@@ -104,21 +129,21 @@ const BulkPriceUpdate = forwardRef((props) => {
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label">Base Price:</label>
-                                    <input type="number" name="baseprice" className="form-control" id="exampleFormControlInput2"/>
+                                    <input type="number" name="baseprice" className="form-control" id="exampleFormControlInput2" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
-                                    <input type="date" name="date" className="form-control" id="exampleFormControlInput9" placeholder=""/>
+                                    <input type="date" name="date" className="form-control" id="exampleFormControlInput9" placeholder="" />
                                 </div>
-                                <p className="text-danger fs-12">{Error}</p>
+                                <p className="text-danger fs-12">{error}</p>
                             </div>
 
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link 
-                                    to={"#"} 
-                                    onClick={() => HandleUpdateCanvasClose()} 
+                                <Link
+                                    to={"#"}
+                                    onClick={() => HandleUpdateCanvasClose()}
                                     className="btn btn-danger light ms-1"
                                 >
                                     Cancel
