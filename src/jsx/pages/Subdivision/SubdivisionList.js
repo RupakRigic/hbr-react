@@ -228,6 +228,7 @@ const SubdivisionList = () => {
   const [selectedValues, setSelectedValues] = useState([]);
   const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
+  const [selectedZipCode, setSelectedZipCode] = useState([]);
   const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [selectedJurisdicition, setSelectedJurisdiction] = useState([]);
   const [seletctedGasProvider, setSelectedGasProvider] = useState([]);
@@ -750,6 +751,7 @@ const SubdivisionList = () => {
   };
 
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
+  const [zipCodeDropDown, setZipCodeDropDown] = useState([]);
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
@@ -911,6 +913,10 @@ const SubdivisionList = () => {
       const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
       handleSelectAreaChange(selectedArea);
     }
+    if (localStorage.getItem("selectedZipCodeByFilter_Subdivision")) {
+      const selectedZipCode = JSON.parse(localStorage.getItem("selectedZipCodeByFilter_Subdivision"));
+      handleSelectZipCodeChange(selectedZipCode);
+    }
     if (localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
       const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
       handleSelectMasterPlanChange(selectedMasterPlan);
@@ -1053,6 +1059,22 @@ const SubdivisionList = () => {
     }
   };
 
+  const GetZipCodeList = async () => {
+    try {
+      const responseData = await AdminSubdevisionService.get_zipcode_list().json();
+      const formattedData = responseData.data.map((zipcode) => ({
+        label: zipcode,
+        value: zipcode,
+      }));
+      setZipCodeDropDown(formattedData);
+    } catch (error) {
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        console.log(errorJson);
+      }
+    }
+  };
+
   const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
       var userData = {
@@ -1080,6 +1102,7 @@ const SubdivisionList = () => {
   useEffect(() => {
       if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
         GetBuilderDropDownList();
+        GetZipCodeList();
       }
     }, [manageFilterOffcanvas, canvasShowAdd, canvasShowEdit]);
 
@@ -1146,6 +1169,7 @@ const SubdivisionList = () => {
     localStorage.setItem("selectedBuilderNameByFilter_Subdivision", JSON.stringify(selectedBuilderName));
     localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatus));
     localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedArea));
+    localStorage.setItem("selectedZipCodeByFilter_Subdivision", JSON.stringify(selectedZipCode));
     localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlan));
     localStorage.setItem("selectedAgeByFilter_Subdivision", JSON.stringify(selectedAge));
     localStorage.setItem("selectedSingleByFilter_Subdivision", JSON.stringify(selectedSingle));
@@ -1244,6 +1268,7 @@ const SubdivisionList = () => {
     setSelectedSubdivisionName([]);
     setProductTypeStatus([]);
     setSelectedArea([]);
+    setSelectedZipCode([]);
     setSelectedMasterPlan([]);
     setSelectedAge([]);
     setSelectedSingle([]);
@@ -1257,6 +1282,7 @@ const SubdivisionList = () => {
     localStorage.removeItem("selectedBuilderNameByFilter_Subdivision");
     localStorage.removeItem("productTypeStatusByFilter_Subdivision");
     localStorage.removeItem("selectedAreaByFilter_Subdivision");
+    localStorage.removeItem("selectedZipCodeByFilter_Subdivision");
     localStorage.removeItem("selectedMasterPlanByFilter_Subdivision");
     localStorage.removeItem("selectedAgeByFilter_Subdivision");
     localStorage.removeItem("selectedSingleByFilter_Subdivision");
@@ -2422,6 +2448,16 @@ const SubdivisionList = () => {
     setFilterQuery(prevState => ({
       ...prevState,
       area: selectedValues
+    }));
+    setNormalFilter(true);
+  };
+
+  const handleSelectZipCodeChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    setSelectedZipCode(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      zipcode: selectedValues
     }));
     setNormalFilter(true);
   };
@@ -4136,7 +4172,7 @@ const SubdivisionList = () => {
 
                           <div className="d-flex" style={{ marginTop: "5px" }}>
                             <div className="fs-18" style={{ width: "180px" }}><span><b>AREA:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
-                            <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{SubdivisionDetails.area || "NA"}</span></div>
+                            <div className="fs-18"><span><b>MASTER PLAN:</b></span>&nbsp;<span>{SubdivisionDetails.masterplan_id || "NA"}</span></div>
                           </div>
                           <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIP CODE:</b>&nbsp;<span>{SubdivisionDetails.zipcode || "NA"}</span></label><br />
                           <label className="fs-18"><b>CROSS STREETS:</b>&nbsp;<span>{SubdivisionDetails.crossstreet || "NA"}</span></label><br />
@@ -4654,9 +4690,7 @@ const SubdivisionList = () => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      STATUS:{" "}
-                    </label>
+                    <label className="form-label">STATUS:</label>
                     <MultiSelect
                       name="status"
                       options={statusOptions}
@@ -4666,9 +4700,7 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      REPORTING:{" "}
-                    </label>
+                    <label className="form-label">REPORTING:</label>
                     <MultiSelect
                       name="reporting"
                       options={reportingOptions}
@@ -4679,9 +4711,7 @@ const SubdivisionList = () => {
                   </div>
 
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      BUILDER NAME :{" "}
-                    </label>
+                    <label className="form-label">BUILDER NAME:</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="builder_name"
@@ -4707,19 +4737,17 @@ const SubdivisionList = () => {
                   </div>
 
                   <div className="col-md-3 mt-3">
-                    <label htmlFor="exampleFormControlInput6" className="form-label"> Product Type:</label>
+                    <label htmlFor="exampleFormControlInput6" className="form-label">PRODUCT TYPE:</label>
                     <MultiSelect
                       name="product_type"
                       options={productTypeOptions}
                       value={productTypeStatus}
                       onChange={handleSelectProductTypeChange}
-                      placeholder="Select Status"
+                      placeholder="Select Product Type"
                     />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      AREA:{" "}
-                    </label>
+                    <label className="form-label">AREA:</label>
                     <MultiSelect
                       name="area"
                       options={areaOption}
@@ -4729,47 +4757,37 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      MASTER PLAN:{" "}
-                    </label>
+                    <label className="form-label">MASTER PLAN:</label>
                     <MultiSelect
                       name="masterplan_id"
                       options={masterPlanOption}
                       value={selectedMasterPlan}
                       onChange={handleSelectMasterPlanChange}
-                      placeholder="Select Area"
+                      placeholder="Select Master Plan"
                     />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      ZIP CODE:{" "}
-                    </label>
-                    <input
-                      type="text"
-                      name="zipcode"
-                      value={filterQuery.zipcode}
-                      className="form-control"
-                      onChange={HandleFilter}
-                      pattern="[0-9, ]*"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
-                      }}
-                    />
+                    <label className="form-label">ZIP CODE:</label>
+                    <Form.Group controlId="tournamentList">
+                      <MultiSelect
+                        name="zipcode"
+                        options={zipCodeDropDown}
+                        value={selectedZipCode}
+                        onChange={handleSelectZipCodeChange}
+                        placeholder={"Select ZipCode"}
+                      />
+                    </Form.Group>
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LOT WIDTH:{" "}
-                    </label>
+                    <label className="form-label">LOT WIDTH:</label>
                     <input type="text" name="lotwidth" value={filterQuery.lotwidth} className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label className="form-label">
-                      LOT SIZE:{" "}
-                    </label>
+                    <label className="form-label">LOT SIZE:</label>
                     <input type="text" value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3">
-                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                    <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:</label>
                     <MultiSelect
                       name="age"
                       options={ageOptions}
@@ -4779,7 +4797,7 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3 ">
-                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                    <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:</label>
                     <MultiSelect
                       name="single"
                       options={singleOptions}
@@ -4789,7 +4807,7 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
-                    <label htmlFor="exampleFormControlInput28" className="form-label">GATED:{" "}</label>
+                    <label htmlFor="exampleFormControlInput28" className="form-label">GATED:</label>
                     <MultiSelect
                       name="gated"
                       options={gatedOptions}
@@ -4799,9 +4817,7 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
-                    <label className="form-label">
-                      JURISDICTION:{" "}
-                    </label>
+                    <label className="form-label">JURISDICTION:</label>
                     <MultiSelect
                       name="juridiction"
                       options={jurisdictionOption}
@@ -4811,9 +4827,7 @@ const SubdivisionList = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
-                    <label className="form-label">
-                      GAS PROVIDER:{" "}
-                    </label>
+                    <label className="form-label">GAS PROVIDER:</label>
                     <MultiSelect
                       name="gasprovider"
                       options={gasProviderOption}
@@ -4827,7 +4841,7 @@ const SubdivisionList = () => {
                     <hr style={{marginTop: "0px"}}/>
                     <div className="d-flex gap-4 col-md-11 mb-3" style={{ width: "100%" }}>
                       <div style={{ width: "100%" }}>
-                        <label className="form-label">From:</label>
+                        <label className="form-label">FROM:</label>
                         <DatePicker
                           name="from"
                           className="form-control"
@@ -4838,7 +4852,7 @@ const SubdivisionList = () => {
                         />
                       </div>
                       <div style={{ width: "100%" }}>
-                        <label className="form-label">To:</label>
+                        <label className="form-label">TO:</label>
                         <DatePicker
                           name="to"
                           className="form-control"
@@ -4877,90 +4891,90 @@ const SubdivisionList = () => {
                 <div className="border-top">
                   <div className="row">
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MONTHS OPEN:{" "}</label>
+                      <label className="form-label">MONTHS OPEN:</label>
                       <input style={{ marginTop: "20px" }} value={filterQueryCalculation.months_open} name="months_open" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">LATEST LOTS RELEASED:{" "}</label>
+                      <label className="form-label">LATEST LOTS RELEASED:</label>
                       <input style={{ marginTop: "20px" }} value={filterQueryCalculation.latest_lots_released} name="latest_lots_released" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">LATEST STANDING INVENTORY:{" "}</label>
+                      <label className="form-label">LATEST STANDING INVENTORY:</label>
                       <input value={filterQueryCalculation.latest_standing_inventory} name="latest_standing_inventory" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG SQFT ALL:{" "}</label>
+                      <label className="form-label">AVG SQFT ALL:</label>
                       <input style={{ marginTop: "20px" }} value={filterQueryCalculation.avg_sqft_all} name="avg_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG SQFT ACTIVE:{" "}</label>
+                      <label className="form-label">AVG SQFT ACTIVE:</label>
                       <input value={filterQueryCalculation.avg_sqft_active} name="avg_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG BASE PRICE ALL:{" "}</label>
+                      <label className="form-label">AVG BASE PRICE ALL:</label>
                       <input value={filterQueryCalculation.avg_base_price_all} name="avg_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG BASE PRICE ACTIVE:{" "}</label>
+                      <label className="form-label">AVG BASE PRICE ACTIVE:</label>
                       <input value={filterQueryCalculation.avg_base_price_active} name="avg_base_price_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MIN SQFT ALL:{" "}</label>
+                      <label className="form-label">MIN SQFT ALL:</label>
                       <input value={filterQueryCalculation.min_sqft_all} name="min_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-4 mb-3">
-                      <label className="form-label">MIN SQFT ACTIVE:{" "}</label>
+                      <label className="form-label">MIN SQFT ACTIVE:</label>
                       <input value={filterQueryCalculation.min_sqft_active} name="min_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MAX SQFT ALL:{" "}</label>
+                      <label className="form-label">MAX SQFT ALL:</label>
                       <input value={filterQueryCalculation.max_sqft_all} name="max_sqft_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MAX SQFT ACTIVE:{" "}</label>
+                      <label className="form-label">MAX SQFT ACTIVE:</label>
                       <input value={filterQueryCalculation.max_sqft_active} name="max_sqft_active" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MIN BASE PRICE ALL:{" "}</label>
+                      <label className="form-label">MIN BASE PRICE ALL:</label>
                       <input value={filterQueryCalculation.min_base_price_all} name="min_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MIN BASE PRICE ACTIVE:{" "}</label>
+                      <label className="form-label">MIN BASE PRICE ACTIVE:</label>
                       <input value={filterQueryCalculation.min_sqft_active_current} name="min_sqft_active_current" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MAX BASE PRICE ALL:{" "}</label>
+                      <label className="form-label">MAX BASE PRICE ALL:</label>
                       <input value={filterQueryCalculation.max_base_price_all} name="max_base_price_all" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MAX BASE PRICE ACTIVE:{" "}</label>
+                      <label className="form-label">MAX BASE PRICE ACTIVE:</label>
                       <input value={filterQueryCalculation.max_sqft_active_current} name="max_sqft_active_current" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:{" "}</label>
+                      <label className="form-label">AVG TRAFFIC PER MONTH THIS YEAR:</label>
                       <input value={filterQueryCalculation.avg_net_traffic_per_month_this_year} name="avg_net_traffic_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:{" "}</label>
+                      <label className="form-label">AVG NET SALES PER MONTH THIS YEAR:</label>
                       <input value={filterQueryCalculation.avg_net_sales_per_month_this_year} name="avg_net_sales_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div><div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:{" "}</label>
+                      <label className="form-label">AVG CLOSINGS PER MONTH THIS YEAR:</label>
                       <input value={filterQueryCalculation.avg_closings_per_month_this_year} name="avg_closings_per_month_this_year" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:{" "}</label>
+                      <label className="form-label">AVG NET SALES PER MONTH SINCE OPEN:</label>
                       <input value={filterQueryCalculation.avg_net_sales_per_month_since_open} name="avg_net_sales_per_month_since_open" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:{" "}</label>
+                      <label className="form-label">AVG NET SALES PER MONTH LAST 3 MONTH:</label>
                       <input value={filterQueryCalculation.avg_net_sales_per_month_last_three_months} name="avg_net_sales_per_month_last_three_months" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">MONTH NET SOLD:{" "}</label>
+                      <label className="form-label">MONTH NET SOLD:</label>
                       <input value={filterQueryCalculation.month_net_sold} name="month_net_sold" className="form-control" onChange={handleInputChange} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                      <label className="form-label">YEAR NET SOLD:{" "}</label>
+                      <label className="form-label">YEAR NET SOLD:</label>
                       <input value={filterQueryCalculation.year_net_sold} name="year_net_sold" className="form-control" onChange={handleInputChange} />
                     </div>
                   </div>

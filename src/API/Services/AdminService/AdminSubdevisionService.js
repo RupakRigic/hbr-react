@@ -18,5 +18,6 @@ export default {
     subdivisionDropDown: () => clientAuth.get(`admin/subdivision/builder/subdivision/list`),
     subdivisionbybuilderidlist: (userData) => clientAuth.post(`admin/subdivision/subdivisionbybuilderidlist`,{ json: userData }),
     Subdivisionbybuilderid: (builderId) => clientAuth.get(`admin/subdivision/subdivisionbybuilderid/${builderId}`),
+    get_zipcode_list: () => clientAuth.get(`admin/subdivision/get-zipcode-list`),
     export: (page=1,sortConfig='',searchQuery = '', exportColumn, is_calculated) => clientAuth.post(`admin/subdivision/export?page=${page}${sortConfig}${searchQuery}${is_calculated}`, { json: exportColumn }),
 };

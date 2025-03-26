@@ -12,12 +12,14 @@ const FilterSubdivision = () => {
     const [selectedStatusByFilter, setSelectedStatusByFilter] = useState([]);
     const [selectedReportingByFilter, setSelectedReportingByFilter] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [zipCodeDropDown, setZipCodeDropDown] = useState([]);
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
     const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
     const [selectedSubdivisionNameByFilter, setSelectedSubdivisionNameByFilter] = useState([]);
     const [productTypeStatusByFilter, setProductTypeStatusByFilter] = useState([]);
     const [selectedAreaByFilter, setSelectedAreaByFilter] = useState([]);
+    const [selectedZipCodeByFilter, setSelectedZipCodeByFilter] = useState([]);
     const [selectedMasterPlanByFilter, setSelectedMasterPlanByFilter] = useState([]);
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
     const [selectedSingleByFilter, setSelectedSingleByFilter] = useState([]);
@@ -70,6 +72,10 @@ const FilterSubdivision = () => {
             const selectedArea = JSON.parse(localStorage.getItem("selectedAreaByFilter_Subdivision"));
             handleSelectAreaChange(selectedArea);
         }
+        if (localStorage.getItem("selectedZipCodeByFilter_Subdivision")) {
+            const selectedZipCode = JSON.parse(localStorage.getItem("selectedZipCodeByFilter_Subdivision"));
+            handleSelectZipCodeChange(selectedZipCode);
+        }
         if (localStorage.getItem("selectedMasterPlanByFilter_Subdivision")) {
             const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Subdivision"));
             handleSelectMasterPlanChange(selectedMasterPlan);
@@ -99,6 +105,7 @@ const FilterSubdivision = () => {
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
+            GetZipCodeList();
         } else {
             navigate("/");
         }
@@ -138,6 +145,23 @@ const FilterSubdivision = () => {
             console.log(error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
+                console.log(errorJson);
+            }
+        }
+    };
+
+    const GetZipCodeList = async () => {
+        try {
+            const responseData = await AdminSubdevisionService.get_zipcode_list().json();
+            const formattedData = responseData.data.map((zipcode) => ({
+                label: zipcode,
+                value: zipcode,
+            }));
+            setZipCodeDropDown(formattedData);
+        } catch (error) {
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                console.log(errorJson);
             }
         }
     };
@@ -178,6 +202,7 @@ const FilterSubdivision = () => {
                 localStorage.setItem("selectedSubdivisionNameByFilter_Subdivision", JSON.stringify(selectedSubdivisionNameByFilter));
                 localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatusByFilter));
                 localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedAreaByFilter));
+                localStorage.setItem("selectedZipCodeByFilter_Subdivision", JSON.stringify(selectedZipCodeByFilter));
                 localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlanByFilter));
                 localStorage.setItem("selectedAgeByFilter_Subdivision", JSON.stringify(selectedAgeByFilter));
                 localStorage.setItem("selectedSingleByFilter_Subdivision", JSON.stringify(selectedSingleByFilter));
@@ -216,6 +241,7 @@ const FilterSubdivision = () => {
         localStorage.setItem("selectedSubdivisionNameByFilter_Subdivision", JSON.stringify(selectedSubdivisionNameByFilter));
         localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatusByFilter));
         localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedAreaByFilter));
+        localStorage.setItem("selectedZipCodeByFilter_Subdivision", JSON.stringify(selectedZipCodeByFilter));
         localStorage.setItem("selectedMasterPlanByFilter_Subdivision", JSON.stringify(selectedMasterPlanByFilter));
         localStorage.setItem("selectedAgeByFilter_Subdivision", JSON.stringify(selectedAgeByFilter));
         localStorage.setItem("selectedSingleByFilter_Subdivision", JSON.stringify(selectedSingleByFilter));
@@ -296,6 +322,15 @@ const FilterSubdivision = () => {
         setFilterQuery(prevState => ({
             ...prevState,
             area: selectedValues
+        }));
+    };
+
+    const handleSelectZipCodeChange = (selectedItems) => {
+        const selectedValues = selectedItems.map(item => item.value).join(', ');
+        setSelectedZipCodeByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            zipcode: selectedValues
         }));
     };
 
@@ -421,6 +456,7 @@ const FilterSubdivision = () => {
         setSelectedBuilderNameByFilter([]);
         setProductTypeStatusByFilter([]);
         setSelectedAreaByFilter([]);
+        setSelectedZipCodeByFilter([]);
         setSelectedMasterPlanByFilter([]);
         setSelectedAgeByFilter([]);
         setSelectedSingleByFilter([]);
@@ -601,13 +637,13 @@ const FilterSubdivision = () => {
                         </Form.Group>
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label htmlFor="exampleFormControlInput6" className="form-label">Product Type:</label>
+                        <label htmlFor="exampleFormControlInput6" className="form-label">PRODUCT TYPE:</label>
                         <MultiSelect
                             name="product_type"
                             options={productTypeOptions}
                             value={productTypeStatusByFilter}
                             onChange={handleSelectProductTypeChange}
-                            placeholder="Select Status"
+                            placeholder="Select Product Type"
                         />
                     </div>
                     <div className="col-md-3 mt-3">
@@ -627,21 +663,17 @@ const FilterSubdivision = () => {
                             options={masterPlanOption}
                             value={selectedMasterPlanByFilter}
                             onChange={handleSelectMasterPlanChange}
-                            placeholder="Select Area"
+                            placeholder="Select Master Plan"
                         />
                     </div>
                     <div className="col-md-3 mt-3">
                         <label className="form-label">ZIP CODE:</label>
-                        <input
-                            type="text"
+                        <MultiSelect
                             name="zipcode"
-                            value={filterQuery.zipcode}
-                            className="form-control"
-                            onChange={HandleFilter}
-                            pattern="[0-9, ]*"
-                            onInput={(e) => {
-                                e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
-                            }}
+                            options={zipCodeDropDown}
+                            value={selectedZipCodeByFilter}
+                            onChange={handleSelectZipCodeChange}
+                            placeholder="Select ZipCode"
                         />
                     </div>
                     <div className="col-md-3 mt-3">
@@ -707,7 +739,7 @@ const FilterSubdivision = () => {
                         <hr style={{ marginTop: "0px" }} />
                         <div className="d-flex gap-4 col-md-11 mb-3" style={{ width: "100%" }}>
                             <div style={{ width: "100%" }}>
-                                <label className="form-label">From:</label>
+                                <label className="form-label">FROM:</label>
                                 <DatePicker
                                     name="from"
                                     className="form-control"
@@ -718,7 +750,7 @@ const FilterSubdivision = () => {
                                 />
                             </div>
                             <div style={{ width: "100%" }}>
-                                <label className="form-label">To:</label>
+                                <label className="form-label">TO:</label>
                                 <DatePicker
                                     name="to"
                                     className="form-control"
