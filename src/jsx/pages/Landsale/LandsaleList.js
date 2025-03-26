@@ -151,6 +151,10 @@ const LandsaleList = () => {
     } else {
       setSelectedSubdivisionName([]);
       setSubdivisionListDropDown([]);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        subdivision_name: ""
+      }));
     }
   }, [selectedBuilderIDByFilter]);
 

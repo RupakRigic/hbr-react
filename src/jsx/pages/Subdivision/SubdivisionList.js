@@ -876,6 +876,10 @@ const SubdivisionList = () => {
     } else {
       setSelectedSubdivisionName([]);
       setSubdivisionListDropDown([]);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        name: ""
+      }));
     }
   }, [selectedBuilderIDByFilter]);
 
@@ -1170,6 +1174,7 @@ const SubdivisionList = () => {
     localStorage.setItem("selectedStatusBySubdivisionFilter_Subdivision", JSON.stringify(selectedStatus));
     localStorage.setItem("selectedReportingByFilter_Subdivision", JSON.stringify(selectedReporting));
     localStorage.setItem("selectedBuilderNameByFilter_Subdivision", JSON.stringify(selectedBuilderName));
+    localStorage.setItem("selectedSubdivisionNameByFilter_Subdivision", JSON.stringify(selectedSubdivisionName));
     localStorage.setItem("productTypeStatusByFilter_Subdivision", JSON.stringify(productTypeStatus));
     localStorage.setItem("selectedAreaByFilter_Subdivision", JSON.stringify(selectedArea));
     localStorage.setItem("selectedZipCodeByFilter_Subdivision", JSON.stringify(selectedZipCode));

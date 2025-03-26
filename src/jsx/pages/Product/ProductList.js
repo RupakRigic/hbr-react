@@ -504,6 +504,10 @@ const ProductList = () => {
     } else {
       setSelectedSubdivisionName([]);
       setSubdivisionListDropDown([]);
+      setFilterQuery(prevState => ({
+        ...prevState,
+        subdivision_name: ""
+      }));
     }
   }, [selectedBuilderIDByFilter]);
 
