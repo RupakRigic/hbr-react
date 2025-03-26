@@ -1,15 +1,41 @@
-import React, { useState, forwardRef, Fragment } from 'react';
+import React, { useState, forwardRef, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import Select from "react-select";
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const BulkLandsaleUpdate = forwardRef((props) => {
-  const { selectedLandSales, SubdivisionList, canvasShowEdit, seCanvasShowEdit } = props;
+  const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
   const [SubdivisionCode, setSubdivisionCode] = useState([]);
+  const [SubdivisionList, SetSubdivisionList] = useState([]);
   const [Error, setError] = useState('');
+
+  useEffect(() => {
+    if (canvasShowEdit) {
+      GetSubdivisionDropDownList();
+    }
+  }, [canvasShowEdit]);
+
+  const GetSubdivisionDropDownList = async () => {
+    try {
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData);
+    } catch (error) {
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -41,6 +67,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
           };
 
           const data = await AdminProductService.bulkupdate(selectedLandSales, userData).json();
+
           if (data.status === true) {
             swal("Records Updated Successfully").then((willDelete) => {
               if (willDelete) {
@@ -61,7 +88,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
   };
 
   const HandleUpdateCanvasClose = () => {
-    seCanvasShowEdit(false); 
+    seCanvasShowEdit(false);
     setError('');
     setSubdivisionCode([]);
   };
@@ -192,7 +219,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                 </div>
 
                 <p className="text-danger fs-12">{Error}</p>
-
               </div>
 
               <div>

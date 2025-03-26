@@ -56,7 +56,7 @@ const ProductList = () => {
   const [searchQuery, setSearchQuery] = useState(localStorage.getItem("searchQueryByProductFilter_Product") ? JSON.parse(localStorage.getItem("searchQueryByProductFilter_Product")) : "");
   const [productList, setProductList] = useState([]);
   const [productListCount, setProductsListCount] = useState('');
-  const [SubdivisionList, SetSubdivisionList] = useState([]);
+  const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [exportmodelshow, setExportModelShow] = useState(false)
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -440,6 +440,8 @@ const ProductList = () => {
   const [priceChangeSinceOpenResult, setPriceChangeSinceOpenResult] = useState(0);
   const [priceChangeLast12MonthsResult, setPriceChangeLast12MonthsResult] = useState(0);
 
+  const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
+
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
@@ -494,7 +496,16 @@ const ProductList = () => {
     if(productID){
       handleRowClick(productID);
     }
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    if (selectedBuilderIDByFilter?.length > 0) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
+    }
+  }, [selectedBuilderIDByFilter]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -617,7 +628,6 @@ const ProductList = () => {
   useEffect(() => {
     if(manageFilterOffcanvas || canvasShowAdd || canvasShowEdit){
       GetBuilderDropDownList();
-      GetSubdivisionDropDownList();
     }
   }, [canvasShowAdd, canvasShowEdit, manageFilterOffcanvas]);
 
@@ -651,20 +661,26 @@ const ProductList = () => {
     }
   };
 
-  const GetSubdivisionDropDownList = async () => {
+  const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
     try {
-      const response = await AdminSubdevisionService.subdivisionDropDown();
+      var userData = {
+        builder_ids: selectedBuilderIDByFilter
+      }
+      const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
       const responseData = await response.json();
       const formattedData = responseData.data.map((subdivision) => ({
         label: subdivision.name,
         value: subdivision.id,
       }));
-      SetSubdivisionList(formattedData);
+
+      const validSubdivisionIds = formattedData.map(item => item.value);
+      setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
+      setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        setError(errorJson.message);
+        console.log(errorJson);
       }
     }
   };
@@ -1127,7 +1143,6 @@ const ProductList = () => {
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -1158,7 +1173,7 @@ const ProductList = () => {
   const handleSelectBuilderNameChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setSelectedValues(selectedValues);
+    setSelectedBuilderIDByFilter(selectedValues);
     setSelectedBuilderName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1168,9 +1183,7 @@ const ProductList = () => {
   }
 
   const handleSelectSubdivisionNameChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.label).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedSubdivisionName(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1180,9 +1193,7 @@ const ProductList = () => {
   }
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1192,9 +1203,7 @@ const ProductList = () => {
   };
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1204,9 +1213,7 @@ const ProductList = () => {
   };
 
   const handleSelectStatusChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2376,7 +2383,6 @@ const ProductList = () => {
         seCanvasShowAdd={seCanvasShowAdd}
         Title="Add Product"
         parentCallback={handleCallback}
-        SubdivisionList={SubdivisionList}
       />
 
       <BulkProductUpdate
@@ -2385,7 +2391,6 @@ const ProductList = () => {
         Title={selectedLandSales?.length  === 1 ? "Edit Product" : "Bulk Edit Products"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
-        SubdivisionList={SubdivisionList}
       />
 
       <Modal show={show} onHide={handleClose}>
@@ -2469,7 +2474,7 @@ const ProductList = () => {
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
-                        options={SubdivisionList}
+                        options={subdivisionListDropDown}
                         value={selectedSubdivisionName}
                         onChange={handleSelectSubdivisionNameChange}
                         placeholder={"Select Subdivision Name"}

@@ -1,19 +1,47 @@
 import React, {
   useState,
   forwardRef,
-  useImperativeHandle,
+  Fragment,
+  useEffect,
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Offcanvas, Form } from "react-bootstrap";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import swal from "sweetalert";
 import Select from "react-select";
+import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 
-const ProductOffcanvas = forwardRef((props, ref) => {
-  const { SubdivisionList, canvasShowAdd, seCanvasShowAdd } = props;
+const ProductOffcanvas = forwardRef((props) => {
+  const { canvasShowAdd, seCanvasShowAdd } = props;
   const navigate = useNavigate();
   const [Error, setError] = useState("");
-  const [SubdivisionCode, setSubdivisionCode] = useState("");
+  const [SubdivisionCode, setSubdivisionCode] = useState([]);
+  const [SubdivisionList, SetSubdivisionList] = useState([]);
+
+
+  useEffect(() => {
+    if (canvasShowAdd) {
+      GetSubdivisionDropDownList();
+    }
+  }, [canvasShowAdd]);
+
+  const GetSubdivisionDropDownList = async () => {
+    try {
+      const response = await AdminSubdevisionService.subdivisionDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.data.map((subdivision) => ({
+        label: subdivision.name,
+        value: subdivision.id,
+      }));
+      SetSubdivisionList(formattedData);
+    } catch (error) {
+      console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        setError(errorJson.message);
+      }
+    }
+  };
 
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
@@ -33,7 +61,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
         sqft: event.target.sqft.value,
         website: event.target.website.value ? event.target.website.value : "",
       };
+
       const data = await AdminProductService.store(userData).json();
+
       if (data.status === true) {
         swal("Product Created Succesfully").then((willDelete) => {
           if (willDelete) {
@@ -54,7 +84,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
   };
 
   return (
-    <>
+    <Fragment>
       <Offcanvas
         show={canvasShowAdd}
         onHide={seCanvasShowAdd}
@@ -85,25 +115,20 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                       onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                       styles={{
                         container: (provided) => ({
-                            ...provided,
-                            color: 'black'
+                          ...provided,
+                          color: 'black'
                         }),
                         menu: (provided) => ({
-                            ...provided,
-                            color: 'black'
+                          ...provided,
+                          color: 'black'
                         }),
                       }}
                     />
                   </Form.Group>
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput3"
-                    className="form-label"
-                  >
-                    {" "}
-                    Name <span className="text-danger">*</span>
-                  </label>
+                  <label htmlFor="exampleFormControlInput3" className="form-label">Name <span className="text-danger">*</span></label>
                   <input
                     type="text"
                     name="name"
@@ -112,29 +137,20 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput5"
-                    className="form-label"
-                  >
-                    {" "}
-                    Status <span className="text-danger">*</span>
-                  </label>
+                  <label htmlFor="exampleFormControlInput5" className="form-label">Status <span className="text-danger">*</span></label>
                   <select className="default-select form-control" name="status">
                     <option value="">All</option>
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>
                     <option value="2">Future</option>
                     <option value="3">Closed</option>
-                  </select>{" "}
+                  </select>
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput17"
-                    className="form-label"
-                  >
-                    SQFT
-                  </label>
+                  <label htmlFor="exampleFormControlInput17" className="form-label">SQFT</label>
                   <input
                     type="number"
                     name="sqft"
@@ -143,13 +159,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Stories
-                  </label>
+                  <label htmlFor="exampleFormControlInput4" className="form-label">Stories</label>
                   <input
                     type="number"
                     name="stories"
@@ -158,13 +170,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput12"
-                    className="form-label"
-                  >
-                    Bedroom
-                  </label>
+                  <label htmlFor="exampleFormControlInput12" className="form-label">Bedroom</label>
                   <input
                     type="number"
                     name="bedroom"
@@ -173,13 +181,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput10"
-                    className="form-label"
-                  >
-                    Bathroom
-                  </label>
+                  <label htmlFor="exampleFormControlInput10" className="form-label">Bathroom</label>
                   <input
                     type="number"
                     name="bathroom"
@@ -189,13 +193,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     step="0.1"
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput6"
-                    className="form-label"
-                  >
-                    Garage
-                  </label>
+                  <label htmlFor="exampleFormControlInput6" className="form-label">Garage</label>
                   <input
                     type="number"
                     name="garage"
@@ -204,13 +204,9 @@ const ProductOffcanvas = forwardRef((props, ref) => {
                     placeholder=""
                   />
                 </div>
+
                 <div className="col-xl-6 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput17"
-                    className="form-label"
-                  >
-                    Website
-                  </label>
+                  <label htmlFor="exampleFormControlInput17" className="form-label">Website</label>
                   <input
                     type="text"
                     name="website"
@@ -222,6 +218,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
 
                 <p className="text-danger fs-12">{Error}</p>
               </div>
+              
               <div>
                 <button type="submit" className="btn btn-primary me-1">
                   Submit
@@ -238,7 +235,7 @@ const ProductOffcanvas = forwardRef((props, ref) => {
           </div>
         </div>
       </Offcanvas>
-    </>
+    </Fragment>
   );
 });
 

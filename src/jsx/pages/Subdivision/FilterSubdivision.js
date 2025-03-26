@@ -114,6 +114,9 @@ const FilterSubdivision = () => {
     useEffect(() => {
         if (selectedBuilderIDByFilter?.length > 0) {
             SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+        } else {
+            setSelectedSubdivisionNameByFilter([]);
+            setSubdivisionListDropDown([]);
         }
     }, [selectedBuilderIDByFilter]);
 
@@ -179,7 +182,6 @@ const FilterSubdivision = () => {
             }));
             const validSubdivisionIds = formattedData.map(item => item.value);
             setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
-
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
             console.log("Error fetching subdivision list:", error);

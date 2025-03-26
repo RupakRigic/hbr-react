@@ -11,6 +11,7 @@ const FilterProducts = () => {
     const [selectedStatusByFilter, setSelectedStatusByFilter] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
+    const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedSubdivisionNameByFilter, setSelectedSubdivisionNameByFilter] = useState([]);
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
@@ -38,23 +39,23 @@ const FilterProducts = () => {
     });
 
     useEffect(() => {
-        if(localStorage.getItem("selectedStatusByProductFilter_Product")) {
+        if (localStorage.getItem("selectedStatusByProductFilter_Product")) {
             const selectedStatus = JSON.parse(localStorage.getItem("selectedStatusByProductFilter_Product"));
             handleSelectStatusChange(selectedStatus);
         }
-        if(localStorage.getItem("selectedBuilderNameByFilter_Product")) {
-          const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Product"));
-          handleSelectBuilderNameChange(selectedBuilderName);
+        if (localStorage.getItem("selectedBuilderNameByFilter_Product")) {
+            const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilter_Product"));
+            handleSelectBuilderNameChange(selectedBuilderName);
         }
-        if(localStorage.getItem("selectedSubdivisionNameByFilter_Product")) {
-          const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Product"));
-          handleSelectSubdivisionNameChange(selectedSubdivisionName);
+        if (localStorage.getItem("selectedSubdivisionNameByFilter_Product")) {
+            const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Product"));
+            handleSelectSubdivisionNameChange(selectedSubdivisionName);
         }
-        if(localStorage.getItem("selectedAgeByFilter_Product")) {
+        if (localStorage.getItem("selectedAgeByFilter_Product")) {
             const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Product"));
             handleSelectAgeChange(selectedAge);
         }
-        if(localStorage.getItem("selectedSingleByFilter_Product")) {
+        if (localStorage.getItem("selectedSingleByFilter_Product")) {
             const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Product"));
             handleSelectSingleChange(selectedSingle);
         }
@@ -63,11 +64,19 @@ const FilterProducts = () => {
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
-            GetSubdivisionDropDownList();
         } else {
             navigate("/");
         }
     }, []);
+
+    useEffect(() => {
+        if (selectedBuilderIDByFilter?.length > 0) {
+            SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+        } else {
+            setSelectedSubdivisionNameByFilter([]);
+            setSubdivisionListDropDown([]);
+        }
+    }, [selectedBuilderIDByFilter]);
 
     useEffect(() => {
         setSearchQuery(filterString());
@@ -102,14 +111,19 @@ const FilterProducts = () => {
         }
     };
 
-    const GetSubdivisionDropDownList = async () => {
+    const SubdivisionByBuilderIDList = async (selectedBuilderIDByFilter) => {
         try {
-            const response = await AdminSubdevisionService.subdivisionDropDown();
+            var userData = {
+                builder_ids: selectedBuilderIDByFilter
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
             const responseData = await response.json();
             const formattedData = responseData.data.map((subdivision) => ({
                 label: subdivision.name,
                 value: subdivision.id,
             }));
+            const validSubdivisionIds = formattedData.map(item => item.value);
+            setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
             console.log("Error fetching subdivision list:", error);
@@ -121,8 +135,8 @@ const FilterProducts = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("setProductFilter") == "true") {
-            if((searchQuery == "") || (searchQuery == "&status=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&current_base_price=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")){
+        if (localStorage.getItem("setProductFilter") == "true") {
+            if ((searchQuery == "") || (searchQuery == "&status=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&current_base_price=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")) {
                 return;
             } else {
                 navigate("/productlist");
@@ -152,7 +166,7 @@ const FilterProducts = () => {
                 localStorage.setItem("searchQueryByProductFilter_Product", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
             }
         }
-        
+
     }, [searchQuery]);
 
     const HandleFilterForm = (e) => {
@@ -197,7 +211,9 @@ const FilterProducts = () => {
 
     const handleSelectBuilderNameChange = (selectedItems) => {
         const selectedNames = selectedItems.map(item => item.label).join(', ');
+        const selectedValues = selectedItems.map(item => item.value);
         setSelectedBuilderNameByFilter(selectedItems);
+        setSelectedBuilderIDByFilter(selectedValues);
         setFilterQuery(prevState => ({
             ...prevState,
             builder_name: selectedNames
@@ -272,7 +288,7 @@ const FilterProducts = () => {
             area: "",
             masterplan_id: "",
             zipcode: "",
-            lotwidth:"",
+            lotwidth: "",
             lotsize: "",
             age: "",
             single: ""
@@ -282,6 +298,7 @@ const FilterProducts = () => {
         setSelectedSubdivisionNameByFilter([]);
         setSelectedAgeByFilter([]);
         setSelectedSingleByFilter([]);
+        setSelectedBuilderIDByFilter([]);
     };
 
     return (
@@ -290,7 +307,7 @@ const FilterProducts = () => {
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">PLAN STATUS:{" "}</label>
+                        <label className="form-label">PLAN STATUS:</label>
                         <MultiSelect
                             name="status"
                             options={statusOptions}
@@ -300,7 +317,7 @@ const FilterProducts = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">BUILDER NAME:{" "}</label>
+                        <label className="form-label">BUILDER NAME:</label>
                         <Form.Group controlId="tournamentList">
                             <MultiSelect
                                 name="builder_name"
@@ -312,7 +329,7 @@ const FilterProducts = () => {
                         </Form.Group>
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">SUBDIVISION NAME:{" "}</label>
+                        <label className="form-label">SUBDIVISION NAME:</label>
                         <Form.Group controlId="tournamentList">
                             <MultiSelect
                                 name="subdivision_name"
@@ -324,53 +341,53 @@ const FilterProducts = () => {
                         </Form.Group>
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">PRODUCT NAME :{" "}</label>
+                        <label className="form-label">PRODUCT NAME:</label>
                         <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">SQUARE FOOTAGE:{" "}</label>
+                        <label className="form-label">SQUARE FOOTAGE:</label>
                         <input name="sqft" value={filterQuery.sqft} className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">STORIES:{" "}</label>
+                        <label className="form-label">STORIES:</label>
                         <input name="stories" value={filterQuery.stories} className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">BEDROOMS:{" "}</label>
+                        <label className="form-label">BEDROOMS:</label>
                         <input value={filterQuery.bedroom} name="bedroom" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">BATH ROOMS:{" "}</label>
+                        <label className="form-label">BATH ROOMS:</label>
                         <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">GARAGE:{" "}</label>
+                        <label className="form-label">GARAGE:</label>
                         <input type="text" name="garage" value={filterQuery.garage} className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">CURRENT BASE PRICE:{" "}</label>
+                        <label className="form-label">CURRENT BASE PRICE:</label>
                         <input type="text" value={filterQuery.current_base_price} name="current_base_price" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">PRODUCT TYPE:{" "}</label>
+                        <label className="form-label">PRODUCT TYPE:</label>
                         <input value={filterQuery.product_type} name="product_type" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">AREA:{" "}</label>
+                        <label className="form-label">AREA:</label>
                         <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3 ">
-                        <label className="form-label">MASTER PLAN:{" "}</label>
+                        <label className="form-label">MASTER PLAN:</label>
                         <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">ZIP CODE:{" "}</label>
-                        <input 
-                            type="text" 
-                            name="zipcode" 
-                            value={filterQuery.zipcode} 
-                            className="form-control" 
-                            onChange={HandleFilter} 
+                        <label className="form-label">ZIP CODE:</label>
+                        <input
+                            type="text"
+                            name="zipcode"
+                            value={filterQuery.zipcode}
+                            className="form-control"
+                            onChange={HandleFilter}
                             pattern="[0-9, ]*"
                             onInput={(e) => {
                                 e.target.value = e.target.value.replace(/[^0-9, ]/g, '');
@@ -378,16 +395,16 @@ const FilterProducts = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">LOT WIDTH:{" "}</label>
+                        <label className="form-label">LOT WIDTH:</label>
                         <input value={filterQuery.lotwidth} name="lotwidth" className="form-control" onChange={HandleFilter} />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label className="form-label">LOT SIZE:{" "}</label>
+                        <label className="form-label">LOT SIZE:</label>
                         <input value={filterQuery.lotsize} name="lotsize" className="form-control" onChange={HandleFilter} />
                     </div>
 
                     <div className="col-md-3 mt-3 mb-3">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:{" "}</label>
+                        <label htmlFor="exampleFormControlInput8" className="form-label">AGE RESTRICTED:</label>
                         <MultiSelect
                             name="age"
                             options={ageOptions}
@@ -397,7 +414,7 @@ const FilterProducts = () => {
                         />
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
-                        <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:{" "}</label>
+                        <label htmlFor="exampleFormControlInput8" className="form-label">All SINGLE STORY:</label>
                         <MultiSelect
                             name="single"
                             options={singleOptions}

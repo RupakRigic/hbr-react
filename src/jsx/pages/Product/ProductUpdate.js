@@ -13,13 +13,32 @@ const ProductUpdate = () => {
   const queryParams = new URLSearchParams(location.search);
   const page = queryParams.get("page");
 
+  const params = useParams();
+  const navigate = useNavigate();
+
   const [SubdivisionCode, setSubdivisionCode] = useState([]);
   const [Error, setError] = useState("");
   const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
   const [ProductList, SetProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const params = useParams();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      GetSubdivision(params.id);
+      GetSubdivisionDropDownList();
+    } else {
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (subdivisionListDropDown.length > 0 && ProductList != "") {
+      let initialSubdivisionId = subdivisionListDropDown.find(
+        (subID) => subID.value === ProductList.subdivision_id
+      )
+      handleSubdivisionCode(initialSubdivisionId);
+    }
+  }, [subdivisionListDropDown, ProductList]);
 
   const GetSubdivision = async (id) => {
     setIsLoading(true);
@@ -55,24 +74,6 @@ const ProductUpdate = () => {
     }
   };
 
-  useEffect(() => {
-    if (localStorage.getItem("usertoken")) {
-      GetSubdivision(params.id);
-      GetSubdivisionDropDownList();
-    } else {
-      navigate("/");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (subdivisionListDropDown.length > 0 && ProductList != "") {
-      let initialSubdivisionId = subdivisionListDropDown.find(
-        (subID) => subID.value === ProductList.subdivision_id
-      )
-      handleSubdivisionCode(initialSubdivisionId);
-    }
-  }, [subdivisionListDropDown, ProductList]);
-
   const handleSubdivisionCode = (code) => {
     setSubdivisionCode(code);
   };
@@ -82,9 +83,7 @@ const ProductUpdate = () => {
 
     try {
       var userData = {
-        subdivision_id: SubdivisionCode.id
-          ? SubdivisionCode.id
-          : ProductList.subdivision_id,
+        subdivision_id: SubdivisionCode ? SubdivisionCode.value : ProductList.subdivision_id,
         product_code: event.target.product_code.value,
         name: event.target.name.value,
         status: event.target.status.value,
@@ -95,7 +94,9 @@ const ProductUpdate = () => {
         sqft: event.target.sqft.value,
         website: event.target.website.value,
       };
+
       const data = await AdminProductService.update(params.id, userData).json();
+
       if (data.status === true) {
         swal("Record Updated Successfully").then((willDelete) => {
           if (willDelete) {
@@ -134,9 +135,7 @@ const ProductUpdate = () => {
                     <form onSubmit={handleSubmit}>
                       <div className="row">
                         <div className="col-xl-6 mb-3">
-                          <label className="form-label">
-                            Subdivision <span className="text-danger">*</span>
-                          </label>
+                          <label className="form-label">Subdivision <span className="text-danger">*</span></label>
                           <Form.Group controlId="tournamentList">
                             <Select
                               options={subdivisionListDropDown}
@@ -155,14 +154,9 @@ const ProductUpdate = () => {
                             />
                           </Form.Group>
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput2"
-                            className="form-label"
-                          >
-                            {" "}
-                            Product Code <span className="text-danger">*</span>
-                          </label>
+                          <label htmlFor="exampleFormControlInput2" className="form-label">Product Code <span className="text-danger">*</span></label>
                           <input
                             type="text"
                             defaultValue={ProductList.product_code}
@@ -174,14 +168,9 @@ const ProductUpdate = () => {
                             style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput3"
-                            className="form-label"
-                          >
-                            {" "}
-                            Name <span className="text-danger">*</span>
-                          </label>
+                          <label htmlFor="exampleFormControlInput3" className="form-label">Name <span className="text-danger">*</span></label>
                           <input
                             type="text"
                             defaultValue={ProductList.name}
@@ -191,18 +180,10 @@ const ProductUpdate = () => {
                             placeholder=""
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput5"
-                            className="form-label"
-                          >
-                            {" "}
-                            Status <span className="text-danger">*</span>
-                          </label>
-                          <select
-                            className="default-select form-control"
-                            name="status"
-                          >
+                          <label htmlFor="exampleFormControlInput5" className="form-label">Status <span className="text-danger">*</span></label>
+                          <select className="default-select form-control" name="status">
                             <option value="">All</option>
                             <option selected={ProductList.status == 1 ? true : false} value="1">Active</option>
                             <option selected={ProductList.status == 0 ? true : false} value="0">Sold Out</option>
@@ -210,13 +191,9 @@ const ProductUpdate = () => {
                             <option selected={ProductList.status == 3 ? true : false} value="3">Closed</option>
                           </select>
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput17"
-                            className="form-label"
-                          >
-                            SQFT
-                          </label>
+                          <label htmlFor="exampleFormControlInput17" className="form-label">SQFT</label>
                           <input
                             type="number"
                             defaultValue={ProductList.sqft}
@@ -226,13 +203,9 @@ const ProductUpdate = () => {
                             placeholder=""
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput4"
-                            className="form-label"
-                          >
-                            Stories
-                          </label>
+                          <label htmlFor="exampleFormControlInput4" className="form-label">Stories</label>
                           <input
                             type="number"
                             defaultValue={ProductList.stories}
@@ -242,13 +215,9 @@ const ProductUpdate = () => {
                             placeholder=""
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput12"
-                            className="form-label"
-                          >
-                            Bedroom
-                          </label>
+                          <label htmlFor="exampleFormControlInput12" className="form-label">Bedroom</label>
                           <input
                             type="number"
                             defaultValue={ProductList.bedroom}
@@ -258,13 +227,9 @@ const ProductUpdate = () => {
                             placeholder=""
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput10"
-                            className="form-label"
-                          >
-                            Bathroom
-                          </label>
+                          <label htmlFor="exampleFormControlInput10" className="form-label">Bathroom</label>
                           <input
                             type="number"
                             defaultValue={ProductList.bathroom}
@@ -275,13 +240,9 @@ const ProductUpdate = () => {
                             step="0.1"
                           />
                         </div>
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput6"
-                            className="form-label"
-                          >
-                            {" "}
-                            Garage
+                          <label htmlFor="exampleFormControlInput6" className="form-label">Garage
                           </label>
                           <input
                             type="number"
@@ -292,16 +253,9 @@ const ProductUpdate = () => {
                             placeholder=""
                           />
                         </div>
-                        
-                        
-                        
+
                         <div className="col-xl-6 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput18"
-                            className="form-label"
-                          >
-                            Website
-                          </label>
+                          <label htmlFor="exampleFormControlInput18" className="form-label">Website</label>
                           <input
                             type="text"
                             defaultValue={ProductList.website}
@@ -314,6 +268,7 @@ const ProductUpdate = () => {
 
                         <p className="text-danger fs-12">{Error}</p>
                       </div>
+                      
                       <div>
                         <button type="submit" className="btn btn-primary me-1">
                           Submit

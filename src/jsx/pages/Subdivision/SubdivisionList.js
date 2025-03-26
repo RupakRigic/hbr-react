@@ -871,8 +871,11 @@ const SubdivisionList = () => {
   },[]);
 
   useEffect(() => {
-    if(selectedBuilderIDByFilter?.length > 0) {
+    if (selectedBuilderIDByFilter?.length > 0) {
       SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    } else {
+      setSelectedSubdivisionName([]);
+      setSubdivisionListDropDown([]);
     }
   }, [selectedBuilderIDByFilter]);
 
