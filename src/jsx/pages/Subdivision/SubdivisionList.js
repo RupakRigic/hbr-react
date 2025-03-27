@@ -225,7 +225,6 @@ const SubdivisionList = () => {
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedGated, setSelectedGated] = useState([]);
   const [productTypeStatus, setProductTypeStatus] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([]);
   const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
   const [selectedArea, setSelectedArea] = useState([]);
   const [selectedZipCode, setSelectedZipCode] = useState([]);
@@ -871,17 +870,17 @@ const SubdivisionList = () => {
   },[]);
 
   useEffect(() => {
-    if (selectedBuilderIDByFilter?.length > 0) {
-      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
-    } else {
-      setSelectedSubdivisionName([]);
-      setSubdivisionListDropDown([]);
+    SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+  }, [selectedBuilderIDByFilter]);
+
+  useEffect(() => {
+    if(selectedSubdivisionName?.length === 0){
       setFilterQuery(prevState => ({
         ...prevState,
         name: ""
-      }));
+    }));
     }
-  }, [selectedBuilderIDByFilter]);
+  }, [selectedSubdivisionName]);
 
   useEffect(() => {
     if (selectedFields) {
@@ -2624,9 +2623,7 @@ const SubdivisionList = () => {
   };
 
   const handleSelectStatusChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2636,9 +2633,7 @@ const SubdivisionList = () => {
   }
 
   const handleSelectReportingChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedReporting(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2648,9 +2643,7 @@ const SubdivisionList = () => {
   }
 
   const handleSelectProductTypeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setProductTypeStatus(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2660,9 +2653,7 @@ const SubdivisionList = () => {
   }
 
   const handleSelectAgeChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedAge(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -2672,11 +2663,8 @@ const SubdivisionList = () => {
   }
 
   const handleSelectSingleChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedSingle(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       single: selectedNames
@@ -2685,11 +2673,8 @@ const SubdivisionList = () => {
   }
 
   const handleSelectGatedChange = (selectedItems) => {
-    const selectedValues = selectedItems.map(item => item.value);
     const selectedNames = selectedItems.map(item => item.value).join(', ');
-    setSelectedValues(selectedValues);
     setSelectedGated(selectedItems);
-
     setFilterQuery(prevState => ({
       ...prevState,
       gated: selectedNames

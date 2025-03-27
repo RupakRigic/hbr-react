@@ -216,17 +216,17 @@ const TrafficsaleList = () => {
   },[selectedLandSales]);
 
   useEffect(() => {
-    if (selectedBuilderIDByFilter?.length > 0) {
-      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
-    } else {
-      setSelectedSubdivisionName([]);
-      setSubdivisionListDropDown([]);
+    SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+  }, [selectedBuilderIDByFilter]);
+
+  useEffect(() => {
+    if (selectedSubdivisionName?.length === 0) {
       setFilterQuery(prevState => ({
         ...prevState,
         subdivision_name: ""
       }));
     }
-  }, [selectedBuilderIDByFilter]);
+  }, [selectedSubdivisionName]);
 
   useEffect(() => {
     if (selectedFields) {

@@ -99,13 +99,17 @@ const FilterBasePrice = () => {
     }, []);
 
     useEffect(() => {
-        if (selectedBuilderIDByFilter?.length > 0) {
-            SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
-        } else {
-            setSelectedSubdivisionNameByFilter([]);
-            setSubdivisionListDropDown([]);
-        }
+        SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
     }, [selectedBuilderIDByFilter]);
+
+    useEffect(() => {
+        if (selectedSubdivisionNameByFilter?.length === 0) {
+            setFilterQuery(prevState => ({
+                ...prevState,
+                subdivision_name: ""
+            }));
+        }
+    }, [selectedSubdivisionNameByFilter]);
 
     useEffect(() => {
         setSearchQuery(filterString());
