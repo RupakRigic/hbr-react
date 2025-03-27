@@ -61,6 +61,13 @@ const ProductList = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
 
+  const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
+  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedAge, setSelectedAge] = useState([]);
+  const [selectedSingle, setSelectedSingle] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+
   const resetSelection = () => {
     setSelectAll(false);
     setSelectedColumns([]);
@@ -1141,13 +1148,6 @@ const ProductList = () => {
       }
     }
   };
-
-  const [builderDropDown, setBuilderDropDown] = useState([]);
-  const [selectedBuilderName, setSelectedBuilderName] = useState([]);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
-  const [selectedAge, setSelectedAge] = useState([]);
-  const [selectedSingle, setSelectedSingle] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
