@@ -26,6 +26,12 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         }
     }, [canvasShowEdit]);
 
+    useEffect(() => {
+        if (canvasShowEdit) {
+            SubdivisionByBuilderIDList(builderCode);
+        }
+    }, [builderCode, canvasShowEdit]);
+
     const GetBuilderDropDownList = async () => {
         setIsLoading(true);
         try {
@@ -50,9 +56,12 @@ const BulkLandsaleUpdate = forwardRef((props) => {
         }
     };
 
-    const GetSubdivisionDropDownList = async (builderId) => {
+    const SubdivisionByBuilderIDList = async (builderId) => {
         try {
-            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+            var userData = {
+                builder_ids: (builderId?.value === "" || builderId?.value === undefined || builderId?.value === null) ? [] : [builderId.value]
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
             const responseData = await response.json();
             const formattedData = [
                 { label: "Select Subdivision None", value: "none" }, // Default option
@@ -61,6 +70,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                     value: subdivision.id,
                 })),
             ];
+            const filter = formattedData?.filter(data => data.value === SubdivisionCode?.value);
+            handleSubdivisionCode(filter?.length > 0 ? filter[0] : formattedData[0]);
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
             if (error.name === "HTTPError") {
@@ -72,15 +83,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
 
     const handleBuilderCode = (code) => {
         setBuilderCode(code);
-        if (code.value !== "none") {
-            GetSubdivisionDropDownList(code.value);
-        } else {
-            const formattedData = [
-                { label: "Select Subdivision None", value: "none" },
-            ]
-            setSubdivisionListDropDown(formattedData);
-            setSubdivisionCode([]);
-        }
     };
 
     const handleSubdivisionCode = (code) => {
@@ -116,8 +118,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "lng": event.target.lng.value,
                         "area": event.target.area.value,
                         "zip": event.target.zip.value,
-                        "subdivision_id": SubdivisionCode?.value === "none" ? "none" : SubdivisionCode?.value,
-                        "builder_id": builderCode?.value === "none" ?  "none" : builderCode?.value,
+                        "subdivision_id": (SubdivisionCode?.value === "none" || SubdivisionCode?.value === undefined || SubdivisionCode?.value === null) ? "none" : SubdivisionCode?.value,
+                        "builder_id": (builderCode?.value === "none" || builderCode?.value === undefined || builderCode?.value === null) ? "none" : builderCode?.value,
                     }
 
                     const data = await AdminLandsaleService.bulkupdate(selectedLandSales, userData).json();

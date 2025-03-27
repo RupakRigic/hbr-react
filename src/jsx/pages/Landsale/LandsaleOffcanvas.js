@@ -12,7 +12,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [error, setError] = useState('');
-    const [selectedBuilderName, setSelectedBuilderName] = useState("");
+    const [builderCode, setBuilderCode] = useState([]);
     const [subdivisionCode, setSubdivisionCode] = useState([]);
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
@@ -26,15 +26,24 @@ const LandsaleOffcanvas = forwardRef((props) => {
         }
     }, [canvasShowAdd]);
 
+    useEffect(() => {
+        if (canvasShowAdd) {
+            SubdivisionByBuilderIDList(builderCode);
+        }
+    }, [builderCode, canvasShowAdd]);
+
     const GetBuilderDropDownList = async () => {
         setIsLoading(true);
         try {
             const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
-            const formattedData = responseData.map((builder) => ({
-                label: builder.name,
-                value: builder.id,
-            }));
+            const formattedData = [
+                { label: "Select Builder None", value: "" }, // Default option
+                ...responseData.map((builder) => ({
+                    label: builder.name,
+                    value: builder.id,
+                })),
+            ];
             setBuilderListDropDown(formattedData);
             setIsLoading(false);
         } catch (error) {
@@ -47,14 +56,22 @@ const LandsaleOffcanvas = forwardRef((props) => {
         }
     };
 
-    const GetSubdivisionDropDownList = async (builderId) => {
+    const SubdivisionByBuilderIDList = async (builderId) => {
         try {
-            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+            var userData = {
+                builder_ids: (builderId?.value === "" || builderId?.value === undefined || builderId?.value === null) ? [] : [builderId.value]
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
             const responseData = await response.json();
-            const formattedData = responseData.data.map((subdivision) => ({
-                label: subdivision.name,
-                value: subdivision.id,
-            }));
+            const formattedData = [
+                { label: "Select Subdivision None", value: "" },
+                ...responseData.data.map((subdivision) => ({
+                    label: subdivision.name,
+                    value: subdivision.id,
+                })),
+            ];
+            const filter = formattedData?.filter(data => data.value === subdivisionCode?.value);
+            handleSubdivisionCode(filter?.length > 0 ? filter[0] : formattedData[0]);
             setSubdivisionListDropDown(formattedData);
             setIsLoading(false);
         } catch (error) {
@@ -65,9 +82,8 @@ const LandsaleOffcanvas = forwardRef((props) => {
         }
     };
 
-    const handleSelectBuilderNameChange = (e) => {
-        setSelectedBuilderName(e);
-        GetSubdivisionDropDownList(e.value);
+    const handleSelectBuilderNameChange = (code) => {
+        setBuilderCode(code);
     };
 
     const handleSubdivisionCode = (code) => {
@@ -93,18 +109,18 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": subdivisionCode ? subdivisionCode.value : '',
-                "builder_id": selectedBuilderName ? selectedBuilderName.value : '',
+                "subdivision_id": (subdivisionCode?.value === "" || subdivisionCode?.value === undefined || subdivisionCode?.value === null) ? "" : subdivisionCode?.value,
+                "builder_id": (builderCode?.value === "" || builderCode?.value === undefined || builderCode?.value === null) ? "" : builderCode?.value,
             }
 
             const data = await AdminLandsaleService.store(userData).json();
-            
+
             if (data.status === true) {
                 swal("Landsale Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         props.parentCallback();
                         seCanvasShowAdd(false);
-                        setSelectedBuilderName("");
+                        setBuilderCode([]);
                         setPrice(null);
                         setNoOfUnit(null);
                         setSubdivisionListDropDown([]);
@@ -126,7 +142,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setSelectedBuilderName(""); setSubdivisionListDropDown([]); }}
+                        onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setBuilderCode([]); setSubdivisionListDropDown([]); }}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -146,7 +162,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                             <Select
                                                 name="builder_name"
                                                 options={builderListDropDown}
-                                                value={selectedBuilderName}
+                                                value={builderCode}
                                                 onChange={handleSelectBuilderNameChange}
                                                 placeholder={"Select Builder Name"}
                                                 styles={{
@@ -168,6 +184,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                         <Form.Group controlId="tournamentList">
                                             <Select
                                                 options={subdivisionListDropDown}
+                                                value={subdivisionCode}
                                                 onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
                                                 placeholder={"Select Subdivision..."}
                                                 styles={{
@@ -269,7 +286,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
 
                                 <div>
                                     <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                    <Link to={"#"} onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setSelectedBuilderName(""); setSubdivisionListDropDown([]); }} className="btn btn-danger light ms-1">Cancel</Link>
+                                    <Link to={"#"} onClick={() => { seCanvasShowAdd(false); setPrice(null); setNoOfUnit(null); setBuilderCode([]); setSubdivisionListDropDown([]); }} className="btn btn-danger light ms-1">Cancel</Link>
                                 </div>
                             </form>
                         </div>

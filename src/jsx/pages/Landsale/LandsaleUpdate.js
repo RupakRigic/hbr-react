@@ -46,6 +46,12 @@ const LandsaleUpdate = () => {
         }
     }, [LandsaleList, builderListDropDown]);
 
+    useEffect(() => {
+        if (LandsaleList?.id) {
+            SubdivisionByBuilderIDList(builderCode);
+        }
+    }, [builderCode, LandsaleList]);
+
     const ShowLandSales = async (id) => {
         setIsLoadingLandSale(true);
         try {
@@ -69,7 +75,7 @@ const LandsaleUpdate = () => {
             const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
             const formattedData = [
-                { label: "Select Builder", value: "" }, // Default option
+                { label: "Select Builder None", value: "" }, // Default option
                 ...responseData.map((builder) => ({
                     label: builder.name,
                     value: builder.id,
@@ -87,13 +93,17 @@ const LandsaleUpdate = () => {
         }
     };
 
-    const GetSubdivisionDropDownList = async (builderId) => {
+    const SubdivisionByBuilderIDList = async (builderId) => {
         setIsLoadingSubdivision(true);
         try {
-            const response = await AdminSubdevisionService.Subdivisionbybuilderid(builderId);
+
+            var userData = {
+                builder_ids: (builderId?.value === "" || builderId?.value === undefined || builderId?.value === null) ? [] : [builderId.value]
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
             const responseData = await response.json();
             const formattedData = [
-                { label: "Select Subdivision", value: "" }, // Default option
+                { label: "Select Subdivision None", value: "" },
                 ...responseData.data.map((subdivision) => ({
                     label: subdivision.name,
                     value: subdivision.id,
@@ -114,12 +124,6 @@ const LandsaleUpdate = () => {
 
     const handleBuilderCode = (code) => {
         setBuilderCode(code);
-        if (code.value) {
-            GetSubdivisionDropDownList(code.value);
-        } else {
-            setSubdivisionListDropDown([]);
-            setSubdivisionCode([]);
-        }
     };
 
     const handleSubdivisionCode = (code) => {
@@ -146,8 +150,8 @@ const LandsaleUpdate = () => {
                 "lng": event.target.lng.value,
                 "area": event.target.area.value,
                 "zip": event.target.zip.value,
-                "subdivision_id": SubdivisionCode ? SubdivisionCode?.value : null,
-                "builder_id": builderCode ? builderCode?.value : null,
+                "subdivision_id": (SubdivisionCode?.value === "" || SubdivisionCode?.value === undefined || SubdivisionCode?.value === null) ? "" : SubdivisionCode?.value,
+                "builder_id": (builderCode?.value === "" || builderCode?.value === undefined || builderCode?.value === null) ? "" : builderCode?.value,
             }
 
             const data = await AdminLandsaleService.update(params.id, userData).json();
