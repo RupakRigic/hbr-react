@@ -242,12 +242,12 @@ const LandsaleUpdate = () => {
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Seller <span className="text-danger">*</span></label>
+                                                    <label htmlFor="exampleFormControlInput2" className="form-label">Seller <span className="text-danger">*</span></label>
                                                     <input type="text" defaultValue={LandsaleList.seller} name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Buyer <span className="text-danger">*</span></label>
+                                                    <label htmlFor="exampleFormControlInput3" className="form-label">Buyer <span className="text-danger">*</span></label>
                                                     <input type="text" defaultValue={LandsaleList.buyer} name='buyer' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                                 </div>
 
@@ -307,17 +307,17 @@ const LandsaleUpdate = () => {
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Longitude </label>
+                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Longitude</label>
                                                     <input type="text" name='lng' defaultValue={LandsaleList.lng} className="form-control" id="exampleFormControlInput17" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Area </label>
+                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Area</label>
                                                     <input type="text" defaultValue={LandsaleList.area} name='area' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">
-                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
+                                                    <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode</label>
                                                     <input type="text" name='zip' defaultValue={LandsaleList.zip} className="form-control" id="exampleFormControlInput17" placeholder="" />
                                                 </div>
 

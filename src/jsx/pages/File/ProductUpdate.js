@@ -111,7 +111,7 @@ const ProductUpdate = () => {
                                     <form onSubmit={handleSubmit}>
                                         <div className="row">
                                             <div className="col-xl-6 mb-3">
-                                                <label className="form-label">Subdivision<span className="text-danger">*</span></label>
+                                                <label className="form-label">Subdivision <span className="text-danger">*</span></label>
                                                 <Form.Group controlId="tournamentList">
 
                                                     <Select
@@ -125,11 +125,11 @@ const ProductUpdate = () => {
 
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput2" className="form-label"> Product Code <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput2" className="form-label">Product Code <span className="text-danger">*</span></label>
                                                 <input type="text" defaultValue={ProductList.product_code} name='product_code' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput3" className="form-label"> Name <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput3" className="form-label">Name <span className="text-danger">*</span></label>
                                                 <input type="text" defaultValue={ProductList.name} name='name' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
@@ -137,42 +137,42 @@ const ProductUpdate = () => {
                                                 <input type="number" defaultValue={ProductList.stories} name='stories' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput5" className="form-label"> Status <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput5" className="form-label">Status <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.status} name='status' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput6" className="form-label"> Garage <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput6" className="form-label">Garage <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.garage} name='garage' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput7" className="form-label"> Price Change <span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput7" className="form-label">Price Change <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.pricechange} name='pricechange' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                             </div>
 
 
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput10" className="form-label">Bathroom<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput10" className="form-label">Bathroom <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.bathroom} name='bathroom' className="form-control" id="exampleFormControlInput10" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput11" className="form-label">Recent Price<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput11" className="form-label">Recent Price <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.recentprice} name='recentprice' className="form-control" id="exampleFormControlInput11" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput12" className="form-label">Bedroom<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput12" className="form-label">Bedroom <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.bedroom} name='bedroom' className="form-control" id="exampleFormControlInput12" placeholder="" />
                                             </div>
 
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput16" className="form-label">Recent Price SQFT<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput16" className="form-label">Recent Price SQFT <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.recentpricesqft} name='recentpricesqft' className="form-control" id="exampleFormControlInput16" placeholder="" />
                                             </div>
                                             <div className="col-xl-6 mb-3">
-                                                <label htmlFor="exampleFormControlInput17" className="form-label">SQFT<span className="text-danger">*</span></label>
+                                                <label htmlFor="exampleFormControlInput17" className="form-label">SQFT <span className="text-danger">*</span></label>
                                                 <input type="number" defaultValue={ProductList.sqft} name='sqft' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                             </div>
 

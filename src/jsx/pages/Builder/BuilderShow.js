@@ -120,24 +120,24 @@ const BuilderShow = forwardRef((props, ref) => {
                                     <input type="text" name="code" className="form-control" id="exampleFormControlInput1" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Name <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label">Name <span className="text-danger">*</span></label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Website </label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label">Website</label>
                                     <input type="text" name='website' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput4" className="form-label">Mobile </label>
+                                    <label htmlFor="exampleFormControlInput4" className="form-label">Mobile</label>
                                     <input type="number" name='phone' className="form-control" id="exampleFormControlInput4" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label"> Fax </label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Fax</label>
                                     <input type="text" name='fax' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Is Active </label>
+                                    <label className="form-label">Is Active</label>
                                     <select className="default-select form-control" onChange={handleActive} >
                                         {/* <option data-display="Select">Please select</option> */}
                                         <option value="1">true</option>
@@ -147,19 +147,19 @@ const BuilderShow = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Office Address 1 </label>
+                                    <label className="form-label">Office Address 1</label>
                                     <textarea rows="2" name='officeaddress1' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Office Address 2 </label>
+                                    <label className="form-label">Office Address 2</label>
                                     <textarea rows="2" name='officeaddress2' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label"> City </label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">City</label>
                                     <input type="text" name='city' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label"> Zipcode </label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label">Zipcode</label>
                                     <input type="text" name='zipcode' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
@@ -197,11 +197,11 @@ const BuilderShow = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Current Land Aquisitions </label>
+                                    <label className="form-label">Current Land Aquisitions</label>
                                     <textarea rows="2" name='current_land_aquisitions' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Coporate Office Address 1 </label>
+                                    <label className="form-label">Coporate Office Address 1</label>
                                     <textarea rows="2" name='coporate_officeaddress_1' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">

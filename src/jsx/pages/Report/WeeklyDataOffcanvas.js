@@ -122,7 +122,7 @@ const WeeklyDataOffcanvas = forwardRef((props, ref) => {
                                     </Form.Group>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput3" className="form-label"> Weekly Traffic <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput3" className="form-label">Weekly Traffic <span className="text-danger">*</span></label>
                                     <input type="number" name='weekly_traffic' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">

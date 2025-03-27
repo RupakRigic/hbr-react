@@ -84,7 +84,7 @@ const ProductOffcanvas = forwardRef((props) => {
                         <form onSubmit={handleSubmit}>
                             <div className="row">
                                 <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Product<span className="text-danger">*</span></label>
+                                    <label className="form-label">Product <span className="text-danger">*</span></label>
                                     <Form.Group controlId="tournamentList">
                                         <Select
                                             options={productList}
@@ -105,7 +105,7 @@ const ProductOffcanvas = forwardRef((props) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label"> Base Price: <span className="text-danger">*</span></label>
+                                    <label htmlFor="exampleFormControlInput2" className="form-label">Base Price <span className="text-danger">*</span></label>
                                     <input type="number" name='baseprice' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                 </div>
 
