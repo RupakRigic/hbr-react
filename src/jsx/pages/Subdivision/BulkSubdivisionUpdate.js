@@ -123,7 +123,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             opensince: event.target.opensince.value,
             age: age,
             single: single,
-            // firstpermitdate: event.target.firstpermitdate.value,
             masterplan_id: masterplan?.value,
             lat: event.target.lat.value,
             lng: event.target.lng.value,
@@ -400,17 +399,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                       <option value="0">No</option>
                     </select>
                   </div>
-
-                  {/* <div className="col-xl-6 mb-3">
-                    <label htmlFor="exampleFormControlInput9" className="form-label">First Permit Date</label>
-                    <input
-                      type="date"
-                      name="firstpermitdate"
-                      className="form-control"
-                      id="exampleFormControlInput9"
-                      placeholder=""
-                    />
-                  </div> */}
 
                   <div className="col-xl-6 mb-3">
                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>

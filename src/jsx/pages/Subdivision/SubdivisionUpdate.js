@@ -20,12 +20,12 @@ const SubdivisionUpdate = () => {
   const [Error, setError] = useState("");
   const [Subdivision, setSubdivision] = useState([]);
   const params = useParams();
-  const [status, setStatus] = useState("1");
-  const [productType, setProductType] = useState("DET");
-  const [reporting, setReporting] = useState("1");
-  const [single, setSingle] = useState("1");
-  const [age, setAge] = useState("1");
-  const [area, setArea] = useState("1");
+  const [status, setStatus] = useState("");
+  const [productType, setProductType] = useState("");
+  const [reporting, setReporting] = useState("");
+  const [single, setSingle] = useState("");
+  const [age, setAge] = useState("");
+  const [area, setArea] = useState("");
   const [juridiction, setJuridiction] = useState("");
   const [masterplan, setMasterPlan] = useState("");
   const [gate, setGate] = useState('');
@@ -152,7 +152,6 @@ const SubdivisionUpdate = () => {
         opensince: event.target.opensince.value,
         age: age,
         single: single,
-        // firstpermitdate: event.target.firstpermitdate.value,
         masterplan_id: masterplan,
         lat: event.target.lat.value,
         lng: event.target.lng.value,
@@ -219,12 +218,23 @@ const SubdivisionUpdate = () => {
                     <form onSubmit={handleSubmit}>
                       <div className="row">
                         <div className="col-xl-6 mb-3">
-                          <label className="form-label">Builder Code</label>
+                          <label className="form-label">Builder Code <span className="text-danger">*</span></label>
                           <Form.Group controlId="tournamentList">
                             <Select
                               options={options}
                               value={BuilderCode}
                               onChange={(selectedOption) => handleBuilderCode(selectedOption)}
+                              placeholder={"Selecte Builder"}
+                              styles={{
+                                container: (provided) => ({
+                                    ...provided,
+                                    color: 'black'
+                                }),
+                                menu: (provided) => ({
+                                    ...provided,
+                                    color: 'black'
+                                }),
+                            }}
                             ></Select>
                           </Form.Group>
                         </div>

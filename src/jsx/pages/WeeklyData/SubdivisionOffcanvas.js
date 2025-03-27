@@ -11,15 +11,15 @@ const SubdivisionOffcanvas = forwardRef((props) => {
 
     const [BuilderCode, setBuilderCode] = useState(null);
     const [Error, setError] = useState('');
-    const [status, setStatus] = useState('1');
+    const [status, setStatus] = useState('');
     const [productType, setProductType] = useState('');
-    const [reporting, setReporting] = useState('1');
-    const [single, setSingle] = useState('0');
-    const [age, setAge] = useState('0');
+    const [reporting, setReporting] = useState('');
+    const [single, setSingle] = useState('');
+    const [age, setAge] = useState('');
     const [area, setArea] = useState('');
     const [juridiction, setJuridiction] = useState('');
     const [masterplan, setMasterPlan] = useState('');
-    const [gate, setGate] = useState('0');
+    const [gate, setGate] = useState('');
     const [options, setOptions] = useState([]);
 
     const handleStatus = (e) => {
@@ -111,7 +111,6 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                 "opensince": event.target.opensince.value ? event.target.opensince.value : '',
                 "age": age,
                 "single": single,
-                // "firstpermitdate": '',
                 "masterplan_id": masterplan,
                 "lat": event.target.lat.value ? event.target.lat.value : '',
                 "lng": event.target.lng.value ? event.target.lng.value : '',
@@ -120,22 +119,11 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                 "zipcode": event.target.zipcode.value ? event.target.zipcode.value : '',
                 "parcel": event.target.parcel.value ? event.target.parcel.value : '',
                 "crossstreet": event.target.crossstreet.value ? event.target.crossstreet.value : '',
-                "totallots": event.target.totallots.value ? event.target.totallots.value : 0,
-                // "unsoldlots": 0,
-                // "lotreleased": 0,
-                "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : 0,
-                // "stadinginventory": 0,
+                "totallots": event.target.totallots.value ? event.target.totallots.value : '',
+                "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : '',
                 "lotsize": event.target.lotsize.value,
-                // "permits": 0,
-                // "netsales": 0,
-                // "closing": 0,
-                // "monthsopen": 0,
                 "gated": gate,
-                // "sqftgroup": '',
-                // "dollargroup": '',
                 "masterplanfee": event.target.masterplanfee.value ? event.target.masterplanfee.value : '',
-                // "lastweeklydata": '',
-                // "dateadded": '',
                 "zoning": event.target.zoning.value ? event.target.zoning.value : '',
                 "gasprovider": event.target.gasprovider.value ? event.target.gasprovider.value : '',
                 "website": event.target.website.value ? event.target.website.value : '',
