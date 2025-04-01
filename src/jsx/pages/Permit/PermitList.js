@@ -553,7 +553,7 @@ const PermitList = () => {
     { label: "Address Name", key: "AddressName" },
     { label: "Parcel Number", key: "ParcelNumber" },
     { label: "Contractor", key: "Contractor" },
-    { label: "Squre Footage", key: "SqureFootage" },
+    { label: "Square Footage", key: "SqureFootage" },
     { label: "Owner", key: "Owner" },
     { label: "Lot Number", key: "LotNumber" },
     { label: "Permit Number", key: "PermitNumber" },
@@ -563,7 +563,7 @@ const PermitList = () => {
     { label: "Product Type", key: "ProductType" },
     { label: "Area", key: "Area" },
     { label: "Master Plan", key: "MasterPlan" },
-    { label: "Zip Code", key: "ZipCode" },
+    { label: "ZIP Code", key: "ZipCode" },
     { label: "Lot Width", key: "LotWidth" },
     { label: "Lot Size", key: "LotSize" },
     { label: "Zoning", key: "Zoning" },
@@ -581,7 +581,7 @@ const PermitList = () => {
     { label: "Address Name", key: "AddressName" },
     { label: "Parcel Number", key: "ParcelNumber" },
     { label: "Contractor", key: "Contractor" },
-    { label: "Squre Footage", key: "SqureFootage" },
+    { label: "Square Footage", key: "SqureFootage" },
     { label: "Owner", key: "Owner" },
     { label: "Lot Number", key: "LotNumber" },
     { label: "Permit Number", key: "PermitNumber" },
@@ -591,7 +591,7 @@ const PermitList = () => {
     { label: "Product Type", key: "ProductType" },
     { label: "Area", key: "Area" },
     { label: "Master Plan", key: "MasterPlan" },
-    { label: "Zip Code", key: "ZipCode" },
+    { label: "ZIP Code", key: "ZipCode" },
     { label: "Lot Width", key: "LotWidth" },
     { label: "Lot Size", key: "LotSize" },
     { label: "Zoning", key: "Zoning" },
@@ -1230,7 +1230,7 @@ const PermitList = () => {
         if (value === 'parcelNumber') {
           value = 'parcel';
         }
-        if (value === 'squreFootage') {
+        if (value === 'squareFootage') {
           value = 'sqft';
         }
         if (value === 'lotNumber') {
@@ -1248,7 +1248,7 @@ const PermitList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
         }
         if (value === 'lotWidth') {
@@ -1664,19 +1664,19 @@ const PermitList = () => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
-                                  {column.id == "squre Footage" ? "Square Footage" : column.label}
+                                  {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "address Number" ? "address2" :
                                       column.id == "address Name" ? "address1" :
                                       column.id == "parcel Number" ? "parcel" :
-                                      column.id == "squre Footage" ? "sqft" :
+                                      column.id == "square Footage" ? "sqft" :
                                       column.id == "lot Number" ? "lotnumber" :
                                       column.id == "permit Number" ? "permitnumber" :
                                       column.id == "sub Legal Name" ? "sublegal_name" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "zIP Code" ? "zipcode" :
                                       column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
@@ -1691,13 +1691,13 @@ const PermitList = () => {
                                             column.id == "address Number" ? "address2" :
                                             column.id == "address Name" ? "address1" :
                                             column.id == "parcel Number" ? "parcel" :
-                                            column.id == "squre Footage" ? "sqft" :
+                                            column.id == "square Footage" ? "sqft" :
                                             column.id == "lot Number" ? "lotnumber" :
                                             column.id == "permit Number" ? "permitnumber" :
                                             column.id == "sub Legal Name" ? "sublegal_name" :
                                             column.id == "product Type" ? "product_type" :
                                             column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "zIP Code" ? "zipcode" :
                                             column.id == "lot Width" ? "lotwidth" :
                                             column.id == "lot Size" ? "lotsize" :
                                             column.id == "age Restricted" ? "age" :
@@ -1713,7 +1713,7 @@ const PermitList = () => {
                                 {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address Number" &&
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "lot Number" && column.id !== "permit Number" && column.id !== "plan" && column.id !== "sub Legal Name" && column.id !== "product Type" &&
-                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "action"
                                 ) &&
                                   (
@@ -1721,7 +1721,7 @@ const PermitList = () => {
                                       <br />
                                       <select className="custom-select"
                                         value={
-                                          column.id == "squre Footage" ? squareFootageOption :
+                                          column.id == "square Footage" ? squareFootageOption :
                                           column.id == "value" ? valueOption :
                                           column.id == "lot Width" ? lotWidthOption :
                                           column.id == "lot Size" ? lotSizeOption : ""
@@ -1737,7 +1737,7 @@ const PermitList = () => {
                                           appearance: "auto"
                                         }}
 
-                                        onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e.target.value, "sqft") :
+                                        onChange={(e) => column.id == "square Footage" ? handleSelectChange(e.target.value, "sqft") :
                                           column.id == "value" ? handleSelectChange(e.target.value, "value") :
                                           column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
                                           column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : ""}
@@ -1781,7 +1781,7 @@ const PermitList = () => {
                                   {column.id == "contractor" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "squre Footage" &&
+                                  {column.id == "square Footage" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{squareFootageResult.toFixed(2)}</td>
                                   }
                                   {column.id == "owner" &&
@@ -1811,7 +1811,7 @@ const PermitList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "lot Width" &&
@@ -1896,7 +1896,7 @@ const PermitList = () => {
                                     {column.id == "contractor" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.contractor}</td>
                                     }
-                                    {column.id == "squre Footage" &&
+                                    {column.id == "square Footage" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.sqft}</td>
                                     }
                                     {column.id == "owner" &&
@@ -1926,7 +1926,7 @@ const PermitList = () => {
                                     {column.id == "master Plan" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.masterplan_id}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
@@ -2141,7 +2141,7 @@ const PermitList = () => {
                         />
                         <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
                           {isChecked && <span>{fieldOrder}. </span>}
-                          {field.label == "Squre Footage" ? "Square Footage" : field.label}
+                          {field.label}
                         </label>
                       </div>
 
