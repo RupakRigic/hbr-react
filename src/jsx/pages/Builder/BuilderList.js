@@ -1596,6 +1596,9 @@ const BuilderTable = () => {
         if (value === 'localAddress') {
           value = 'officeaddress1';
         }
+        if (value === 'localFax') {
+          value = 'fax';
+        }
         if (value === 'companyType') {
           value = 'company_type';
         }
