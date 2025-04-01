@@ -453,9 +453,9 @@ const SubdivisionUpdate = () => {
                         </div>
 
                         <div className="col-xl-6 mb-3">
-                          <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
+                          <label htmlFor="exampleFormControlInput14" className="form-label">Jurisdiction</label>
                           <select className="default-select form-control" name="" onChange={handleJurisdiction} value={juridiction}>
-                            <option value="">Select Juridiction</option>
+                            <option value="">Select Jurisdiction</option>
                             <option value="Boulder City">Boulder City</option>
                             <option value="CLV">CLV</option>
                             <option value="CC Enterprise">CC Enterprise</option>
@@ -482,7 +482,7 @@ const SubdivisionUpdate = () => {
                         </div>
 
                         <div className="col-xl-6 mb-3">
-                          <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
+                          <label htmlFor="exampleFormControlInput15" className="form-label">ZIP Code</label>
                           <input
                             type="number"
                             defaultValue={Subdivision.zipcode}

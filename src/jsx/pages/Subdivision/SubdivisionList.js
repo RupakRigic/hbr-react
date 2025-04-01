@@ -247,32 +247,32 @@ const SubdivisionList = () => {
   const [loadingReportId, setLoadingReportId] = useState(null);
 
   const headers = [
-    { label: 'Status', key: 'firstname' },
-    { label: 'Reporting', key: 'lastname' },
-    { label: 'Builder', key: 'nickname' },
-    { label: 'Name', key: 'zipcode' },
-    { label: 'Product Type', key: 'city' },
-    { label: 'Area', key: 'with' },
-    { label: 'Master Plan', key: 'without' },
-    { label: 'Zipcode', key: 'reentries' },
-    { label: 'Total Lots', key: 'rakes' },
-    { label: 'Lot Width', key: 'firstname' },
-    { label: 'Lot Size', key: 'lastname' },
-    { label: 'Zoning', key: 'nickname' },
-    { label: 'Age Restricted', key: 'zipcode' },
-    { label: 'All Single Story', key: 'city' },
-    { label: 'Gated', key: 'with' },
-    { label: 'Cross Streets', key: 'without' },
-    { label: 'Juridiction', key: 'reentries' },
-    { label: 'Latitude', key: 'rakes' },
-    { label: 'Longitude', key: 'zipcode' },
-    { label: 'Gas Provider', key: 'city' },
-    { label: 'HOA Fee', key: 'with' },
-    { label: 'Master Plan Fee', key: 'without' },
-    { label: 'Parcel Group', key: 'reentries' },
-    { label: 'Phone', key: 'rakes' },
-    { label: 'Website', key: 'with' },
-    { label: 'FK Builder Id', key: 'BuilderID' },
+    { label: 'Status', key: 'is_active' },
+    { label: 'Reporting', key: 'reporting' },
+    { label: 'Builder', key: 'builder_name' },
+    { label: 'Name', key: 'name' },
+    { label: 'Product Type', key: 'product_type' },
+    { label: 'Area', key: 'area' },
+    { label: 'Master Plan', key: 'masteplan_id' },
+    { label: 'ZIP Code', key: 'zipcode' },
+    { label: 'Total Lots', key: 'totallots' },
+    { label: 'Lot Width', key: 'lotwidth' },
+    { label: 'Lot Size', key: 'lotsize' },
+    { label: 'Zoning', key: 'zoning' },
+    { label: 'Age Restricted', key: 'age' },
+    { label: 'All Single Story', key: 'single' },
+    { label: 'Gated', key: 'gated' },
+    { label: 'Cross Streets', key: 'crossstreet' },
+    { label: 'Jurisdiction', key: 'juridiction' },
+    { label: 'Latitude', key: 'lat' },
+    { label: 'Longitude', key: 'lng' },
+    { label: 'Gas Provider', key: 'gasprovider' },
+    { label: 'HOA Fee', key: 'hoafee' },
+    { label: 'Master Plan Fee', key: 'masterplanfee' },
+    { label: 'Parcel Group', key: 'parcel' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Website', key: 'website' },
+    { label: 'FK Builder Id', key: 'builder_code' },
     { label: 'Total Closings', key: 'total_closings' },
     { label: 'Total Permits', key: 'total_permits' },
     { label: 'Total Net Sales', key: 'total_net_sales' },
@@ -303,8 +303,12 @@ const SubdivisionList = () => {
     { label: 'Price Group', key: 'price_group' },
     { label: 'Month Net Sold', key: 'month_net_sold' },
     { label: 'Year Net Sold', key: 'year_net_sold' },
-    { label: 'Open Since', key: 'opensince' }
-
+    { label: 'Open Since', key: 'opensince' },
+    { label: 'Avg Closing Price', key: 'avg_closing_price' },
+    { label: 'Permits This Year', key: 'permit_this_year' },
+    { label: 'Median Closing Price Since Open', key: 'median_closing_price_since_open' },
+    { label: 'Median Closing Price This Year', key: 'median_closing_price_this_year' },
+    { label: 'Date Added', key: 'created_at' },
   ];
 
   const exportColumns = [
@@ -315,7 +319,7 @@ const SubdivisionList = () => {
     { label: 'Product Type', key: 'product_type' },
     { label: 'Area', key: 'area' },
     { label: 'Master Plan', key: 'masteplan_id' },
-    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'ZIP Code', key: 'zipcode' },
     { label: 'Total Lots', key: 'totallots' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
@@ -324,7 +328,7 @@ const SubdivisionList = () => {
     { label: 'All Single Story', key: 'single' },
     { label: 'Gated', key: 'gated' },
     { label: 'Cross Streets', key: 'crossstreet' },
-    { label: 'Juridiction', key: 'juridiction' },
+    { label: 'Jurisdiction', key: 'juridiction' },
     { label: 'Latitude', key: 'lat' },
     { label: 'Longitude', key: 'lng' },
     { label: 'Gas Provider', key: 'gasprovider' },
@@ -437,7 +441,7 @@ const SubdivisionList = () => {
               case "Master Plan":
                 mappedRow[header] = row.masterplan_id;
                 break;
-              case "Zip Code":
+              case "ZIP Code":
                 mappedRow[header] = row.zipcode;
                 break;
               case "Total Lots":
@@ -464,7 +468,7 @@ const SubdivisionList = () => {
               case "Cross Streets":
                 mappedRow[header] = row.crossstreet;
                 break;
-              case "Juridiction":
+              case "Jurisdiction":
                 mappedRow[header] = row.juridiction;
                 break;
               case "Latitude":
@@ -2556,33 +2560,6 @@ const SubdivisionList = () => {
     setNormalFilter(true);
   };
 
-  const zipCodeOption = [
-    { value: "89002", label: "89002" },
-    { value: "89005", label: "89005" },
-    { value: "89011", label: "89011" },
-    { value: "89012", label: "89012" },
-    { value: "89014", label: "89014" },
-    { value: "89015", label: "89015" },
-    { value: "89018", label: "89018" },
-    { value: "89021", label: "89021" },
-    { value: "89027", label: "89027" },
-    { value: "89029", label: "89029" },
-    { value: "89030", label: "89030" },
-    { value: "89031", label: "89031" },
-    { value: "89032", label: "89032" },
-    { value: "89044", label: "89044" },
-    { value: "89044", label: "89044" },
-    { value: "89052", label: "89052" },
-    { value: "89055", label: "89055" },
-    { value: "89060", label: "89060" },
-    { value: "89061", label: "89061" },
-    { value: "89074", label: "89074" },
-    { value: "89081", label: "89081" },
-    { value: "89084", label: "89084" },
-    { value: "89085", label: "89085" },
-    { value: "89086", label: "89086" },
-  ];
-
   const gasProviderOption = [
     { value: "SOUTHWEST GAS", label: "SOUTHWEST GAS" },
   ];
@@ -2793,8 +2770,11 @@ const SubdivisionList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
+        }
+        if (value === 'jurisdiction') {
+          value = 'juridiction';
         }
         if (value === 'totalLots') {
           value = 'totallots';
@@ -3242,7 +3222,8 @@ const SubdivisionList = () => {
                                     column.id == "builder" ? "builderName" :
                                     column.id == "product Type" ? "product_type" :
                                     column.id == "master Plan" ? "masterplan_id" :
-                                    column.id == "zip Code" ? "zipcode" :
+                                    column.id == "zIP Code" ? "zipcode" :
+                                    column.id == "jurisdiction" ? "juridiction" :
                                     column.id == "total Lots" ? "totallots" :
                                     column.id == "lot Width" ? "lotwidth" :
                                     column.id == "lot Size" ? "lotsize" :
@@ -3266,7 +3247,8 @@ const SubdivisionList = () => {
                                           column.id == "builder" ? "builderName" :
                                           column.id == "product Type" ? "product_type" :
                                           column.id == "master Plan" ? "masterplan_id" :
-                                          column.id == "zip Code" ? "zipcode" :
+                                          column.id == "zIP Code" ? "zipcode" :
+                                          column.id == "jurisdiction" ? "juridiction" :
                                           column.id == "total Lots" ? "totallots" :
                                           column.id == "lot Width" ? "lotwidth" :
                                           column.id == "lot Size" ? "lotsize" :
@@ -3292,8 +3274,8 @@ const SubdivisionList = () => {
                               </strong>
 
                               {(!excelLoading) && (column.id !== "action" && column.id !== "status" && column.id !== "reporting" && column.id !== "builder" && column.id !== "name" &&
-                                column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" &&
-                                column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "gated" && column.id !== "cross Streets" && column.id !== "juridiction" &&
+                                column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" &&
+                                column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "gated" && column.id !== "cross Streets" && column.id !== "jurisdiction" &&
                                 column.id !== "latitude" && column.id !== "longitude" && column.id !== "gas Provider" && column.id !== "parcel Group" && column.id !== "phone" &&
                                 column.id !== "website" && column.id !== "date Added" && column.id !== "__pkSubID" && column.id !== "_fkBuilderID" && column.id !== "latest Traffic/Sales Data" &&
                                 column.id !== "max Week Ending" && column.id !== "min Week Ending" && column.id !== "sqft Group" && column.id !== "price Group" && column.id !== "open Since"
@@ -3401,7 +3383,7 @@ const SubdivisionList = () => {
                                 {column.id == "master Plan" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "zip Code" &&
+                                {column.id == "zIP Code" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "total Lots" &&
@@ -3428,7 +3410,7 @@ const SubdivisionList = () => {
                                 {column.id == "cross Streets" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "juridiction" &&
+                                {column.id == "jurisdiction" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "latitude" &&
@@ -3634,7 +3616,7 @@ const SubdivisionList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                   }
                                   {column.id == "total Lots" &&
@@ -3670,7 +3652,7 @@ const SubdivisionList = () => {
                                   {column.id == "cross Streets" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.crossstreet}</td>
                                   }
-                                  {column.id == "juridiction" &&
+                                  {column.id == "jurisdiction" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{element.juridiction}</td>
                                   }
                                   {column.id == "latitude" &&
@@ -4814,7 +4796,7 @@ const SubdivisionList = () => {
                       options={jurisdictionOption}
                       value={selectedJurisdicition}
                       onChange={handleSelectJurisdictionChange}
-                      placeholder="Select Juridiction"
+                      placeholder="Select Jurisdiction"
                     />
                   </div>
                   <div className="col-md-3 mt-3 mb-3">

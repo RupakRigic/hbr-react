@@ -471,12 +471,12 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                   </div>
 
                   <div className="col-xl-6 mb-3">
-                    <label htmlFor="exampleFormControlInput14" className="form-label">Juridiction</label>
+                    <label htmlFor="exampleFormControlInput14" className="form-label">Jurisdiction</label>
                     <Form.Group controlId="tournamentList">
                       <Select
                         options={optionsJuridiction}
                         value={juridiction}
-                        placeholder={"Select Juridiction..."}
+                        placeholder={"Select Jurisdiction..."}
                         onChange={(selectedOption) => handleJurisdiction(selectedOption)}
                         styles={{
                           container: (provided) => ({
@@ -495,7 +495,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                   </div>
 
                   <div className="col-xl-6 mb-3">
-                    <label htmlFor="exampleFormControlInput15" className="form-label">Zipcode</label>
+                    <label htmlFor="exampleFormControlInput15" className="form-label">ZIP Code</label>
                     <input
                       type="number"
                       name="zipcode"
