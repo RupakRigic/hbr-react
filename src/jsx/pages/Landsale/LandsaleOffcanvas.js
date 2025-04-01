@@ -277,7 +277,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode</label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">ZIP Code</label>
                                         <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
 

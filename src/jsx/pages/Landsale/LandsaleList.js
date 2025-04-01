@@ -472,6 +472,7 @@ const LandsaleList = () => {
         if (willDelete) {
           a.click();
           a.parentNode.removeChild(a);
+          setSelectedColumns([]);
         }
       });
     } catch (error) {
@@ -1021,7 +1022,7 @@ const LandsaleList = () => {
         if (value === 'size') {
           value = 'noofunit';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zip';
         }
         return {
@@ -1422,7 +1423,7 @@ const LandsaleList = () => {
                                     (item) => item.key === (
                                       column.id == "size MS" ? "typeofunit" :
                                       column.id == "size" ? "noofunit" :
-                                      column.id == "zip Code" ? "zip" :
+                                      column.id == "zIP Code" ? "zip" :
                                       toCamelCase(column.id))
                                   ) && (
                                       <span>
@@ -1430,7 +1431,7 @@ const LandsaleList = () => {
                                           (item) => item.key === (
                                             column.id == "size MS" ? "typeofunit" :
                                             column.id == "size" ? "noofunit" :
-                                            column.id == "zip Code" ? "zip" :
+                                            column.id == "zIP Code" ? "zip" :
                                             toCamelCase(column.id))
                                         ).direction === "asc"
                                           ? "↑"
@@ -1441,7 +1442,7 @@ const LandsaleList = () => {
 
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
                                   column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" &&
-                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zip Code" && 
+                                  column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zIP Code" && 
                                   column.id !== "latitude" && column.id !== "longitude" && column.id !== "area") &&
                                   (
                                     <>
@@ -1527,7 +1528,7 @@ const LandsaleList = () => {
                                   {column.id == "parcel" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "latitude" &&
@@ -1650,7 +1651,7 @@ const LandsaleList = () => {
                                     {column.id == "parcel" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.zip}</td>
                                     }
                                   </>
@@ -1814,7 +1815,7 @@ const LandsaleList = () => {
                 </div>
                 <div className="d-flex" style={{ marginTop: "5px" }}>
                   <label className="fs-18" style={{ marginTop: "5px", width: "400px" }}><b>PRICE:</b>&nbsp;<span>{<PriceComponent price={landSaleDetails.price} /> || "NA"}</span></label><br />
-                  <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIPCODE:</b>&nbsp;<span>{landSaleDetails.zip || "NA"}</span></label><br />
+                  <label className="fs-18" style={{ marginTop: "5px" }}><b>ZIP CODE:</b>&nbsp;<span>{landSaleDetails.zip || "NA"}</span></label><br />
                 </div>
                 <label className="fs-18"><b>DATE:</b>&nbsp;<span>{<DateComponent date={landSaleDetails.date} /> || "NA"}
                 </span></label><br />

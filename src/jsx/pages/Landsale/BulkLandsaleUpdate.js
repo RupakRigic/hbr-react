@@ -224,7 +224,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                         <input type="text" name='seller' className="form-control" id="exampleFormControlInput2" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput3" className="form-label"> Buyer</label>
+                                        <label htmlFor="exampleFormControlInput3" className="form-label">Buyer</label>
                                         <input type="text" name='buyer' className="form-control" id="exampleFormControlInput3" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
@@ -276,15 +276,15 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                     </div>
 
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Longitude </label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">Longitude</label>
                                         <input type="text" name='lng' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Area </label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">Area</label>
                                         <input type="text" name='area' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <div className="col-xl-6 mb-3">
-                                        <label htmlFor="exampleFormControlInput17" className="form-label">Zipcode </label>
+                                        <label htmlFor="exampleFormControlInput17" className="form-label">ZIP Code</label>
                                         <input type="text" name='zip' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                     </div>
                                     <p className='text-danger fs-12'>{Error}</p>
