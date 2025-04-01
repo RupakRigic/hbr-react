@@ -665,6 +665,7 @@ const SubdivisionList = () => {
           if (willDelete) {
             a.click();
             a.parentNode.removeChild(a);
+            setSelectedColumns([]);
           }
         });
       } catch (error) {

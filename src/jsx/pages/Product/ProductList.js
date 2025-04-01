@@ -82,8 +82,8 @@ const ProductList = () => {
     { label: 'Product Name', key: 'producutname' },
     { label: 'Square Footage', key: 'squarefootage' },
     { label: 'Stories', key: 'stories' },
-    { label: 'Bed Rooms', key: 'bedrooms' },
-    { label: 'Bath Rooms', key: 'bathrooms' },
+    { label: 'Bedrooms', key: 'bedrooms' },
+    { label: 'Bathrooms', key: 'bathrooms' },
     { label: 'Garage', key: 'garage' },
     { label: 'Current Base Price', key: 'currentbaseprice' },
     { label: 'Current Price Per SQFT', key: 'currentprice' },
@@ -91,7 +91,7 @@ const ProductList = () => {
     { label: 'Product Type', key: 'producttype' },
     { label: 'Area', key: 'area' },
     { label: 'Master Plan', key: 'masterplan' },
-    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'ZIP Code', key: 'zipcode' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
@@ -110,8 +110,8 @@ const ProductList = () => {
     { label: 'Product Name', key: 'name' },
     { label: 'Square Footage', key: 'sqft' },
     { label: 'Stories', key: 'stories' },
-    { label: 'Bed Rooms', key: 'bedroom' },
-    { label: 'Bath Rooms', key: 'bathroom' },
+    { label: 'Bedrooms', key: 'bedroom' },
+    { label: 'Bathrooms', key: 'bathroom' },
     { label: 'Garage', key: 'garage' },
     { label: 'Current Base Price', key: 'latestBasePrice' },
     { label: 'Current Price Per SQFT', key: 'currentprice' },
@@ -119,7 +119,7 @@ const ProductList = () => {
     { label: 'Product Type', key: 'producttype' },
     { label: 'Area', key: 'area' },
     { label: 'Master Plan', key: 'masterplan' },
-    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'ZIP Code', key: 'zipcode' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
@@ -216,10 +216,10 @@ const ProductList = () => {
               case "Stories":
                 mappedRow[header] = row.stories;
                 break;
-              case "Bed Rooms":
+              case "Bedrooms":
                 mappedRow[header] = row.bedroom;
                 break;
-              case "Bath Rooms":
+              case "Bathrooms":
                 mappedRow[header] = row.bathroom;
                 break;
               case "Garage":
@@ -243,7 +243,7 @@ const ProductList = () => {
               case "Master Plan":
                 mappedRow[header] = row.masterplan_id;
                 break;
-              case "Zip Code":
+              case "ZIP Code":
                 mappedRow[header] = row.zipcode;
                 break;
               case "Lot Width":
@@ -329,6 +329,7 @@ const ProductList = () => {
           if (willDelete) {
             a.click();
             a.parentNode.removeChild(a);
+            setSelectedColumns([]);
           }
         });
       } catch (error) {
@@ -1511,10 +1512,10 @@ const ProductList = () => {
         if (value === 'squareFootage') {
           value = 'sqft';
         }
-        if (value === 'bedRooms') {
+        if (value === 'bedrooms') {
           value = 'bedroom';
         }
-        if (value === 'bathRooms') {
+        if (value === 'bathrooms') {
           value = 'bathroom';
         }
         if (value === 'currentBasePrice') {
@@ -1529,7 +1530,7 @@ const ProductList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
         }
         if (value === 'lotWidth') {
@@ -1949,19 +1950,19 @@ const ProductList = () => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
-                                  {column.id == "bath Rooms" ? "Bathrooms" : column.id == "bed Rooms" ? "Bedrooms" : column.label}
+                                  {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "plan Status" ? "status" :
                                       column.id == "product Name" ? "name" :
                                       column.id == "square Footage" ? "sqft" :
-                                      column.id == "bed Rooms" ? "bedroom" :
-                                      column.id == "bath Rooms" ? "bathroom" :
+                                      column.id == "bedrooms" ? "bedroom" :
+                                      column.id == "bathrooms" ? "bathroom" :
                                       column.id == "current Base Price" ? "recentprice" :
                                       column.id == "product Website" ? "website" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "zIP Code" ? "zipcode" :
                                       column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
@@ -1976,13 +1977,13 @@ const ProductList = () => {
                                             column.id == "plan Status" ? "status" :
                                             column.id == "product Name" ? "name" :
                                             column.id == "square Footage" ? "sqft" :
-                                            column.id == "bed Rooms" ? "bedroom" :
-                                            column.id == "bath Rooms" ? "bathroom" :
+                                            column.id == "bedrooms" ? "bedroom" :
+                                            column.id == "bathrooms" ? "bathroom" :
                                             column.id == "current Base Price" ? "recentprice" :
                                             column.id == "product Website" ? "website" :
                                             column.id == "product Type" ? "product_type" :
                                             column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "zIP Code" ? "zipcode" :
                                             column.id == "lot Width" ? "lotwidth" :
                                             column.id == "lot Size" ? "lotsize" :
                                             column.id == "age Restricted" ? "age" :
@@ -1997,7 +1998,7 @@ const ProductList = () => {
 
                                 {(!excelLoading) && (column.id !== "plan Status" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" &&
                                   column.id !== "product Website" && column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" &&
-                                  column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "date Added" &&
+                                  column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "date Added" &&
                                   column.id !== "__pkProductID" && column.id !== "_fkSubID" && column.id !== "action"
                                 ) &&
                                   (
@@ -2007,8 +2008,8 @@ const ProductList = () => {
                                         value={
                                           column.id == "square Footage" ? squareFootageOption :
                                           column.id == "stories" ? storiesOption :
-                                          column.id == "bed Rooms" ? bedRoomsOption :
-                                          column.id == "bath Rooms" ? bathRoomsOption :
+                                          column.id == "bedrooms" ? bedRoomsOption :
+                                          column.id == "bathrooms" ? bathRoomsOption :
                                           column.id == "garage" ? garageOption :
                                           column.id == "current Base Price" ? currentBasePriceOption :
                                           column.id == "current Price Per SQFT" ? currentPricePerSQFTOption :
@@ -2030,8 +2031,8 @@ const ProductList = () => {
 
                                         onChange={(e) => column.id == "square Footage" ? handleSelectChange(e.target.value, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e.target.value, "stories") :
-                                          column.id == "bed Rooms" ? handleSelectChange(e.target.value, "bedroom") :
-                                          column.id == "bath Rooms" ? handleSelectChange(e.target.value, "bathroom") :
+                                          column.id == "bedrooms" ? handleSelectChange(e.target.value, "bedroom") :
+                                          column.id == "bathrooms" ? handleSelectChange(e.target.value, "bathroom") :
                                           column.id == "garage" ? handleSelectChange(e.target.value, "garage") :
                                           column.id == "current Base Price" ? handleSelectChange(e.target.value, "recentprice") :
                                           column.id == "current Price Per SQFT" ? handleSelectChange(e.target.value, "recentpricesqft") :
@@ -2076,10 +2077,10 @@ const ProductList = () => {
                                   {column.id == "stories" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{storiesResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "bed Rooms" &&
+                                  {column.id == "bedrooms" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{bedRoomsResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "bath Rooms" &&
+                                  {column.id == "bathrooms" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{bathRoomsResult.toFixed(2)}</td>
                                   }
                                   {column.id == "garage" &&
@@ -2103,7 +2104,7 @@ const ProductList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "lot Width" &&
@@ -2196,10 +2197,10 @@ const ProductList = () => {
                                     {column.id == "stories" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.stories}</td>
                                     }
-                                    {column.id == "bed Rooms" &&
+                                    {column.id == "bedrooms" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.bedroom}</td>
                                     }
-                                    {column.id == "bath Rooms" &&
+                                    {column.id == "bathrooms" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.bathroom}</td>
                                     }
                                     {column.id == "garage" &&
@@ -2223,7 +2224,7 @@ const ProductList = () => {
                                     {column.id == "master Plan" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.masterplan_id}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
@@ -2510,7 +2511,7 @@ const ProductList = () => {
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
-                      BATH ROOMS:{" "}
+                      BATHROOMS:{" "}
                     </label>
                     <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                   </div>
@@ -2841,7 +2842,7 @@ const ProductList = () => {
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name == "Bath Rooms" ? "Bathrooms" : element.field_name}
+                            {element.field_name}
                           </label>
                         </div>
                       </div>
@@ -2889,7 +2890,7 @@ const ProductList = () => {
                         checked={selectedColumns.includes(col.label)}
                         onChange={() => handleColumnToggle(col.label)}
                       />
-                      {col.label == "Bath Rooms" ? "Bathrooms" : col.label}
+                      {col.label}
                     </label>
                   </li>
                 ))}
