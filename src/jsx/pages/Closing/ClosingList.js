@@ -119,7 +119,9 @@ const ClosingList = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: "closing" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "closing" });
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
@@ -551,20 +553,15 @@ const ClosingList = () => {
       table: "closing",
     };
     try {
-      const data = await AdminClosingService.manageAccessFields(
-        userData
-      ).json();
+      const data = await AdminClosingService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -2728,6 +2725,14 @@ const ClosingList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
+
+      <AccessField 
+        tableName={"closing"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
+
     </Fragment>
   );
 };

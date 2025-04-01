@@ -138,7 +138,7 @@ const BuilderOffcanvas = forwardRef((props) => {
                                     />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput5" className="form-label">Fax</label>
+                                    <label htmlFor="exampleFormControlInput5" className="form-label">Local Fax</label>
                                     <input type="text" name='fax' className="form-control" id="exampleFormControlInput5" placeholder="" />
                                 </div>
 
@@ -151,7 +151,7 @@ const BuilderOffcanvas = forwardRef((props) => {
                                 </div>
 
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Office Address 1</label>
+                                    <label className="form-label">Local Address</label>
                                     <textarea rows="2" name='officeaddress1' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">
@@ -159,11 +159,11 @@ const BuilderOffcanvas = forwardRef((props) => {
                                     <textarea rows="2" name='officeaddress2' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput6" className="form-label">City</label>
+                                    <label htmlFor="exampleFormControlInput6" className="form-label">Local Office City</label>
                                     <input type="text" name='city' className="form-control" id="exampleFormControlInput6" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label">Zipcode</label>
+                                    <label htmlFor="exampleFormControlInput7" className="form-label">Local Office ZIP</label>
                                     <input type="text" name='zipcode' className="form-control" id="exampleFormControlInput7" placeholder="" />
                                 </div>
 
@@ -191,11 +191,11 @@ const BuilderOffcanvas = forwardRef((props) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput16" className="form-label">Coporate Office Address City</label>
+                                    <label htmlFor="exampleFormControlInput16" className="form-label">Corporate Office City</label>
                                     <input type="text" name='coporate_officeaddress_city' className="form-control" id="exampleFormControlInput16" placeholder="" />
                                 </div>
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput17" className="form-label">Coporate Office Address Zipcode</label>
+                                    <label htmlFor="exampleFormControlInput17" className="form-label">Corporate Office ZIP</label>
                                     <input type="text" name='coporate_officeaddress_zipcode' className="form-control" id="exampleFormControlInput17" placeholder="" />
                                 </div>
 
@@ -204,7 +204,7 @@ const BuilderOffcanvas = forwardRef((props) => {
                                     <textarea rows="2" name='current_land_aquisitions' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">
-                                    <label className="form-label">Coporate Office Address 1</label>
+                                    <label className="form-label">Corporate Office Address</label>
                                     <textarea rows="2" name='coporate_officeaddress_1' className="form-control"></textarea>
                                 </div>
                                 <div className="col-xl-12 mb-3">

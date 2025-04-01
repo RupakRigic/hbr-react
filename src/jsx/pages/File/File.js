@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 
 import AdminCSVFileService from "../../../API/Services/AdminService/AdminCSVFileService";
 import { Link, useNavigate } from "react-router-dom";
@@ -68,7 +68,9 @@ const File = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: "csv" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "csv" });
   const [data, setData] = useState(productList);
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -96,20 +98,15 @@ const File = () => {
       table: "csv",
     };
     try {
-      const data = await AdminCSVFileService.manageAccessFields(
-        userData
-      ).json();
+      const data = await AdminCSVFileService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -330,7 +327,7 @@ const File = () => {
   // };
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="File" pageTitle="File" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -793,7 +790,14 @@ const File = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+
+      <AccessField 
+        tableName={"csv"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
+    </Fragment>
   );
 };
 

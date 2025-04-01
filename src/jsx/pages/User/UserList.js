@@ -55,7 +55,9 @@ const UserList = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: "users" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "users" });
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
@@ -144,12 +146,10 @@ const UserList = () => {
       table: "users",
     };
     try {
-      const data = await AdminUserRoleService.manageAccessFields(
-        userData
-      ).json();
+      const data = await AdminUserRoleService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -1275,6 +1275,13 @@ const UserList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
+
+      <AccessField 
+        tableName={"users"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
     </Fragment>
   );
 };

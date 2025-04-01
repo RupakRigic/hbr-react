@@ -361,7 +361,9 @@ const PriceList = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({});
-  const fieldList = AccessField({ tableName: "prices" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "prices" });
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [productListCount, setProductListCount] = useState('');
@@ -452,15 +454,12 @@ const PriceList = () => {
       const data = await AdminPriceService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -2940,6 +2939,14 @@ const PriceList = () => {
           <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
         </Modal.Footer>
       </Modal>
+
+      <AccessField 
+        tableName={"prices"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
+
     </Fragment>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import { Link, useNavigate } from "react-router-dom";
@@ -78,7 +78,9 @@ const UserList = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
-  const fieldList = AccessField({ tableName: "users" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "users" });
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -115,7 +117,7 @@ const UserList = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -520,7 +522,7 @@ console.log(userList)
   console.log(sortConfig);
 
   return (
-    <>
+    <Fragment>
       <MainPagetitle mainTitle="User" pageTitle="User" parentTitle="Home" />
       <div className="container-fluid">
         <div className="row">
@@ -1196,7 +1198,14 @@ console.log(userList)
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
-    </>
+
+      <AccessField
+        tableName={"users"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
+    </Fragment>
   );
 };
 

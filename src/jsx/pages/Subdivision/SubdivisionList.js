@@ -138,7 +138,9 @@ const SubdivisionList = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({});
-  const fieldList = AccessField({ tableName: "subdivisions" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "subdivisions" });
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -1379,20 +1381,15 @@ const SubdivisionList = () => {
       table: "subdivisions",
     };
     try {
-      const data = await AdminSubdevisionService.manageAccessFields(
-        userData
-      ).json();
+      const data = await AdminSubdevisionService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -5041,6 +5038,13 @@ const SubdivisionList = () => {
           </Modal.Footer>
         </Fragment>
       </Modal>
+
+      <AccessField
+        tableName={"subdivisions"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
     </Fragment>
   );
 };

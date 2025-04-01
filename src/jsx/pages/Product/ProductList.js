@@ -404,8 +404,10 @@ const ProductList = () => {
   const [accessRole, setAccessRole] = useState("Admin");
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
-  const fieldList = AccessField({ tableName: "products" });
+  // const fieldList = AccessField({ tableName: "products" });
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [selectedFileError, setSelectedFileError] = useState("");
@@ -748,19 +750,15 @@ const ProductList = () => {
       table: "products",
     };
     try {
-      const data = await AdminProductService.manageAccessFields(
-        userData
-      ).json();
+      const data = await AdminProductService.manageAccessFields(userData).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -3010,6 +3008,14 @@ const ProductList = () => {
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
+
+      <AccessField 
+        tableName={"products"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
+
     </Fragment>
   );
 };

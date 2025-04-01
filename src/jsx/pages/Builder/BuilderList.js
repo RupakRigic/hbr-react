@@ -98,7 +98,9 @@ const BuilderTable = () => {
   const [accessForm, setAccessForm] = useState({});
   const [role, setRole] = useState("Admin");
   const [checkedItems, setCheckedItems] = useState({});
-  const fieldList = AccessField({ tableName: "builders" });
+  const [manageAccessField, setManageAccessField] = useState(false);
+  const [fieldList, setFieldList] = useState([]);
+  // const fieldList = AccessField({ tableName: "builders" });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
   const resetSelection = () => {
@@ -106,7 +108,6 @@ const BuilderTable = () => {
     setSelectedColumns([]);
   };
   const [exportmodelshow, setExportModelShow] = useState(false);
-  const [columnSeq, setcolumnSeq] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -213,47 +214,33 @@ const BuilderTable = () => {
   const headers = [
     { label: "Builder_code", key: "builder_code" },
     { label: "Logo", key: "logo" },
-    { label: "Fax", key: "fax" },
+    { label: "Local Fax", key: "fax" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
     { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
     { label: "LV office Email", key: "email_address" },
-    { label: "LV office address", key: "officeaddress1" },
-    { label: "LV office City", key: "city" },
-    { label: "LV office Zip", key: "zipcode" },
+    { label: "Local Address", key: "officeaddress1" },
+    { label: "Local Office City", key: "city" },
+    { label: "Local Office ZIP", key: "zipcode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address", key: "coporate_officeaddress_1" },
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
-    { label: "Coporate Office Address Latitude", key: "coporate_officeaddress_lat" },
-    { label: "Coporate Office Address Longitude", key: "coporate_officeaddress_lng" },
     { label: "Stock Market", key: "stock_market" },
     { label: "Active", key: "is_active" },
     { label: "Stock Symbol", key: "stock_symbol" },
     { label: "Active Communities", key: "active_communities" },
-    { label: "Closing This Year", key: "closing_this_year" },
+    { label: "Closings This Year", key: "closing_this_year" },
     { label: "Permits This Year", key: "permits_this_year" },
-    { label: "Net Sales this year", key: "net_sales_this_year" },
+    { label: "Net Sales This Year", key: "net_sales_this_year" },
     { label: "Current Avg Base Price", key: "current_avg_base_Price" },
-    {
-      label: "Median Closing Price This Year",
-      key: "median_closing_price_this_year",
-    },
-    {
-      label: "Median Closing Price Last Year",
-      key: "median_closing_price_last_year",
-    },
-    {
-      label: "Avg Net Sales Per Month This Year",
-      key: "avg_net_sales_per_month_this_year",
-    },
-    {
-      label: "Avg Closings Per Month This Year",
-      key: "avg_closings_per_month_this_year",
-    },
+    { label: "Median Closing Price This Year", key: "median_closing_price_this_year" },
+    { label: "Median Closing Price Last Year", key: "median_closing_price_last_year" },
+    { label: "Avg Net Sales Per Month This Year", key: "avg_net_sales_per_month_this_year" },
+    { label: "Avg Closings Per Month This Year", key: "avg_closings_per_month_this_year" },
     { label: "Total Closings", key: "total_closings" },
     { label: "Total Permits", key: "total_permits" },
     { label: "Total Net Sales", key: "total_net_sales" },
@@ -264,15 +251,15 @@ const BuilderTable = () => {
   const exportColumns = [
     { label: "Builder_code", key: "builder_code" },
     { label: "Logo", key: "Logo" },
-    { label: "Fax", key: "fax" },
+    { label: "Local Fax", key: "fax" },
     { label: "Website", key: "website" },
     { label: "Builder Name", key: "name" },
     { label: "Company Type", key: "company_type" },
     { label: "LV office Phone", key: "phone" },
     { label: "LV office Email", key: "email_address" },
-    { label: "LV office address", key: "officeaddress1" },
-    { label: "LV office City", key: "city" },
-    { label: "LV office Zip", key: "zipCode" },
+    { label: "Local Address", key: "officeaddress1" },
+    { label: "Local Office City", key: "city" },
+    { label: "Local Office ZIP", key: "zipCode" },
     { label: "Current Division President", key: "current_division_president" },
     { label: "Current Land Acquisitions", key: "current_land_aquisitions" },
     { label: "Corporate Office Address", key: "coporate_officeaddress_1" },
@@ -280,15 +267,13 @@ const BuilderTable = () => {
     { label: "Corporate Office City", key: "coporate_officeaddress_city" },
     { label: "Corporate Office State", key: "coporate_officeaddress_2" },
     { label: "Corporate Office Zip", key: "coporate_officeaddress_zipcode" },
-    { label: "Coporate Office Address Latitude", key: "coporate_officeaddress_lat" },
-    { label: "Coporate Office Address Longitude", key: "coporate_officeaddress_lng" },
     { label: "Stock Market", key: "stock_market" },
     { label: "Active", key: "is_active" },
     { label: "Stock Symbol", key: "stock_symbol" },
     { label: "Active Communities", key: "active_communities" },
-    { label: "Closing This Year", key: "closing_this_year" },
+    { label: "Closings This Year", key: "closing_this_year" },
     { label: "Permits This Year", key: "permits_this_year" },
-    { label: "Net Sales this year", key: "net_sales_this_year" },
+    { label: "Net Sales This Year", key: "net_sales_this_year" },
     { label: "Current Avg Base Price", key: "current_avg_base_Price" },
     { label: "Median Closing Price This Year", key: "median_closing_price_this_year" },
     { label: "Median Closing Price Last Year", key: "median_closing_price_last_year" },
@@ -349,7 +334,7 @@ const BuilderTable = () => {
               case "Logo":
                 mappedRow[header] = imageUrl + row.logo;
                 break;
-              case "Fax":
+              case "Local Fax":
                 mappedRow[header] = row.fax;
                 break;
               case "Website":
@@ -367,13 +352,13 @@ const BuilderTable = () => {
               case "LV office Email":
                 mappedRow[header] = row.email_address;
                 break;
-              case "LV office address":
+              case "Local Address":
                 mappedRow[header] = row.officeaddress1;
                 break;
-              case "LV office City":
+              case "Local Office City":
                 mappedRow[header] = row.city;
                 break;
-              case "LV office Zip code":
+              case "Local Office ZIP":
                 mappedRow[header] = row.zipcode;
                 break;
               case "Current Division President":
@@ -394,12 +379,6 @@ const BuilderTable = () => {
               case "Corporate Office Zip":
                 mappedRow[header] = row.coporate_officeaddress_zipcode;
                 break;
-              case "Coporate Office Address Latitude":
-                mappedRow[header] = row.coporate_officeaddress_lat;
-                break;
-              case "Coporate Office Address Longitude":
-                mappedRow[header] = row.coporate_officeaddress_lng;
-                break;
               case "Stock Market":
                 mappedRow[header] = row.stock_market;
                 break;
@@ -412,13 +391,13 @@ const BuilderTable = () => {
               case "Active Communities":
                 mappedRow[header] = row.active_communities;
                 break;
-              case "Closing This Year":
+              case "Closings This Year":
                 mappedRow[header] = row.closing_this_year;
                 break;
               case "Permits This Year":
                 mappedRow[header] = row.permits_this_year;
                 break;
-              case "Net Sales this year":
+              case "Net Sales This Year":
                 mappedRow[header] = row.net_sales_this_year;
                 break;
               case "Current Avg Base Price":
@@ -1008,15 +987,12 @@ const BuilderTable = () => {
       ).json();
       if (data.status === true) {
         setManageAccessOffcanvas(false);
-        window.location.reload();
+        setManageAccessField(true);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
+        setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
       }
     }
   };
@@ -1099,33 +1075,9 @@ const BuilderTable = () => {
       setSelectedFileError("Please select a CSV file.");
     }
   };
-  const [colSeq, setcolSeq] = useState(["Logo", "Website", "Builder Name", "Company Type", "LV office Phone", "LV office Email", "LV office address", "LV office City", "LV office Zip", "Current Division President", "Current Land Acquisitions", "Corporate Office Address 1", "Corporate Office City", "Corporate Office State", "Corporate Office Zip", "Stock Market", "Stock Symbol", "Active Communities", "Closing This Year", "Permits This Year", "Net Sales this year", "Current Avg Base Price", "Median Closing Price This Year ", "Median Closing Price Last Year", "Avg Net Sales Per Month This Year ", "Avg Closings Per Month This Year", "Total Closings", "Total Permits", "Total Net Sales", "Date Of First Closing", "Date Of Latest Closing"]);
+
   const handlBuilderClick = (e) => {
     setShow(true);
-  };
-
-  const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData('index', index);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const sourceIndex = event.dataTransfer.getData('index');
-    const targetIndex = event.currentTarget.dataset.index;
-
-    // Create a copy of the items array
-    const newItems = [...colSeq];
-    // Remove the dragged item from its original position
-    const [draggedItem] = newItems.splice(sourceIndex, 1);
-    // Insert the dragged item at the drop target position
-    newItems.splice(targetIndex, 0, draggedItem);
-
-    // Update the state with the new order of items
-    setcolSeq(newItems);
   };
 
   const handleOpenDialog = () => {
@@ -1628,8 +1580,8 @@ const BuilderTable = () => {
   useEffect(() => {
     const fieldOptions = fieldList
       .filter((field) => field !== 'Action' && field !== 'logo'
-        && field !== 'Active Communities' && field !== 'Closing This Year'
-        && field !== 'Permits This Year' && field !== 'Net Sales this year'
+        && field !== 'Active Communities' && field !== 'Closings This Year'
+        && field !== 'Permits This Year' && field !== 'Net Sales This Year'
         && field !== 'Current Avg Base Price' && field !== 'Median Closing Price This Year'
         && field !== 'Median Closing Price Last Year' && field !== 'Avg Net Sales Per Month This Year'
         && field !== 'Avg Closings Per Month This Year' && field !== 'Total Closings' && field !== 'Total Permits'
@@ -1640,11 +1592,8 @@ const BuilderTable = () => {
         if (value === '__pkBuilderID') {
           value = 'builder_code';
         }
-        if (value === 'officeAddress1') {
+        if (value === 'localAddress') {
           value = 'officeaddress1';
-        }
-        if (value === 'officeAddressState') {
-          value = 'officeaddress2';
         }
         if (value === 'companyType') {
           value = 'company_type';
@@ -1664,23 +1613,17 @@ const BuilderTable = () => {
         if (value === 'currentLandAquisitions') {
           value = 'current_land_aquisitions';
         }
-        if (value === 'coporateOfficeAddress1') {
+        if (value === 'corporateOfficeAddress') {
           value = 'coporate_officeaddress_1';
         }
         if (value === 'corporateOfficeAddressState') {
           value = 'coporate_officeaddress_2';
         }
-        if (value === 'coporateOfficeAddressCity') {
+        if (value === 'corporateOfficeCity') {
           value = 'coporate_officeaddress_city';
         }
-        if (value === 'coporateofficeaddresszipcode') {
+        if (value === 'corporateOfficeZIP') {
           value = 'coporate_officeaddress_zipcode';
-        }
-        if (value === 'coporateOfficeAddresslatitude') {
-          value = 'coporate_officeaddress_lat';
-        }
-        if (value === 'coporateOfficeAddresslongitude') {
-          value = 'coporate_officeaddress_lng';
         }
         if (value === 'emailAddress') {
           value = 'email_address';
@@ -2053,40 +1996,36 @@ const BuilderTable = () => {
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "__pkBuilderID" ? "builder_code" :
-                                      column.id == "office Address 1" ? "officeaddress1" :
-                                      column.id == "office Address State" ? "officeaddress2" :
+                                      column.id == "local Address" ? "officeaddress1" :
+                                      column.id == "local Fax" ? "fax" :
                                       column.id == "company Type" ? "company_type" :
                                       column.id == "active" ? "is_active" :
                                       column.id == "stock Market" ? "stock_market" :
                                       column.id == "current Division President" ? "current_division_president" :
                                       column.id == "stock Symbol" ? "stock_symbol" :
                                       column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                      column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                      column.id == "corporate Office Address" ? "coporate_officeaddress_1" :
                                       column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                      column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                      column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                      column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                      column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                      column.id == "corporate Office City" ? "coporate_officeaddress_city" :
+                                      column.id == "corporate Office ZIP" ? "coporate_officeaddress_zipcode" :
                                       column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
                                             column.id == "__pkBuilderID" ? "builder_code" :
-                                            column.id == "office Address 1" ? "officeaddress1" :
-                                            column.id == "office Address State" ? "officeaddress2" :
+                                            column.id == "local Address" ? "officeaddress1" :
+                                            column.id == "local Fax" ? "fax" :
                                             column.id == "company Type" ? "company_type" :
                                             column.id == "active" ? "is_active" :
                                             column.id == "stock Market" ? "stock_market" :
                                             column.id == "current Division President" ? "current_division_president" :
                                             column.id == "stock Symbol" ? "stock_symbol" :
                                             column.id == "current Land Aquisitions" ? "current_land_aquisitions" :
-                                            column.id == "coporate Office Address 1" ? "coporate_officeaddress_1" :
+                                            column.id == "corporate Office Address" ? "coporate_officeaddress_1" :
                                             column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
-                                            column.id == "coporate Office Address City" ? "coporate_officeaddress_city" :
-                                            column.id == "coporate office address zipcode" ? "coporate_officeaddress_zipcode" :
-                                            column.id == "coporate Office Address latitude" ? "coporate_officeaddress_lat" :
-                                            column.id == "coporate Office Address longitude" ? "coporate_officeaddress_lng" :
+                                            column.id == "corporate Office City" ? "coporate_officeaddress_city" :
+                                            column.id == "corporate Office ZIP" ? "coporate_officeaddress_zipcode" :
                                             column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
@@ -2096,15 +2035,15 @@ const BuilderTable = () => {
                                   }
                                 </strong>
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "email Address" && column.id !== "__pkBuilderID" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&
-                                  column.id !== "fax" && column.id !== "office Address 1" && column.id !== "office Address State" && column.id !== "city" && column.id !== "zipcode" &&
+                                  column.id !== "local Fax" && column.id !== "local Address" && column.id !== "local Office City" && column.id !== "local Office ZIP" &&
                                   column.id !== "company Type" && column.id !== "active" && column.id !== "stock Market" && column.id !== "current Division President" && column.id !== "stock Symbol" &&
-                                  column.id !== "current Land Aquisitions" && column.id !== "coporate Office Address 1" && column.id !== "corporate Office Address State" && column.id !== "coporate Office Address City" && column.id !== "coporate office address zipcode" &&
-                                  column.id !== "coporate Office Address latitude" && column.id !== "coporate Office Address longitude" && column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
+                                  column.id !== "current Land Aquisitions" && column.id !== "corporate Office Address" && column.id !== "corporate Office Address State" && column.id !== "corporate Office City" && column.id !== "corporate Office ZIP" &&
+                                  column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
                                 ) && (
                                     <>
                                       <br />
-                                      <select className="custom-select" value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closing This Year" ? closingThisYearOption :
-                                        column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales this year" ? netSalesThisYearOption :
+                                      <select className="custom-select" value={column.id == "active Communities" ? activeCommunitiesOption : column.id == "closings This Year" ? closingThisYearOption :
+                                        column.id == "permits This Year" ? permitsThisYearOption : column.id == "net Sales This Year" ? netSalesThisYearOption :
                                         column.id == "current Avg Base Price" ? currentAvgBasePriceOption : column.id == "median Closing Price This Year" ? medianClosingPriceThisYearOption :
                                         column.id == "median Closing Price Last Year" ? medianClosingPriceLastYearOption : column.id == "avg Net Sales Per Month This Year" ? avgNetSalesPerMonthThisYearOption :
                                         column.id == "avg Closings Per Month This Year" ? avgClosingsPerMonthThisYearOption : column.id == "total Closings" ? totalClosingsOption :
@@ -2119,9 +2058,9 @@ const BuilderTable = () => {
                                           appearance: "auto"
                                         }}
                                         onChange={(e) => column.id == "active Communities" ? handleSelectChange(e.target.value, "active_communities") :
-                                          column.id == "closing This Year" ? handleSelectChange(e.target.value, "closing_this_year") :
+                                          column.id == "closings This Year" ? handleSelectChange(e.target.value, "closing_this_year") :
                                           column.id == "permits This Year" ? handleSelectChange(e.target.value, "permits_this_year") :
-                                          column.id == "net Sales this year" ? handleSelectChange(e.target.value, "net_sales_this_year") :
+                                          column.id == "net Sales This Year" ? handleSelectChange(e.target.value, "net_sales_this_year") :
                                           column.id == "current Avg Base Price" ? handleSelectChange(e.target.value, "current_avg_base_Price") :
                                           column.id == "median Closing Price This Year" ? handleSelectChange(e.target.value, "median_closing_price_this_year") :
                                           column.id == "median Closing Price Last Year" ? handleSelectChange(e.target.value, "median_closing_price_last_year") :
@@ -2163,19 +2102,16 @@ const BuilderTable = () => {
                                   {column.id == "phone" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "fax" &&
+                                  {column.id == "local Fax" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "office Address 1" &&
+                                  {column.id == "local Address" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "office Address State" &&
+                                  {column.id == "local Office City" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "city" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
-                                  }
-                                  {column.id == "zipcode" &&
+                                  {column.id == "local Office ZIP" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "company Type" &&
@@ -2196,34 +2132,28 @@ const BuilderTable = () => {
                                   {column.id == "current Land Aquisitions" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate Office Address 1" &&
+                                  {column.id == "corporate Office Address" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "corporate Office Address State" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate Office Address City" &&
+                                  {column.id == "corporate Office City" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "coporate office address zipcode" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
-                                  }
-                                  {column.id == "coporate Office Address latitude" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
-                                  }
-                                  {column.id == "coporate Office Address longitude" &&
+                                  {column.id == "corporate Office ZIP" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "active Communities" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{activeCommunitiesResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "closing This Year" &&
+                                  {column.id == "closings This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{closingThisYearResult.toFixed(2)}</td>
                                   }
                                   {column.id == "permits This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{permitsThisYearResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "net Sales this year" &&
+                                  {column.id == "net Sales This Year" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{netSalesThisYearResult.toFixed(2)}</td>
                                   }
                                   {column.id == "current Avg Base Price" &&
@@ -2326,19 +2256,16 @@ const BuilderTable = () => {
                                     {column.id == "phone" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.phone}</td>
                                     }
-                                    {column.id == "fax" &&
+                                    {column.id == "local Fax" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.fax}</td>
                                     }
-                                    {column.id == "office Address 1" &&
+                                    {column.id == "local Address" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress1}</td>
                                     }
-                                    {column.id == "office Address State" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.officeaddress2}</td>
-                                    }
-                                    {column.id == "city" &&
+                                    {column.id == "local Office City" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.city}</td>
                                     }
-                                    {column.id == "zipcode" &&
+                                    {column.id == "local Office ZIP" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.zipcode}</td>
                                     }
                                     {column.id == "company Type" &&
@@ -2363,34 +2290,28 @@ const BuilderTable = () => {
                                     {column.id == "current Land Aquisitions" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.current_land_aquisitions}</td>
                                     }
-                                    {column.id == "coporate Office Address 1" &&
+                                    {column.id == "corporate Office Address" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_1}</td>
                                     }
                                     {column.id == "corporate Office Address State" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_2}</td>
                                     }
-                                    {column.id == "coporate Office Address City" &&
+                                    {column.id == "corporate Office City" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_city}</td>
                                     }
-                                    {column.id == "coporate office address zipcode" &&
+                                    {column.id == "corporate Office ZIP" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_zipcode}</td>
-                                    }
-                                    {column.id == "coporate Office Address latitude" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lat}</td>
-                                    }
-                                    {column.id == "coporate Office Address longitude" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.coporate_officeaddress_lng}</td>
                                     }
                                     {column.id == "active Communities" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.active_communities}</td>
                                     }
-                                    {column.id == "closing This Year" &&
+                                    {column.id == "closings This Year" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.closing_this_year}</td>
                                     }
                                     {column.id == "permits This Year" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.permits_this_year}</td>
                                     }
-                                    {column.id == "net Sales this year" &&
+                                    {column.id == "net Sales This Year" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.net_sales_this_year}</td>
                                     }
                                     {column.id == "current Avg Base Price" &&
@@ -2991,20 +2912,13 @@ const BuilderTable = () => {
                               : element.field_name === "builder_code" ? "Builder Code"
                               : element.field_name === "logo" ? "Logo"
                               : element.field_name === "phone" ? "LV Office Phone"
-                              : element.field_name === "fax" ? "Fax"
-                              : element.field_name === "officeaddress1" ? "LV Office Address"
-                              : element.field_name === "city" ? "LV Office City"
-                              : element.field_name === "zipcode" ? "LV Office Zip"
                               : element.field_name === "company_type" ? "Company Type"
                               : element.field_name === "is_active" ? "Status"
                               : element.field_name === "stock_market" ? "Stock Market"
                               : element.field_name === "current_division_president" ? "Current Division President"
                               : element.field_name === "stock_symbol" ? "Stock Symbol "
                               : element.field_name === "current_land_aquisitions" ? "Current Land Acquisitions"
-                              : element.field_name === "coporate_officeaddress_1" ? "Corporate Office Address"
                               : element.field_name === "coporate_officeaddress_2" ? "Corporate Office State"
-                              : element.field_name === "coporate_officeaddress_city" ? "Corporate Office City"
-                              : element.field_name === "coporate_officeaddress_zipcode" ? "Corporate Office Zip"
                               : element.field_name === "officeaddress2" ? "Address 2"
                               : element.field_name === "created_at" ? "Date Added" : element.field_name
                             }
@@ -3250,6 +3164,13 @@ const BuilderTable = () => {
           </Modal.Footer>
         </Fragment>
       </Modal>
+
+      <AccessField 
+        tableName={"builders"}
+        setFieldList={setFieldList}
+        manageAccessField={manageAccessField}
+        setManageAccessField={setManageAccessField}
+      />
     </Fragment>
   );
 };
