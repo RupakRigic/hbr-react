@@ -453,7 +453,7 @@ const ClosingList = () => {
     { label: 'Product Type', key: 'Product_Type' },
     { label: 'Area', key: 'Area' },
     { label: 'Master Plan', key: 'Master_Plan' },
-    { label: 'Zip Code', key: 'Zip_Code' },
+    { label: 'ZIP Code', key: 'Zip_Code' },
     { label: 'Lot Width', key: 'Lot_Width' },
     { label: 'Lot Size', key: 'Lot_Size' },
     { label: 'Zoning', key: 'Zoning' },
@@ -480,7 +480,7 @@ const ClosingList = () => {
     { label: 'Product Type', key: 'Product_Type' },
     { label: 'Area', key: 'Area' },
     { label: 'Master Plan', key: 'Master_Plan' },
-    { label: 'Zip Code', key: 'Zip_Code' },
+    { label: 'ZIP Code', key: 'Zip_Code' },
     { label: 'Lot Width', key: 'Lot_Width' },
     { label: 'Lot Size', key: 'Lot_Size' },
     { label: 'Zoning', key: 'Zoning' },
@@ -533,6 +533,7 @@ const ClosingList = () => {
         if (willDelete) {
           a.click();
           a.parentNode.removeChild(a);
+          setSelectedColumns([]);
         }
       });
     } catch (error) {
@@ -1363,7 +1364,7 @@ const ClosingList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
         }
         if (value === 'lotWidth') {
@@ -1751,7 +1752,7 @@ const ClosingList = () => {
                                       column.id == "doc" ? "document" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "zIP Code" ? "zipcode" :
                                       column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "age Restricted" ? "age" :
@@ -1773,7 +1774,7 @@ const ClosingList = () => {
                                             column.id == "doc" ? "document" :
                                             column.id == "product Type" ? "product_type" :
                                             column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "zIP Code" ? "zipcode" :
                                             column.id == "lot Width" ? "lotwidth" :
                                             column.id == "lot Size" ? "lotsize" :
                                             column.id == "age Restricted" ? "age" :
@@ -1790,7 +1791,7 @@ const ClosingList = () => {
                                 {(!excelLoading) && (column.id !== "closing Type" && column.id !== "closing Date" && column.id !== "doc" &&
                                   column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address" && column.id !== "parcel Number" &&
                                   column.id !== "sub Legal Name" && column.id !== "seller Legal Name" && column.id !== "buyer Name" && column.id !== "lender" && column.id !== "type" &&
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
                                 ) &&
                                   (
@@ -1888,7 +1889,7 @@ const ClosingList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "lot Width" &&
@@ -2005,7 +2006,7 @@ const ClosingList = () => {
                                     {column.id == "master Plan" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.masterplan_id}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
