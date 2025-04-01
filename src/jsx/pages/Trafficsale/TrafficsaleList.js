@@ -490,12 +490,12 @@ const TrafficsaleList = () => {
     { label: 'Weekly Cancellations', key: 'WeeklyCancellations' },
     { label: 'Weekly Net Sales', key: 'WeeklyNetSales' },
     { label: 'Total Lots', key: 'TotalLots' },
-    { label: 'Weekly Lots Release For Sale', key: 'WeeklyLotsReleaseForSale' },
+    { label: 'Weekly Lots Released for Sales', key: 'WeeklyLotsReleaseForSale' },
     { label: 'Weekly Unsold Standing Inventory', key: 'WeeklyUnsoldStandingInventory' },
     { label: 'Product Type', key: 'ProductType' },
     { label: 'Area', key: 'Area' },
     { label: 'Master Plan', key: 'MasterPlan' },
-    { label: 'Zip Code', key: 'ZipCode' },
+    { label: 'ZIP Code', key: 'ZipCode' },
     { label: 'Lot Width', key: 'LotWidth' },
     { label: 'Lot Size', key: 'LotSize' },
     { label: 'Zoning', key: 'Zoning' },
@@ -520,12 +520,12 @@ const TrafficsaleList = () => {
     { label: 'Weekly Cancellations', key: 'WeeklyCancellations' },
     { label: 'Weekly Net Sales', key: 'WeeklyNetSales' },
     { label: 'Total Lots', key: 'TotalLots' },
-    { label: 'Weekly Lots Release For Sale', key: 'WeeklyLotsReleaseForSale' },
+    { label: 'Weekly Lots Released for Sales', key: 'WeeklyLotsReleaseForSale' },
     { label: 'Weekly Unsold Standing Inventory', key: 'WeeklyUnsoldStandingInventory' },
     { label: 'Product Type', key: 'ProductType' },
     { label: 'Area', key: 'Area' },
     { label: 'Master Plan', key: 'MasterPlan' },
-    { label: 'Zip Code', key: 'ZipCode' },
+    { label: 'ZIP Code', key: 'ZipCode' },
     { label: 'Lot Width', key: 'LotWidth' },
     { label: 'Lot Size', key: 'LotSize' },
     { label: 'Zoning', key: 'Zoning' },
@@ -597,7 +597,7 @@ const TrafficsaleList = () => {
                 return row.netsales || 0;
               case "Total Lots":
                 return row.subdivision?.totallots || '';
-              case "Weekly Lots Release For Sale":
+              case "Weekly Lots Released for Sales":
                 return row.lotreleased || '';
               case "Weekly Unsold Standing Inventory":
                 return row.unsoldinventory || '';
@@ -607,7 +607,7 @@ const TrafficsaleList = () => {
                 return row.subdivision?.area || '';
               case "Master Plan":
                 return row.subdivision?.masterplan_id || '';
-              case "Zip Code":
+              case "ZIP Code":
                 return row.subdivision?.zipcode || '';
               case "Lot Width":
                 return row.subdivision?.lotwidth || '';
@@ -690,6 +690,7 @@ const TrafficsaleList = () => {
           if (willDelete) {
             a.click();
             a.parentNode.removeChild(a);
+            setSelectedColumns([]);
           }
         });
       } catch (error) {
@@ -1646,7 +1647,7 @@ const TrafficsaleList = () => {
         if (value === 'totalLots') {
           value = 'totallots';
         }
-        if (value === 'weeklyLotsReleaseForSale') {
+        if (value === 'weeklyLotsReleasedforSales') {
           value = 'lotreleased';
         }
         if (value === 'weeklyUnsoldStandingInventory') {
@@ -1661,7 +1662,7 @@ const TrafficsaleList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
         }
         if (value === 'lotWidth') {
@@ -2067,7 +2068,7 @@ const TrafficsaleList = () => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
-                                  {column.id == "weekly Lots Release For Sale" ? "Weekly Lots Released for Sale" : column.label}
+                                  {column.label}
                                   {column.id != "action" && sortConfig.some(
                                     (item) => item.key === (
                                       column.id == "week Ending" ? "weekending" :
@@ -2076,12 +2077,12 @@ const TrafficsaleList = () => {
                                       column.id == "weekly Cancellations" ? "cancelations" :
                                       column.id == "weekly Net Sales" ? "netsales" :
                                       column.id == "total Lots" ? "totallots" :
-                                      column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                      column.id == "weekly Lots Released for Sales" ? "lotreleased" :
                                       column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "area" ? "area" :
                                       column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "zIP Code" ? "zipcode" :
                                       column.id == "lot Width" ? "lotwidth" :
                                       column.id == "lot Size" ? "lotsize" :
                                       column.id == "zoning" ? "zoning" :
@@ -2099,12 +2100,12 @@ const TrafficsaleList = () => {
                                             column.id == "weekly Cancellations" ? "cancelations" :
                                             column.id == "weekly Net Sales" ? "netsales" :
                                             column.id == "total Lots" ? "totallots" :
-                                            column.id == "weekly Lots Release For Sale" ? "lotreleased" :
+                                            column.id == "weekly Lots Released for Sales" ? "lotreleased" :
                                             column.id == "weekly Unsold Standing Inventory" ? "unsoldinventory" :
                                             column.id == "product Type" ? "product_type" :
                                             column.id == "area" ? "area" :
                                             column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "zIP Code" ? "zipcode" :
                                             column.id == "lot Width" ? "lotwidth" :
                                             column.id == "lot Size" ? "lotsize" :
                                             column.id == "zoning" ? "zoning" :
@@ -2120,7 +2121,7 @@ const TrafficsaleList = () => {
 
                                 {(!excelLoading) && (column.id !== "week Ending" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Type" &&
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
-                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
+                                  column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action" &&
                                   column.id !== "sqft Group" && column.id !== "price Group"
                                 ) &&
@@ -2134,7 +2135,7 @@ const TrafficsaleList = () => {
                                           column.id == "weekly Cancellations" ? weeklyCancellationsOption :
                                           column.id == "weekly Net Sales" ? weeklyNetSalesOption :
                                           column.id == "total Lots" ? totalLotsOption :
-                                          column.id == "weekly Lots Release For Sale" ? weeklyLotsReleaseForSaleOption :
+                                          column.id == "weekly Lots Released for Sales" ? weeklyLotsReleaseForSaleOption :
                                           column.id == "weekly Unsold Standing Inventory" ? weeklyUnsoldStandingInventoryOption :
                                           column.id == "lot Width" ? lotWidthOption : column.id == "lot Size" ? lotSizeOption : 
                                           column.id == "avg Base Price All" ? avgBasePriceAllOption : column.id == "avg Base Price Active" ? avgBasePriceActiveOption:
@@ -2156,7 +2157,7 @@ const TrafficsaleList = () => {
                                           column.id == "weekly Cancellations" ? handleSelectChange(e.target.value, "cancelations") :
                                           column.id == "weekly Net Sales" ? handleSelectChange(e.target.value, "netsales") :
                                           column.id == "total Lots" ? handleSelectChange(e.target.value, "totallots") :
-                                          column.id == "weekly Lots Release For Sale" ? handleSelectChange(e.target.value, "lotreleased") :
+                                          column.id == "weekly Lots Released for Sales" ? handleSelectChange(e.target.value, "lotreleased") :
                                           column.id == "weekly Unsold Standing Inventory" ? handleSelectChange(e.target.value, "unsoldinventory") :
                                           column.id == "lot Width" ? handleSelectChange(e.target.value, "lotwidth") :
                                           column.id == "lot Size" ? handleSelectChange(e.target.value, "lotsize") : 
@@ -2207,7 +2208,7 @@ const TrafficsaleList = () => {
                                   {column.id == "total Lots" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{totalLotsResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "weekly Lots Release For Sale" &&
+                                  {column.id == "weekly Lots Released for Sales" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{weeklyLotsReleaseForSaleResult.toFixed(2)}</td>
                                   }
                                   {column.id == "weekly Unsold Standing Inventory" &&
@@ -2222,7 +2223,7 @@ const TrafficsaleList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "lot Width" &&
@@ -2328,7 +2329,7 @@ const TrafficsaleList = () => {
                                     {column.id == "total Lots" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.totallots}</td>
                                     }
-                                    {column.id == "weekly Lots Release For Sale" &&
+                                    {column.id == "weekly Lots Released for Sales" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.lotreleased}</td>
                                     }
                                     {column.id == "weekly Unsold Standing Inventory" &&
@@ -2343,7 +2344,7 @@ const TrafficsaleList = () => {
                                     {column.id == "master Plan" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.masterplan_id}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
@@ -2800,7 +2801,7 @@ const TrafficsaleList = () => {
                   </div>
                   <div className="col-md-3 mt-3">
                     <label className="form-label">
-                      WEEKLY LOTS RELEASE FOR SALE:{" "}
+                      WEEKLY LOTS RELEASED FOR SALES:{" "}
                     </label>
                     <input value={filterQuery.lotreleased} name="lotreleased" className="form-control" onChange={HandleFilter} />
                   </div>
