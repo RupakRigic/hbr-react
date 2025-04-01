@@ -99,7 +99,7 @@ const PriceList = () => {
     { label: 'Product Type', key: 'productType' },
     { label: 'Area', key: 'area' },
     { label: 'Master Plan', key: 'masterplan_id' },
-    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'ZIP Code', key: 'zipcode' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
@@ -124,7 +124,7 @@ const PriceList = () => {
     { label: 'Product Type', key: 'productType' },
     { label: 'Area', key: 'area' },
     { label: 'Master Plan', key: 'masterplan_id' },
-    { label: 'Zip Code', key: 'zipcode' },
+    { label: 'ZIP Code', key: 'zipcode' },
     { label: 'Lot Width', key: 'lotwidth' },
     { label: 'Lot Size', key: 'lotsize' },
     { label: 'Zoning', key: 'zoning' },
@@ -230,7 +230,7 @@ const PriceList = () => {
                 return row.product.subdivision.area || '';
               case "Master Plan":
                 return row.product.subdivision.masterplan_id || '';
-              case "Zip Code":
+              case "ZIP Code":
                 return row.product.subdivision.zipcode || '';
               case "Lot Width":
                 return row.product.subdivision.lotwidth || '';
@@ -300,6 +300,7 @@ const PriceList = () => {
           if (willDelete) {
             a.click();
             a.parentNode.removeChild(a);
+            setSelectedColumns([]);
           }
         });
       } catch (error) {
@@ -1579,6 +1580,9 @@ const PriceList = () => {
         if (value === 'bedrooms') {
           value = 'bedroom';
         }
+        if (value === 'bathrooms') {
+          value = 'bathroom';
+        }
         if (value === 'basePrice') {
           value = 'baseprice';
         }
@@ -1591,7 +1595,7 @@ const PriceList = () => {
         if (value === 'masterPlan') {
           value = 'masterplan_id';
         }
-        if (value === 'zipCode') {
+        if (value === 'zIPCode') {
           value = 'zipcode';
         }
         if (value === 'lotWidth') {
@@ -1957,9 +1961,10 @@ const PriceList = () => {
                                       column.id == "date" ? "date" :
                                       column.id == "product Type" ? "product_type" :
                                       column.id == "master Plan" ? "masterplan_id" :
-                                      column.id == "zip Code" ? "zipcode" :
+                                      column.id == "zIP Code" ? "zipcode" :
                                       column.id == "squre Footage" ? "sqft" :
                                       column.id == "bedrooms" ? "bedroom" :
+                                      column.id == "bathrooms" ? "bathroom" :
                                       column.id == "base Price" ? "baseprice" :
                                       column.id == "price Per SQFT" ? "perSQFT" :
                                       column.id == "lot Width" ? "lotwidth" :
@@ -1975,9 +1980,10 @@ const PriceList = () => {
                                             column.id == "date" ? "date" :
                                             column.id == "product Type" ? "product_type" :
                                             column.id == "master Plan" ? "masterplan_id" :
-                                            column.id == "zip Code" ? "zipcode" :
+                                            column.id == "zIP Code" ? "zipcode" :
                                             column.id == "squre Footage" ? "sqft" :
                                             column.id == "bedrooms" ? "bedroom" :
+                                            column.id == "bathrooms" ? "bathroom" :
                                             column.id == "base Price" ? "baseprice" :
                                             column.id == "price Per SQFT" ? "perSQFT" :
                                             column.id == "lot Width" ? "lotwidth" :
@@ -1992,7 +1998,7 @@ const PriceList = () => {
                                 </strong>
 
                                 {(!excelLoading) && (column.id !== "date" && column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "product Name" &&
-                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zip Code" && column.id !== "zoning" &&
+                                  column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" &&
                                   column.id !== "age Restricted" && column.id !== "all Single Story" && column.id !== "__pkPriceID" && column.id !== "_fkProductID" && column.id !== "action"
                                 ) &&
                                   (
@@ -2003,7 +2009,7 @@ const PriceList = () => {
                                           column.id == "squre Footage" ? squareFootageOption :
                                           column.id == "stories" ? storiesOption :
                                           column.id == "bedrooms" ? bedroomsOption :
-                                          column.id == "bathroom" ? bathroomOption :
+                                          column.id == "bathrooms" ? bathroomOption :
                                           column.id == "garage" ? garageOption :
                                           column.id == "base Price" ? basePriceOption :
                                           column.id == "price Per SQFT" ? pricePerSQFTOption :
@@ -2024,7 +2030,7 @@ const PriceList = () => {
                                         onChange={(e) => column.id == "squre Footage" ? handleSelectChange(e.target.value, "sqft") :
                                           column.id == "stories" ? handleSelectChange(e.target.value, "stories") :
                                           column.id == "bedrooms" ? handleSelectChange(e.target.value, "bedroom") :
-                                          column.id == "bathroom" ? handleSelectChange(e.target.value, "bathroom") :
+                                          column.id == "bathrooms" ? handleSelectChange(e.target.value, "bathroom") :
                                           column.id == "garage" ? handleSelectChange(e.target.value, "garage") :
                                           column.id == "base Price" ? handleSelectChange(e.target.value, "baseprice") :
                                           column.id == "price Per SQFT" ? handleSelectChange(e.target.value, "price_per_sqft") :
@@ -2070,7 +2076,7 @@ const PriceList = () => {
                                   {column.id == "bedrooms" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{bedroomsResult.toFixed(2)}</td>
                                   }
-                                  {column.id == "bathroom" &&
+                                  {column.id == "bathrooms" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{bathroomResult.toFixed(2)}</td>
                                   }
                                   {column.id == "garage" &&
@@ -2091,7 +2097,7 @@ const PriceList = () => {
                                   {column.id == "master Plan" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "zip Code" &&
+                                  {column.id == "zIP Code" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "lot Width" &&
@@ -2175,7 +2181,7 @@ const PriceList = () => {
                                     {column.id == "bedrooms" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.bedroom}</td>
                                     }
-                                    {column.id == "bathroom" &&
+                                    {column.id == "bathrooms" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.bathroom}</td>
                                     }
                                     {column.id == "garage" &&
@@ -2196,7 +2202,7 @@ const PriceList = () => {
                                     {column.id == "master Plan" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.masterplan_id}</td>
                                     }
-                                    {column.id == "zip Code" &&
+                                    {column.id == "zIP Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.subdivision.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
@@ -2539,7 +2545,7 @@ const PriceList = () => {
                   </div>
                   <div className="col-md-3 mt-2">
                     <label className="form-label">
-                      BATH ROOMS:{" "}
+                      BATHROOMS:{" "}
                     </label>
                     <input value={filterQuery.bathroom} name="bathroom" className="form-control" onChange={HandleFilter} />
                   </div>
