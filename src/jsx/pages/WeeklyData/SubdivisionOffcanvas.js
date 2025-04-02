@@ -11,15 +11,15 @@ const SubdivisionOffcanvas = forwardRef((props) => {
 
     const [BuilderCode, setBuilderCode] = useState(null);
     const [Error, setError] = useState('');
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState('1');
     const [productType, setProductType] = useState('');
-    const [reporting, setReporting] = useState('');
-    const [single, setSingle] = useState('');
-    const [age, setAge] = useState('');
+    const [reporting, setReporting] = useState('1');
+    const [single, setSingle] = useState('0');
+    const [age, setAge] = useState('0');
     const [area, setArea] = useState('');
     const [juridiction, setJuridiction] = useState('');
     const [masterplan, setMasterPlan] = useState('');
-    const [gate, setGate] = useState('');
+    const [gate, setGate] = useState('0');
     const [options, setOptions] = useState([]);
 
     const handleStatus = (e) => {
@@ -119,8 +119,8 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                 "zipcode": event.target.zipcode.value ? event.target.zipcode.value : '',
                 "parcel": event.target.parcel.value ? event.target.parcel.value : '',
                 "crossstreet": event.target.crossstreet.value ? event.target.crossstreet.value : '',
-                "totallots": event.target.totallots.value ? event.target.totallots.value : '',
-                "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : '',
+                "totallots": event.target.totallots.value ? event.target.totallots.value : 0,
+                "lotwidth": event.target.lotwidth.value ? event.target.lotwidth.value : 0,
                 "lotsize": event.target.lotsize.value,
                 "gated": gate,
                 "masterplanfee": event.target.masterplanfee.value ? event.target.masterplanfee.value : '',
@@ -187,7 +187,7 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                                     color: 'black'
                                                 }),
                                             }}
-                                        ></Select>
+                                        />
                                     </Form.Group>
                                 </div>
 
@@ -198,7 +198,6 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Status</label>
                                     <select className="default-select form-control" onChange={handleStatus} >
-                                        <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Sold Out</option>
                                         <option value="2">Future</option>
@@ -207,7 +206,6 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label">Reporting</label>
                                     <select className="default-select form-control" onChange={handleReporting} >
-                                        <option value="">Select Reporting</option>
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>
@@ -253,23 +251,21 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label className="form-label">Age Restricted</label>
-                                    <select className="default-select form-control" name="" onChange={handleAge} >
-                                        <option value="">Select age Restricted</option>
-                                        <option value="1">Yes</option>
+                                    <select className="default-select form-control" onChange={handleAge} >
                                         <option value="0">No</option>
+                                        <option value="1">Yes</option>
                                     </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput8" className="form-label">All Single Story</label>
-                                    <select className="default-select form-control" name="" onChange={handleSingle} >
-                                        <option value="">Select Story</option>
-                                        <option value="1">Yes</option>
+                                    <select className="default-select form-control" onChange={handleSingle} >
                                         <option value="0">No</option>
+                                        <option value="1">Yes</option>
                                     </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Masterplan</label>
-                                    <select className="default-select form-control" name="" onChange={handleMasterPlan} >
+                                    <select className="default-select form-control" onChange={handleMasterPlan} >
                                         <option value="">Select Masterplan</option>
                                         <option value=""></option>
                                         <option value="ALIANTE">ALIANTE</option>
@@ -326,7 +322,7 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput13" className="form-label">Area</label>
-                                    <select className="default-select form-control" name="" onChange={handleArea} >
+                                    <select className="default-select form-control" onChange={handleArea} >
                                         <option value="">Select Area</option>
                                         <option value="BC">BC</option>
                                         <option value="E">E</option>
@@ -344,7 +340,7 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput14" className="form-label">Jurisdiction</label>
-                                    <select className="default-select form-control" name="" onChange={handleJurisdiction} >
+                                    <select className="default-select form-control" onChange={handleJurisdiction} >
                                         <option value="">Select Jurisdiction</option>
                                         <option value="Boulder City">Boulder City</option>
                                         <option value="CLV">CLV</option>
@@ -396,13 +392,9 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput28" className="form-label">Gated</label>
-                                    <select className="default-select form-control"
-                                        onChange={handleGate}
-                                        value={gate}
-                                    >
-                                        <option value="">Select Gate</option>
-                                        <option value="1">Yes</option>
+                                    <select className="default-select form-control" onChange={handleGate}>
                                         <option value="0">No</option>
+                                        <option value="1">Yes</option>
                                     </select>
                                 </div>
                                 <div className="col-xl-6 mb-3">
