@@ -218,7 +218,9 @@ const TrafficsaleList = () => {
   },[selectedLandSales]);
 
   useEffect(() => {
-    SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    if (manageFilterOffcanvas) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    }
   }, [selectedBuilderIDByFilter]);
 
   useEffect(() => {

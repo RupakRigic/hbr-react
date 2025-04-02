@@ -177,8 +177,10 @@ const ClosingList = () => {
   }, []);
 
   useEffect(() => {
-    SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
-  }, [selectedBuilderIDByFilter]);
+    if (manageFilterOffcanvas) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    }
+  }, [selectedBuilderIDByFilter, manageFilterOffcanvas]);
 
   useEffect(() => {
     if (selectedSubdivisionName?.length === 0) {

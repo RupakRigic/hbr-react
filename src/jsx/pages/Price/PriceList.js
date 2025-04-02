@@ -487,8 +487,10 @@ const PriceList = () => {
   }, []);
 
   useEffect(() => {
-    SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
-  }, [selectedBuilderIDByFilter]);
+    if (manageFilterOffcanvas) {
+      SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
+    }
+  }, [selectedBuilderIDByFilter, manageFilterOffcanvas]);
 
   useEffect(() => {
     if (selectedSubdivisionName?.length === 0) {
@@ -604,7 +606,7 @@ const PriceList = () => {
     if (manageFilterOffcanvas) {
       GetBuilderDropDownList();
     }
-  }, [canvasShowAdd]);
+  }, [manageFilterOffcanvas]);
 
   const applyFilters = () => {
     const isAnyFilterApplied = Object.values(filterQueryCalculation).some(query => query !== "");
