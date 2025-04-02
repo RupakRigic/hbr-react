@@ -51,8 +51,8 @@ const ClosingOffcanvas = forwardRef((props) => {
                 "buyer": event.target.buyer.value,
                 "lender": event.target.lender.value,
                 "closingdate": event.target.closingdate.value,
-                "closingprice": event.target.closingprice.value,
-                "loanamount": event.target.loanamount.value,
+                "closingprice": event.target.closingprice.value ? event.target.closingprice.value : 0,
+                "loanamount": event.target.loanamount.value ? event.target.loanamount.value : 0,
                 "document": event.target.document.value,
                 "parcel": event.target.parcel.value
             }

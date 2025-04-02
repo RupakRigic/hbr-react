@@ -54,8 +54,8 @@ const PermitOffcanvas = forwardRef((props) => {
                 "lotnumber": event.target.lotnumber.value,
                 "owner": event.target.owner.value,
                 "plan": event.target.plan.value,
-                "sqft": event.target.sqft.value,
-                "value": event.target.value.value,
+                "sqft": event.target.sqft.value ? event.target.sqft.value : 0,
+                "value": event.target.value.value ? event.target.value.value : 0,
                 "permitnumber": event.target.permitnumber.value,
                 "address1": event.target.address1.value,
                 "address2": event.target.address2.value

@@ -53,12 +53,12 @@ const ProductOffcanvas = forwardRef((props) => {
       var userData = {
         subdivision_id: SubdivisionCode?.value,
         name: event.target.name.value,
-        stories: event.target.stories.value ? event.target.stories.value : "",
+        stories: event.target.stories.value ? event.target.stories.value : 0,
         status: event.target.status.value,
-        garage: event.target.garage.value,
-        bathroom: event.target.bathroom.value,
-        bedroom: event.target.bedroom.value,
-        sqft: event.target.sqft.value,
+        garage: event.target.garage.value ? event.target.garage.value : 0,
+        bathroom: event.target.bathroom.value ? event.target.bathroom.value : 0,
+        bedroom: event.target.bedroom.value ? event.target.bedroom.value : 0,
+        sqft: event.target.sqft.value ? event.target.sqft.value : 0,
         website: event.target.website.value ? event.target.website.value : "",
       };
 
@@ -141,7 +141,6 @@ const ProductOffcanvas = forwardRef((props) => {
                 <div className="col-xl-6 mb-3">
                   <label htmlFor="exampleFormControlInput5" className="form-label">Status <span className="text-danger">*</span></label>
                   <select className="default-select form-control" name="status">
-                    <option value="">All</option>
                     <option value="1">Active</option>
                     <option value="0">Sold Out</option>
                     <option value="2">Future</option>

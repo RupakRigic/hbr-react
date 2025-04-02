@@ -99,7 +99,7 @@ const LandsaleOffcanvas = forwardRef((props) => {
                 "location": event.target.location.value,
                 "date": event.target.date.value,
                 "parcel": event.target.parcel.value,
-                "price": event.target.price.value,
+                "price": event.target.price.value ? event.target.price.value : 0,
                 "typeofunit": event.target.typeofunit.value,
                 "noofunit": event.target.noofunit.value,
                 "notes": event.target.notes.value,
