@@ -226,8 +226,9 @@ const BuilderTable = () => {
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   };
@@ -241,8 +242,9 @@ const BuilderTable = () => {
       console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   };
@@ -257,6 +259,8 @@ const BuilderTable = () => {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   };
@@ -623,6 +627,8 @@ const BuilderTable = () => {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   };
@@ -699,6 +705,8 @@ const BuilderTable = () => {
       if (error.name === "HTTPError") {
         const errorJson = error.response.json();
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
 
@@ -734,8 +742,9 @@ const BuilderTable = () => {
       setIsLoading(false);
       if (error.name === 'HTTPError') {
         const errorJson = await error.response.json();
-
-        setError(errorJson.message)
+        setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
     setIsLoading(false);
@@ -758,6 +767,8 @@ const BuilderTable = () => {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   };
@@ -1232,7 +1243,7 @@ const BuilderTable = () => {
               <div className="d-flex justify-content-center align-items-center mb-5" style={{ marginTop: "35%" }}>
                 <ClipLoader color="#4474fc" />
               </div>
-            ) : (!isLoading && Error !== "" ? (
+            ) : (!isLoading && Error !== "" && pdfUrl == "" ? (
               <div style={{ textAlign: "center", marginTop: "30%", fontSize: "60px", color: "black" }}>
                 <i class="bi bi-exclamation-octagon" />
               </div>
