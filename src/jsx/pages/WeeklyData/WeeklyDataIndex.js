@@ -500,7 +500,7 @@ const WeeklyDataIndex = () => {
                                     />
                                   </td>
                                   <td>
-                                    <td>
+                                    <td style={{border: "none"}}>
                                       <input
                                         type="hidden"
                                         name="subdivision_id"

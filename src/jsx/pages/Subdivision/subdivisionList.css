@@ -174,11 +174,15 @@ div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(2){
 }
 div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(3),
 div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(3){
-  left: 165px;
+  left: 189px;
 }
 div#employee-tbl_wrapper table.datareporting-table tr th:nth-child(4),
 div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(4){
-  left: 418px;
+  left: 442px;
+}
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(3),
+div#employee-tbl_wrapper table.datareporting-table tr td:nth-child(4){
+  z-index: 1;
 }
 
 div#employee-tbl_wrapper table tr td:first-child,
