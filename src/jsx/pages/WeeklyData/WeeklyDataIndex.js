@@ -93,12 +93,7 @@ const WeeklyDataIndex = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      } else {
-        setError("An unexpected error occurred");
-      }
+      swal("Something went wrong!");
     }
     setIsLoading(false);
   };
@@ -162,14 +157,11 @@ const WeeklyDataIndex = () => {
       if (data.status === true) {
         getWeeklyList();
         setShowPopup(false);
+      } else {
+        swal("Something went wrong!");
       }
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(
-          errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-        );
-      }
+      swal("Something went wrong!");
     }
   };
 
@@ -229,10 +221,7 @@ const WeeklyDataIndex = () => {
       setIsLoading(false);
       document.body.removeChild(link);
     } catch (error) {
-      if (error.response && error.response.data) {
-        console.error("Error downloading PDF:", error.response.data);
-        setError("Something went wrong");
-      }
+      setError("Something went wrong");
     }
   };
 
@@ -253,12 +242,11 @@ const WeeklyDataIndex = () => {
               getWeeklyList();
             }
           });
+        } else {
+          swal("Something went wrong!");
         }
       } catch (error) {
-        if (error.name === "HTTPError") {
-          const errorJson = await error.response.json();
-          setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
-        }
+        swal("Something went wrong!");
       }
     }
   };
