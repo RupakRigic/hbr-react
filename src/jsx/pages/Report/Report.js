@@ -132,6 +132,8 @@ const BuilderTable = () => {
   const [selectedFile, setSelectedFile] = useState('');
   const [selectedFileError, setSelectedFileError] = useState("");
   const [reportOption, setReportOption] = useState([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isSavingReport, setIsSavingReport] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -275,6 +277,7 @@ const BuilderTable = () => {
   }, []);
 
   const handlePreview = async (e) => {
+    setIsButtonDisabled(true);
     if (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") {
       let start_Date = moment(startDate);
       let end_Date = moment(endDate);
@@ -314,6 +317,7 @@ const BuilderTable = () => {
           if (responseData.status) {
             swal("Report Saved Succesfully").then((willDelete) => {
               if (willDelete) {
+                setIsSavingReport(false);
                 getreportlist();
                 navigate("/report");
               }
@@ -375,6 +379,7 @@ const BuilderTable = () => {
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
             if (willDelete) {
+              setIsSavingReport(false);
               getreportlist();
               navigate("/report");
             }
@@ -424,16 +429,8 @@ const BuilderTable = () => {
           }
         );
 
-        // let responseData = await AdminReportService.pdfSave(reportdata).json();
-        // if (responseData.status) {
-        //   swal("Report Saved Succesfully").then((willDelete) => {
-        //     if (willDelete) {
-        //       getreportlist();
-        //       navigate("/report");
-        //     }
-        //   });
-        // }
         setIsLoading(false);
+        setIsButtonDisabled(false);
         // Create a new Blob for XLS file
         const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 
@@ -490,6 +487,7 @@ const BuilderTable = () => {
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
             if (willDelete) {
+              setIsSavingReport(false);
               getreportlist();
               navigate("/report");
             }
@@ -543,6 +541,7 @@ const BuilderTable = () => {
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
             if (willDelete) {
+              setIsSavingReport(false);
               getreportlist();
               navigate("/report");
             }
@@ -588,6 +587,7 @@ const BuilderTable = () => {
         if (responseData.status) {
           swal("Report Saved Succesfully").then((willDelete) => {
             if (willDelete) {
+              setIsSavingReport(false);
               getreportlist();
               navigate("/report");
             }
@@ -605,10 +605,12 @@ const BuilderTable = () => {
   };
 
   const handlePdfResponse = (response) => {
+    setIsButtonDisabled(false);
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     //  window.open(url);
     setPdfUrl(url);
+    setIsSavingReport(true);
   };
 
   const formatDate = (dateString) => {
@@ -696,6 +698,7 @@ const BuilderTable = () => {
       let responseData = await AdminReportService.uploadReport(inputData).json();
       swal("Report Saved Succesfully").then((willDelete) => {
         if (willDelete) {
+          setIsSavingReport(false);
           navigate("/report");
         }
       });
@@ -1224,9 +1227,10 @@ const BuilderTable = () => {
                             <div className="ms-4 mb-4">
                               <a
                                 onClick={handlePreview}
-                                className="btn btn-primary"
+                                className={`btn btn-primary ${isButtonDisabled || isSavingReport ? "disabled" : ""}`}
+                                style={{ pointerEvents: isButtonDisabled || isSavingReport ? "none" : "auto", opacity: isButtonDisabled || isSavingReport ? 0.5 : 1 }}
                               >
-                                Save
+                                {isButtonDisabled ? "Processing..." : isSavingReport ? "Saving..." : "Save"}
                               </a>
                             </div>
                           </div>
