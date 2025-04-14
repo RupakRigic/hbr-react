@@ -62,7 +62,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             if (willDelete) {
                 try {
                     var userData = {
-                        // "builder_code": event.target.code.value,
                         "name": event.target.name.value,
                         "website": event.target.website.value,
                         "phone": event.target.phone.value,
@@ -72,6 +71,7 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "city": event.target.city.value,
                         "zipcode": event.target.zipcode.value,
                         "is_active": isActive?.value,
+                        "email_address": event.target.email_address.value,
                         "company_type": company_type?.value,
                         "stock_market": event.target.stock_market.value,
                         "current_division_president": event.target.current_division_president.value,
@@ -126,12 +126,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                     <div className="container-fluid">
                         <form onSubmit={handleSubmit}>
                             <div className="row">
-                                {/* <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput1" className="form-label">Builder Code</label>
-                                    <input type="text" name="code"
-                                        className="form-control" id="exampleFormControlInput1" placeholder="" />
-                                </div> */}
-
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput2" className="form-label">Name</label>
                                     <input type="text" name='name' className="form-control" id="exampleFormControlInput2" placeholder="" />
@@ -194,6 +188,11 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                             }),
                                         }}
                                     />
+                                </div>
+
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput13" className="form-label">Email Address</label>
+                                    <input type="email" name='email_address' className="form-control" id="exampleFormControlInput13" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-12 mb-3">

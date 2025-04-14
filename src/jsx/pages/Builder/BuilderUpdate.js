@@ -82,6 +82,7 @@ const BuilderUpdate = () => {
                 "officeaddress2": event.target.officeaddress2.value,
                 "city": event.target.city.value,
                 "zipcode": event.target.zipcode.value,
+                "email_address": event.target.email_address.value,
                 "company_type": company_type.value ? company_type.value : Builder.company_type,
                 "stock_market": event.target.stock_market.value,
                 "current_division_president": event.target.current_division_president.value,
@@ -180,6 +181,11 @@ const BuilderUpdate = () => {
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput5" className="form-label">Local Fax</label>
                                                     <input type="text" name='fax' defaultValue={Builder.fax} className="form-control" id="exampleFormControlInput5" placeholder="" />
+                                                </div>
+
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput13" className="form-label">Email Address</label>
+                                                    <input type="email" name='email_address' defaultValue={Builder.email_address} className="form-control" id="exampleFormControlInput13" placeholder="" />
                                                 </div>
 
                                                 <div className="col-xl-12 mb-3">

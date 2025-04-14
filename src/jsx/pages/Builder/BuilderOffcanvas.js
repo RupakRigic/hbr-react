@@ -42,6 +42,7 @@ const BuilderOffcanvas = forwardRef((props) => {
                 "city": event.target.city.value ? event.target.city.value : '',
                 "zipcode": event.target.zipcode.value ? event.target.zipcode.value : '',
                 "is_active": isActive ? isActive : '',
+                "email_address": event.target.email_address.value ? event.target.email_address.value : '',
                 "company_type": company_type ? company_type : '',
                 "stock_market": event.target.stock_market.value ? event.target.stock_market.value : '',
                 "current_division_president": event.target.current_division_president.value ? event.target.current_division_president.value : '',
@@ -148,6 +149,11 @@ const BuilderOffcanvas = forwardRef((props) => {
                                         <option value="1">True</option>
                                         <option value="0">False</option>
                                     </select>
+                                </div>
+
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput13" className="form-label">Email Address</label>
+                                    <input type="email" name='email_address' className="form-control" id="exampleFormControlInput13" placeholder="" />
                                 </div>
 
                                 <div className="col-xl-12 mb-3">
