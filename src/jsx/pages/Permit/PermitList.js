@@ -42,6 +42,7 @@ const PermitList = () => {
   const [productTypeStatus, setProductTypeStatus] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
   const [selectCheckBox, setSelectCheckBox] = useState(false);
+  const [updateCCAPN, setUpdateCCAPN ] = useState(false);
   const [samePage, setSamePage] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [AllPermitListExport, setAllPermitListExport] = useState([]);
@@ -1393,6 +1394,42 @@ const PermitList = () => {
     }
   };
 
+  const UpdateFromCcapn = async () => {
+    setUpdateCCAPN(true);
+    try {
+      const response = await AdminPermitService.ccapnUpdate();
+      const responseData = await response.json();
+      if (responseData.status) {
+        setUpdateCCAPN(false);
+        Swal.fire({
+          icon: 'success',
+          html: `Data updated successfully`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
+      } else {
+        setUpdateCCAPN(false);
+        Swal.fire({
+          icon: 'error',
+          html: `Something went wrong!`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
+      }
+    } catch (error) {
+      setUpdateCCAPN(false);
+      console.log(error);
+      if (error.name === "HTTPError") {
+        Swal.fire({
+          icon: 'error',
+          html: `Something went wrong!`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
+      }
+    }
+  };
+
   return (
     <Fragment>
       <MainPagetitle mainTitle="Permit" pageTitle="Permit" parentTitle="Home" />
@@ -1410,6 +1447,10 @@ const PermitList = () => {
                         role="group"
                         aria-label="Basic example"
                       >
+                        {SyestemUserRole == "Admin" &&
+                          <button class="btn btn-secondary cursor-none btn-sm me-1" onClick={UpdateFromCcapn}>
+                            {updateCCAPN ? "Update with CCAPNs..." : "Update with CCAPNs"}
+                          </button>}
                       </div>
                       <ColumnReOrderPopup
                         open={openDialog}

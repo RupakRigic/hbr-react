@@ -19,5 +19,6 @@ export default {
   }),
   bulkupdate: (id, userData) => clientAuth.put(`admin/permit/bulkupdate/${id}`, { json: userData }),
   bulkdestroy: (id) => clientAuth.delete(`admin/permit/bulkdestroy/${id}`),
+  ccapnUpdate: () => clientAuth.get(`admin/permit/ccapn-update`),
   export: (page = 1, sortConfig = '', searchQuery = '', exportColumn) => clientAuth.post(`admin/permit/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
 };

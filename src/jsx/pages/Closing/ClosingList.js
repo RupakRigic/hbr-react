@@ -113,6 +113,7 @@ const ClosingList = () => {
     loanamount: "",
     document: "",
   });
+  const [updateCCAPN, setUpdateCCAPN ] = useState(false);
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -424,10 +425,12 @@ const ClosingList = () => {
   };
 
   const UpdateFromCcapn = async () => {
+    setUpdateCCAPN(true);
     try {
-      const response = await AdminClosingService.ccapnUpdate({});
+      const response = await AdminClosingService.ccapnUpdate();
       const responseData = await response.json();
       if(responseData.status) {
+        setUpdateCCAPN(false);
         Swal.fire({
           icon: 'success',
           html: `Data updated successfully`,
@@ -435,6 +438,7 @@ const ClosingList = () => {
           showCancelButton: false,
         });
       } else {
+        setUpdateCCAPN(false);
         Swal.fire({
           icon: 'error',
           html: `Something went wrong!`,
@@ -443,10 +447,15 @@ const ClosingList = () => {
         });
       }
     } catch (error) {
+      setUpdateCCAPN(false);
       console.log(error);
       if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
+        Swal.fire({
+          icon: 'error',
+          html: `Something went wrong!`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
       }
     }
   }
@@ -1503,8 +1512,7 @@ const ClosingList = () => {
                       >
                         {SyestemUserRole == "Admin" &&
                           <button class="btn btn-secondary cursor-none btn-sm me-1" onClick={UpdateFromCcapn}>
-                            {" "}
-                            Update with CCAPNs
+                            {updateCCAPN ? "Update with CCAPNs..." : "Update with CCAPNs"}
                           </button>}
                       </div>
                       <ColumnReOrderPopup
