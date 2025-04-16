@@ -427,7 +427,21 @@ const ClosingList = () => {
     try {
       const response = await AdminClosingService.ccapnUpdate({});
       const responseData = await response.json();
-      console.log(responseData);
+      if(responseData.status) {
+        Swal.fire({
+          icon: 'success',
+          html: `Data updated successfully`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          html: `Something went wrong!`,
+          confirmButtonText: 'OK',
+          showCancelButton: false,
+        });
+      }
     } catch (error) {
       console.log(error);
       if (error.name === "HTTPError") {
