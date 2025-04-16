@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import swal from "sweetalert";
+import Swal from "sweetalert2";
 import AdminCCAPNService from "../../../API/Services/AdminService/AdminCCAPNService";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
@@ -27,8 +28,8 @@ const CCAPNList = () => {
     subdivision_code: ""
   });
   const [BuilderList, setBuilderList] = useState([]);
-  const [selectedSubdivisionName, setSelectedSubdivisionName] = useState("");
-  const [selectedBuilderName, setSelectedBuilderName] = useState("");
+  const [selectedSubdivisionId, setSelectedSubdivisionId] = useState([]);
+  const [selectedBuilderId, setSelectedBuilderId] = useState([]);
   const [selectedSubdivisionNameFilter, setSelectedSubdivisionNameFilter] = useState([]);
   const [selectedBuilderNameFilter, setSelectedBuilderNameFilter] = useState([]);
   const [builderListDropDown, setBuilderListDropDown] = useState([]);
@@ -177,7 +178,7 @@ const CCAPNList = () => {
   };
 
   const handleSelectBuilderNameChange = (e) => {
-    setSelectedBuilderName(e);
+    setSelectedBuilderId(e);
     getbuilderlist(e.value);
   };
 
@@ -225,7 +226,7 @@ const CCAPNList = () => {
   };
 
   const handleSelectSubdivisionNameChange = (e) => {
-    setSelectedSubdivisionName(e.value);
+    setSelectedSubdivisionId(e);
   };
 
   const handleRowEdit = async (id) => {
@@ -254,14 +255,6 @@ const CCAPNList = () => {
         value: builder.id,
       }));
       setBuilderListDropDown(formattedData);
-      if (formattedData.length > 0) {
-        setSelectedBuilderName([
-          {
-            label: formattedData[0].label,
-            value: formattedData[0].value,
-          },
-        ]);
-      }
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -420,27 +413,36 @@ const CCAPNList = () => {
       if (willDelete) {
         try {
           var userData = {
-            subdivision_id: selectedSubdivisionName,
+            subdivision_id: selectedSubdivisionId?.value,
           };
-          const data = await AdminCCAPNService.bulkupdate(
-            selectedLandSales,
-            userData
-          ).json();
+          const data = await AdminCCAPNService.bulkupdate(selectedLandSales, userData).json();
           if (data.status === true) {
             swal("Ccapn Updated Succesfully").then((willDelete) => {
               if (willDelete) {
-                navigate("/ccapn");
+                setShowOffcanvas(false);
+                setSelectedBuilderId([]);
+                setSelectedSubdivisionId([]);
+                setSelectedLandSales([]);
+                setSelectedBuilderNameFilter([]);
+                setSelectedSubdivisionNameFilter([]);
                 GetCCAPNList(currentPage, sortConfig, searchQuery);
               }
             });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              html: `Something went wrong!`,
+              confirmButtonText: 'OK',
+              showCancelButton: false,
+            });
           }
         } catch (error) {
-          if (error.name === "HTTPError") {
-            const errorJson = await error.response.json();
-            setError(
-              errorJson.message.substr(0, errorJson.message.lastIndexOf("."))
-            );
-          }
+          Swal.fire({
+            icon: 'error',
+            html: `Something went wrong!`,
+            confirmButtonText: 'OK',
+            showCancelButton: false,
+          });
         }
       }
     });
@@ -527,6 +529,7 @@ const CCAPNList = () => {
                           <Select
                             name="builder_name"
                             options={builderListDropDown}
+                            value={selectedBuilderId}
                             onChange={(e) => handleSelectBuilderNameChange(e)}
                             placeholder="Select Builder Name"
                             styles={{
@@ -550,6 +553,7 @@ const CCAPNList = () => {
                           <Select
                             name="subdivision_name"
                             options={BuilderList}
+                            value={selectedSubdivisionId}
                             onChange={(e) => handleSelectSubdivisionNameChange(e)}
                             placeholder={"Select Subdivision Name"}
                             styles={{
@@ -708,15 +712,13 @@ const CCAPNList = () => {
                       >
                         <thead>
                           <tr style={{ textAlign: "center" }}>
-                            {/* <th>
+                            <th>
                               <input
                                 type="checkbox"
                                 style={{
                                   cursor: "pointer",
                                 }}
-                                checked={
-                                  selectedLandSales.length === ccapnList.length
-                                }
+                                checked={selectedLandSales.length === ccapnList.length}
                                 onChange={(e) =>
                                   e.target.checked
                                     ? setSelectedLandSales(
@@ -725,7 +727,7 @@ const CCAPNList = () => {
                                     : setSelectedLandSales([])
                                 }
                               />
-                            </th>{" "} */}
+                            </th>
                             <th>
                               <strong>No.</strong>
                             </th>
@@ -768,20 +770,16 @@ const CCAPNList = () => {
                           {ccapnList !== null && ccapnList.length > 0 ? (
                             ccapnList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
-                                {/* <td>
+                                <td>
                                   <input
                                     type="checkbox"
-                                    checked={selectedLandSales.includes(
-                                      element.id
-                                    )}
-                                    onChange={(e) =>
-                                      handleEditCheckboxChange(e, element.id)
-                                    }
+                                    checked={selectedLandSales.includes(element.id)}
+                                    onChange={(e) => handleEditCheckboxChange(e, element.id)}
                                     style={{
                                       cursor: "pointer",
                                     }}
                                   />
-                                </td> */}
+                                </td>
                                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.builder?.name}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.name}</td>
@@ -920,17 +918,20 @@ const CCAPNList = () => {
                   <Select
                     name="builder_name"
                     options={builderListDropDown}
-                    value={selectedBuilderName}
-                    onChange={handleSelectBuilderNameChange}
-                    placeholder={"Select Builder Name"}
+                    value={selectedBuilderId}
+                    onChange={(e) => handleSelectBuilderNameChange(e)}
+                    placeholder="Select Builder Name"
                     styles={{
                       container: (provided) => ({
                         ...provided,
-                        color: 'black'
+                        color: 'black',
+                        width: '200px',
                       }),
                       menu: (provided) => ({
                         ...provided,
-                        color: 'black'
+                        color: 'black',
+                        width: '200px',
+                        zIndex: 999
                       }),
                     }}
                   />
@@ -941,17 +942,20 @@ const CCAPNList = () => {
                   <Select
                     name="subdivision_name"
                     options={BuilderList}
-                    value={selectedSubdivisionName}
-                    onChange={handleSelectSubdivisionNameChange}
+                    value={selectedSubdivisionId}
+                    onChange={(e) => handleSelectSubdivisionNameChange(e)}
                     placeholder={"Select Subdivision Name"}
                     styles={{
                       container: (provided) => ({
                         ...provided,
-                        color: 'black'
+                        color: 'black',
+                        width: '200px',
                       }),
                       menu: (provided) => ({
                         ...provided,
-                        color: 'black'
+                        color: 'black',
+                        width: '200px',
+                        zIndex: 999
                       }),
                     }}
                   />

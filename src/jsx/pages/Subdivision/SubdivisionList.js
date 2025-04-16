@@ -4104,9 +4104,11 @@ const SubdivisionList = () => {
                       <Tab label="Permits" value="3" />
                       <Tab label="Closings" value="4" />
                       <Tab label="Land Sales" value="5" />
+                      <Tab label="Parcel List" value="6" />
                       {/* <Tab label="Traffic & Sales" value="6" /> */}
                     </TabList>
                   </Box>
+                  {/* Subdivision Details */}
                   <TabPanel value="1" className="p-0">
                     <div className="d-flex">
 
@@ -4242,6 +4244,8 @@ const SubdivisionList = () => {
 
                     </div>
                   </TabPanel>
+
+                  {/* Products */}
                   <TabPanel value="2" className="p-0">
                     <div className="card">
                       <div className="card-body p-0">
@@ -4310,6 +4314,8 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                   </TabPanel>
+
+                  {/* Permits */}
                   <TabPanel value="3" className="p-0">
                     <div className="card">
                       <div className="card-body p-0">
@@ -4372,6 +4378,8 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                   </TabPanel>
+
+                  {/* Closings */}
                   <TabPanel value="4" className="p-0">
                     <div className="card">
                       <div className="card-body p-0">
@@ -4436,6 +4444,8 @@ const SubdivisionList = () => {
                       </div>
                     </div>
                   </TabPanel>
+
+                  {/* Land Sales */}
                   <TabPanel value="5" className="p-0">
                     <div className="card">
                       <div className="card-body p-0">
@@ -4480,6 +4490,63 @@ const SubdivisionList = () => {
                                         <td>{element.noofunit}</td>
                                         <td>{element.typeofunit}</td>
                                         <td>{element.price_per ? <PriceComponent price={element.price_per} /> : ""}</td>
+                                      </tr>
+                                    )
+                                  )
+                                ) : (
+                                  <tr>
+                                    <td
+                                      colSpan="7"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      No data found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+
+                  {/* Parcel List */}
+                  <TabPanel value="6" className="p-0">
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div className="table-responsive active-projects style-1 ItemsCheckboxSec shorting">
+                          <div
+                            id="employee-tbl_wrapper"
+                            className="dataTables_wrapper no-footer"
+                          >
+                            <table
+                              id="empoloyees-tblwrapper"
+                              className="table ItemsCheckboxSec dataTable no-footer subdivision-table-landsale mb-0"
+                            >
+                              <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                  <th><strong>No.</strong></th>
+                                  <th><strong>Parcel</strong></th>
+                                  <th><strong>Full Address</strong></th>
+                                </tr>
+                              </thead>
+                              <tbody style={{ textAlign: "center" }}>
+                                {SubdivisionDetails.land_sales &&
+                                  Array.isArray(SubdivisionDetails.get_parcels) &&
+                                  SubdivisionDetails.get_parcels.length > 0 ? (
+                                  SubdivisionDetails.get_parcels.map(
+                                    (element, index) => (
+                                      <tr
+                                        key={element.id}
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{element.parcel}</td>
+                                        <td style={{ textAlign: "center" }}>{(element?.loc_strno == 0 || element?.loc_strno == null) ? "" : (element?.loc_strno + " " + element?.loc_strname)}</td>
                                       </tr>
                                     )
                                   )
