@@ -5,6 +5,7 @@ import Select from "react-select";
 import AdminProductService from "../../../API/Services/AdminService/AdminProductService";
 import AdminPriceService from "../../../API/Services/AdminService/AdminPriceService";
 import swal from "sweetalert";
+import Swal from 'sweetalert2';
 import MainPagetitle from "../../layouts/MainPagetitle";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -14,10 +15,12 @@ const PriceUpdate = () => {
     const page = queryParams.get("page");
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingDropDown, setIsLoadingDropDown] = useState(false);
     const [Error, setError] = useState("");
     const [ProductCode, setProductCode] = useState([]);
     const [PriceList, setPriceList] = useState([]);
     const [ProductList, setProductList] = useState([]);
+    const [productData, setProductData] = useState([]);
     const params = useParams();
     const navigate = useNavigate();
 
@@ -53,15 +56,19 @@ const PriceUpdate = () => {
     };
 
     const GetProductDropDownList = async () => {
+        setIsLoadingDropDown(true);
         try {
             const response = await AdminProductService.productDropDown();
             const responseData = await response.json();
+            setIsLoadingDropDown(false);
+            setProductData(responseData);
             const formattedData = responseData.map((product) => ({
                 label: product.name,
                 value: product.id,
             }));
             setProductList(formattedData);
         } catch (error) {
+            setIsLoadingDropDown(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -71,7 +78,19 @@ const PriceUpdate = () => {
     };
 
     const handleProductCode = (code) => {
+        let productSubandBuilder = productData?.filter(data => data.id == code.value);
         setProductCode(code);
+
+        const builderName = `<strong>${productSubandBuilder[0]?.builder_name}</strong>`;
+        const subdivisionName = `<strong>${productSubandBuilder[0]?.subdivision_name}</strong>`;
+        const productName = `<strong>${productSubandBuilder[0]?.name}</strong>`;
+
+        Swal.fire({
+            html: `Please confirm that you are updating the price detail for the builder ${builderName} and subdivision ${subdivisionName} for the product ${productName}.`,
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            showCancelButton: false,
+        });
     };
 
     const handleSubmit = async (event) => {
@@ -111,7 +130,7 @@ const PriceUpdate = () => {
                             <div className="card-header">
                                 <h4 className="card-title">Edit Base Price</h4>
                             </div>
-                            {isLoading ? (
+                            {(isLoading || isLoadingDropDown) ? (
                                 <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
                                     <ClipLoader color="#4474fc" />
                                 </div>
@@ -147,7 +166,7 @@ const PriceUpdate = () => {
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput2" className="form-label">Base Price <span className="text-danger">*</span></label>
                                                     <input
-                                                        type="number"
+                                                        type="text"
                                                         name="baseprice"
                                                         className="form-control"
                                                         id="exampleFormControlInput2"

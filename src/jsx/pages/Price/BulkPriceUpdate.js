@@ -2,16 +2,20 @@ import React, { useState, forwardRef, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
+import Swal from 'sweetalert2';
 import Select from "react-select";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const BulkPriceUpdate = forwardRef((props) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [productList, setProductList] = useState([]);
     const [productCode, setProductCode] = useState([]);
+    const [productData, setProductData] = useState([]);
 
     useEffect(() => {
         if (canvasShowEdit) {
@@ -20,15 +24,19 @@ const BulkPriceUpdate = forwardRef((props) => {
     }, [canvasShowEdit]);
 
     const GetProductDropDownList = async () => {
+        setIsLoading(true);
         try {
             const response = await AdminProductService.productDropDown();
             const responseData = await response.json();
+            setProductData(responseData);
+            setIsLoading(false);
             const formattedData = responseData.map((product) => ({
                 label: product.name,
                 value: product.id,
             }));
             setProductList(formattedData);
         } catch (error) {
+            setIsLoading(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -38,7 +46,19 @@ const BulkPriceUpdate = forwardRef((props) => {
     };
 
     const handleProductCode = (code) => {
+        let productSubandBuilder = productData?.filter(data => data.id == code.value);
         setProductCode(code);
+
+        const builderName = `<strong>${productSubandBuilder[0]?.builder_name}</strong>`;
+        const subdivisionName = `<strong>${productSubandBuilder[0]?.subdivision_name}</strong>`;
+        const productName = `<strong>${productSubandBuilder[0]?.name}</strong>`;
+
+        Swal.fire({
+            html: `Please confirm that you are updating the price detail for the builder ${builderName} and subdivision ${subdivisionName} for the product ${productName}.`,
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            showCancelButton: false,
+        });
     };
 
     const handleSubmit = async (event) => {
@@ -97,61 +117,67 @@ const BulkPriceUpdate = forwardRef((props) => {
                         <i className="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div className="offcanvas-body">
-                    <div className="container-fluid">
-                        <form onSubmit={handleSubmit}>
-                            <div className="row">
-                                <div className="col-xl-6 mb-3">
-                                    <label className="form-label">
-                                        Product
-                                    </label>
-                                    <Form.Group controlId="tournamentList">
-                                        <Select
-                                            options={productList}
-                                            value={productCode}
-                                            placeholder={"Select Product..."}
-                                            onChange={(selectedOption) => handleProductCode(selectedOption)}
-                                            styles={{
-                                                container: (provided) => ({
-                                                    ...provided,
-                                                    width: '100%',
-                                                    color: 'black'
-                                                }),
-                                                menu: (provided) => ({
-                                                    ...provided,
-                                                    width: '100%',
-                                                    color: 'black'
-                                                }),
-                                            }}
-                                        />
-                                    </Form.Group>
-                                </div>
-
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput2" className="form-label">Base Price:</label>
-                                    <input type="number" name="baseprice" className="form-control" id="exampleFormControlInput2" />
-                                </div>
-
-                                <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
-                                    <input type="date" name="date" className="form-control" id="exampleFormControlInput9" placeholder="" />
-                                </div>
-                                <p className="text-danger fs-12">{error}</p>
-                            </div>
-
-                            <div>
-                                <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link
-                                    to={"#"}
-                                    onClick={() => HandleUpdateCanvasClose()}
-                                    className="btn btn-danger light ms-1"
-                                >
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
+                {isLoading ? (
+                    <div className="d-flex justify-content-center align-items-center mb-5">
+                        <ClipLoader color="#4474fc" />
                     </div>
-                </div>
+                ) : (
+                    <div className="offcanvas-body">
+                        <div className="container-fluid">
+                            <form onSubmit={handleSubmit}>
+                                <div className="row">
+                                    <div className="col-xl-6 mb-3">
+                                        <label className="form-label">
+                                            Product
+                                        </label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                options={productList}
+                                                value={productCode}
+                                                placeholder={"Select Product..."}
+                                                onChange={(selectedOption) => handleProductCode(selectedOption)}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        width: '100%',
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        width: '100%',
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
+                                        <label htmlFor="exampleFormControlInput2" className="form-label">Base Price:</label>
+                                        <input type="text" name="baseprice" className="form-control" id="exampleFormControlInput2" />
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
+                                        <label htmlFor="exampleFormControlInput9" className="form-label">Date</label>
+                                        <input type="date" name="date" className="form-control" id="exampleFormControlInput9" placeholder="" />
+                                    </div>
+                                    <p className="text-danger fs-12">{error}</p>
+                                </div>
+
+                                <div>
+                                    <button type="submit" className="btn btn-primary me-1">Submit</button>
+                                    <Link
+                                        to={"#"}
+                                        onClick={() => HandleUpdateCanvasClose()}
+                                        className="btn btn-danger light ms-1"
+                                    >
+                                        Cancel
+                                    </Link>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </Offcanvas>
         </Fragment>
     );
