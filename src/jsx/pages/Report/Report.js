@@ -330,15 +330,21 @@ const BuilderTable = () => {
             setError(errorJson.message);
           }
           setError("Something went wrong");
+          setIsButtonDisabled(false);
+          setIsSavingReport(false);
         }
       } else {
         setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
         setAlertMessage("Please select 12 month Period for your report.");
         return;
       }
     } else if (reportType == "Weekly Traffic and Sales Watch(PDF)") {
       if (weekEndingDate == "") {
         setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
         setAlertMessage("Please select week ending date");
         return;
       }
@@ -392,10 +398,14 @@ const BuilderTable = () => {
           setError(errorJson.message);
         }
         setError("Something went wrong");
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
       }
     } else if (reportType == "Weekly Traffic and Sales Watch(XLS)") {
       if (weekEndingDate == "") {
         setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
         setAlertMessage("Please select week ending date");
         return;
       }
@@ -448,10 +458,14 @@ const BuilderTable = () => {
           setError(errorJson.message);
         }
         setError("Something went wrong");
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
       }
     } else if (reportType == "LV Quartley Traffic and Sales Summary") {
       if (selectYear == "" || selectQuarter == "") {
         setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
         setAlertMessage("Please select year and quarter");
         return;
       }
@@ -500,10 +514,14 @@ const BuilderTable = () => {
           setError(errorJson.message);
         }
         setError("Something went wrong");
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
       }
     } else if (reportType == "Subdivision Analysis Report") {
       if (BuilderCode == "" || SubdivisionCode == "") {
         setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
         setAlertMessage("Please select builder and subdivision both.");
         return;
       }
@@ -554,6 +572,8 @@ const BuilderTable = () => {
           setError(errorJson.message);
         }
         setError("Something went wrong");
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
       }
     } else {
       setIsLoading(true);
@@ -600,6 +620,8 @@ const BuilderTable = () => {
           setError(errorJson.message);
         }
         setError("Something went wrong");
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
       }
     }
   };
@@ -1247,7 +1269,7 @@ const BuilderTable = () => {
                             </div>}
 
                           </div>
-                          <div className="col-md-7 d-flex justify-content-center" style={{ marginLeft: "320px", marginTop: "20px" }}>
+                          <div className="col-md-7 d-flex justify-content-center" style={{ marginLeft: isButtonDisabled ? "300px" : isSavingReport ? "310px" : "320px", marginTop: "20px" }}>
                             <div className="ms-4 mb-4">
                               <a
                                 onClick={handlePreview}
