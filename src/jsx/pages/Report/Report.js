@@ -920,16 +920,38 @@ const BuilderTable = () => {
                               <i className="fa-solid fa-angle-left" />
                             </Link>
                             <span>
-                              {number.map((n, i) => (
-                                <Link
-                                  className={`paginate_button ${currentPage === n ? "current" : ""
-                                    } `}
-                                  key={i}
-                                  onClick={() => changeCPage(n)}
-                                >
-                                  {n}
-                                </Link>
-                              ))}
+                              {number.map((n, i) => {
+                                if (
+                                  n === 1 ||
+                                  n === npage ||
+                                  n === currentPage ||
+                                  n === currentPage - 1 ||
+                                  n === currentPage + 1
+                                ) {
+                                  return (
+                                    <Link
+                                      className={`paginate_button ${currentPage === n ? "current" : ""
+                                        } `}
+                                      key={i}
+                                      onClick={() => changeCPage(n)}
+                                    >
+                                      {n}
+                                    </Link>
+                                  );
+                                }
+
+                                if (
+                                  (n === currentPage - 2 && currentPage > 4) ||
+                                  (n === currentPage + 2 && currentPage < npage - 3)
+                                ) {
+                                  return (
+                                    <span key={i} className="paginate_button disabled">
+                                      ...
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })}
                             </span>
                             <Link
                               className="paginate_button next"
