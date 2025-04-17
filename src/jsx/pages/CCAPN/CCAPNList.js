@@ -283,8 +283,8 @@ const CCAPNList = () => {
       const responseData = await response.json();
       setIsLoading(false);
       setCCAPNList(responseData.data);
-      setNpage(Math.ceil(responseData.total / recordsPage));
-      setFileListCount(responseData.total);
+      setNpage(Math.ceil(responseData.meta.total / recordsPage));
+      setFileListCount(responseData.meta.total);
     } catch (error) {
       setIsLoading(false);
       if (error.name === "HTTPError") {
