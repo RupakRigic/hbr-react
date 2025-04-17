@@ -236,11 +236,14 @@ const BuilderTable = () => {
   };
 
   const getreportlist = async () => {
+    setIsLoading(true);
     try {
       const response = await AdminReportService.reportList();
       const responseData = await response.json();
+      setIsLoading(false);
       setReportList(responseData);
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -814,157 +817,165 @@ const BuilderTable = () => {
                   </TabList>
                 </Box>
                 <TabPanel value="1" className="p-0">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div
-                        id="employee-tbl_wrapper report-table"
-                        className="dataTables_wrapper no-footer table-responsive active-projects style-1 ItemsCheckboxSec shorting"
-                      >
-                        <table
-                          id="empoloyees-tblwrapper"
-                          className="table ItemsCheckboxSec dataTable no-footer mb-0 report-table"
+                  {isLoading ? (
+                    <div className="d-flex justify-content-center align-items-center mb-5 mt-5">
+                      <ClipLoader color="#4474fc" />
+                    </div>
+                  ) : (
+                    <div className="card">
+                      <div className="card-body p-0">
+                        <div
+                          id="employee-tbl_wrapper report-table"
+                          className="dataTables_wrapper no-footer table-responsive active-projects style-1 ItemsCheckboxSec shorting"
                         >
-                          <thead>
-                            <tr style={{ textAlign: "center" }}>
-                              <th>
-                                <strong>Name</strong>
-                              </th>
-                              <th>
-                                <strong>Report</strong>
-                              </th>
-                              <th>
-                                <strong>Saved at</strong>
-                              </th>
-
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody style={{ textAlign: "center" }}>
-                            {records.map((element, index) => {
-                              return (
-                                <tr style={{ textAlign: "center" }}>
-                                  <td>
-                                    <a
-                                      href="#"
-                                      onClick={(e) =>
-                                        handleReportPreview(element.content)
-                                      }
-                                      className="text-decoration-none"
-                                    >
-                                      {element.name}
-                                    </a>
-                                  </td>
-
-                                  <td>
-                                    <a
-                                      href="#"
-                                      onClick={(e) =>
-                                        handleReportPreview(element.content)
-                                      }
-                                      className="text-decoration-none"
-                                    >
-                                      {element.report_type.length > 20
-                                        ? element.report_type.substring(0, 20) +
-                                        "...   "
-                                        : element.report_type}
-                                    </a>
-                                  </td>
-                                  <td>
-                                    <a
-                                      href="#"
-                                      onClick={(e) =>
-                                        handleReportPreview(element.content)
-                                      }
-                                      className="text-decoration-none"
-                                    >
-                                      {formatDate(element.created_at)}
-                                    </a>
-                                  </td>
-                                  <td>
-                                    <div className="d-flex justify-content-center">
-                                      <Link
-                                        onClick={() =>
-                                          swal({
-                                            title: "Are you sure?",
-
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                          }).then((willDelete) => {
-                                            if (willDelete) {
-                                              handleDelete(element.id);
-                                            }
-                                          })
-                                        }
-                                        className="btn btn-danger shadow btn-xs sharp"
-                                      >
-                                        <i className="fa fa-trash"></i>
-                                      </Link>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                        <div className="d-sm-flex text-center justify-content-end align-items-center">
-                          <div
-                            className="dataTables_paginate paging_simple_numbers justify-content-center"
-                            id="example2_paginate"
+                          <table
+                            id="empoloyees-tblwrapper"
+                            className="table ItemsCheckboxSec dataTable no-footer mb-0 report-table"
                           >
-                            <Link
-                              className="paginate_button previous disabled"
-                              to="#"
-                              onClick={prePage}
-                            >
-                              <i className="fa-solid fa-angle-left" />
-                            </Link>
-                            <span>
-                              {number.map((n, i) => {
-                                if (
-                                  n === 1 ||
-                                  n === npage ||
-                                  n === currentPage ||
-                                  n === currentPage - 1 ||
-                                  n === currentPage + 1
-                                ) {
-                                  return (
-                                    <Link
-                                      className={`paginate_button ${currentPage === n ? "current" : ""
-                                        } `}
-                                      key={i}
-                                      onClick={() => changeCPage(n)}
-                                    >
-                                      {n}
-                                    </Link>
-                                  );
-                                }
+                            <thead>
+                              <tr style={{ textAlign: "center" }}>
+                                <th>
+                                  <strong>Name</strong>
+                                </th>
+                                <th>
+                                  <strong>Report</strong>
+                                </th>
+                                <th>
+                                  <strong>Saved at</strong>
+                                </th>
 
-                                if (
-                                  (n === currentPage - 2 && currentPage > 4) ||
-                                  (n === currentPage + 2 && currentPage < npage - 3)
-                                ) {
-                                  return (
-                                    <span key={i} className="paginate_button disabled">
-                                      ...
-                                    </span>
-                                  );
-                                }
-                                return null;
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+
+                            <tbody style={{ textAlign: "center" }}>
+                              {records.map((element, index) => {
+                                return (
+                                  <tr style={{ textAlign: "center" }}>
+                                    <td>
+                                      <a
+                                        href="#"
+                                        onClick={(e) =>
+                                          handleReportPreview(element.content)
+                                        }
+                                        className="text-decoration-none"
+                                      >
+                                        {element.name}
+                                      </a>
+                                    </td>
+
+                                    <td>
+                                      <a
+                                        href="#"
+                                        onClick={(e) =>
+                                          handleReportPreview(element.content)
+                                        }
+                                        className="text-decoration-none"
+                                      >
+                                        {element.report_type.length > 20
+                                          ? element.report_type.substring(0, 20) +
+                                          "...   "
+                                          : element.report_type}
+                                      </a>
+                                    </td>
+                                    <td>
+                                      <a
+                                        href="#"
+                                        onClick={(e) =>
+                                          handleReportPreview(element.content)
+                                        }
+                                        className="text-decoration-none"
+                                      >
+                                        {formatDate(element.created_at)}
+                                      </a>
+                                    </td>
+                                    <td>
+                                      <div className="d-flex justify-content-center">
+                                        <Link
+                                          onClick={() =>
+                                            swal({
+                                              title: "Are you sure?",
+
+                                              icon: "warning",
+                                              buttons: true,
+                                              dangerMode: true,
+                                            }).then((willDelete) => {
+                                              if (willDelete) {
+                                                handleDelete(element.id);
+                                              }
+                                            })
+                                          }
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                        >
+                                          <i className="fa fa-trash"></i>
+                                        </Link>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
                               })}
-                            </span>
-                            <Link
-                              className="paginate_button next"
-                              to="#"
-                              onClick={nextPage}
+                            </tbody>
+
+                          </table>
+                          <div className="d-sm-flex text-center justify-content-end align-items-center">
+                            <div
+                              className="dataTables_paginate paging_simple_numbers justify-content-center"
+                              id="example2_paginate"
                             >
-                              <i className="fa-solid fa-angle-right" />
-                            </Link>
+                              <Link
+                                className="paginate_button previous disabled"
+                                to="#"
+                                onClick={prePage}
+                              >
+                                <i className="fa-solid fa-angle-left" />
+                              </Link>
+                              <span>
+                                {number.map((n, i) => {
+                                  if (
+                                    n === 1 ||
+                                    n === npage ||
+                                    n === currentPage ||
+                                    n === currentPage - 1 ||
+                                    n === currentPage + 1
+                                  ) {
+                                    return (
+                                      <Link
+                                        className={`paginate_button ${currentPage === n ? "current" : ""
+                                          } `}
+                                        key={i}
+                                        onClick={() => changeCPage(n)}
+                                      >
+                                        {n}
+                                      </Link>
+                                    );
+                                  }
+
+                                  if (
+                                    (n === currentPage - 2 && currentPage > 4) ||
+                                    (n === currentPage + 2 && currentPage < npage - 3)
+                                  ) {
+                                    return (
+                                      <span key={i} className="paginate_button disabled">
+                                        ...
+                                      </span>
+                                    );
+                                  }
+                                  return null;
+                                })}
+                              </span>
+                              <Link
+                                className="paginate_button next"
+                                to="#"
+                                onClick={nextPage}
+                              >
+                                <i className="fa-solid fa-angle-right" />
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </TabPanel>
                 <TabPanel value="2" className="p-0">
                   <div className="card">
