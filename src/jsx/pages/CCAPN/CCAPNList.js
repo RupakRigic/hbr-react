@@ -345,40 +345,20 @@ const CCAPNList = () => {
 
             document.getElementById("fileInput").value = null;
 
-            if (response.data.failed_records > 0) {
-              let message = [];
-              const problematicRows = response.data.failed_records_details.map(detail => detail.row).join(', ');
-              const problematicRowsError = response.data.failed_records_details.map(detail => detail.error).join(', ');
-              message += '\nRecord Imported: ' + response.data.successful_records;
-              message += '\nFailed Record Count: ' + response.data.failed_records;
-              message += '\nProblematic Record Rows: ' + problematicRows + '.';
-              message += '\nErrors: ' + problematicRowsError + '.';
-              message += '\nLast Row: ' + response.data.last_processed_row;
+            if (response.data.status) {
               setShow(false);
-              swal({
-                title: response.data.message,
-                text: message,
-              }).then((willDelete) => {
+              swal(response.data.message).then((willDelete) => {
                 if (willDelete) {
                   GetCCAPNList(currentPage, sortConfig, searchQuery);
                 }
               });
             } else {
-              if (response.data.message) {
-                let message = [];
-                const updatedRows = response.data.updated_records_details.map(detail => detail.row).join(', ');
-                message += '\nUpdated Record Count: ' + response.data.updated_records_count;
-                message += '\nUpdated Record Rows: ' + updatedRows + '.';
                 setShow(false);
-                swal({
-                  title: response.data.message,
-                  text: message,
-                }).then((willDelete) => {
+                swal(response.data.message).then((willDelete) => {
                   if (willDelete) {
                     GetCCAPNList(currentPage, sortConfig, searchQuery);
                   }
                 });
-              }
             }
           }
         } catch (error) {
