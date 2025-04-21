@@ -788,8 +788,8 @@ const CCAPNList = () => {
                                 <td style={{ textAlign: "center" }}>{element?.ll_x}</td>
                                 <td style={{ textAlign: "center" }}>{element?.ll_y}</td>
                                 <td style={{ textAlign: "center" }}>{element?.subdivision?.subdivision_code}</td>
-                                <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>-</td>
+                                <td style={{ textAlign: "center" }}>{element?.permit}</td>
+                                <td style={{ textAlign: "center" }}>{element?.closing}</td>
                                 <td style={{ textAlign: "center" }}><DateComponent date={element.updated_at} /></td>
                                 <td style={{ textAlign: "center" }}>
                                   <div className="d-flex justify-content-center">
