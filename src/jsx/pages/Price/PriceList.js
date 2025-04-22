@@ -1074,13 +1074,10 @@ const PriceList = () => {
             });
           }  else {
             if (responseData.message) {
-              let message = [];
-              const updatedRows = responseData.updated_records_details.map(detail => detail.row).join(', ');
-              message += '\nUpdated Record Count: ' + responseData.updated_records_count;
-              message += '\nUpdated Record Rows: ' + updatedRows + '.';
+              let message = responseData.message;
               setShow(false);
               swal({
-                title: responseData.message,
+                title: "",
                 text: message,
               }).then((willDelete) => {
                 if (willDelete) {
