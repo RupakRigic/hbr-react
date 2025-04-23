@@ -1861,7 +1861,7 @@ const PriceList = () => {
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
+                      Showing {lastIndex - recordsPage + 1 } to {lastIndex} of{" "}
                       {productListCount} entries
                     </div>
                     <div
@@ -2271,7 +2271,7 @@ const PriceList = () => {
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage} to {lastIndex} of{" "}
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
                       {productListCount} entries
                     </div>
                     <div
