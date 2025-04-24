@@ -24,14 +24,23 @@ const SubdivisionOffcanvas = forwardRef((props) => {
 
     const handleStatus = (e) => {
         setStatus(e.target.value);
+        if (e.target.value == 1 ) {
+            handleReporting(e);
+        } else {
+            setReporting(reporting);
+        }
+    };
+
+    const handleReporting = (e) => {
+        if(status == 1) {
+            setReporting("1");
+        } else {
+            setReporting(e.target.value);
+        }
     };
 
     const handleProductType = (e) => {
         setProductType(e.target.value);
-    };
-
-    const handleReporting = (e) => {
-        setReporting(e.target.value);
     };
 
     const handleSingle = (e) => {
@@ -197,7 +206,7 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput4" className="form-label">Status</label>
-                                    <select className="default-select form-control" onChange={handleStatus} >
+                                    <select className="default-select form-control" value={status} onChange={handleStatus} >
                                         <option value="1">Active</option>
                                         <option value="0">Sold Out</option>
                                         <option value="2">Future</option>
@@ -205,7 +214,7 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                                 </div>
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput5" className="form-label">Reporting</label>
-                                    <select className="default-select form-control" onChange={handleReporting} >
+                                    <select className="default-select form-control" value={reporting} onChange={handleReporting} >
                                         <option value="1">Yes</option>
                                         <option value="0">No</option>
                                     </select>

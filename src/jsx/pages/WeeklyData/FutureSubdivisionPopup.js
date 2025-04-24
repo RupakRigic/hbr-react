@@ -43,7 +43,8 @@ const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
         event.preventDefault();
         try {
             var userData = {
-                "status": true
+                "status": true,
+                "reporting": true
             }
             const data = await AdminSubdevisionService.bulkupdate(builderId, userData).json();
             if (data.status === true) {
@@ -81,6 +82,18 @@ const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
                         onChange={(e) => HandleSelectChange(e)}
                         value={BuilderList.id}
                         name="builder_name"
+                        styles={{
+                            container: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                            }),
+                            menu: (provided) => ({
+                                ...provided,
+                                width: '100%',
+                                color: 'black'
+                            }),
+                        }}
                     ></Select>
                 </Form.Group>
             </Modal.Body>
