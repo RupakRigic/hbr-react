@@ -102,7 +102,7 @@ const WeeklyDataIndex = () => {
     setNetSale(true);
     setReset(false);
     const { name, value } = event.target;
-    const numericValue = value === "0" ? "0" : value.replace(/^0+/, "").replace(/[^0-9]/g, "");
+    const numericValue = (value === "0" || value === "") ? "0" : value.replace(/^0+/, "").replace(/[^0-9]/g, "");
     setFormData((prevState) => ({
       ...prevState,
       [id]: {
