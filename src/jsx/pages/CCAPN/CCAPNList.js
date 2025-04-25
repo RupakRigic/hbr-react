@@ -135,10 +135,7 @@ const CCAPNList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+      setError("Something went wrong!");
     }
   };
 
@@ -152,10 +149,7 @@ const CCAPNList = () => {
       }));
       setSubdivisionDropDown(formattedData);
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+      setError("Something went wrong!");
     }
   };
 
@@ -170,10 +164,7 @@ const CCAPNList = () => {
       setBuilderList(formattedData);
       setIsLoading(false);
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+      setError("Something went wrong!");
     }
   };
 
@@ -239,7 +230,9 @@ const CCAPNList = () => {
 
   const handleClose = () => {
     setShow(false);
-    // GetCCAPNList();
+    setError("");
+    setSelectedFileError("");
+    // GetCCAPNList(currentPage, sortConfig, searchQuery);
   };
 
   const SyestemUserRole = localStorage.getItem("user")
@@ -256,10 +249,7 @@ const CCAPNList = () => {
       }));
       setBuilderListDropDown(formattedData);
     } catch (error) {
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+      setError("Something went wrong!");
     }
   };
 
@@ -287,10 +277,7 @@ const CCAPNList = () => {
       setFileListCount(responseData.meta.total);
     } catch (error) {
       setIsLoading(false);
-      if (error.name === "HTTPError") {
-        const errorJson = await error.response.json();
-        setError(errorJson.message);
-      }
+      setError("Something went wrong!");
     }
     setIsLoading(false);
   };
@@ -362,13 +349,11 @@ const CCAPNList = () => {
             }
           }
         } catch (error) {
-          if (error.name === "HTTPError") {
-            const errorJson = error.response.json();
-            setSelectedFile("");
-            setError(errorJson.message);
-            document.getElementById("fileInput").value = null;
-            setIsLoading(false);
-          }
+          setSelectedFile("");
+          setError("Something went wrong!");
+          document.getElementById("fileInput").value = null;
+          setIsLoading(false);
+          break;
         }
       };
       setSelectedFileError("");
@@ -959,8 +944,8 @@ const CCAPNList = () => {
           <div className="mt-3">
             <input type="file" id="fileInput" onChange={handleFileChange} />
           </div>
-          <p className="text-danger d-flex justify-content-center align-item-center mt-1">
-            {selectedFileError}
+          <p className="text-danger mt-2">
+            {selectedFileError || Error}
           </p>
         </Modal.Body>
         <Modal.Footer>
