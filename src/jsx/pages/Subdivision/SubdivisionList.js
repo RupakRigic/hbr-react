@@ -4292,7 +4292,8 @@ const SubdivisionList = () => {
                                         <td>{element.bedroom}</td>
                                         <td>{element.bathroom}</td>
                                         <td>{element.garage}</td>
-                                        <td>{element.recentprice ? <PriceComponent price={element.recentprice} /> : ""}</td>
+                                        {/* <td>{element.recentprice ? <PriceComponent price={element.recentprice} /> : ""}</td> */}
+                                        <td>{element.latest_base_price ? <PriceComponent price={element.latest_base_price} /> : ""}</td>
                                         <td>{element.current_price_per_sqft ? <PriceComponent price={element.current_price_per_sqft} /> : ""}</td>
                                       </tr>
                                     )
