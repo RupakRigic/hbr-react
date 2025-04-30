@@ -1748,7 +1748,7 @@ const LandsaleList = () => {
       <LandsaleOffcanvas
         canvasShowAdd={canvasShowAdd}
         seCanvasShowAdd={seCanvasShowAdd}
-        Title="Add Landsale"
+        Title="Add Land Sale"
         parentCallback={handleCallback}
       />
 

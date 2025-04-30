@@ -8,7 +8,7 @@ export default {
     show: (id) => clientAuth.get(`admin/product/show/${id}`),
     accessField: () => clientAuth.get(`admin/product/access-fields`),
     manageAccessFields:(userData) =>  clientAuth.post(`admin/product/manage-access-fields`,{ json: userData }),
-    getBySubDivisionId: (id) => clientAuth.get(`admin/product/showbysubdivisionid/${id}`),
+    productBySubdivision: (id) => clientAuth.get(`admin/product/productbysubdivision/${id}`),
     import: (userData) => clientAuth.post(`admin/product/import`, { json: userData }),
     bulkupdate: (id, userData) => clientAuth.put(`admin/product/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/product/bulkdestroy/${id}`),

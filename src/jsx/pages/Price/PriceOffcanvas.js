@@ -1,12 +1,13 @@
-import React, { useState, forwardRef, useEffect } from 'react';
+import React, { useState, forwardRef, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import swal from "sweetalert";
-import Swal from 'sweetalert2';
 import Select from "react-select";
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import ClipLoader from 'react-spinners/ClipLoader';
+import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const ProductOffcanvas = forwardRef((props) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
@@ -15,29 +16,84 @@ const ProductOffcanvas = forwardRef((props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [productCode, setProductCode] = useState([]);
     const [productList, setProductList] = useState([]);
-    const [productData, setProductData] = useState([]);
-    // const [basePrice, setBasePrice] = useState(null);
+    const [builderCode, setBuilderCode] = useState([]);
+    const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [subdivisionCode, setSubdivisionCode] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
 
     useEffect(() => {
         if (canvasShowAdd) {
-            GetProductDropDownList();
+            GetBuilderDropDownList();
         }
     }, [canvasShowAdd]);
 
-    const GetProductDropDownList = async () => {
+    useEffect(() => {
+        if (canvasShowAdd && builderCode?.value) {
+            SubdivisionByBuilderIDList(builderCode);
+        }
+    }, [builderCode, canvasShowAdd]);
+
+    useEffect(() => {
+        if (canvasShowAdd && subdivisionCode?.value) {
+            ProductBySubdivisionIDList(subdivisionCode?.value);
+        }
+    }, [subdivisionCode, canvasShowAdd]);
+
+    const GetBuilderDropDownList = async () => {
         setIsLoading(true);
         try {
-            const response = await AdminProductService.productDropDown();
+            const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
+            }));
+            setBuilderListDropDown(formattedData);
             setIsLoading(false);
-            setProductData(responseData);
-            const formattedData = responseData.map((product) => ({
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError("Something went wrong!");
+            }
+        }
+    };
+
+    const SubdivisionByBuilderIDList = async (builderId) => {
+        try {
+            var userData = {
+                builder_ids: (builderId?.value === "" || builderId?.value === undefined || builderId?.value === null) ? [] : [builderId.value]
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            const filter = formattedData?.filter(data => data.value === subdivisionCode?.value);
+            handleSubdivisionCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
+            setSubdivisionListDropDown(formattedData);
+        } catch (error) {
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
+    };
+
+    const ProductBySubdivisionIDList = async (subdivisionId) => {
+        try {
+            const response = await AdminProductService.productBySubdivision(subdivisionId ? subdivisionId : "");
+            const responseData = await response.json();
+            const formattedData = responseData?.map((product) => ({
                 label: product.name,
                 value: product.id,
             }));
+            const filter = formattedData?.filter(data => data.value === productCode?.value);
+            handleProductCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
             setProductList(formattedData);
         } catch (error) {
-            setIsLoading(false);
             console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
@@ -46,24 +102,17 @@ const ProductOffcanvas = forwardRef((props) => {
         }
     };
 
-    const handleProductCode = (code) => {
-        let productSubandBuilder = productData?.filter(data => data.id == code.value);
-        setProductCode(code);
-
-        const builderName = `<strong>${productSubandBuilder[0]?.builder_name}</strong>`;
-        const subdivisionName = `<strong>${productSubandBuilder[0]?.subdivision_name}</strong>`;
-        const productName = `<strong>${productSubandBuilder[0]?.name}</strong>`;
-
-        Swal.fire({
-            html: `Please confirm that you are adding the price detail for the builder ${builderName} and subdivision ${subdivisionName} for the product ${productName}.`,
-            icon: 'warning',
-            confirmButtonText: 'OK',
-            showCancelButton: false,
-        });
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (!builderCode?.value || !subdivisionCode?.value) {
+            if (!builderCode?.value) {
+                setError("The builderId field is required");
+                return;
+            } else {
+                setError("The subdivisionId field is required");
+                return;
+            }
+        }
         try {
             var userData = {
                 "product_id": productCode?.value,
@@ -89,13 +138,33 @@ const ProductOffcanvas = forwardRef((props) => {
         }
     };
 
+    const handleSelectBuilderNameChange = (code) => {
+        setBuilderCode(code);
+    };
+
+    const handleSubdivisionCode = (code) => {
+        setSubdivisionCode(code);
+    };
+
+    const handleProductCode = (code) => {
+        setProductCode(code);
+    };
+
+    const HandleCancel = () => {
+        seCanvasShowAdd(false);
+        setBuilderCode([]);
+        setSubdivisionCode([]);
+        setProductCode([]);
+        setError("");
+    };
+
     return (
-        <>
+        <Fragment>
             <Offcanvas show={canvasShowAdd} onHide={seCanvasShowAdd} className="offcanvas-end customeoff" placement='end'>
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => seCanvasShowAdd(false)}
+                        onClick={() => HandleCancel()}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -110,10 +179,56 @@ const ProductOffcanvas = forwardRef((props) => {
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Builder <span className="text-danger">*</span></label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                name="builder_name"
+                                                options={builderListDropDown}
+                                                value={builderCode}
+                                                onChange={(selectedOption) => handleSelectBuilderNameChange(selectedOption)}
+                                                placeholder={"Select Builder Name"}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Subdivision <span className="text-danger">*</span></label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                options={subdivisionListDropDown}
+                                                value={subdivisionCode}
+                                                onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                                placeholder={"Select Subdivision..."}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
                                         <label className="form-label">Product <span className="text-danger">*</span></label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
                                                 options={productList}
+                                                value={productCode}
                                                 onChange={(selectedOption) => handleProductCode(selectedOption)}
                                                 placeholder="Search and select a product..."
                                                 styles={{
@@ -146,14 +261,14 @@ const ProductOffcanvas = forwardRef((props) => {
 
                                 <div>
                                     <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                    <Link to={"#"} onClick={() => seCanvasShowAdd(false)} className="btn btn-danger light ms-1">Cancel</Link>
+                                    <Link to={"#"} onClick={() => HandleCancel()} className="btn btn-danger light ms-1">Cancel</Link>
                                 </div>
                             </form>
                         </div>
                     </div>
                 )}
             </Offcanvas>
-        </>
+        </Fragment>
     );
 });
 
