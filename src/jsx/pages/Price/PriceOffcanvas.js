@@ -36,6 +36,13 @@ const ProductOffcanvas = forwardRef((props) => {
     useEffect(() => {
         if (canvasShowAdd && subdivisionCode?.value) {
             ProductBySubdivisionIDList(subdivisionCode?.value);
+        } else {
+            if (subdivisionCode?.value) {
+                setProductCode(productCode);
+            } else {
+                setProductList([]);
+                setProductCode([]);
+            }
         }
     }, [subdivisionCode, canvasShowAdd]);
 
@@ -186,7 +193,7 @@ const ProductOffcanvas = forwardRef((props) => {
                                                 options={builderListDropDown}
                                                 value={builderCode}
                                                 onChange={(selectedOption) => handleSelectBuilderNameChange(selectedOption)}
-                                                placeholder={"Select Builder Name"}
+                                                placeholder={"Search and select a builder..."}
                                                 styles={{
                                                     container: (provided) => ({
                                                         ...provided,
@@ -208,7 +215,7 @@ const ProductOffcanvas = forwardRef((props) => {
                                                 options={subdivisionListDropDown}
                                                 value={subdivisionCode}
                                                 onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
-                                                placeholder={"Select Subdivision..."}
+                                                placeholder={"Search and select a subdivision..."}
                                                 styles={{
                                                     container: (provided) => ({
                                                         ...provided,

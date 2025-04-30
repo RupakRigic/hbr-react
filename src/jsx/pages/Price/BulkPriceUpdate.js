@@ -2,42 +2,86 @@ import React, { useState, forwardRef, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Offcanvas, Form } from 'react-bootstrap';
 import swal from "sweetalert";
-import Swal from 'sweetalert2';
 import Select from "react-select";
 import AdminPriceService from '../../../API/Services/AdminService/AdminPriceService';
 import AdminProductService from '../../../API/Services/AdminService/AdminProductService';
 import ClipLoader from 'react-spinners/ClipLoader';
+import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
+import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
 const BulkPriceUpdate = forwardRef((props) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [builderCode, setBuilderCode] = useState([]);
+    const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [subdivisionCode, setSubdivisionCode] = useState([]);
+    const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [productList, setProductList] = useState([]);
     const [productCode, setProductCode] = useState([]);
-    const [productData, setProductData] = useState([]);
 
     useEffect(() => {
         if (canvasShowEdit) {
-            GetProductDropDownList();
+            GetBuilderDropDownList();
         }
     }, [canvasShowEdit]);
 
-    const GetProductDropDownList = async () => {
+    useEffect(() => {
+        if (canvasShowEdit && builderCode?.value) {
+            SubdivisionByBuilderIDList(builderCode);
+        }
+    }, [canvasShowEdit, builderCode]);
+
+    useEffect(() => {
+        if (canvasShowEdit && subdivisionCode?.value) {
+            ProductBySubdivisionIDList(subdivisionCode?.value);
+        } else {
+            if (subdivisionCode?.value) {
+                setProductCode(productCode);
+            } else {
+                setProductList([]);
+                setProductCode([]);
+            }
+        }
+    }, [canvasShowEdit, subdivisionCode]);
+
+    const GetBuilderDropDownList = async () => {
         setIsLoading(true);
         try {
-            const response = await AdminProductService.productDropDown();
+            const response = await AdminBuilderService.builderDropDown();
             const responseData = await response.json();
-            setProductData(responseData);
-            setIsLoading(false);
-            const formattedData = responseData.map((product) => ({
-                label: product.name,
-                value: product.id,
+            const formattedData = responseData.map((builder) => ({
+                label: builder.name,
+                value: builder.id,
             }));
-            setProductList(formattedData);
+            setBuilderListDropDown(formattedData);
+            setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
             console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError("Something went wrong!");
+            }
+        }
+    };
+
+    const SubdivisionByBuilderIDList = async (builderId) => {
+        try {
+            var userData = {
+                builder_ids: (builderId?.value === "" || builderId?.value === undefined || builderId?.value === null) ? [] : [builderId.value]
+            }
+            const response = await AdminSubdevisionService.subdivisionbybuilderidlist(userData);
+            const responseData = await response.json();
+            const formattedData = responseData.data.map((subdivision) => ({
+                label: subdivision.name,
+                value: subdivision.id,
+            }));
+            const filter = formattedData?.filter(data => data.value === subdivisionCode?.value);
+            handleSubdivisionCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
+            setSubdivisionListDropDown(formattedData);
+        } catch (error) {
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -45,20 +89,24 @@ const BulkPriceUpdate = forwardRef((props) => {
         }
     };
 
-    const handleProductCode = (code) => {
-        let productSubandBuilder = productData?.filter(data => data.id == code.value);
-        setProductCode(code);
-
-        const builderName = `<strong>${productSubandBuilder[0]?.builder_name}</strong>`;
-        const subdivisionName = `<strong>${productSubandBuilder[0]?.subdivision_name}</strong>`;
-        const productName = `<strong>${productSubandBuilder[0]?.name}</strong>`;
-
-        Swal.fire({
-            html: `Please confirm that you are updating the price detail for the builder ${builderName} and subdivision ${subdivisionName} for the product ${productName}.`,
-            icon: 'warning',
-            confirmButtonText: 'OK',
-            showCancelButton: false,
-        });
+    const ProductBySubdivisionIDList = async (subdivisionId) => {
+        try {
+            const response = await AdminProductService.productBySubdivision(subdivisionId);
+            const responseData = await response.json();
+            const formattedData = responseData?.map((product) => ({
+                label: product.name,
+                value: product.id,
+            }));
+            const filter = formattedData?.filter(data => data.value === productCode?.value);
+            handleProductCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
+            setProductList(formattedData);
+        } catch (error) {
+            console.log("Error fetching builder list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                setError(errorJson.message);
+            }
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -88,6 +136,12 @@ const BulkPriceUpdate = forwardRef((props) => {
                                 props.parentCallback();
                             }
                         })
+                    } else {
+                        swal(data.message).then((willDelete) => {
+                            if (willDelete) {
+                                HandleUpdateCanvasClose();
+                            }
+                        })
                     }
                 }
                 catch (error) {
@@ -103,7 +157,24 @@ const BulkPriceUpdate = forwardRef((props) => {
     const HandleUpdateCanvasClose = () => {
         seCanvasShowEdit(false);
         setError('');
+        setBuilderCode([]);
+        setBuilderListDropDown([]);
+        setSubdivisionCode([]);
+        setSubdivisionListDropDown([]);
         setProductCode([]);
+        setProductList([]);
+    };
+
+    const handleSelectBuilderNameChange = (code) => {
+        setBuilderCode(code);
+    };
+
+    const handleSubdivisionCode = (code) => {
+        setSubdivisionCode(code);
+    };
+
+    const handleProductCode = (code) => {
+        setProductCode(code);
     };
 
     return (
@@ -127,14 +198,57 @@ const BulkPriceUpdate = forwardRef((props) => {
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-xl-6 mb-3">
-                                        <label className="form-label">
-                                            Product
-                                        </label>
+                                        <label className="form-label">Builder</label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                name="builder_name"
+                                                options={builderListDropDown}
+                                                value={builderCode}
+                                                onChange={(selectedOption) => handleSelectBuilderNameChange(selectedOption)}
+                                                placeholder={"Search and select a builder..."}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Subdivision</label>
+                                        <Form.Group controlId="tournamentList">
+                                            <Select
+                                                options={subdivisionListDropDown}
+                                                value={subdivisionCode}
+                                                onChange={(selectedOption) => handleSubdivisionCode(selectedOption)}
+                                                placeholder={"Search and select a subdivision..."}
+                                                styles={{
+                                                    container: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                    menu: (provided) => ({
+                                                        ...provided,
+                                                        color: 'black'
+                                                    }),
+                                                }}
+                                            />
+                                        </Form.Group>
+                                    </div>
+
+                                    <div className="col-xl-6 mb-3">
+                                        <label className="form-label">Product</label>
                                         <Form.Group controlId="tournamentList">
                                             <Select
                                                 options={productList}
                                                 value={productCode}
-                                                placeholder={"Select Product..."}
+                                                placeholder={"Search and select a product..."}
                                                 onChange={(selectedOption) => handleProductCode(selectedOption)}
                                                 styles={{
                                                     container: (provided) => ({
