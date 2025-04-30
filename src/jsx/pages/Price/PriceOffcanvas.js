@@ -84,7 +84,7 @@ const ProductOffcanvas = forwardRef((props) => {
 
     const ProductBySubdivisionIDList = async (subdivisionId) => {
         try {
-            const response = await AdminProductService.productBySubdivision(subdivisionId ? subdivisionId : "");
+            const response = await AdminProductService.productBySubdivision(subdivisionId);
             const responseData = await response.json();
             const formattedData = responseData?.map((product) => ({
                 label: product.name,
@@ -106,10 +106,10 @@ const ProductOffcanvas = forwardRef((props) => {
         event.preventDefault();
         if (!builderCode?.value || !subdivisionCode?.value) {
             if (!builderCode?.value) {
-                setError("The builderId field is required");
+                setError("The builder id field is required");
                 return;
             } else {
-                setError("The subdivisionId field is required");
+                setError("The subdivision id field is required");
                 return;
             }
         }
