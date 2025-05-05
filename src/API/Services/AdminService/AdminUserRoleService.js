@@ -1,7 +1,7 @@
 import client from "../../client";
 import clientAuth from "../../clientAuth"
 export default {
-    index: (page=1,sortConfig='',searchQuery = '') => clientAuth.get(`admin/user/index?page=${page}${sortConfig}${searchQuery}`),
+    index: (page=1, sortConfig='', userData) => clientAuth.post(`admin/user/index?page=${page}${sortConfig}`, { json: userData }),
     update: (id, userData) => clientAuth.post(`admin/user/update/${id}`, { json: userData }),
     destroy: (id) => clientAuth.delete(`admin/user/destroy/${id}`),
     store: (userData) => clientAuth.post(`admin/user/store`, { json: userData }),
@@ -17,5 +17,5 @@ export default {
     activity_log: (page=1, id, userData) => clientAuth.post(`admin/user/all/activity/${id}?page=${page}`, { json: userData }),
     notify_user_list: (page=1, userData) => clientAuth.post(`admin/notify/user/list?page=${page}`, { json: userData }),
     notify_user_store: (userData) => clientAuth.post(`admin/notify/user/store`, { json: userData }),
-    export: (page=1, sortConfig='', searchQuery = '', exportColumn) => clientAuth.post(`admin/user/export?page=${page}${sortConfig}${searchQuery}`, { json: exportColumn }),
+    export: (page=1, sortConfig='', exportColumn) => clientAuth.post(`admin/user/export?page=${page}${sortConfig}`, { json: exportColumn }),
 };

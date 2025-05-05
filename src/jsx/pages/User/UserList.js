@@ -5,7 +5,6 @@ import swal from "sweetalert";
 import UserOffcanvas from "./UserOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
 import { Col, Offcanvas, Row } from "react-bootstrap";
-import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import AccessField from "../../components/AccssFieldComponent/AccessFiled";
@@ -63,10 +62,7 @@ const UserList = () => {
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterQuery, setFilterQuery] = useState({
-    role: "",
-  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
@@ -84,15 +80,16 @@ const UserList = () => {
     setSelectAll(false);
     setSelectedColumns([]);
   };
+  const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [exportmodelshow, setExportModelShow] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
-      if(page === currentPage){
+      if (page === currentPage) {
         return;
       } else {
-        getuserList(page === null ? currentPage : JSON.parse(page), sortConfig, searchQuery);
+        getuserList(page === null ? currentPage : JSON.parse(page), sortConfig);
       }
     } else {
       navigate("/");
@@ -201,7 +198,6 @@ const UserList = () => {
     { label: "Company", key: "Company" },
     { label: "Notes", key: "Notes" },
     { label: "Builder", key: "Builder" },
-    
   ];
 
   const handleSelectAllToggle = () => {
@@ -232,9 +228,12 @@ const UserList = () => {
     setExcelDownload(true);
     try {
       var exportColumn = {
-        columns: selectedColumns
+        columns: selectedColumns,
+        role_names: selectedRole?.map(role => role.value)
       }
-      const response = await AdminUserRoleService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+
+      const response = await AdminUserRoleService.export(currentPage, sortConfigString, exportColumn).blob();
+
       const downloadUrl = URL.createObjectURL(response);
       const a = document.createElement('a');
       a.href = downloadUrl;
@@ -248,7 +247,7 @@ const UserList = () => {
         if (willDelete) {
           a.click();
           a.parentNode.removeChild(a);
-          setSelectedColumns([]);
+          resetSelection();
         }
       });
     } catch (error) {
@@ -276,7 +275,7 @@ const UserList = () => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
 
-  const getuserList = async (currentPage, sortConfig, searchQuery) => {
+  const getuserList = async (currentPage, sortConfig, reset) => {
     setIsLoading(true);
     setCurrentPage(currentPage);
     try {
@@ -286,7 +285,11 @@ const UserList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
 
-      const response = await AdminUserRoleService.index(currentPage, sortConfigString, searchQuery);
+      var userData = {
+        role_names: !reset ? selectedRole?.map(role => role.value) : []
+      }
+
+      const response = await AdminUserRoleService.index(currentPage, sortConfigString, userData);
 
       const responseData = await response.json();
       setUserList(responseData.data);
@@ -306,7 +309,7 @@ const UserList = () => {
     try {
       let responseData = await AdminUserRoleService.destroy(e).json();
       if (responseData.status === true) {
-        getuserList(currentPage, sortConfig, searchQuery);
+        getuserList(currentPage, sortConfig);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -320,7 +323,7 @@ const UserList = () => {
     try {
       let responseData = await AdminUserRoleService.bulkdestroy(id).json();
       if (responseData.status === true) {
-        getuserList(currentPage, sortConfig, searchQuery);
+        getuserList(currentPage, sortConfig);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -331,9 +334,10 @@ const UserList = () => {
   };
 
   const handleCallback = () => {
-    getuserList(currentPage, sortConfig, searchQuery);
+    getuserList(currentPage, sortConfig);
     setSelectedUsers([]);
   };
+
   const handleRowClick = async (id) => {
     setShowOffcanvas(true);
     setIsFormLoading(true);
@@ -350,26 +354,17 @@ const UserList = () => {
     }
   };
 
-  useEffect(() => {
-    setSearchQuery(filterString());
-  }, [filterQuery]);
-
-  const filterString = () => {
-    const queryString = Object.keys(filterQuery)
-      .map(
-        (key) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(filterQuery[key])}`
-      )
-      .join("&");
-
-    return queryString ? `&${queryString}` : "";
+  const HandleCancelFilter = () => {
+    setSelectedRole([]);
+    getuserList(1, sortConfig, true);
+    setManageFilterOffcanvas(false);
   };
 
-  const HandleCancelFilter = (e) => {
-    setFilterQuery({
-      role: "",
-    });
-  };
+  const HandleFilterForm = (e) => {
+    e.preventDefault();
+    getuserList(1, sortConfig);
+    setManageFilterOffcanvas(false);
+  }
 
   const handleOpenDialog = () => {
     setDraggedColumns(columns);
@@ -407,7 +402,7 @@ const UserList = () => {
 
   useEffect(() => {
     const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsUsersList"));
-    if(draggedColumns) {
+    if (draggedColumns) {
       setColumns(draggedColumns);
     } else {
       const mappedColumns = fieldList.map((data) => ({
@@ -420,68 +415,27 @@ const UserList = () => {
 
   const roleOptions = [
     { value: "User", label: "User" },
-    { value: "Data Uploader", label: "Data Uploader" }
+    { value: "Account Admin	", label: "Account Admin	" },
+    { value: "Data Uploader", label: "Data Uploader" },
+    { value: "Admin", label: "Admin" },
+    { value: "Staff", label: "Staff" }
   ];
 
   const handleSelectRoleChange = (selectedItems) => {
     setSelectedRole(selectedItems);
-  }
+  };
+
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action' && field !== 'Price Change Since Open' && field !== 'Price Change Last 12 Months' && field !== 'Current Price Per SQFT')
+      .filter((field) => field !== 'Action')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 
-        if (value === 'planStatus') {
-          value = 'status';
-        }
-        if (value === 'productName') {
+        if (value === 'firstName') {
           value = 'name';
         }
-        if (value === 'squareFootage') {
-          value = 'sqft';
-        }
-        if (value === 'bedRooms') {
-          value = 'bedroom';
-        }
-        if (value === 'bathRooms') {
-          value = 'bathroom';
-        }
-        if (value === 'currentBasePrice') {
-          value = 'recentprice';
-        }
-        if (value === 'productWebsite') {
-          value = 'website';
-        }
-        if (value === 'productType') {
-          value = 'product_type';
-        }
-        if (value === 'masterPlan') {
-          value = 'masterplan_id';
-        }
-        if (value === 'zipCode') {
-          value = 'zipcode';
-        }
-        if (value === 'lotWidth') {
-          value = 'lotwidth';
-        }
-        if (value === 'lotSize') {
-          value = 'lotsize';
-        }
-        if (value === 'ageRestricted') {
-          value = 'age';
-        }
-        if (value === 'allSingleStory') {
-          value = 'single';
-        }
-        if (value === 'dateAdded') {
-          value = 'created_at';
-        }
-        if (value === '__pkProductID') {
-          value = 'product_code';
-        }
-        if (value === '_fkSubID') {
-          value = 'subdivision_code';
+        if (value === 'lastName') {
+          value = 'last_name';
         }
         return {
           value: value,
@@ -495,6 +449,7 @@ const UserList = () => {
   const HandleSortingPopupDetailClick = (e) => {
     setShowSortingPopup(true);
   };
+
   const handleSelectAllChange = (e) => {
     if (e.target.checked) {
       setSelectedFields(fieldOptions);
@@ -508,6 +463,7 @@ const UserList = () => {
       setSelectionOrder({});
     }
   };
+
   const handleSortingCheckboxChange = (e, field) => {
     const isChecked = e.target.checked;
     if (isChecked) {
@@ -529,6 +485,7 @@ const UserList = () => {
       });
     }
   };
+
   const handleSortOrderChange = (fieldValue, order) => {
     setSortOrders({
       ...sortOrders,
@@ -542,7 +499,7 @@ const UserList = () => {
       direction: sortOrders[field.value] || 'asc',
     }));
     setSortConfig(sortingConfig)
-    getuserList(currentPage, sortingConfig, searchQuery);
+    getuserList(currentPage, sortingConfig);
     handleSortingPopupClose();
   };
 
@@ -595,7 +552,7 @@ const UserList = () => {
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
-                          <Dropdown>
+                          {/* <Dropdown>
                             <Dropdown.Toggle
                               variant="success"
                               className="btn-sm"
@@ -634,7 +591,13 @@ const UserList = () => {
                                 </Button>
                               </div>
                             </Dropdown.Menu>
-                          </Dropdown>
+                          </Dropdown> */}
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
                         </div>
                       ) : (
                         <div className="d-flex">
@@ -661,7 +624,7 @@ const UserList = () => {
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
-                          <Dropdown>
+                          {/* <Dropdown>
                             <Dropdown.Toggle
                               variant="success"
                               className="btn-sm btn-sm me-1"
@@ -681,14 +644,14 @@ const UserList = () => {
                                   </label>
                                   <MultiSelect
                                     name="role"
+                                    placeholder={"Select Role"}
                                     options={roleOptions}
                                     value={selectedRole}
                                     onChange={handleSelectRoleChange}
-                                    placeholder={"Select Role"}
                                   />
                                 </div>
                               </div>
-                              <div className="d-flex justify-content-end">
+                              <div className="d-flex justify-content-between">
                                 <Button
                                   className="btn-sm"
                                   onClick={HandleCancelFilter}
@@ -696,9 +659,22 @@ const UserList = () => {
                                 >
                                   Reset
                                 </Button>
+                                <Button
+                                  className="btn-sm"
+                                  onClick={HandleFilterForm}
+                                  variant="primary"
+                                >
+                                  Filter
+                                </Button>
                               </div>
                             </Dropdown.Menu>
-                          </Dropdown>
+                          </Dropdown> */}
+                          <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
+                            <div style={{ fontSize: "11px" }}>
+                              <i className="fa fa-filter" />&nbsp;
+                              Filter
+                            </div>
+                          </button>
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
@@ -745,7 +721,7 @@ const UserList = () => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-trash" />&nbsp;
-                               Delete
+                              Delete
                             </div>
                           </button>
                         </div>
@@ -855,11 +831,19 @@ const UserList = () => {
                                 <strong>
                                   {column.label}
                                   {column.id != "action" && sortConfig.some(
-                                    (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
+                                    (item) => item.key === (
+                                      column.id == "builder" ? "builder" :
+                                      column.id == "first Name" ? "name" :
+                                      column.id == "last Name" ? "last_name" : column.id
+                                    )
                                   ) ? (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
-                                        (item) => item.key === (column.id == "builder" ? "builderName" : column.id)
+                                        (item) => item.key === (
+                                          column.id == "builder" ? "builder" :
+                                          column.id == "first Name" ? "name" :
+                                          column.id == "last Name" ? "last_name" : column.id
+                                        )
                                       ).direction === "asc" ? "↑" : "↓"
                                       }
                                     </span>
@@ -1048,17 +1032,20 @@ const UserList = () => {
           </div>
         </div>
       </div>
+
       <UserOffcanvas
         ref={product}
         Title="Add User"
         parentCallback={handleCallback}
       />
+
       <BulkUserUpdateOffcanvas
         ref={bulkproduct}
         Title={selectedUsers?.length === 1 ? "Edit User" : "Bulk Edit Users"}
         userSelectedUsers={selectedUsers}
         parentCallback={handleCallback}
       />
+
       <Offcanvas
         show={showOffcanvas}
         onHide={setShowOffcanvas}
@@ -1148,6 +1135,7 @@ const UserList = () => {
             </div>
           </div>)}
       </Offcanvas>
+
       <Offcanvas
         show={manageAccessOffcanvas}
         onHide={setManageAccessOffcanvas}
@@ -1215,6 +1203,7 @@ const UserList = () => {
           </div>
         </div>
       </Offcanvas>
+
       <Modal show={showSort} onHide={HandleSortDetailClick}>
         <Modal.Header handleSortClose>
           <Modal.Title>Sorted Fields</Modal.Title>
@@ -1413,6 +1402,65 @@ const UserList = () => {
           </Modal.Footer>
         </Fragment>
       </Modal>
+
+      {/* Filter Canvas */}
+      <Offcanvas
+        show={manageFilterOffcanvas}
+        onHide={setManageFilterOffcanvas}
+        className="offcanvas-end customeoff"
+        placement="end"
+      >
+        <div className="offcanvas-header border-bottom">
+          <h5 className="modal-title" id="#gridSystemModal">
+            Filter User{" "}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setManageFilterOffcanvas(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div className="offcanvas-body">
+          <div className="container-fluid">
+            <div className="">
+              <form onSubmit={HandleFilterForm}>
+                <div className="row">
+                  <div className="col-md-6 mt-3">
+                    <label className="form-label">Role:</label>
+                    <MultiSelect
+                      name="role"
+                      placeholder={"Select Role"}
+                      options={roleOptions}
+                      value={selectedRole}
+                      onChange={handleSelectRoleChange}
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+            <br />
+            <div className="d-flex justify-content-between">
+              <Button
+                className="btn-sm"
+                onClick={HandleCancelFilter}
+                variant="secondary"
+              >
+                Reset
+              </Button>
+              <Button
+                className="btn-sm"
+                onClick={HandleFilterForm}
+                variant="primary"
+              >
+                Filter
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Offcanvas>
 
       <AccessField 
         tableName={"users"}
