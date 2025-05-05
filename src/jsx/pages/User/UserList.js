@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import UserOffcanvas from "./UserOffcanvas";
 import MainPagetitle from "../../layouts/MainPagetitle";
-import { Offcanvas } from "react-bootstrap";
+import { Col, Offcanvas, Row } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -77,6 +77,15 @@ const UserList = () => {
   const [selectionOrder, setSelectionOrder] = useState({});
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
   const [sortOrders, setSortOrders] = useState({});
+
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const resetSelection = () => {
+    setSelectAll(false);
+    setSelectedColumns([]);
+  };
+  const [exportmodelshow, setExportModelShow] = useState(false);
+  const [excelDownload, setExcelDownload] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -184,7 +193,68 @@ const UserList = () => {
     }
   };
 
+  const exportColumns = [
+    { label: "First Name", key: "First Name" },
+    { label: "Last Name", key: "Last Name" },
+    { label: "Email", key: "Email" },
+    { label: "Role", key: "Role" },
+    { label: "Company", key: "Company" },
+    { label: "Notes", key: "Notes" },
+    { label: "Builder", key: "Builder" },
+    
+  ];
 
+  const handleSelectAllToggle = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    if (newSelectAll) {
+      setSelectedColumns(exportColumns.map(col => col.label));
+    } else {
+      setSelectedColumns([]);
+    }
+  };
+
+  const handleColumnToggle = (column) => {
+    const updatedColumns = selectedColumns.includes(column)
+      ? selectedColumns.filter((col) => col !== column)
+      : [...selectedColumns, column];
+    console.log(updatedColumns);
+    setSelectedColumns(updatedColumns);
+    setSelectAll(updatedColumns.length === exportColumns.length);
+  };
+
+  const handleDownloadExcel = async () => {
+    setExcelDownload(true);
+    let sortConfigString = "";
+    if (sortConfig !== null) {
+      sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
+    }
+    setExcelDownload(true);
+    try {
+      var exportColumn = {
+        columns: selectedColumns
+      }
+      const response = await AdminUserRoleService.export(currentPage, sortConfigString, searchQuery, exportColumn).blob();
+      const downloadUrl = URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.setAttribute('download', `users.xlsx`);
+      document.body.appendChild(a);
+      setExcelDownload(false);
+      setExportModelShow(false);
+      swal({
+        text: "Download Completed"
+      }).then((willDelete) => {
+        if (willDelete) {
+          a.click();
+          a.parentNode.removeChild(a);
+          setSelectedColumns([]);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const prePage = () => {
     if (currentPage !== 1) {
@@ -519,6 +589,12 @@ const UserList = () => {
                               Sort
                             </div>
                           </Button>
+                          <button disabled={excelDownload || userList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
+                          </button>
                           <Dropdown>
                             <Dropdown.Toggle
                               variant="success"
@@ -579,6 +655,12 @@ const UserList = () => {
                               Sort
                             </div>
                           </Button>
+                          <button disabled={excelDownload || userList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                            <div style={{ fontSize: "11px" }}>
+                              <i class="fas fa-file-export" />&nbsp;
+                              {excelDownload ? "Downloading..." : "Export"}
+                            </div>
+                          </button>
                           <Dropdown>
                             <Dropdown.Toggle
                               variant="success"
@@ -1274,6 +1356,62 @@ const UserList = () => {
           <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
           <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Export Modal */}
+      <Modal show={exportmodelshow} onHide={() => setExportModelShow(true)}>
+        <Fragment>
+          <Modal.Header>
+            <Modal.Title>Export</Modal.Title>
+            <button
+              className="btn-close"
+              aria-label="Close"
+              onClick={() => { resetSelection(); setExportModelShow(false); }}
+            ></button>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col lg={10}>
+                <ul className='list-unstyled'>
+                  <li>
+                    <label className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={selectAll}
+                        onChange={handleSelectAllToggle}
+                      />
+                      Select All
+                    </label>
+                  </li>
+                  {exportColumns.map((col) => (
+                    <li key={col.label}>
+                      <label className='form-check'>
+                        <input
+                          type="checkbox"
+                          className='form-check-input'
+                          checked={selectedColumns.includes(col.label)}
+                          onChange={() => handleColumnToggle(col.label)}
+                        />
+                        {col.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              varient="primary"
+              class="btn btn-primary"
+              disabled={excelDownload}
+              onClick={handleDownloadExcel}
+            >
+              {excelDownload ? "Downloading..." : "Download"}
+            </button>
+          </Modal.Footer>
+        </Fragment>
       </Modal>
 
       <AccessField 
