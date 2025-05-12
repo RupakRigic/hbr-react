@@ -5,7 +5,7 @@ let userData = localStorage.getItem('usertoken') ? localStorage.getItem('usertok
 class HTTPError extends Error { }
 const clientAuth = ky.extend({
    prefixUrl: "http://localhost/hbr/public/api/",
-  // prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
+  // prefixUrl: "https://vegasdata.homes/portal/public/api/",
   timeout : false,
   hooks: {
     beforeRequest: [

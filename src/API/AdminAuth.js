@@ -4,7 +4,7 @@ let userData = localStorage.getItem('admintoken') ? localStorage.getItem('admint
 class HTTPError extends Error { }
 const AdminAuth = ky.extend({
    prefixUrl: "http://localhost/hbr/public/api/",
-  // prefixUrl: "http://ec2-54-176-207-251.us-west-1.compute.amazonaws.com/portal/public/api/",
+  // prefixUrl: "https://vegasdata.homes/portal/public/api/",
   
   hooks: {
     beforeRequest: [
