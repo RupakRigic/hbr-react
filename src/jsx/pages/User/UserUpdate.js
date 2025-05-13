@@ -18,6 +18,7 @@ const UserUpdate = () => {
   const [Error, setError] = useState("");
   const [BuilderCode, setBuilderCode] = useState("");
   const [RoleCode, setRoleCode] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
   const [subRoleList, setSubRoleList] = useState([]);
@@ -54,6 +55,34 @@ const UserUpdate = () => {
   }, []);
 
   useEffect(() => {
+    if (UserList?.roles && RoleList?.length > 0) {
+      let roleIds = UserList?.roles.map(role => role.id);
+
+      if (roleIds.includes(10) || roleIds.includes(11)) {
+        const StandardUserOptions = UserList?.roles.map(role => ({
+          value: role.id,
+          label: role.name
+        }));
+        const filter = RoleList?.filter(data => data.id == 9)
+        const formattedRoles = [{
+          value: filter[0].id,
+          label: filter[0].name
+        }];
+        handleRoleCode(formattedRoles[0]);
+        setStandardRoleCode(UserList?.roles.map(role => role.id));
+        setStandardUser(StandardUserOptions);
+      } else {
+        const filter = RoleList?.filter(data => data.id == UserList?.roles[0].id)
+        const formattedRoles = [{
+          value: filter[0].id,
+          label: filter[0].name
+        }];
+        handleRoleCode(formattedRoles[0]);
+      }
+    }
+  }, [UserList, RoleList]);
+
+  useEffect(() => {
     if (UserList.id) {
       setFirstName(UserList.name);
       setLastName(UserList.last_name);
@@ -70,20 +99,6 @@ const UserUpdate = () => {
       setIsLoading(false);
       SetUserList(responseData1);
       setBuilderCode(responseData1.builder_id);
-
-      let roleIds = responseData1.roles.map(role => role.id);
-
-      if (roleIds.includes(10) || roleIds.includes(11)) {
-        const StandardUserOptions = responseData1.roles.map(role => ({
-          value: role.id,
-          label: role.name
-        }));
-        setRoleCode(9);
-        setStandardRoleCode(responseData1.roles.map(role => role.id));
-        setStandardUser(StandardUserOptions);
-      } else {
-        setRoleCode(responseData1.roles[0].id);
-      }
     } catch (error) {
       setIsLoading(false);
       if (error.name === "HTTPError") {
@@ -401,8 +416,12 @@ const UserUpdate = () => {
                           <label className="form-label">Role</label>
                           <Select
                             options={roleOptions}
-                            value={roleOptions.find(option => option.value === RoleCode)}
-                            // value={RoleCode}
+                            value={roleOptions.find(option => option.value === RoleCode[0])}
+                            isSearchable={isMenuOpen}
+                            onMenuOpen={() => setIsMenuOpen(true)}
+                            onMenuClose={() => setIsMenuOpen(false)}
+                            inputId="react-select-role"
+                            name="react-select-role"
                             onChange={(selectedOption) => handleRoleCode(selectedOption)}
                             placeholder="Select Role"
                             styles={{
