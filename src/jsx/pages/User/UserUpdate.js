@@ -211,7 +211,8 @@ const UserUpdate = () => {
         "last_name": lastName,
         "email": email,
         "notes": notes,
-        "company": company
+        "company": company,
+        "password": newPassword
       }
       const data = await AdminUserRoleService.update(params.id, userData).json();
       if (data.status === true) {

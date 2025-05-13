@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { useSelector } from "react-redux";
 import { Routes, Route, Outlet } from "react-router-dom";
 
@@ -278,9 +278,10 @@ const allroutes = [
 const Markup = () => {
   const userData = JSON.parse(localStorage.getItem('user'));
   let currentRole = '';
-  if(userData)
-  {
+  let isSubscribed = '1';
+  if(userData) {
     currentRole = userData.role;
+    isSubscribed = userData.is_subscribed;
   }
 
   const allowedRoles = [currentRole]; // Example: Assuming the current user has the role 'Admin'
@@ -293,25 +294,27 @@ const Markup = () => {
     );
   });
 
-  function NotFound() {
-    const url = filteredRoutes.map((route) => route.url);
-    let path = window.location.pathname;
-    path = path.split("/");
-    path = path[path.length - 1];
-    if (url.indexOf(path) <= 0) {
-      return <Error404 />;
+  const finalRoutes = filteredRoutes.filter((route) => {
+    // If not subscribed, only allow weekly-data
+    if (isSubscribed === "0" && !allowedRoles?.includes("Admin")) {
+      return route.url === "/weekly-data";
     }
+    return true;
+  });
+
+  function NotFound() {
+    return <Error404 />;
   }
 
   return (
-    <>
+    <Fragment>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/page-error-404" element={<Error404 />} />
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<MainLayout />}>
-          {filteredRoutes.map((data, i) => (
+          {finalRoutes?.map((data, i) => (
             <Route
               key={i}
               exact
@@ -323,7 +326,7 @@ const Markup = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <ScrollToTop />
-    </>
+    </Fragment>
   );
 };
 
