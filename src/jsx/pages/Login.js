@@ -291,17 +291,19 @@ function Login(props) {
             // }
             navigate("/weekly-data");
 
-          }else if(userRole == "Standard User"){
+          } else if(userRole == "Standard User"){
             navigate("/weekly-data");
-          }else if(userRole == "Account Admin"){
+          } else if(userRole == "Account Admin"){
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
             if (subscription == 1) {
               navigate("/weekly-data");
             } else {
-              navigate("/subscriptionplan");
+              navigate("/weekly-data");
+              // navigate("/subscriptionplan");
             }
           } else {
-            navigate("/subscriptionlist");
+              navigate("/weekly-data");
+            // navigate("/subscriptionlist");
           }
         }
       } catch (error) {

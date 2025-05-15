@@ -12,7 +12,8 @@ const Error404 = () => {
                         <div className="dz-error" data-text="404">404</div>
                         <h4 className="error-head"><i className="fa fa-exclamation-triangle text-warning"></i> The page you were looking for is not found!</h4>                        
                         <div>
-                           <Link to={"/dashboard"} className="btn btn-secondary">BACK TO HOMEPAGE</Link>
+                           {/* <Link to={"/dashboard"} className="btn btn-secondary">BACK TO HOMEPAGE</Link> */}
+                           <Link to={"/"} className="btn btn-secondary" onClick={() => localStorage.clear()}>BACK TO HOMEPAGE</Link>
                         </div>
                      </div>
                   </div>
