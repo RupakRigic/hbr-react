@@ -95,6 +95,7 @@ const BuilderUpdate = () => {
                 "logo": file ? file.split(',')[1] : "",
                 "coporate_officeaddress_lat": event.target.coporate_officeaddress_lat.value,
                 "coporate_officeaddress_lng": event.target.coporate_officeaddress_lng.value,
+                "icon_url": event.target.icon_url.value,
             }
 
             const data = await AdminBuilderService.update(params.id, userData).json();
@@ -267,6 +268,10 @@ const BuilderUpdate = () => {
                                                 <div className="col-xl-12 mb-3">
                                                     <label className="form-label">coporate_officeaddress_lng</label>
                                                     <textarea rows="2" name='coporate_officeaddress_lng' defaultValue={Builder.coporate_officeaddress_lng} className="form-control"></textarea>
+                                                </div>
+                                                 <div className="col-xl-12 mb-3">
+                                                    <label className="form-label">Icon URL</label>
+                                                    <input rows="2" name='icon_url' defaultValue={Builder.icon_url} className="form-control"></input>
                                                 </div>
 
                                                 <p className='text-danger fs-12'>{Error}</p>

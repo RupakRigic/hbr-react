@@ -173,7 +173,7 @@ const allroutes = [
   {
     url: "/weekly-data-index",
     component: <WeeklyDataIndex />,
-    allowedRoles: ["Admin", "Data Uploader","Standard User"],
+    allowedRoles: ["Admin", "Data Uploader","Standard User","Account Admin"],
   },
   { url: "/files", 
     component: <File />, 
@@ -297,7 +297,7 @@ const Markup = () => {
   const finalRoutes = filteredRoutes.filter((route) => {
     // If not subscribed, only allow weekly-data
     if (isSubscribed === "0" && !allowedRoles?.includes("Admin")) {
-      return route.url === "/weekly-data";
+      return route.url === "/weekly-data" || route.url === "/weekly-data-index";
     }
     return true;
   });

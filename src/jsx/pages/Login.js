@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useEffect, Fragment, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
@@ -11,13 +11,15 @@ import { Modal, Button, Form } from 'react-bootstrap';
 function Login(props) {
   const [heartActive, setHeartActive] = useState(true);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+const [email, setEmail] = useState(() => localStorage.getItem('rememberEmail') || '');
   const [emailSend, setSendEmail] = useState("");
   const [emailCorrect, setEmailCorrect] = useState(false);
   let errorsObj = { email: "", password: "" };
   const [errors, setErrors] = useState(errorsObj);
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+const [password, setPassword] = useState(() => localStorage.getItem('rememberPassword') || '');
+const [rememberMe, setRememberMe] = useState(() =>
+  !!(localStorage.getItem('rememberEmail') && localStorage.getItem('rememberPassword'))
+);
   var d = new Date();
   const [forgotModelShow, setForgotModelShow] = useState(false);
 
@@ -28,6 +30,13 @@ function Login(props) {
 
   const onLogin = async (e) => {
     e.preventDefault();
+      if (rememberMe) {
+                localStorage.setItem('rememberEmail', email);
+                localStorage.setItem('rememberPassword', password);
+              } else {
+                localStorage.removeItem('rememberEmail');
+                localStorage.removeItem('rememberPassword');
+              }
     let error = false;
     const errorObj = { ...errorsObj };
     if (email === "") {

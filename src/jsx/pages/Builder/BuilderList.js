@@ -246,6 +246,8 @@ const BuilderTable = () => {
     { label: "Total Net Sales", key: "total_net_sales" },
     { label: "Date Of First Closing", key: "date_of_first_closing" },
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
+    { label: "Icon Url", key: "icon_url" },
+
   ];
 
   const exportColumns = [
@@ -284,6 +286,8 @@ const BuilderTable = () => {
     { label: "Total Net Sales", key: "total_net_sales" },
     { label: "Date Of First Closing", key: "date_of_first_closing" },
     { label: "Date Of Latest Closing", key: "date_of_latest_closing" },
+    { label: "Icon Url", key: "icon_url" },
+
   ];
 
   const handleSelectAllToggle = () => {
@@ -2012,6 +2016,7 @@ const BuilderTable = () => {
                                       column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
                                       column.id == "corporate Office City" ? "coporate_officeaddress_city" :
                                       column.id == "corporate Office ZIP" ? "coporate_officeaddress_zipcode" :
+                                      column.id == "icon Url" ? "icon_url":
                                       column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                   ) && (
                                       <span>
@@ -2030,6 +2035,7 @@ const BuilderTable = () => {
                                             column.id == "corporate Office Address State" ? "coporate_officeaddress_2" :
                                             column.id == "corporate Office City" ? "coporate_officeaddress_city" :
                                             column.id == "corporate Office ZIP" ? "coporate_officeaddress_zipcode" :
+                                            column.id == "icon Url" ? "icon_url":
                                             column.id == "email Address" ? "email_address" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
@@ -2042,7 +2048,7 @@ const BuilderTable = () => {
                                   column.id !== "local Fax" && column.id !== "local Address" && column.id !== "local Office City" && column.id !== "local Office ZIP" &&
                                   column.id !== "company Type" && column.id !== "active" && column.id !== "stock Market" && column.id !== "current Division President" && column.id !== "stock Symbol" &&
                                   column.id !== "current Land Aquisitions" && column.id !== "corporate Office Address" && column.id !== "corporate Office Address State" && column.id !== "corporate Office City" && column.id !== "corporate Office ZIP" &&
-                                  column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing"
+                                  column.id !== "date Of First Closing" && column.id !== "date Of Latest Closing" && column.id !== "icon Url"
                                 ) && (
                                     <>
                                       <br />
@@ -2350,6 +2356,9 @@ const BuilderTable = () => {
                                     }
                                     {column.id == "email Address" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.email_address}</td>
+                                    }
+                                    {column.id == "icon Url" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.icon_url}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>

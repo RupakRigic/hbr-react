@@ -84,6 +84,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "logo": file?.split(',')[1],
                         "coporate_officeaddress_lat": event.target.coporate_officeaddress_lat.value,
                         "coporate_officeaddress_lng": event.target.coporate_officeaddress_lng.value,
+                        "icon_url": event.target.icon_url.value ? event.target.icon_url.value : '',
+
                     }
 
                     const data = await AdminBuilderService.bulkupdate(selectedLandSales, userData).json();
@@ -287,6 +289,11 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                                 <div className="col-xl-12 mb-3">
                                     <label className="form-label">coporate_officeaddress_lng</label>
                                     <textarea rows="2" name='coporate_officeaddress_lng' className="form-control"></textarea>
+                                </div>
+
+                                <div className="col-xl-12 mb-3">
+                                    <label className="form-label">Icon URL</label>
+                                    <input type="text" name='icon_url' className="form-control"></input>
                                 </div>
 
                                 <p className='text-danger fs-12'>{Error}</p>

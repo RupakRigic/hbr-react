@@ -231,11 +231,11 @@ const LogoutPage = () => {
         localStorage.removeItem("searchQueryByLandSalesFilter");
         localStorage.removeItem("setLansSaleFilter");
 
-        localStorage.clear();
+        // localStorage.clear();
         navigate('/');
       } else {
         console.log(data.message);
-        localStorage.clear();
+        // localStorage.clear();
       }
     } catch (error) {
       localStorage.clear();
