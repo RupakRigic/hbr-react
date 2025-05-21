@@ -366,6 +366,14 @@ const RechartJs = () => {
       setgraph5Title("New Home Resales By Builder");
       setgraph6Title("New Home Resales By Master Plan");
     }
+    else if (event.target.value == "landsales") {
+      setgraph1Title("Builder Land Purchases - Total Acres")
+      setgraph2Title("Builder Land Purchases - Total Price");
+      setgraph3Title("Builder Land Purchases - Price per Acre");
+      setgraph4Title("Price per Acre by Master Plan");
+      setgraph5Title("Price per Acre by ZIP Code");
+      setgraph6Title("Price per Lot by ZIP Code");
+    }
   };
 
   const handleDisplay = (e) => {
@@ -787,7 +795,7 @@ const RechartJs = () => {
         { value: 'New-Home-Prices', label: 'New Home Prices' },
         { value: 'New-Home-Closings', label: 'New Home Closings' },
         { value: 'New-Home-Permits', label: 'New Home Permits' },
-        // { value: 'Land-Sales', label: 'Land Sales' }
+        { value: 'landsales', label: 'Land Sales' }
       ];
       setDataTypeOption(transformedData);
     }
