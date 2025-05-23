@@ -1070,17 +1070,22 @@ const TrafficsaleList = () => {
         let operator = '=';
         let value = query;
 
-        if (query.startsWith('>') || query.startsWith('<') || query.startsWith('=')) {
-          operator = query[0];
-          value = query.slice(1);
-        }
+          const match = query.match(/^(>=|<=|!=|>|<|=)(.*)$/);
 
+          if (match) {
+            operator = match[1]; // the operator (>=, <=, >, <, =, !=)
+            value = match[2].trim(); // the numeric or string value
+          }
         const numberValue = parseFloat(value);
         if (!isNaN(numberValue)) {
           return items.filter(item => {
             const itemValue = parseFloat(item[key]);
             if (operator === '>') return itemValue > numberValue;
             if (operator === '<') return itemValue < numberValue;
+            if (operator === '>=') return itemValue >= numberValue;
+            if (operator === '<=') return itemValue <= numberValue;
+            if (operator === '!=') return itemValue != numberValue;
+
             return itemValue === numberValue;
           });
         }

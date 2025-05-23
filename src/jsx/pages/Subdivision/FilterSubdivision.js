@@ -612,7 +612,10 @@ const FilterSubdivision = () => {
             <form onSubmit={HandleFilterForm}>
                 <div className="row">
                     <div className="col-md-3 mt-3">
-                        <label className="form-label">STATUS:</label>
+                        <label className="form-label">STATUS:{" "}
+                                <span className="text-danger">*</span>
+
+                        </label>
                         <MultiSelect
                             name="status"
                             options={statusOptions}
