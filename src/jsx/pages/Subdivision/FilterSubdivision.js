@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import { useNavigate } from 'react-router-dom';
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
+import Modal from "react-bootstrap/Modal";
 
 const FilterSubdivision = () => {
     const navigate = useNavigate();
@@ -237,9 +238,21 @@ const FilterSubdivision = () => {
         }
 
     }, [searchQuery]);
+  const [message, setMessage] = useState(false);
+      const [showPopup, setShowPopup] = useState(false);
+          const handlePopupClose = () => setShowPopup(false);
+    const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
 
     const HandleFilterForm = (e) => {
         e.preventDefault();
+                if (filterQuery.status == "") {
+          setShowPopup(true);
+           setMessage("Please select status.");
+
+      return;
+    } 
         navigate("/subdivisionlist");
         localStorage.setItem("selectedStatusBySubdivisionFilter_Subdivision", JSON.stringify(selectedStatusByFilter));
         localStorage.setItem("selectedReportingByFilter_Subdivision", JSON.stringify(selectedReportingByFilter));
@@ -791,7 +804,24 @@ const FilterSubdivision = () => {
                     </div>
                 </div>
             </form>
+                {/* Popup */}
+                        <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+                          <Modal.Header handlePopupClose>
+                            <Modal.Title>Alert</Modal.Title>
+                            <button
+                              className="btn-close"
+                              aria-label="Close"
+                              onClick={() => handlePopupClose()}
+                            ></button>
+                          </Modal.Header>
+                          <Modal.Body>{message}</Modal.Body>
+                          <Modal.Footer>
+                            <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
+                          </Modal.Footer>
+                        </Modal>
         </div>
+
+        
     )
 }
 

@@ -468,7 +468,7 @@ const GoogleMapLocator = () => {
                zoom={zoomLevel}
                onLoad={onLoad}
                options={{
-                  mapTypeId: "satellite",
+                  mapTypeId: "hybrid",
                }}
             >
 

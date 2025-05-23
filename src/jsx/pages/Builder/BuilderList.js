@@ -3004,7 +3004,7 @@ const BuilderTable = () => {
                       ACTIVE COMMUNITIES :{" "}
                     </label>
 
-                    <input type="number" value={filterQuery.active_communities} name="active_communities" className="form-control" onChange={HandleFilter} />
+                    <input type="text" value={filterQuery.active_communities} name="active_communities" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-4 mt-3">
                     <label className="form-label">

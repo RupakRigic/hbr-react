@@ -195,7 +195,7 @@ const FilterBuilder = () => {
                     <div className="col-md-6 mt-3">
                         <label className="form-label">ACTIVE COMMUNITIES:</label>
                         <input
-                            type="number"
+                            type="text"
                             value={filterQuery.active_communities}
                             name="active_communities"
                             className="form-control"

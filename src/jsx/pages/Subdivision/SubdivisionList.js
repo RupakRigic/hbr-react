@@ -1120,8 +1120,20 @@ const SubdivisionList = () => {
         GetZipCodeList();
       }
     }, [manageFilterOffcanvas]);
-
+  const [message, setMessage] = useState(false);
+    const HandlePopupDetailClick = (e) => {
+    setShowPopup(true);
+  };
+  
+    const handlePopupClose = () => setShowPopup(false);
   const HandleFilterForm = (e) => {
+
+        if (filterQuery.status == "") {
+          setShowPopup(true);
+           setMessage("Please select status.");
+
+      return;
+    } 
     const isAnyFilterApplied = Object.values(filterQuery).some(query => query !== "");
     if (!isAnyFilterApplied) {
       localStorage.removeItem("setSubdivisionFilter");
@@ -4123,25 +4135,39 @@ const SubdivisionList = () => {
                           <span className="fw-bold fs-30">
                             {SubdivisionDetails.name || "NA"}
                           </span><br />
-                          <span className="fs-18">
-                            {SubdivisionDetails.website || "NA"}
-                          </span><br />
+
+                       {SubdivisionDetails.website && (
+                        <>
+                          <a
+                            style={{
+                    display: "block",
+                    paddingRight: "63px",
+                    wordWrap: "break-word",
+                    color:"#1976d2"
+                  }}
+
+                          target="_blank" href={SubdivisionDetails.website}>{SubdivisionDetails.website}</a>
+                          <br />
+                        </>
+                      )}
+
+                        
 
                           <label className="fs-18" style={{ marginTop: "10px" }}><b>PHONE:</b>&nbsp;<span>{SubdivisionDetails.phone || "NA"}</span></label><br />
                           <label className="fs-18"><b>PRODUCT TYPE:</b>&nbsp;<span>{SubdivisionDetails.product_type || "NA"}</span></label><br />
                           <label className="fs-18"><b>OPEN SINCE:</b>&nbsp;<span>{SubdivisionDetails.opensince || "NA"}</span></label><br />
                           <label className="fs-18"><b>AGE RESTRICTED:</b>&nbsp;
                             <span className="fw-bold">
-                              {SubdivisionDetails.reporting === 0 && "No"}
-                              {SubdivisionDetails.reporting === 1 && "Yes"}
-                              {SubdivisionDetails.reporting === "" && "NA"}
+                              {SubdivisionDetails.age === 0 && "No"}
+                              {SubdivisionDetails.age === 1 && "Yes"}
+                              {SubdivisionDetails.age === "" && "NA"}
                             </span>
                           </label><br />
                           <label className="fs-18"><b>ALL SINGLE-STORY:</b>&nbsp;
                             <span className="fw-bold">
-                              {SubdivisionDetails.reporting === 0 && "No"}
-                              {SubdivisionDetails.reporting === 1 && "Yes"}
-                              {SubdivisionDetails.reporting === "" && "NA"}
+                              {SubdivisionDetails.single === 0 && "No"}
+                              {SubdivisionDetails.single === 1 && "Yes"}
+                              {SubdivisionDetails.single === "" && "NA"}
                             </span>
                           </label><br />
                           <label className="fs-18"><b>GATED:</b>&nbsp;<span>{SubdivisionDetails.gated || "NA"}</span></label>
@@ -4227,16 +4253,22 @@ const SubdivisionList = () => {
                             <label style={{ marginLeft: "15px" }}>PERMITS:&nbsp;{SubdivisionDetails.total_permits || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;{SubdivisionDetails.total_closings || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_since_open || "NA"}</label><br />
-                            <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:&nbsp;</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:
+                              {
+                              SubdivisionDetails.months_open > 0 && SubdivisionDetails.total_closings > 0
+                                ? (SubdivisionDetails.total_closings / SubdivisionDetails.months_open).toFixed(2)
+                                : "NA"
+                            }
+                            &nbsp;</label><br />
                             <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_since_open} /> || "NA"}</label><br />
 
                             <label className="fs-20" style={{ marginBottom: "0px" }}><b>THIS YEAR:</b></label><br />
                             <label style={{ marginLeft: "15px" }}>NET SALES:&nbsp;{SubdivisionDetails.year_net_sold || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>PERMITS:&nbsp;{SubdivisionDetails.permit_this_year || "NA"}</label><br />
-                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;</label><br />
-                            <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year} /> || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;{SubdivisionDetails?.builder?.closing_this_year || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:&nbsp;{SubdivisionDetails.avg_closings_per_month_this_year || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year} /> || "NA"}</label><br />
                           </div>
                         </div>
 
@@ -5090,6 +5122,22 @@ const SubdivisionList = () => {
           </Modal.Footer>
         </Fragment>
       </Modal>
+
+            {/* Popup */}
+            <Modal show={showPopup} onHide={HandlePopupDetailClick}>
+              <Modal.Header handlePopupClose>
+                <Modal.Title>Alert</Modal.Title>
+                <button
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={() => handlePopupClose()}
+                ></button>
+              </Modal.Header>
+              <Modal.Body>{message}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handlePopupClose}>Close</Button>
+              </Modal.Footer>
+            </Modal>
 
       <AccessField
         tableName={"subdivisions"}
