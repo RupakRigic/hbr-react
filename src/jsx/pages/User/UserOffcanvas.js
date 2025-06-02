@@ -164,7 +164,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
         }
         try {
             const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
-            if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9) || RoleCode.includes(12)) {
+            if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
                 var userData = {
                     "name": firstName,
                     "company": company,
