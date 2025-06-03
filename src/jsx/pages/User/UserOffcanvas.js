@@ -184,6 +184,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     swal("User Created Succesfully").then((willDelete) => {
                         if (willDelete) {
                             setAddUser(false);
+                            setError("");
                             setRoleCode([]);
                             setStandardUser([]);
                             setCompanies(['']);
@@ -208,7 +209,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
         event.preventDefault();
         try {
             var userData = {
-                "builder_id": BuilderCode,
+                "builder_ids": BuilderCode,
                 "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
                 "name": firstName,
                 "last_name": lastName,
@@ -226,6 +227,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 swal("User Created Succesfully").then((willDelete) => {
                     if (willDelete) {
                         setAddUser(false);
+                        setError("");
                         setCompanies(['']);
                         props.parentCallback();
                     }
@@ -270,7 +272,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 <div className="offcanvas-header">
                     <h5 className="modal-title" id="#gridSystemModal">{props.Title}</h5>
                     <button type="button" className="btn-close"
-                        onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); setCompanies(['']); }}
+                        onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); setCompanies(['']); setError(""); }}
                     >
                         <i className="fa-solid fa-xmark"></i>
                     </button>
@@ -432,7 +434,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                             </div>
                             <div>
                                 <button type="submit" className="btn btn-primary me-1">Submit</button>
-                                <Link to={"#"} onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); setCompanies(['']); }} className="btn btn-danger light ms-1">Cancel</Link>
+                                <Link to={"#"} onClick={() => { setAddUser(false); setRoleCode(); setStandardUser([]); setCompanies(['']); setError(""); }} className="btn btn-danger light ms-1">Cancel</Link>
                             </div>
                         </form>
                     </div>

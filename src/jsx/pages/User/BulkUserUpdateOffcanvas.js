@@ -159,7 +159,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     event.preventDefault();
     try {
       var userData = {
-        "builder_id": BuilderCode,
+        "builder_ids": BuilderCode,
         "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
         "name": firstName,
         "last_name": lastName,
@@ -204,6 +204,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     setBuilderCode("");  
     setStandardUser([]);
     setCompanies(['']);
+    setError("");
   };
 
   const handleCompanyChange = (index, value) => {
