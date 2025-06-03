@@ -203,7 +203,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     setRoleCode([]); 
     setBuilderCode("");  
     setStandardUser([]);
-    setCompanies([]);
+    setCompanies(['']);
   };
 
   const handleCompanyChange = (index, value) => {
