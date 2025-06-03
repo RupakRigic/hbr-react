@@ -356,7 +356,7 @@ const UserList = () => {
     setIsFormLoading(true);
     try {
       let responseData = await AdminUserRoleService.show(id).json();
-      setUserDetails(responseData);
+      setUserDetails(responseData.data);
       setIsFormLoading(false);
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -1006,7 +1006,7 @@ const UserList = () => {
           </button>
         </div>
         {isFormLoading ? (
-          <div className="d-flex justify-content-center align-items-center mb-5">
+          <div className="d-flex justify-content-center align-items-center mt-5 mb-5">
             <ClipLoader color="#4474fc" />
           </div>
         ) : (

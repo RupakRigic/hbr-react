@@ -79,7 +79,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const GetUserList = async (id) => {
         try {
             let responseData1 = await AdminUserRoleService.show(id).json();
-            SetUserDetail(responseData1);
+            SetUserDetail(responseData1.data);
             setBuilderCode(responseData1.builder_id);
         } catch (error) {
             if (error.name === "HTTPError") {
