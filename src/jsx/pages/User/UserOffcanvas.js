@@ -12,7 +12,7 @@ import { FiRefreshCcw, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 const UserOffcanvas = forwardRef((props, ref) => {
     const [Error, setError] = useState('');
     const [addUser, setAddUser] = useState(false);
-    const [BuilderCode, setBuilderCode] = useState('');
+    const [BuilderCode, setBuilderCode] = useState([]);
     const [RoleCode, setRoleCode] = useState([]);
     const [standardRoleCode, setStandardRoleCode] = useState([]);
     const [RoleList, setRoleList] = useState([]);
@@ -25,17 +25,15 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [notes, setNotes] = useState("");
-    const [company, setCompany] = useState("");
     const userRole = JSON.parse(localStorage.getItem("user")).role;
     const userId = JSON.parse(localStorage.getItem("user")).localId;
-
-
+    const [companies, setCompanies] = useState(['']);
     const [newPassword, setNewPassword] = useState('');
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
     const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
+    const [userDetail, SetUserDetail] = useState([]);
 
     const generatePassword = () => {
         const chars =
@@ -78,22 +76,12 @@ const UserOffcanvas = forwardRef((props, ref) => {
         }
     };
 
-
-    const [userDetail, SetUserDetail] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
     const GetUserList = async (id) => {
-        setIsLoading(true);
         try {
             let responseData1 = await AdminUserRoleService.show(id).json();
-            setIsLoading(false);
             SetUserDetail(responseData1);
             setBuilderCode(responseData1.builder_id);
-
-
-
         } catch (error) {
-            setIsLoading(false);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -105,7 +93,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
         GetRoleList();
         if (userRole == 'Account Admin') {
             GetUserList(userId)
-            setCompany(userDetail.company);
+            setCompanies(userDetail.company);
         }
     }, []);
 
@@ -160,14 +148,14 @@ const UserOffcanvas = forwardRef((props, ref) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (userRole == 'Account Admin') {
-            setCompany(userDetail.company);
+            setCompanies(userDetail.company);
         }
         try {
             const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
             if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
                 var userData = {
                     "name": firstName,
-                    "company": company,
+                    "company": companies,
                     "last_name": lastName,
                 }
                 const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
@@ -188,7 +176,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     "last_name": lastName,
                     "email": email,
                     "notes": notes,
-                    "company": company,
+                    "company": companies,
                     "password": newPassword
                 }
                 const data = await AdminUserRoleService.store(userData).json();
@@ -225,7 +213,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                 "last_name": lastName,
                 "email": email,
                 "notes": notes,
-                "company": company,
+                "company": companies,
                 "password": newPassword
             }
             const data = await AdminUserRoleService.store(userData).json();
@@ -252,6 +240,26 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     const HandlePopupDetailClick = (e) => {
         setShowPopup(true);
+    };
+
+    const handleCompanyChange = (index, value) => {
+        const newCompanies = [...companies];
+        newCompanies[index] = value;
+        setCompanies(newCompanies);
+    };
+
+    const addCompanyField = () => {
+        setCompanies([...companies, '']);
+    };
+
+    const removeCompanyField = (index) => {
+        const newCompanies = [...companies];
+        newCompanies.splice(index, 1);
+        setCompanies(newCompanies);
+    };
+
+    const getFieldName = (index) => {
+        return index === 0 ? 'company' : `company${index + 1}`;
     };
 
     return (
@@ -331,11 +339,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                 </div>
 
                                 <div className="col-xl-6 mb-3">
-                                    <label htmlFor="exampleFormControlInput7" className="form-label">Company <span className="text-danger">*</span></label>
-                                    <input type="text" name='company' required className="form-control" id="exampleFormControlInput7" placeholder="" onChange={(e) => setCompany(e.target.value)} />
-                                </div>
-
-                                <div className="col-xl-6 mb-3">
                                     <label className="form-label">Role</label>
                                     <Select
                                         options={roleOptions}
@@ -377,6 +380,52 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                         }}
                                     />
                                 </div>}
+
+                                {companies.map((company, index) => (
+                                    <>
+                                        <div className="col-xl-6 mb-3" key={index}>
+                                            <label htmlFor={getFieldName(index)} className="form-label">
+                                                {index === 0 ? 'Company' : `Company ${index + 1}`} <span className="text-danger">*</span>
+                                            </label>
+
+                                            <div className="d-flex align-items-start gap-2">
+                                                <input
+                                                    type="text"
+                                                    name={getFieldName(index)}
+                                                    required
+                                                    className="form-control"
+                                                    id={getFieldName(index)}
+                                                    value={company}
+                                                    onChange={(e) => handleCompanyChange(index, e.target.value)}
+                                                />
+
+                                                <div className="d-flex flex-column align-items-end">
+                                                    {companies.length > 1 && (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-danger mb-1"
+                                                            onClick={() => removeCompanyField(index)}
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {index === companies.length - 1 && (
+                                                <div className="mt-3">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link p-0"
+                                                        style={{ fontSize: '14px' }}
+                                                        onClick={addCompanyField}
+                                                    >
+                                                        + Add Company
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
+                                ))}
                                 <p className='text-danger fs-12'>{Error}</p>
                             </div>
                             <div>

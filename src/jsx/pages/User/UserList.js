@@ -62,7 +62,7 @@ const UserList = () => {
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState([]);
-
+  const [companyFilterName, setCompanyFilterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
@@ -83,6 +83,15 @@ const UserList = () => {
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [exportmodelshow, setExportModelShow] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("role_name_User") || localStorage.getItem("company_User")) {
+      const roleName = JSON.parse(localStorage.getItem("role_name_User"));
+      const companyName = localStorage.getItem("company_User");
+      setSelectedRole(roleName ? roleName : []);
+      setCompanyFilterName(companyName ? companyName : "");
+    }
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
@@ -285,8 +294,12 @@ const UserList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
 
+      const roleName = JSON.parse(localStorage.getItem("role_name_User"));
+      const companyName = localStorage.getItem("company_User");
+
       var userData = {
-        role_names: !reset ? selectedRole?.map(role => role.value) : []
+        role_names: !reset ? roleName ? roleName?.map(role => role.value) : selectedRole?.map(role => role.value) : [],
+        company: !reset ? companyName ? companyName : companyFilterName : ""
       }
 
       const response = await AdminUserRoleService.index(currentPage, sortConfigString, userData);
@@ -356,12 +369,17 @@ const UserList = () => {
 
   const HandleCancelFilter = () => {
     setSelectedRole([]);
+    setCompanyFilterName("");
+    localStorage.removeItem("role_name_User");
+    localStorage.removeItem("company_User");
     getuserList(1, sortConfig, true);
     setManageFilterOffcanvas(false);
   };
 
   const HandleFilterForm = (e) => {
     e.preventDefault();
+    localStorage.setItem("role_name_User", JSON.stringify(selectedRole));
+    localStorage.setItem("company_User", companyFilterName);
     getuserList(1, sortConfig);
     setManageFilterOffcanvas(false);
   }
@@ -423,6 +441,10 @@ const UserList = () => {
 
   const handleSelectRoleChange = (selectedItems) => {
     setSelectedRole(selectedItems);
+  };
+
+  const HandleCompanyFilterName = (companyName) => {
+    setCompanyFilterName(companyName);
   };
 
   useEffect(() => {
@@ -552,46 +574,6 @@ const UserList = () => {
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
-                          {/* <Dropdown>
-                            <Dropdown.Toggle
-                              variant="success"
-                              className="btn-sm"
-                              id="dropdown-basic"
-                              title="Filter"
-                            >
-                              <div style={{ fontSize: "11px" }}>
-                                <i className="fa fa-filter" />&nbsp;
-                                Filter
-                              </div>
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              <h5 className="">Filter Options</h5>
-                              <div className="border-top">
-                                <div className="mt-3 mb-3">
-                                  <label className="form-label">
-                                    Role:
-                                  </label>
-                                  <MultiSelect
-                                    name="role"
-                                    options={roleOptions}
-                                    value={selectedRole}
-                                    onChange={handleSelectRoleChange}
-                                    placeholder={"Select Role"}
-                                  />
-                                </div>
-                              </div>
-                              <div className="d-flex justify-content-end">
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>
-                              </div>
-                            </Dropdown.Menu>
-                          </Dropdown> */}
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;
@@ -624,51 +606,6 @@ const UserList = () => {
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
-                          {/* <Dropdown>
-                            <Dropdown.Toggle
-                              variant="success"
-                              className="btn-sm btn-sm me-1"
-                              id="dropdown-basic"
-                              title="Filter"
-                            >
-                              <i className="fa fa-filter" />&nbsp;
-                              Filter
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              <h5 className="">Filter Options</h5>
-                              <div className="border-top">
-                                <div className="mt-3 mb-3">
-                                  <label className="form-label">
-                                    Role:
-                                  </label>
-                                  <MultiSelect
-                                    name="role"
-                                    placeholder={"Select Role"}
-                                    options={roleOptions}
-                                    value={selectedRole}
-                                    onChange={handleSelectRoleChange}
-                                  />
-                                </div>
-                              </div>
-                              <div className="d-flex justify-content-between">
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleCancelFilter}
-                                  variant="secondary"
-                                >
-                                  Reset
-                                </Button>
-                                <Button
-                                  className="btn-sm"
-                                  onClick={HandleFilterForm}
-                                  variant="primary"
-                                >
-                                  Filter
-                                </Button>
-                              </div>
-                            </Dropdown.Menu>
-                          </Dropdown> */}
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;
@@ -699,7 +636,11 @@ const UserList = () => {
                             to={"#"}
                             className="btn btn-primary btn-sm me-1"
                             data-bs-toggle="offcanvas"
-                            onClick={() => bulkproduct.current.showEmployeModal()}
+                            onClick={() => selectedUsers?.length > 0 ? bulkproduct.current.showEmployeModal() : swal({
+                              text: "Please select at least one record.",
+                              icon: "warning",
+                              dangerMode: true,
+                            })}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-pencil" />&nbsp;
@@ -857,7 +798,7 @@ const UserList = () => {
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
                           {userList !== null && userList.length > 0 ? (
-                            userList.map((element, index) => (
+                            userList?.map((element, index) => (
                               <tr
                                 onClick={(e) => {
                                   if (e.target.type == "checkbox") {
@@ -906,7 +847,7 @@ const UserList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
                                     }
                                     {column.id == "builder" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder : "NA"}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder?.name : "NA"}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
@@ -1417,7 +1358,7 @@ const UserList = () => {
           <button
             type="button"
             className="btn-close"
-            onClick={() => setManageFilterOffcanvas(false)}
+            onClick={() => { setManageFilterOffcanvas(false); setCompanyFilterName(""); setSelectedRole([]); }}
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
@@ -1437,6 +1378,10 @@ const UserList = () => {
                       value={selectedRole}
                       onChange={handleSelectRoleChange}
                     />
+                  </div>
+                  <div className="col-md-6 mt-3">
+                    <label className="form-label">Company:</label>
+                    <input type="text" value={companyFilterName} name="company" className="form-control" onChange={(e) => HandleCompanyFilterName(e.target.value)} />
                   </div>
                 </div>
               </form>
@@ -1462,7 +1407,7 @@ const UserList = () => {
         </div>
       </Offcanvas>
 
-      <AccessField 
+      <AccessField
         tableName={"users"}
         setFieldList={setFieldList}
         manageAccessField={manageAccessField}
