@@ -96,8 +96,13 @@ export const MenuList = [
         to: '/downloading-archive-data',
     },
     {
-        title: 'Subscription',
+        title: 'Subscribers',
         iconStyle: SVGICON.SubscribeData,
         to: '/subscriberlist',
     },
+    // {
+    //     title: 'Subscription Plan',
+    //     iconStyle: SVGICON.SubscribeData,
+    //     to: '/subscriptionplan',
+    // },
 ]
