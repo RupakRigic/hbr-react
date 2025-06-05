@@ -12,7 +12,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const { userSelectedUsers } = props;
   
   const [Error, setError] = useState("");
-  const [BuilderCode, setBuilderCode] = useState("");
+  const [BuilderCode, setBuilderCode] = useState([]);
   const [RoleCode, setRoleCode] = useState([]);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
   const [RoleList, setRoleList] = useState([]);
@@ -27,7 +27,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
-  const [company, setCompany] = useState("");
+  const [companies, setCompanies] = useState(['']);
 
   useEffect(() => {
     GetRoleList();
@@ -90,7 +90,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          if (!company && RoleCode == 9) {
+          if (!companies && RoleCode == 9) {
             setShowPopup(true);
             setMessage("Please enter valid company.");
             return;
@@ -98,10 +98,10 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
 
           const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
 
-          if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9) || RoleCode.includes(13) || RoleCode.includes(12)) {
+          if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
             var userData = {
               "name": firstName,
-              "company": company,
+              "company": companies,
               "last_name": lastName,
             }
 
@@ -123,7 +123,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
               "last_name": lastName,
               "email": email,
               "notes": notes,
-              "company": company
+              "company": companies
             }
 
             const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
@@ -137,7 +137,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   setLastName("");
                   setEmail("");
                   setNotes("");
-                  setCompany("");
                   setStandardUser([]);
                   props.parentCallback();
                 }
@@ -160,13 +159,13 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     event.preventDefault();
     try {
       var userData = {
-        "builder_id": BuilderCode,
+        "builder_ids": BuilderCode,
         "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
         "name": firstName,
         "last_name": lastName,
         "email": email,
         "notes": notes,
-        "company": company
+        "company": companies
       }
       const data = await AdminUserRoleService.bulkupdate(userSelectedUsers, userData).json();
       if (data.status === true) {
@@ -181,7 +180,6 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
             setLastName("");
             setEmail("");
             setNotes("");
-            setCompany("");
             props.parentCallback();
           }
         });
@@ -205,6 +203,28 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     setRoleCode([]); 
     setBuilderCode("");  
     setStandardUser([]);
+    setCompanies(['']);
+    setError("");
+  };
+
+  const handleCompanyChange = (index, value) => {
+    const newCompanies = [...companies];
+    newCompanies[index] = value;
+    setCompanies(newCompanies);
+  };
+
+  const addCompanyField = () => {
+    setCompanies([...companies, '']);
+  };
+
+  const removeCompanyField = (index) => {
+    const newCompanies = [...companies];
+    newCompanies.splice(index, 1);
+    setCompanies(newCompanies);
+  };
+
+  const getFieldName = (index) => {
+    return index === 0 ? 'company' : `company${index + 1}`;
   };
 
   return (
@@ -270,17 +290,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   />
                 </div>
 
-                <div className="col-xl-6 mb-3">
-                  <label htmlFor="exampleFormControlInput5" className="form-label">Company</label>
-                  <input
-                    type="text"
-                    name="company"
-                    className="form-control"
-                    id="exampleFormControlInput5"
-                    placeholder=""
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </div>
+                
 
                 <div className="col-xl-6 mb-3">
                   <label className="form-label">Role</label>
@@ -303,27 +313,87 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   />
                 </div>
 
-                {RoleCode == 9 && <div className="col-xl-6 mb-3">
-                  <label className="form-label">Standard User</label>
-                  <MultiSelect
-                    options={StandardUserOptions}
-                    onChange={(selectedOption) => handleStandardUser(selectedOption)}
-                    value={StandardUser}
-                    placeholder="Select Role"
-                    styles={{
-                      container: (provided) => ({
-                        ...provided,
-                        width: '100%',
-                        color: 'black'
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        width: '100%',
-                        color: 'black'
-                      }),
-                    }}
+                {RoleCode == 9 &&
+                  <div className="col-xl-6 mb-3">
+                    <label className="form-label">Standard User</label>
+                    <MultiSelect
+                      options={StandardUserOptions}
+                      onChange={(selectedOption) => handleStandardUser(selectedOption)}
+                      value={StandardUser}
+                      placeholder="Select Role"
+                      styles={{
+                        container: (provided) => ({
+                          ...provided,
+                          width: '100%',
+                          color: 'black'
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          width: '100%',
+                          color: 'black'
+                        }),
+                      }}
+                    />
+                  </div>
+                }
+
+                {/* <div className="col-xl-6 mb-3">
+                  <label htmlFor="exampleFormControlInput5" className="form-label">Company</label>
+                  <input
+                    type="text"
+                    name="company"
+                    className="form-control"
+                    id="exampleFormControlInput5"
+                    placeholder=""
+                    onChange={(e) => setCompany(e.target.value)}
                   />
-                </div>}
+                </div> */}
+
+                {companies.map((company, index) => (
+                  <>
+                    <div className="col-xl-6 mb-3" key={index}>
+                      <label htmlFor={getFieldName(index)} className="form-label">
+                        {index === 0 ? 'Company' : `Company ${index + 1}`} <span className="text-danger">*</span>
+                      </label>
+
+                      <div className="d-flex align-items-start gap-2">
+                        <input
+                          type="text"
+                          name={getFieldName(index)}
+                          required
+                          className="form-control"
+                          id={getFieldName(index)}
+                          value={company}
+                          onChange={(e) => handleCompanyChange(index, e.target.value)}
+                        />
+
+                        <div className="d-flex flex-column align-items-end">
+                          {companies.length > 1 && (
+                            <button
+                              type="button"
+                              className="btn btn-danger mb-1"
+                              onClick={() => removeCompanyField(index)}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {index === companies.length - 1 && (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            className="btn btn-link p-0"
+                            style={{ fontSize: '14px' }}
+                            onClick={addCompanyField}
+                          >
+                            + Add Company
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ))}
 
                 <p className="text-danger fs-12">{Error}</p>
               </div>

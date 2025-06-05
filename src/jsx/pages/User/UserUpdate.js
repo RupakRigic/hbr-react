@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useParams, useNavigate, Form, useLocation } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import AdminUserRoleService from "../../../API/Services/AdminService/AdminUserRoleService";
 import swal from "sweetalert";
@@ -16,7 +16,7 @@ const UserUpdate = () => {
   const page = queryParams.get("page");
 
   const [Error, setError] = useState("");
-  const [BuilderCode, setBuilderCode] = useState("");
+  const [BuilderCode, setBuilderCode] = useState([]);
   const [RoleCode, setRoleCode] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [standardRoleCode, setStandardRoleCode] = useState([]);
@@ -35,12 +35,11 @@ const UserUpdate = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
-  const [company, setCompany] = useState("");
-
   const [newPassword, setNewPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [copyToClipboardbtn, setCopyToClipboardbtn] = useState(false);
+  const [companies, setCompanies] = useState(['']);
 
   useEffect(() => {
     GetRoleList();
@@ -56,26 +55,26 @@ const UserUpdate = () => {
 
   useEffect(() => {
     if (UserList?.roles && RoleList?.length > 0) {
-      let roleIds = UserList?.roles.map(role => role.id);
+      let roleIds = UserList?.roles?.map(role => role.id);
 
       if (roleIds.includes(10) || roleIds.includes(11)) {
-        const StandardUserOptions = UserList?.roles.map(role => ({
+        const StandardUserOptions = UserList?.roles?.map(role => ({
           value: role.id,
           label: role.name
         }));
         const filter = RoleList?.filter(data => data.id == 9)
         const formattedRoles = [{
-          value: filter[0].id,
-          label: filter[0].name
+          value: filter[0]?.id,
+          label: filter[0]?.name
         }];
         handleRoleCode(formattedRoles[0]);
-        setStandardRoleCode(UserList?.roles.map(role => role.id));
+        setStandardRoleCode(UserList?.roles?.map(role => role.id));
         setStandardUser(StandardUserOptions);
       } else {
-        const filter = RoleList?.filter(data => data.id == UserList?.roles[0].id)
+        const filter = RoleList?.filter(data => data.id == UserList?.roles[0]?.id)
         const formattedRoles = [{
-          value: filter[0].id,
-          label: filter[0].name
+          value: filter[0]?.id,
+          label: filter[0]?.name
         }];
         handleRoleCode(formattedRoles[0]);
       }
@@ -83,12 +82,15 @@ const UserUpdate = () => {
   }, [UserList, RoleList]);
 
   useEffect(() => {
-    if (UserList.id) {
-      setFirstName(UserList.name);
-      setLastName(UserList.last_name);
-      setEmail(UserList.email);
-      setNotes(UserList.notes);
-      setCompany(UserList.company);
+    if (UserList?.id) {
+      setFirstName(UserList?.name);
+      setLastName(UserList?.last_name);
+      setEmail(UserList?.email);
+      setNotes(UserList?.notes);
+      const companyArray = UserList?.company
+        ? UserList?.company.split(',').map(c => c.trim())
+        : [''];
+      setCompanies(companyArray);
     }
   }, [UserList]);
 
@@ -97,7 +99,7 @@ const UserUpdate = () => {
     try {
       let responseData1 = await AdminUserRoleService.show(id).json();
       setIsLoading(false);
-      SetUserList(responseData1);
+      SetUserList(responseData1.data);
       setBuilderCode(responseData1.builder_id);
     } catch (error) {
       setIsLoading(false);
@@ -121,31 +123,31 @@ const UserUpdate = () => {
     }
   };
 
-  const roleOptions = RoleList.map(element => ({
-    value: element.id,
-    label: element.name
+  const roleOptions = RoleList?.map(element => ({
+    value: element?.id,
+    label: element?.name
   }));
 
-  const StandardUserOptions = subRoleList.map(element => ({
-    value: element.id,
-    label: element.name
+  const StandardUserOptions = subRoleList?.map(element => ({
+    value: element?.id,
+    label: element?.name
   }));
 
   const handleRoleCode = (code) => {
     const formattedRoles = [{
-      value: code.value,
-      label: code.label
+      value: code?.value,
+      label: code?.label
     }];
-    const selectedValues = formattedRoles.map(item => item.value);
-  
-    if(!selectedValues.includes(9)){
+    const selectedValues = formattedRoles?.map(item => item.value);
+
+    if (!selectedValues.includes(9)) {
       setStandardRoleCode([]);
     }
     setRoleCode(selectedValues);
   };
 
   const handleStandardUser = (code) => {
-    const selectedValues = code.map(item => item.value);
+    const selectedValues = code?.map(item => item.value);
     setStandardRoleCode(selectedValues);
     setStandardUser(code);
   };
@@ -154,10 +156,10 @@ const UserUpdate = () => {
     event.preventDefault();
     try {
       const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
-      if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9) || RoleCode.includes(13) || RoleCode.includes(12)) {
+      if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
         var userData = {
           "name": firstName,
-          "company": company,
+          "company": companies,
           "last_name": lastName,
         }
         const data = await AdminUserRoleService.checkBuilderForCompany(userData).json();
@@ -177,7 +179,7 @@ const UserUpdate = () => {
           "last_name": lastName,
           "email": email,
           "notes": notes,
-          "company": company,
+          "company": companies,
           "password": newPassword
         }
         const data = await AdminUserRoleService.update(params.id, userData).json();
@@ -205,13 +207,13 @@ const UserUpdate = () => {
     event.preventDefault();
     try {
       var userData = {
-        "builder_id": BuilderCode,
+        "builder_ids": BuilderCode,
         "role_id": standardRoleCode?.length > 0 ? standardRoleCode : RoleCode,
         "name": firstName,
         "last_name": lastName,
         "email": email,
         "notes": notes,
-        "company": company,
+        "company": companies,
         "password": newPassword
       }
       const data = await AdminUserRoleService.update(params.id, userData).json();
@@ -258,10 +260,10 @@ const UserUpdate = () => {
       textArea.style.position = "fixed"; // Avoid scrolling to the bottom of the page
       textArea.style.left = "-9999px"; // Move it off-screen
       document.body.appendChild(textArea);
-  
+
       textArea.focus();
       textArea.select();
-  
+
       try {
         const successful = document.execCommand("copy"); // Copy the text to clipboard
         if (successful) {
@@ -279,8 +281,26 @@ const UserUpdate = () => {
       console.error("No text to copy.");
     }
   };
-  
 
+  const handleCompanyChange = (index, value) => {
+    const newCompanies = [...companies];
+    newCompanies[index] = value;
+    setCompanies(newCompanies);
+  };
+
+  const addCompanyField = () => {
+    setCompanies([...companies, '']);
+  };
+
+  const removeCompanyField = (index) => {
+    const newCompanies = [...companies];
+    newCompanies.splice(index, 1);
+    setCompanies(newCompanies);
+  };
+
+  const getFieldName = (index) => {
+    return index === 0 ? 'company' : `company${index + 1}`;
+  };
 
   return (
     <Fragment>
@@ -336,6 +356,7 @@ const UserUpdate = () => {
                             className="form-control"
                             id="exampleFormControlInput4"
                             placeholder=""
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)}
                           />
                         </div>
@@ -353,19 +374,6 @@ const UserUpdate = () => {
                           />
                         </div>
 
-                        <div className="col-xl-6 mb-3">
-                          <label htmlFor="exampleFormControlInput6" className="form-label">Company <span className="text-danger">*</span></label>
-                          <input
-                            type="text"
-                            name="company"
-                            defaultValue={company}
-                            className="form-control"
-                            id="exampleFormControlInput6"
-                            placeholder=""
-                            onChange={(e) => setCompany(e.target.value)}
-                          />
-                        </div>
-
                         <div className="col-xl-6 mb-3 position-relative">
                           <label htmlFor="exampleFormControlInput7" className="form-label">
                             Password
@@ -378,13 +386,17 @@ const UserUpdate = () => {
                               className="form-control"
                               id="exampleFormControlInput7"
                               placeholder=""
+                              autoComplete="new-password"
+                              readOnly
+                              onFocus={(e) => e.target.removeAttribute('readOnly')}
                               onChange={(e) => setNewPassword(e.target.value)}
                             />
+
                             <button
                               className="btn btn-outline-light"
                               type="button"
                               onClick={() => setNewPassword(generatePassword())}
-                              style={{borderColor: "#cccccc"}}
+                              style={{ borderColor: "#cccccc" }}
                             >
                               <FiRefreshCcw />
                             </button>
@@ -392,7 +404,7 @@ const UserUpdate = () => {
                               className="btn btn-outline-light"
                               type="button"
                               onClick={copyToClipboard}
-                              style={{borderColor: "#cccccc"}}
+                              style={{ borderColor: "#cccccc" }}
                             >
                               <FiCopy />
                             </button>}
@@ -400,7 +412,7 @@ const UserUpdate = () => {
                               className="btn btn-outline-light"
                               type="button"
                               onClick={() => setShowNewPassword(!showNewPassword)}
-                              style={{borderColor: "#cccccc"}}
+                              style={{ borderColor: "#cccccc" }}
                             >
                               {showNewPassword ? <FiEye /> : <FiEyeOff />}
                             </button>
@@ -411,7 +423,6 @@ const UserUpdate = () => {
                             </div>
                           )}
                         </div>
-
 
                         <div className="col-xl-6 mb-3">
                           <label className="form-label">Role</label>
@@ -440,27 +451,75 @@ const UserUpdate = () => {
                           />
                         </div>
 
-                        {RoleCode == 9 && <div className="col-xl-6 mb-3">
-                          <label className="form-label">Standard User</label>
-                          <MultiSelect
-                            options={StandardUserOptions}
-                            onChange={(selectedOption) => handleStandardUser(selectedOption)}
-                            value={StandardUser}
-                            placeholder="Select Role"
-                            styles={{
-                              container: (provided) => ({
-                                ...provided,
-                                width: '100%',
-                                color: 'black'
-                              }),
-                              menu: (provided) => ({
-                                ...provided,
-                                width: '100%',
-                                color: 'black'
-                              }),
-                            }}
-                          />
-                        </div>}
+                        {RoleCode == 9 &&
+                          <div className="col-xl-6 mb-3">
+                            <label className="form-label">Standard User</label>
+                            <MultiSelect
+                              options={StandardUserOptions}
+                              onChange={(selectedOption) => handleStandardUser(selectedOption)}
+                              value={StandardUser}
+                              placeholder="Select Role"
+                              styles={{
+                                container: (provided) => ({
+                                  ...provided,
+                                  width: '100%',
+                                  color: 'black'
+                                }),
+                                menu: (provided) => ({
+                                  ...provided,
+                                  width: '100%',
+                                  color: 'black'
+                                }),
+                              }}
+                            />
+                          </div>
+                        }
+
+                        {companies.map((company, index) => (
+                          <>
+                            <div className="col-xl-6 mb-3" key={index}>
+                              <label htmlFor={getFieldName(index)} className="form-label">
+                                {index === 0 ? 'Company' : `Company ${index + 1}`} <span className="text-danger">*</span>
+                              </label>
+
+                              <div className="d-flex align-items-start gap-2">
+                                <input
+                                  type="text"
+                                  name={getFieldName(index)}
+                                  required
+                                  className="form-control"
+                                  id={getFieldName(index)}
+                                  value={company}
+                                  onChange={(e) => handleCompanyChange(index, e.target.value)}
+                                />
+
+                                <div className="d-flex flex-column align-items-end">
+                                  {companies.length > 1 && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-danger mb-1"
+                                      onClick={() => removeCompanyField(index)}
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              {index === companies.length - 1 && (
+                                <div className="mt-3">
+                                  <button
+                                    type="button"
+                                    className="btn btn-link p-0"
+                                    style={{ fontSize: '14px' }}
+                                    onClick={addCompanyField}
+                                  >
+                                    + Add Company
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        ))}
 
                         <p className="text-danger fs-12">{Error}</p>
                       </div>
@@ -474,7 +533,8 @@ const UserUpdate = () => {
                       </div>
                     </form>
                   </div>
-                </div>)}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -488,7 +548,7 @@ const UserUpdate = () => {
             className="btn-close"
             aria-label="Close"
             onClick={() => handlePopupClose()}
-          ></button>
+          />
         </Modal.Header>
         <Modal.Body style={{ color: "black" }}>
           {message}
@@ -497,9 +557,11 @@ const UserUpdate = () => {
           <Button variant="primary" onClick={handlePopupClose}>
             Close
           </Button>
-          {saveBtn && <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
-            Okay
-          </Button>}
+          {saveBtn &&
+            <Button variant="primary" onClick={(e) => handlePopupSave(e)}>
+              Okay
+            </Button>
+          }
         </Modal.Footer>
       </Modal>
     </Fragment>

@@ -278,7 +278,7 @@ console.log(userList)
     setIsFormLoading(true);
     try {
       let responseData = await AdminUserRoleService.show(id).json();
-      setUserDetails(responseData);
+      setUserDetails(responseData.data);
       setIsFormLoading(false);
       console.log(responseData);
     } catch (error) {
