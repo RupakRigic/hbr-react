@@ -847,7 +847,12 @@ const UserList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
                                     }
                                     {column.id == "builder" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.builder ? element.builder?.name : "NA"}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {Array.isArray(element.builder.name)
+                                          ? element.builder.name.map(b => b).filter(Boolean).join(", ")
+                                          : element.builder.name || "NA"
+                                        }
+                                      </td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
