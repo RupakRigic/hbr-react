@@ -70,6 +70,7 @@ const SideBar = () => {
       <div className="deznav-scroll">
         <ul className="metismenu" id="menu">
           {MenuList.map((data, index) => {
+            console.log(data)
             let menuClass = data.classsChange;
             if (menuClass === "menu-title") {
               return (

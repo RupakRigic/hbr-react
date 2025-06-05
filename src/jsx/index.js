@@ -60,6 +60,7 @@ import SubscriptionList from "./pages/SubscriptionPlan/SubscriptionList";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UserAnalyticsList from "./pages/UserAnalytics/UserAnalyticsList";
 import ArchiveDataUpdate from "./pages/ArchiveData/ArchiveDataUpdate";
+import ScrapPriceList from "./pages/ScrapedPrices/ScrapPriceList";
 
 const allroutes = [
   // Dashboard
@@ -241,6 +242,11 @@ const allroutes = [
   {
     url: "/filterbaseprice",
     component: <FilterBasePrice />,
+    allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
+  },
+   {
+    url: "/scrapepricelist",
+    component: <ScrapPriceList />,
     allowedRoles: ["Admin", "User","Standard User",'Account Admin'],
   },
   {

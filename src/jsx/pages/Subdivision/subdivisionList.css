@@ -240,4 +240,9 @@ div#employee-tbl_wrapper table.product-table-price tr th {
 div#employee-tbl_wrapper table.product-table-price tr td {
   position: static !important;
 }
+div#employee-tbl_wrapper table.scrap-table tr th:nth-child(3){
+    padding: 8px 110px;
+}
+
+
 /* Table Scroll Css */

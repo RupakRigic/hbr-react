@@ -48,6 +48,11 @@ export const MenuList = [
         to: '/filterbaseprice',
 
     },
+     {
+        title: 'Scrap Price List',
+        iconStyle: SVGICON.Pages,
+        to: '/scrapepricelist',
+    },
     {
         title: 'Closings',
         iconStyle: SVGICON.CoreHr,
@@ -100,4 +105,5 @@ export const MenuList = [
         iconStyle: SVGICON.SubscribeData,
         to: '/subscriberlist',
     },
+    
 ]
