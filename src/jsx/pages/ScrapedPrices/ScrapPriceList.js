@@ -1892,7 +1892,10 @@ const handleSave = async (rowId, rawValue) => {
                               if (willDelete) {
                                 handleBulkApprove(selectedLandSales);
                               }
-                            }) : ""}
+                            }) : swal({
+                              title: "Please select at least one row.",
+                              icon: "warning",
+                            })}
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-check" />&nbsp;
@@ -2120,13 +2123,27 @@ const handleSave = async (rowId, rawValue) => {
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         
                             <button
-                              onClick={(e) => {
-                                handleBulkApprove(element.id);
-                              }}
-        className="btn btn-success btn-sm ms-1"
-                            >
- <div style={{ fontSize: "11px" }}>
-                              <i className="fa fa-check" />&nbsp;
+                              // onClick={(e) => {
+                              //   handleBulkApprove(element.id);
+                              // }}
+
+                              onClick={() => {
+                              if (element.id) {
+                                swal({
+                                  title: "Are you sure?",
+                                  icon: "warning",
+                                  buttons: true,
+                                  dangerMode: true,
+                                }).then((willDelete) => {
+                                  if (willDelete) {
+                                    handleBulkApprove(element.id);
+                                  }
+                                });
+                              }
+                            }}
+                          className="btn btn-success btn-sm ms-1">
+                          <div style={{ fontSize: "11px" }}>
+                          <i className="fa fa-check" />&nbsp;
                                Approve
                             </div>
                             </button>                              
@@ -2177,9 +2194,9 @@ const handleSave = async (rowId, rawValue) => {
             value: element.scraped_price || "",
           });
         }}
-        className="btn btn-outline-secondary btn-sm ms-2"
+      className="btn btn-primary shadow btn-xs sharp ms-2"
       >
-        Edit
+    <i className="fas fa-pencil-alt"></i>
       </button>
     </>
   )}
