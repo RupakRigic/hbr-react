@@ -1185,7 +1185,7 @@ const ScrapPriceList = () => {
   };
 
   const handleSaveDialog = () => {
-    localStorage.setItem("draggedColumnsPrices", JSON.stringify(draggedColumns));
+    localStorage.setItem("draggedColumnsScrapPrices", JSON.stringify(draggedColumns));
     setColumns(draggedColumns);
     setOpenDialog(false);
   };
@@ -1209,7 +1209,7 @@ const ScrapPriceList = () => {
   };
 
   useEffect(() => {
-    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsPrices"));
+    const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsScrapPrices"));
     if(draggedColumns) {
       setColumns(draggedColumns);
     } else {
