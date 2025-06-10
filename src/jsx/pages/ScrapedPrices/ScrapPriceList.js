@@ -450,7 +450,7 @@ const ScrapPriceList = () => {
     var userData = {
       form: accessForm,
       role: role,
-      table: "prices",
+      table: "scraped_product_prices",
     };
 
     try {
@@ -767,8 +767,8 @@ const ScrapPriceList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
       const response = await AdminScrapPriceService.index(
-        pageNumber
-        // sortConfigString
+        pageNumber,
+        sortConfigString
         // searchQuery
       );
       const responseData = await response.json();
@@ -1579,51 +1579,18 @@ const ScrapPriceList = () => {
 
   useEffect(() => {
     const fieldOptions = fieldList
-      .filter((field) => field !== 'Action' && field !== 'Price Per SQFT')
+      .filter((field) => field !== 'Action' && field !== 'Approve')
       .map((field) => {
         let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
 
-        if (value === 'squreFootage') {
-          value = 'sqft';
+        if (value === 'scrapedPrices') {
+          value = 'scraped_price';
         }
-        if (value === 'bedrooms') {
-          value = 'bedroom';
+        if (value === 'productCode') {
+          value = 'product_code';
         }
-        if (value === 'bathrooms') {
-          value = 'bathroom';
-        }
-        if (value === 'basePrice') {
-          value = 'baseprice';
-        }
-        if (value === 'productType') {
-          value = 'product_type';
-        }
-        if (value === 'area') {
-          value = 'area';
-        }
-        if (value === 'masterPlan') {
-          value = 'masterplan_id';
-        }
-        if (value === 'zIPCode') {
-          value = 'zipcode';
-        }
-        if (value === 'lotWidth') {
-          value = 'lotwidth';
-        }
-        if (value === 'lotSize') {
-          value = 'lotsize';
-        }
-        if (value === 'ageRestricted') {
-          value = 'age';
-        }
-        if (value === 'allSingleStory') {
-          value = 'single';
-        }
-        if (value === '__pkPriceID') {
-          value = 'id';
-        }
-        if (value === '_fkProductID') {
-          value = '_fkProductID';
+        if (value === 'scrapedDate') {
+          value = 'scraped_date';
         }
         return {
           value: value,
@@ -1774,7 +1741,7 @@ const ScrapPriceList = () => {
                               Column Order
                             </div>
                           </button>
-                          {/* <Button
+                          <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortingPopupDetailClick}
@@ -1796,7 +1763,7 @@ const ScrapPriceList = () => {
                               <i className="fa fa-filter" />&nbsp;
                               Filter
                             </div>
-                          </button> */}
+                          </button>
                         </div>
                       ) : (
                         <div className="d-flex">
@@ -1806,7 +1773,7 @@ const ScrapPriceList = () => {
                               Column Order
                             </div>
                           </button>
-                          {/* <Button
+                          <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={HandleSortingPopupDetailClick}
@@ -1817,18 +1784,21 @@ const ScrapPriceList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload || scrapedPriceList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                          
+                          {/* <button disabled={excelDownload || scrapedPriceList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
-                          </button>
+                          </button> */}
+
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;
                               Filter
                             </div>
                           </button>
+
                           <button
                             className="btn btn-primary btn-sm me-1"
                             onClick={() => setManageAccessOffcanvas(true)}
@@ -1838,7 +1808,8 @@ const ScrapPriceList = () => {
                               Field Access
                             </div>
                           </button>
-                          <Button
+                          
+                          {/* <Button
                             className="btn-sm me-1"
                             variant="secondary"
                             onClick={handlBuilderClick}
@@ -1847,14 +1818,16 @@ const ScrapPriceList = () => {
                               <i className="fas fa-file-import" />&nbsp;
                               Import
                             </div>
-                          </Button>
-                          <input
+                          </Button> */}
+
+                          {/* <input
                             type="file"
                             id="fileInput"
                             style={{ display: "none" }}
                             onChange={handleFileChange}
-                          />
-                          <Link
+                          /> */}
+
+                          {/* <Link
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
                             data-bs-toggle="offcanvas"
@@ -1865,6 +1838,7 @@ const ScrapPriceList = () => {
                               Add Base Price
                             </div>
                           </Link> */}
+
                           {/* <Link
                             to={"#"}
                             className="btn btn-primary btn-sm ms-1"
@@ -1880,6 +1854,7 @@ const ScrapPriceList = () => {
                                Edit
                             </div>
                           </Link> */}
+
                           <button
                             className="btn btn-success btn-sm me-1"
                             style={{ marginLeft: "3px" }}
@@ -2002,26 +1977,26 @@ const ScrapPriceList = () => {
                             {columns.map((column) => (
                               <th style={{ textAlign: "center" }} key={column.id}>
                                 <strong>
-
                                   {column.id == "product Code" ? "Product Code" : column.label}
-
-                                  {column.id != "action" && sortConfig.some(
+                                  {column.id != "action" && column.id != "approve" && sortConfig.some(
                                     (item) => item.key === (
-                                      column.id == "product Name" ? "name" :
-                                      column.id == "approve" ? "Approve" :
+                                      column.id == "builder Name" ? "builderName" :
+                                      column.id == "subdivision Name" ? "subdivisionName" :
+                                      column.id == "product Name" ? "productName" :
                                       column.id == "scraped Prices" ? "scraped_price" :
-                                      column.id == "scraped Prices" ? "scraped_price" :
+                                      column.id == "product Code" ? "product_code" :
                                       column.id == "website" ? "website" :
                                       column.id == "scraped Date" ? "scraped_date" : toCamelCase(column.id))
                                     ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
-                                            column.id == "approve" ? "Approve" :
-                                            column.id == "product Code" ? "product_code" :
-                                            column.id == "product Name" ? "name" :
-                                            column.id == "website" ? "website" :
+                                            column.id == "builder Name" ? "builderName" :
+                                            column.id == "subdivision Name" ? "subdivisionName" :
+                                            column.id == "product Name" ? "productName" :
                                             column.id == "scraped Prices" ? "scraped_price" :
+                                            column.id == "product Code" ? "product_code" :
+                                            column.id == "website" ? "website" :
                                             column.id == "scraped Date" ? "scraped_date" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
@@ -2147,22 +2122,24 @@ const ScrapPriceList = () => {
                                     {column.id == "scraped Prices" &&
                                       <td style={{ textAlign: "center" }}>
                                         {editing?.rowId === element.id ? (
-                                          <>
-                                            <input
-                                              type="text"
-                                              value={editing?.value || ""}
-                                              onChange={(e) =>
-                                                setEditing({ ...editing, value: e.target.value })
-                                              }
-                                              onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                  e.preventDefault();
-                                                  handleSave(element.id, editing.value);
+                                          <div className="d-flex align-items-center">
+                                            <div className="flex-grow-1">
+                                              <input
+                                                type="text"
+                                                value={editing?.value || ""}
+                                                onChange={(e) =>
+                                                  setEditing({ ...editing, value: e.target.value })
                                                 }
-                                              }}
-                                              autoFocus
-                                              style={{ width: "80px", textAlign: "center" }}
-                                            />
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    handleSave(element.id, editing.value);
+                                                  }
+                                                }}
+                                                autoFocus
+                                                style={{ width: "80px", textAlign: "center" }}
+                                              />
+                                            </div>
                                             <button
                                               onMouseDown={(e) => {
                                                 e.stopPropagation(); // prevent td click from firing
@@ -2172,23 +2149,25 @@ const ScrapPriceList = () => {
                                             >
                                               Save
                                             </button>
-                                          </>
+                                          </div>
                                         ) : (
-                                          <>
-                                            <PriceComponent price={parseFloat(element.scraped_price)} />
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                setEditing({
-                                                  rowId: element.id,
-                                                  value: element.scraped_price || "",
-                                                });
-                                              }}
-                                              className="btn btn-primary shadow btn-xs sharp ms-2"
-                                            >
-                                              <i className="fas fa-pencil-alt"></i>
-                                            </button>
-                                          </>
+                                            <div className="d-flex align-items-center">
+                                              <div className="flex-grow-1">
+                                                <PriceComponent price={parseFloat(element.scraped_price)} />
+                                              </div>
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setEditing({
+                                                    rowId: element.id,
+                                                    value: element.scraped_price || "",
+                                                  });
+                                                }}
+                                                className="btn btn-primary shadow btn-xs sharp ms-2"
+                                              >
+                                                <i className="fas fa-pencil-alt"></i>
+                                              </button>
+                                            </div>
                                         )}
                                       </td>
                                     }
@@ -2424,7 +2403,7 @@ const ScrapPriceList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Filter Base Price{" "}
+            Filter Scraped Base Price{" "}
           </h5>
           <button
             type="button"
@@ -2441,35 +2420,7 @@ const ScrapPriceList = () => {
               <form onSubmit={HandleFilterForm}>
                 <div className="row">
                   <div className="col-md-3 mt-2">
-                    <label className="form-label">From:{" "}
-                      <span className="text-danger">*</span>
-                    </label>
-                    <DatePicker
-                      name="from"
-                      className="form-control"
-                      selected={filterQuery.from ? parseDate(filterQuery.from) : null}
-                      onChange={handleFilterDateFrom}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                  </div>
-                  <div className="col-md-3 mt-2">
-                    <label className="form-label">To:{" "}
-                      <span className="text-danger">*</span>
-                    </label>
-                    <DatePicker
-                      name="to"
-                      className="form-control"
-                      selected={filterQuery.to ? parseDate(filterQuery.to) : null}
-                      onChange={handleFilterDateTo}
-                      dateFormat="MM/dd/yyyy"
-                      placeholderText="mm/dd/yyyy"
-                    />
-                  </div>
-                  <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      BUILDER NAME:{" "}
-                    </label>
+                    <label className="form-label">BUILDER NAME:</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="builder_name"
@@ -2481,9 +2432,7 @@ const ScrapPriceList = () => {
                     </Form.Group>
                   </div>
                   <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      SUBDIVISION NAME:{" "}
-                    </label>
+                    <label className="form-label">SUBDIVISION NAME:</label>
                     <Form.Group controlId="tournamentList">
                       <MultiSelect
                         name="subdivision_name"
@@ -2640,22 +2589,6 @@ const ScrapPriceList = () => {
                 Filter
               </Button>
             </div>
-            <br />
-            {excelLoading ? <div style={{ textAlign: "center" }}><ClipLoader color="#4474fc" /></div> :
-              <>
-                <h5 className="">Calculation Filter Options</h5>
-                <div className="border-top">
-                  <div className="row">
-                    <div className="col-md-3 mt-3">
-                      <label className="form-label">
-                        PRICE PER SQFT:{" "}
-                      </label>
-                      <input name="price_per_sqft" value={filterQueryCalculation.price_per_sqft} className="form-control" onChange={handleInputChange} />
-                    </div>
-                  </div>
-                </div>
-              </>
-            }
           </div>
         </div>
       </Offcanvas>
@@ -2845,7 +2778,7 @@ const ScrapPriceList = () => {
       >
         <div className="offcanvas-header border-bottom">
           <h5 className="modal-title" id="#gridSystemModal">
-            Manage Price Fields Access{" "}
+            Manage Scraped Base Price Fields Access{" "}
           </h5>
           <button
             type="button"
@@ -2868,9 +2801,10 @@ const ScrapPriceList = () => {
               value={role}
             >
               <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
+              <option value="Standard User">Standard User</option>
               <option value="Data Uploader">Data Uploader</option>
-              <option value="User">User</option>
-              <option value="User">Standard User</option>
+              <option value="Account Admin">Account Admin</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">
@@ -2890,7 +2824,7 @@ const ScrapPriceList = () => {
                             className="form-check-label"
                             htmlFor={`flexCheckDefault${index}`}
                           >
-                            {element.field_name == "Squre Footage" ? "Square Footage" : element.field_name}
+                            {element.field_name}
                           </label>
                         </div>
                       </div>
@@ -2922,7 +2856,7 @@ const ScrapPriceList = () => {
       </Modal>
 
       <AccessField
-        tableName={"scraped-prices"}
+        tableName={"scraped_product_prices"}
         setFieldList={setFieldList}
         manageAccessField={manageAccessField}
         setManageAccessField={setManageAccessField}
