@@ -625,12 +625,12 @@ const ScrapPriceList = () => {
         let operator = '=';
         let value = query;
 
-       const match = query.match(/^(>=|<=|!=|>|<|=)(.*)$/);
+        const match = query.match(/^(>=|<=|!=|>|<|=)(.*)$/);
 
-          if (match) {
-            operator = match[1]; // the operator (>=, <=, >, <, =, !=)
-            value = match[2].trim(); // the numeric or string value
-          }
+        if (match) {
+          operator = match[1]; // the operator (>=, <=, >, <, =, !=)
+          value = match[2].trim(); // the numeric or string value
+        }
 
         const numberValue = parseFloat(value);
         if (!isNaN(numberValue)) {
@@ -657,7 +657,7 @@ const ScrapPriceList = () => {
       setProductListCount(filtered.length);
       setNpage(Math.ceil(filtered.length / recordsPage));
       setNormalFilter(false);
-      if(isAnyFilterApplied){
+      if (isAnyFilterApplied) {
         setFilter(true);
       } else {
         setFilter(false);
@@ -668,7 +668,7 @@ const ScrapPriceList = () => {
       setNpage(Math.ceil(filtered.length / recordsPage));
       setCurrentPage(1);
       setNormalFilter(false);
-      if(isAnyFilterApplied){
+      if (isAnyFilterApplied) {
         setFilter(true);
       } else {
         setFilter(false);
@@ -767,9 +767,9 @@ const ScrapPriceList = () => {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
       }
       const response = await AdminScrapPriceService.index(
-        pageNumber,
-        sortConfigString,
-        searchQuery
+        pageNumber
+        // sortConfigString
+        // searchQuery
       );
       const responseData = await response.json();
       setIsLoading(false);
@@ -779,15 +779,15 @@ const ScrapPriceList = () => {
       setNpage(Math.ceil(responseData.meta.total / recordsPage));
       setProductListCount(responseData.meta.total);
       setHandleCallBack(true);
-      if (responseData.meta.total > 100) {
-        if(!pageChange){
-          FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
-        }
-      } else {
-        if(!pageChange){
-          setAllBuilderExport(responseData.data);
-        }
-      }
+      // if (responseData.meta.total > 100) {
+      //   if (!pageChange) {
+      //     FetchAllPages(searchQuery, sortConfig, responseData.data, responseData.meta.total);
+      //   }
+      // } else {
+      //   if (!pageChange) {
+      //     setAllBuilderExport(responseData.data);
+      //   }
+      // }
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsLoading(false);
@@ -1080,7 +1080,7 @@ const ScrapPriceList = () => {
                 getpriceList(currentPage, sortConfig, searchQuery);
               }
             });
-          }  else {
+          } else {
             if (responseData.message) {
               let message = responseData.message;
               setShow(false);
@@ -1210,7 +1210,7 @@ const ScrapPriceList = () => {
 
   useEffect(() => {
     const draggedColumns = JSON.parse(localStorage.getItem("draggedColumnsScrapPrices"));
-    if(draggedColumns) {
+    if (draggedColumns) {
       setColumns(draggedColumns);
     } else {
       const mappedColumns = fieldList.map((data) => ({
@@ -1514,7 +1514,7 @@ const ScrapPriceList = () => {
 
       case "bathroom":
         setBathroomOption(value);
-        
+
         if (value === 'sum') {
           setBathroomResult(totalSumFields(field));
         } else if (value === 'avg') {
@@ -1697,40 +1697,40 @@ const ScrapPriceList = () => {
       setSelectionOrder({});
     }
   };
-   const [editing, setEditing] = useState(null); // { rowId, value }
+  const [editing, setEditing] = useState(null); // { rowId, value }
 
-const handleSave = async (rowId, rawValue) => {
-  if (rawValue == null) return;
+  const handleSave = async (rowId, rawValue) => {
+    if (rawValue == null) return;
 
-  const cleanValue =
-    rawValue === "" || isNaN(parseFloat(rawValue))
-      ? "0.00"
-      : parseFloat(rawValue).toFixed(2);
+    const cleanValue =
+      rawValue === "" || isNaN(parseFloat(rawValue))
+        ? "0.00"
+        : parseFloat(rawValue).toFixed(2);
 
-  try {
-    const data = await AdminScrapPriceService.bulkupdate(rowId,
-      {
-      id: rowId,
-      scraped_price: cleanValue,
-    }).json();
+    try {
+      const data = await AdminScrapPriceService.bulkupdate(rowId,
+        {
+          id: rowId,
+          scraped_price: cleanValue,
+        }).json();
 
-    if (data.status === true) {
-      // Update the UI immediately
-      setScrapedPriceList((prev) =>
-        prev.map((item) =>
-          item.id === rowId ? { ...item, scraped_price: cleanValue } : item
-        )
-      );
-      console.log("Saved successfully");
-    } else {
-      console.error("Save failed: ", data);
+      if (data.status === true) {
+        // Update the UI immediately
+        setScrapedPriceList((prev) =>
+          prev.map((item) =>
+            item.id === rowId ? { ...item, scraped_price: cleanValue } : item
+          )
+        );
+        console.log("Saved successfully");
+      } else {
+        console.error("Save failed: ", data);
+      }
+    } catch (error) {
+      console.error("Save failed:", error);
     }
-  } catch (error) {
-    console.error("Save failed:", error);
-  }
 
-  setEditing(null); // Close the editor in any case
-};
+    setEditing(null); // Close the editor in any case
+  };
 
   return (
     <Fragment>
@@ -1764,7 +1764,7 @@ const handleSave = async (rowId, rawValue) => {
                       />
                     </div>
 
-                    <div className="mt-2" style={{width: "100%"}}>
+                    <div className="mt-2" style={{ width: "100%" }}>
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div style={{ marginTop: "10px" }}>
@@ -1899,7 +1899,7 @@ const handleSave = async (rowId, rawValue) => {
                           >
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-check" />&nbsp;
-                               Approve
+                              Approve
                             </div>
                           </button>
                         </div>
@@ -1908,7 +1908,7 @@ const handleSave = async (rowId, rawValue) => {
                   </div>
                   <div className="d-sm-flex text-center justify-content-between align-items-center dataTables_wrapper no-footer">
                     <div className="dataTables_info">
-                      Showing {lastIndex - recordsPage + 1 } to {lastIndex} of{" "}
+                      Showing {lastIndex - recordsPage + 1} to {lastIndex} of{" "}
                       {productListCount} entries
                     </div>
                     <div
@@ -1998,11 +1998,11 @@ const handleSave = async (rowId, rawValue) => {
                             <th>
                               <strong>No.</strong>
                             </th>
-                            
+
                             {columns.map((column) => (
                               <th style={{ textAlign: "center" }} key={column.id}>
                                 <strong>
-                                                
+
                                   {column.id == "product Code" ? "Product Code" : column.label}
 
                                   {column.id != "action" && sortConfig.some(
@@ -2011,23 +2011,18 @@ const handleSave = async (rowId, rawValue) => {
                                       column.id == "approve" ? "Approve" :
                                       column.id == "scraped Prices" ? "scraped_price" :
                                       column.id == "scraped Prices" ? "scraped_price" :
-
                                       column.id == "website" ? "website" :
-                                      column.id == "scraped Date" ? "scraped_date" :toCamelCase(column.id
-                                      ))
-                                       
-                                  ) && (
+                                      column.id == "scraped Date" ? "scraped_date" : toCamelCase(column.id))
+                                    ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
-                                           column.id == "approve" ? "Approve" :
-
+                                            column.id == "approve" ? "Approve" :
                                             column.id == "product Code" ? "product_code" :
-                                          column.id == "product Name" ? "name" :
-                                      column.id == "website" ? "website" :
-                                      column.id == "scraped Prices" ? "scraped_price" :
-                                      column.id == "scraped Date" ? "scraped_date" :toCamelCase(column.id
-                                      ))
+                                            column.id == "product Name" ? "name" :
+                                            column.id == "website" ? "website" :
+                                            column.id == "scraped Prices" ? "scraped_price" :
+                                            column.id == "scraped Date" ? "scraped_date" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -2085,7 +2080,6 @@ const handleSave = async (rowId, rawValue) => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          
                           {scrapedPriceList !== null && scrapedPriceList.length > 0 ? (
                             scrapedPriceList.map((element, index) => (
                               <tr
@@ -2112,115 +2106,101 @@ const handleSave = async (rowId, rawValue) => {
                                       cursor: "pointer",
                                     }}
                                   />
-               
                                 </td>
                                 <td>{index + 1}</td>
-                                     
                                 {columns.map((column) => (
                                   <>
-
-                                  {column.id == "approve" &&
+                                    {column.id == "approve" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        
-                            <button
-                              // onClick={(e) => {
-                              //   handleBulkApprove(element.id);
-                              // }}
-
-                              onClick={() => {
-                              if (element.id) {
-                                swal({
-                                  title: "Are you sure?",
-                                  icon: "warning",
-                                  buttons: true,
-                                  dangerMode: true,
-                                }).then((willDelete) => {
-                                  if (willDelete) {
-                                    handleBulkApprove(element.id);
-                                  }
-                                });
-                              }
-                            }}
-                          className="btn btn-success btn-sm ms-1">
-                          <div style={{ fontSize: "11px" }}>
-                          <i className="fa fa-check" />&nbsp;
-                               Approve
-                            </div>
-                            </button>                              
-                            
+                                        <button
+                                          onClick={() => {
+                                            if (element.id) {
+                                              swal({
+                                                title: "Are you sure?",
+                                                icon: "warning",
+                                                buttons: true,
+                                                dangerMode: true,
+                                              }).then((willDelete) => {
+                                                if (willDelete) {
+                                                  handleBulkApprove(element.id);
+                                                }
+                                              });
+                                            }
+                                          }}
+                                          className="btn btn-success btn-sm ms-1">
+                                          <div style={{ fontSize: "11px" }}>
+                                            <i className="fa fa-check" />&nbsp;
+                                            Approve
+                                          </div>
+                                        </button>
                                       </td>
                                     }
-                                    
+                                    {column.id == "builder Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }} >{element?.product?.subdivision?.builder?.name}</td>
+                                    }
+                                    {column.id == "subdivision Name" &&
+                                      <td key={column.id} style={{ textAlign: "center" }} >{element?.product?.subdivision?.name}</td>
+                                    }
                                     {column.id == "product Name" &&
                                       <td key={column.id} style={{ textAlign: "center" }} >{element.product && element.product && element.product.name}</td>
                                     }
-                                   {column.id == "scraped Prices" &&
-          <td style={{ textAlign: "center" }}>
-  {editing?.rowId === element.id ? (
-    <>
-      <input
-        type="text"
-        value={editing?.value || ""}
-        onChange={(e) =>
-          setEditing({ ...editing, value: e.target.value })
-        }
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleSave(element.id, editing.value);
-          }
-        }}
-        autoFocus
-        style={{ width: "80px", textAlign: "center" }}
-      />
-      <button
-        onMouseDown={(e) => {
-          e.stopPropagation(); // prevent td click from firing
-          handleSave(element.id, editing.value);
-        }}
-        className="btn btn-primary btn-sm ms-1"
-      >
-        Save
-      </button>
-    </>
-  ) : (
-    <>
-      <PriceComponent price={parseFloat(element.scraped_price)} />
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setEditing({
-            rowId: element.id,
-            value: element.scraped_price || "",
-          });
-        }}
-      className="btn btn-primary shadow btn-xs sharp ms-2"
-      >
-    <i className="fas fa-pencil-alt"></i>
-      </button>
-    </>
-  )}
-</td>
-
-
-
-                                        }
-
+                                    {column.id == "scraped Prices" &&
+                                      <td style={{ textAlign: "center" }}>
+                                        {editing?.rowId === element.id ? (
+                                          <>
+                                            <input
+                                              type="text"
+                                              value={editing?.value || ""}
+                                              onChange={(e) =>
+                                                setEditing({ ...editing, value: e.target.value })
+                                              }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                  e.preventDefault();
+                                                  handleSave(element.id, editing.value);
+                                                }
+                                              }}
+                                              autoFocus
+                                              style={{ width: "80px", textAlign: "center" }}
+                                            />
+                                            <button
+                                              onMouseDown={(e) => {
+                                                e.stopPropagation(); // prevent td click from firing
+                                                handleSave(element.id, editing.value);
+                                              }}
+                                              className="btn btn-primary btn-sm ms-1"
+                                            >
+                                              Save
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <PriceComponent price={parseFloat(element.scraped_price)} />
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setEditing({
+                                                  rowId: element.id,
+                                                  value: element.scraped_price || "",
+                                                });
+                                              }}
+                                              className="btn btn-primary shadow btn-xs sharp ms-2"
+                                            >
+                                              <i className="fas fa-pencil-alt"></i>
+                                            </button>
+                                          </>
+                                        )}
+                                      </td>
+                                    }
                                     {column.id == "product Code" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product && element.product.product_code}</td>
                                     }
-                                    
-                                    
                                     {column.id == "website" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.product && element.product.website}</td>
                                     }
-                            
-                                    
-                                
-                                {column.id == "scraped Date" &&
+                                    {column.id == "scraped Date" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.scraped_date} /></td>
                                     }
-                                
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
                                         <div className="d-flex justify-content-center">
@@ -2348,7 +2328,7 @@ const handleSave = async (rowId, rawValue) => {
       <BulkPriceUpdate
         canvasShowEdit={canvasShowEdit}
         seCanvasShowEdit={seCanvasShowEdit}
-        Title={selectedLandSales?.length  === 1 ? "Edit Base Price" : "Bulk Edit Base Prices"}
+        Title={selectedLandSales?.length === 1 ? "Edit Base Price" : "Bulk Edit Base Prices"}
         parentCallback={handleCallback}
         selectedLandSales={selectedLandSales}
       />
@@ -2846,9 +2826,9 @@ const handleSave = async (rowId, rawValue) => {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <button 
-              varient="primary" 
-              class="btn btn-primary" 
+            <button
+              varient="primary"
+              class="btn btn-primary"
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >
@@ -2941,7 +2921,7 @@ const handleSave = async (rowId, rawValue) => {
         </Modal.Footer>
       </Modal>
 
-      <AccessField 
+      <AccessField
         tableName={"scraped-prices"}
         setFieldList={setFieldList}
         manageAccessField={manageAccessField}
