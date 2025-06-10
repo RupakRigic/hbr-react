@@ -87,9 +87,10 @@ const UserUpdate = () => {
       setLastName(UserList?.last_name);
       setEmail(UserList?.email);
       setNotes(UserList?.notes);
-      const companyArray = UserList?.company
-        ? UserList?.company.split(',').map(c => c.trim())
-        : [''];
+      // const companyArray = UserList?.company
+      //   ? UserList?.company.split(',').map(c => c.trim())
+      //   : [''];
+      const companyArray = Array.isArray(UserList.company) ? UserList.company : [];
       setCompanies(companyArray);
     }
   }, [UserList]);

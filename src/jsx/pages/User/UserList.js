@@ -117,6 +117,13 @@ const UserList = () => {
   }, [accessList, accessRole]);
 
   useEffect(() => {
+    if(localStorage.getItem("user")){
+      const userRole = JSON.parse(localStorage.getItem("user")).role;
+      HandleRole("", userRole);
+    }
+  },[]);
+
+  useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getAccesslist();
     } else {
@@ -148,9 +155,14 @@ const UserList = () => {
     setSelectedCheckboxes([]);
   };
 
-  const HandleRole = (e) => {
-    setRole(e.target.value);
-    setAccessRole(e.target.value);
+  const HandleRole = (e, role) => {
+    if(e) {
+      setRole(e.target.value);
+      setAccessRole(e.target.value);
+    } else {
+      setRole(role);
+      setAccessRole(role);
+    }
   };
 
   const handleAccessForm = async (e) => {
@@ -841,7 +853,12 @@ const UserList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.roles.length == 2 ? element.roles[0].name + " & " + element.roles[1].name : element.roles.length == 1 ? element.roles[0].name : "NA"}</td>
                                     }
                                     {column.id == "company" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.company}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>
+                                        {Array.isArray(element.company)
+                                          ? element.company.map(b => b).filter(Boolean).join(", ")
+                                          : element.company || "NA"
+                                        }
+                                      </td>
                                     }
                                     {column.id == "notes" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.notes}</td>
@@ -1066,7 +1083,12 @@ const UserList = () => {
                   <label className="fw-bold" style={{ fontSize: "15px", marginLeft: "5px" }}>Company:</label>
                 </div>
                 <div style={{ fontSize: "15px", marginLeft: "10px", borderColor: "black", width: "250px" }}>
-                  <span style={{ marginLeft: "5px" }}>{UserDetails.company || "NA"}</span>
+                  <span style={{ marginLeft: "5px" }}>
+                    {Array.isArray(UserDetails.company)
+                      ? UserDetails.company.map(b => b).filter(Boolean).join(", ")
+                      : UserDetails.company || "NA"
+                    }
+                  </span>
                 </div>
               </div>
 
@@ -1113,9 +1135,10 @@ const UserList = () => {
               value={role}
             >
               <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
+              <option value="Standard User">Standard User</option>
               <option value="Data Uploader">Data Uploader</option>
-              <option value="User">User</option>
-              <option value="User">Standard User</option>
+              <option value="Account Admin">Account Admin</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">

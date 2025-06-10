@@ -289,7 +289,7 @@ const [rememberMe, setRememberMe] = useState(() =>
           localStorage.removeItem("typeofunit_LandSale");
           localStorage.removeItem("searchQueryByLandSalesFilter");
           localStorage.removeItem("setLansSaleFilter");
-          if (userRole == "Admin") {
+          if (userRole == "Admin" || userRole == "Staff") {
             navigate("/dashboard");
           } else if ( userRole == "Data Uploader") {
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));

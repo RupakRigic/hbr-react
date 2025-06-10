@@ -701,9 +701,14 @@ const TrafficsaleList = () => {
     }
   };
 
-  const HandleRole = (e) => {
-    setRole(e.target.value);
-    setAccessRole(e.target.value);
+  const HandleRole = (e, role) => {
+    if(e) {
+      setRole(e.target.value);
+      setAccessRole(e.target.value);
+    } else {
+      setRole(role);
+      setAccessRole(role);
+    }
   };
 
   const handleAccessForm = async (e) => {
@@ -737,6 +742,13 @@ const TrafficsaleList = () => {
       setCheckedItems(initialCheckedState);
     }
   }, [accessList, accessRole]);
+
+  useEffect(() => {
+    if(localStorage.getItem("user")){
+      const userRole = JSON.parse(localStorage.getItem("user")).role;
+      HandleRole("", userRole);
+    }
+  },[]);
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -2667,9 +2679,10 @@ const TrafficsaleList = () => {
               value={role}
             >
               <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
+              <option value="Standard User">Standard User</option>
               <option value="Data Uploader">Data Uploader</option>
-              <option value="User">User</option>
-              <option value="User">Standard User</option>
+              <option value="Account Admin">Account Admin</option>
             </select>
             <form onSubmit={handleAccessForm}>
               <div className="row">
