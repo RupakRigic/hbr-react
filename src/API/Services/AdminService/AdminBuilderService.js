@@ -13,6 +13,7 @@ export default {
     getRoleFieldList:(tableName)=> clientAuth.get(`admin/builder/access-list/${tableName}`),    
     import: (userData) => clientAuth.post(`admin/builder/import`, { json: userData }),
     builderDropDown:()=> clientAuth.get(`admin/builder/builder-list-pluck`),
+    masterPlanDropDown:()=> clientAuth.get(`admin/trafficsale/get-masterplan-list`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/builder/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/builder/bulkdestroy/${id}`),
     archiveDownloadData: (userData) => clientAuth.post(`admin/archive/download-data`, { json: userData }),

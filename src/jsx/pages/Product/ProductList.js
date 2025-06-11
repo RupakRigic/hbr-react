@@ -62,8 +62,10 @@ const ProductList = () => {
   const [selectedColumns, setSelectedColumns] = useState([]);
 
   const [builderDropDown, setBuilderDropDown] = useState([]);
+  const [masterPlanDropDownList, setMasterPlanDropDownList] = useState([]);
   const [selectedBuilderName, setSelectedBuilderName] = useState([]);
   const [selectedSubdivisionName, setSelectedSubdivisionName] = useState([]);
+  const [selectedMasterPlan, setSelectedMasterPlan] = useState([]);
   const [selectedAge, setSelectedAge] = useState([]);
   const [selectedSingle, setSelectedSingle] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
@@ -548,6 +550,10 @@ const ProductList = () => {
       const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Product"));
       handleSelectSubdivisionNameChange(selectedSubdivisionName);
     }
+    if (localStorage.getItem("selectedMasterPlanByFilter_Product")) {
+      const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Product"));
+      handleSelectMasterPlanChange(selectedMasterPlan);
+    }
     if (localStorage.getItem("selectedAgeByFilter_Product")) {
       const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Product"));
       handleSelectAgeChange(selectedAge);
@@ -644,6 +650,7 @@ const ProductList = () => {
   useEffect(() => {
     if(manageFilterOffcanvas){
       GetBuilderDropDownList();
+      GetMasterPlanDropDownList();
     }
   }, [manageFilterOffcanvas]);
 
@@ -694,6 +701,24 @@ const ProductList = () => {
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
       console.log("Error fetching subdivision list:", error);
+      if (error.name === "HTTPError") {
+        const errorJson = await error.response.json();
+        console.log(errorJson);
+      }
+    }
+  };
+
+  const GetMasterPlanDropDownList = async () => {
+    try {
+      const response = await AdminBuilderService.masterPlanDropDown();
+      const responseData = await response.json();
+      const formattedData = responseData.map((masterPlan) => ({
+        label: masterPlan.label,
+        value: masterPlan.value,
+      }));
+      setMasterPlanDropDownList(formattedData);
+    } catch (error) {
+      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         console.log(errorJson);
@@ -1214,7 +1239,17 @@ const ProductList = () => {
       subdivision_name: selectedNames
     }));
     setNormalFilter(true);
-  }
+  };
+
+  const handleSelectMasterPlanChange = (selectedItems) => {
+    const selectedValues = selectedItems.map(item => item.value).join(', ');
+    setSelectedMasterPlan(selectedItems);
+    setFilterQuery(prevState => ({
+      ...prevState,
+      masterplan_id: selectedValues
+    }));
+    setNormalFilter(true);
+  };
 
   const handleSelectAgeChange = (selectedItems) => {
     const selectedNames = selectedItems.map(item => item.value).join(', ');
@@ -2560,10 +2595,15 @@ const ProductList = () => {
                     <input value={filterQuery.area} name="area" className="form-control" onChange={HandleFilter} />
                   </div>
                   <div className="col-md-3 mt-3 ">
-                    <label className="form-label">
-                      MASTER PLAN:{" "}
-                    </label>
-                    <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} />
+                    <label className="form-label">MASTER PLAN:{" "}</label>
+                    <MultiSelect
+                      name="masterplan_id"
+                      options={masterPlanDropDownList}
+                      value={selectedMasterPlan}
+                      onChange={handleSelectMasterPlanChange}
+                      placeholder="Select Master Plan"
+                    />
+                    {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} /> */}
                   </div>
                   <div className="col-md-3 mt-3 mb-3">
                     <label className="form-label">

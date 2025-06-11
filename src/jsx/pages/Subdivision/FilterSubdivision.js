@@ -13,6 +13,7 @@ const FilterSubdivision = () => {
     const [selectedStatusByFilter, setSelectedStatusByFilter] = useState([]);
     const [selectedReportingByFilter, setSelectedReportingByFilter] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [masterPlanDropDownList, setMasterPlanDropDownList] = useState([]);
     const [zipCodeDropDown, setZipCodeDropDown] = useState([]);
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
@@ -106,6 +107,7 @@ const FilterSubdivision = () => {
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
+            GetMasterPlanDropDownList();
             GetZipCodeList();
         } else {
             navigate("/");
@@ -190,6 +192,24 @@ const FilterSubdivision = () => {
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
             console.log("Error fetching subdivision list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                console.log(errorJson);
+            }
+        }
+    };
+
+    const GetMasterPlanDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.masterPlanDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((masterPlan) => ({
+                label: masterPlan.label,
+                value: masterPlan.value,
+            }));
+            setMasterPlanDropDownList(formattedData);
+        } catch (error) {
+            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 console.log(errorJson);
@@ -518,50 +538,6 @@ const FilterSubdivision = () => {
         { value: "SW", label: "SW" }
     ];
 
-    const masterPlanOption = [
-        { value: "ALIANTE", label: "ALIANTE" },
-        { value: "ANTHEM", label: "ANTHEM" },
-        { value: "ARLINGTON RANCH", label: "ARLINGTON RANCH" },
-        { value: "ASCAYA", label: "ASCAYA" },
-        { value: "BUFFALO RANCH", label: "BUFFALO RANCH" },
-        { value: "CANYON CREST", label: "CANYON CREST" },
-        { value: "CANYON GATE", label: "CANYON GATE" },
-        { value: "CORONADO RANCH", label: "CORONADO RANCH" },
-        { value: "ELDORADO", label: "ELDORADO" },
-        { value: "GREEN VALLEY", label: "GREEN VALLEY" },
-        { value: "HIGHLANDS RANCH", label: "HIGHLANDS RANCH" },
-        { value: "INSPIRADA", label: "INSPIRADA" },
-        { value: "LAKE LAS VEGAS", label: "LAKE LAS VEGAS" },
-        { value: "THE LAKES", label: "THE LAKES" },
-        { value: "LAS VEGAS COUNTRY CLUB", label: "LAS VEGAS COUNTRY CLUB" },
-        { value: "LONE MOUNTAIN", label: "LONE MOUNTAIN" },
-        { value: "MACDONALD RANCH", label: "MACDONALD RANCH" },
-        { value: "MOUNTAINS EDGE", label: "MOUNTAINS EDGE" },
-        { value: "MOUNTAIN FALLS", label: "MOUNTAIN FALLS" },
-        { value: "NEVADA RANCH", label: "NEVADA RANCH" },
-        { value: "NEVADA TRAILS", label: "NEVADA TRAILS" },
-        { value: "PROVIDENCE", label: "PROVIDENCE" },
-        { value: "QUEENSRIDGE", label: "QUEENSRIDGE" },
-        { value: "RED ROCK CC", label: "RED ROCK CC" },
-        { value: "RHODES RANCH", label: "RHODES RANCH" },
-        { value: "SEDONA RANCH", label: "SEDONA RANCH" },
-        { value: "SEVEN HILLS", label: "SEVEN HILLS" },
-        { value: "SILVERADO RANCH", label: "SILVERADO RANCH" },
-        { value: "SILVERSTONE RANCH", label: "SILVERSTONE RANCH" },
-        { value: "SKYE CANYON", label: "SKYE CANYON" },
-        { value: "SKYE HILLS", label: "SKYE HILLS" },
-        { value: "SPANISH TRAIL", label: "SPANISH TRAIL" },
-        { value: "SOUTHERN HIGHLANDS", label: "SOUTHERN HIGHLANDS" },
-        { value: "SUMMERLIN", label: "SUMMERLIN" },
-        { value: "SUNRISE HIGH", label: "SUNRISE HIGH" },
-        { value: "SUNSTONE", label: "SUNSTONE" },
-        { value: "TUSCANY", label: "TUSCANY" },
-        { value: "VALLEY VISTA", label: "VALLEY VISTA" },
-        { value: "VILLAGES AT TULE SPRING", label: "VILLAGES AT TULE SPRING" },
-        { value: "VISTA VERDE", label: "VISTA VERDE" },
-        { value: "WESTON HILLS", label: "WESTON HILLS" },
-    ];
-
     const ageOptions = [
         { value: "1", label: "Yes" },
         { value: "0", label: "No" }
@@ -682,7 +658,7 @@ const FilterSubdivision = () => {
                         <label className="form-label">MASTER PLAN:</label>
                         <MultiSelect
                             name="masterplan_id"
-                            options={masterPlanOption}
+                            options={masterPlanDropDownList}
                             value={selectedMasterPlanByFilter}
                             onChange={handleSelectMasterPlanChange}
                             placeholder="Select Master Plan"

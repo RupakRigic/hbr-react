@@ -1405,19 +1405,19 @@ const ScrapPriceList = () => {
                     </Form.Group> */}
                     <input value={filterQuery.name} name="name" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md-4 mt-3">
                     <label className="form-label">PRODUCT SCRAPED PRICES :</label>
                     <input value={filterQuery.scraped_price} name="scraped_price" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md-4 mt-3">
                     <label className="form-label">PRODUCT CODE :</label>
                     <input value={filterQuery.product_code} name="product_code" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md-4 mt-3">
                     <label className="form-label">WEBSITE :</label>
                     <input value={filterQuery.website} name="website" className="form-control" onChange={HandleFilter} />
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md-4 mt-3">
                     <label className="form-label">SCRAPED DATE :</label>
                     <DatePicker
                       name="scrapescraped_dated_date"

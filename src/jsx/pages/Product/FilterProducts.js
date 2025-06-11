@@ -10,10 +10,12 @@ const FilterProducts = () => {
     const navigate = useNavigate();
     const [selectedStatusByFilter, setSelectedStatusByFilter] = useState([]);
     const [builderListDropDown, setBuilderListDropDown] = useState([]);
+    const [masterPlanDropDownList, setMasterPlanDropDownList] = useState([]);
     const [selectedBuilderNameByFilter, setSelectedBuilderNameByFilter] = useState([]);
     const [selectedBuilderIDByFilter, setSelectedBuilderIDByFilter] = useState([]);
     const [subdivisionListDropDown, setSubdivisionListDropDown] = useState([]);
     const [selectedSubdivisionNameByFilter, setSelectedSubdivisionNameByFilter] = useState([]);
+    const [selectedMasterPlanByFilter, setSelectedMasterPlanByFilter] = useState([]);
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
     const [selectedSingleByFilter, setSelectedSingleByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -51,6 +53,10 @@ const FilterProducts = () => {
             const selectedSubdivisionName = JSON.parse(localStorage.getItem("selectedSubdivisionNameByFilter_Product"));
             handleSelectSubdivisionNameChange(selectedSubdivisionName);
         }
+        if (localStorage.getItem("selectedMasterPlanByFilter_Product")) {
+            const selectedMasterPlan = JSON.parse(localStorage.getItem("selectedMasterPlanByFilter_Product"));
+            handleSelectMasterPlanChange(selectedMasterPlan);
+        }
         if (localStorage.getItem("selectedAgeByFilter_Product")) {
             const selectedAge = JSON.parse(localStorage.getItem("selectedAgeByFilter_Product"));
             handleSelectAgeChange(selectedAge);
@@ -64,6 +70,7 @@ const FilterProducts = () => {
     useEffect(() => {
         if (localStorage.getItem("usertoken")) {
             GetBuilderDropDownList();
+            GetMasterPlanDropDownList();
         } else {
             navigate("/");
         }
@@ -138,6 +145,24 @@ const FilterProducts = () => {
         }
     };
 
+    const GetMasterPlanDropDownList = async () => {
+        try {
+            const response = await AdminBuilderService.masterPlanDropDown();
+            const responseData = await response.json();
+            const formattedData = responseData.map((masterPlan) => ({
+                label: masterPlan.label,
+                value: masterPlan.value,
+            }));
+            setMasterPlanDropDownList(formattedData);
+        } catch (error) {
+            console.log("Error fetching master plan list:", error);
+            if (error.name === "HTTPError") {
+                const errorJson = await error.response.json();
+                console.log(errorJson);
+            }
+        }
+    };
+
     useEffect(() => {
         if (localStorage.getItem("setProductFilter") == "true") {
             if ((searchQuery == "") || (searchQuery == "&status=&builder_name=&subdivision_name=&name=&sqft=&stories=&bedroom=&bathroom=&garage=&current_base_price=&product_type=&area=&masterplan_id=&zipcode=&lotwidth=&lotsize=&age=&single=")) {
@@ -147,6 +172,7 @@ const FilterProducts = () => {
                 localStorage.setItem("selectedStatusByProductFilter_Product", JSON.stringify(selectedStatusByFilter));
                 localStorage.setItem("selectedBuilderNameByFilter_Product", JSON.stringify(selectedBuilderNameByFilter));
                 localStorage.setItem("selectedSubdivisionNameByFilter_Product", JSON.stringify(selectedSubdivisionNameByFilter));
+                localStorage.setItem("selectedMasterPlanByFilter_Product", JSON.stringify(selectedMasterPlanByFilter));
                 localStorage.setItem("selectedAgeByFilter_Product", JSON.stringify(selectedAgeByFilter));
                 localStorage.setItem("selectedSingleByFilter_Product", JSON.stringify(selectedSingleByFilter));
                 localStorage.setItem("product_status_Product", JSON.stringify(filterQuery.status));
@@ -179,6 +205,7 @@ const FilterProducts = () => {
         localStorage.setItem("selectedStatusByProductFilter_Product", JSON.stringify(selectedStatusByFilter));
         localStorage.setItem("selectedBuilderNameByFilter_Product", JSON.stringify(selectedBuilderNameByFilter));
         localStorage.setItem("selectedSubdivisionNameByFilter_Product", JSON.stringify(selectedSubdivisionNameByFilter));
+        localStorage.setItem("selectedMasterPlanByFilter_Product", JSON.stringify(selectedMasterPlanByFilter));
         localStorage.setItem("selectedAgeByFilter_Product", JSON.stringify(selectedAgeByFilter));
         localStorage.setItem("selectedSingleByFilter_Product", JSON.stringify(selectedSingleByFilter));
         localStorage.setItem("product_status_Product", JSON.stringify(filterQuery.status));
@@ -238,6 +265,15 @@ const FilterProducts = () => {
         setFilterQuery((prevFilterQuery) => ({
             ...prevFilterQuery,
             [name]: value,
+        }));
+    };
+
+    const handleSelectMasterPlanChange = (selectedItems) => {
+        const selectedValues = selectedItems.map(item => item.value).join(', ');
+        setSelectedMasterPlanByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            masterplan_id: selectedValues
         }));
     };
 
@@ -382,7 +418,14 @@ const FilterProducts = () => {
                     </div>
                     <div className="col-md-3 mt-3 ">
                         <label className="form-label">MASTER PLAN:</label>
-                        <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} />
+                        <MultiSelect
+                            name="masterplan_id"
+                            options={masterPlanDropDownList}
+                            value={selectedMasterPlanByFilter}
+                            onChange={handleSelectMasterPlanChange}
+                            placeholder="Select Master Plan"
+                        />
+                        {/* <input value={filterQuery.masterplan_id} name="masterplan_id" className="form-control" onChange={HandleFilter} /> */}
                     </div>
                     <div className="col-md-3 mt-3 mb-3">
                         <label className="form-label">ZIP CODE:</label>
