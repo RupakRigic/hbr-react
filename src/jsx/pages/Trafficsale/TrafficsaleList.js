@@ -222,7 +222,7 @@ const TrafficsaleList = () => {
     if (manageFilterOffcanvas) {
       SubdivisionByBuilderIDList(selectedBuilderIDByFilter);
     }
-  }, [selectedBuilderIDByFilter]);
+  }, [manageFilterOffcanvas, selectedBuilderIDByFilter]);
 
   useEffect(() => {
     if (selectedSubdivisionName?.length === 0) {

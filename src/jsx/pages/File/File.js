@@ -13,55 +13,19 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
 const File = () => {
-
-  const HandleSortDetailClick = (e) => {
-    setShowSort(true);
-  };
-
-  const handleSortCheckboxChange = (e, key) => {
-    if (e.target.checked) {
-      setSelectedCheckboxes(prev => [...prev, key]);
-    } else {
-      setSelectedCheckboxes(prev => prev.filter(item => item !== key));
-    }
-  };
-
-  const SyestemUserRole = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).role
-    : "";
-
-  const handleRemoveSelected = () => {
-    const newSortConfig = sortConfig.filter(item => selectedCheckboxes.includes(item.key));
-    setSortConfig(newSortConfig);
-    setSelectedCheckboxes([]);
-  };
-
-  const [showSort, setShowSort] = useState(false);
-  const handleSortClose = () => setShowSort(false);
   const [Error, setError] = useState("");
   const navigate = useNavigate();
-  const [productList, setProductList] = useState([]);
+  const [fileList, setFileList] = useState([]);
   const [fileListCount, setFileListCount] = useState('');
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState([]);
-  const [sortConfigKey, setSortConfigKey] = useState('');
-  const [sortConfigDirection, setSortConfigDirection] = useState('');
-  useEffect(() => {
-    setSelectedCheckboxes(sortConfig.map(col => col.key));
-  }, [sortConfig]);
-
-
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
-
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPage = 100;
   const lastIndex = currentPage * recordsPage;
   const firstIndex = lastIndex - recordsPage;
   const [npage, setNpage] = useState(0);
   const number = [...Array(npage + 1).keys()].slice(1);
-
-
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
   const [accessRole, setAccessRole] = useState("Admin");
@@ -70,21 +34,39 @@ const File = () => {
   const [checkedItems, setCheckedItems] = useState({}); // State to manage checked items
   const [manageAccessField, setManageAccessField] = useState(false);
   const [fieldList, setFieldList] = useState([]);
-  // const fieldList = AccessField({ tableName: "csv" });
-  const [data, setData] = useState(productList);
-
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [canvasShowAddFile, seCanvasShowAddFile] = useState(false);
 
-  useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
-  }, [fieldList]);
+  const SyestemUserRole = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).role : "";
 
-  const checkFieldExist = (fieldName) => {
-    return fieldList.includes(fieldName.trim());
+  const [showSortingPopup, setShowSortingPopup] = useState(false);
+  const handleSortingPopupClose = () => setShowSortingPopup(false);
+  const [fieldOptions, setFieldOptions] = useState([]);
+  const [selectedFields, setSelectedFields] = useState([]);
+  const [selectionOrder, setSelectionOrder] = useState({});
+  const [sortOrders, setSortOrders] = useState({});
+  const HandleSortingPopupDetailClick = (e) => {
+    setShowSortingPopup(true);
   };
+
+  useEffect(() => {
+    const fieldOptions = fieldList
+      .filter((field) => field !== 'Action' && field !== 'Preview' && field !== 'Download')
+      .map((field) => {
+        let value = field.charAt(0).toLowerCase() + field.slice(1).replace(/\s+/g, '');
+
+        if (value === 'title') {
+          value = 'name';
+        }
+        return {
+          value: value,
+          label: field,
+        };
+      });
+    setFieldOptions(fieldOptions);
+  }, [fieldList]);
 
   const HandleRole = (e, role) => {
     if(e) {
@@ -161,6 +143,7 @@ const File = () => {
       }
     }
   };
+
   useEffect(() => {
     if (localStorage.getItem("usertoken")) {
       getAccesslist();
@@ -173,7 +156,7 @@ const File = () => {
     return sortConfig.map((sort) => `${sort.key}:${sort.direction}`).join(",");
   };
 
-  const getproductList = async (currentPage) => {
+  const GetFileList = async (currentPage, sortConfig) => {
     setIsLoading(true);
     try {
 
@@ -184,7 +167,7 @@ const File = () => {
 
       const response = await AdminCSVFileService.index(currentPage, sortConfigString, searchQuery);
       const responseData = await response.json();
-      setProductList(responseData.data);
+      setFileList(responseData.data);
       setNpage(Math.ceil(responseData.total / recordsPage));
       setFileListCount(responseData.total);
       setIsLoading(false);
@@ -197,9 +180,10 @@ const File = () => {
       }
     }
   };
+
   useEffect((currentPage) => {
     if (localStorage.getItem("usertoken")) {
-      getproductList(currentPage);
+      GetFileList(currentPage, sortConfig);
     } else {
       navigate("/");
     }
@@ -209,21 +193,23 @@ const File = () => {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
+
   function changeCPage(id) {
     setCurrentPage(id);
-  }
+  };
+
   function nextPage() {
     if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminCSVFileService.destroy(e).json();
       if (responseData.status === true) {
-        getproductList();
+        GetFileList(currentPage, sortConfig);
       }
     } catch (error) {
       if (error.name === "HTTPError") {
@@ -232,59 +218,10 @@ const File = () => {
       }
     }
   };
+
   const handleCallback = () => {
-    getproductList();
+    GetFileList(currentPage, sortConfig);
   };
-  // const debouncedHandleSearch = useRef(
-  //   debounce((value) => {
-  //     setSearchQuery(value);
-  //   }, 1000)
-  // ).current;
-
-  // useEffect(() => {
-  //   getproductList();
-  // }, [searchQuery]);
-
-  // const HandleSearch = (e) => {
-  //   setIsLoading(true);
-  //   const query = e.target.value.trim();
-  //   if (query) {
-  //     debouncedHandleSearch(`?q=${query}`);
-  //   } else {
-  //     setSearchQuery("");
-  //   }
-  // };
-
-  const requestSort = (key) => {
-    let direction = 'asc';
-
-    const newSortConfig = [...sortConfig];
-    const keyIndex = sortConfig.findIndex((item) => item.key === key);
-    if (keyIndex !== -1) {
-      direction = sortConfig[keyIndex].direction === 'asc' ? 'desc' : 'asc';
-      newSortConfig[keyIndex].direction = direction;
-    } else {
-      newSortConfig.push({ key, direction });
-    }
-    setSortConfig(newSortConfig);
-    setSortConfigKey(newSortConfig[0].key);
-    setSortConfigDirection(newSortConfig[0].direction);
-    getproductList(currentPage, sortConfig);
-  };
-
-  // const sortedData = () => {
-  //   let sorted = [...productList];
-  //   if (sortConfig.length > 0) {
-  //     sorted = sorted.sort((a, b) => {
-  //       for (const { key, direction } of sortConfig) {
-  //         if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
-  //         if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
-  //       }
-  //       return 0;
-  //     });
-  //   }
-  //   return sorted;
-  // };
 
   const handleOpenDialog = () => {
     setDraggedColumns(columns);
@@ -325,19 +262,58 @@ const File = () => {
     }
   }, [fieldList]);
 
-  // const handleDownload = async (fileName) => {
-  //   const url = `${process.env.REACT_APP_IMAGE_URL}Files/${fileName}`;
-  //   const response = await fetch(url, { mode: "no-cors" });
-  //   const blob = await response.blob();
-  //   const blobUrl = window.URL.createObjectURL(blob);
-    
-  //   const link = document.createElement("a");
-  //   link.href = blobUrl;
-  //   link.setAttribute("download", fileName); // Ensures direct download
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
+  // const handleSelectAllChange = (e) => {
+  //   if (e.target.checked) {
+  //     setSelectedFields(fieldOptions);
+  //     const newOrder = {};
+  //     fieldOptions.forEach((field, index) => {
+  //       newOrder[field.value] = index + 1;
+  //     });
+  //     setSelectionOrder(newOrder);
+  //   } else {
+  //     setSelectedFields([]);
+  //     setSelectionOrder({});
+  //   }
   // };
+
+  const handleSortingCheckboxChange = (e, field) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+      setSelectedFields([...selectedFields, field]);
+      setSelectionOrder((prevOrder) => ({
+        ...prevOrder,
+        [field.value]: Object.keys(prevOrder).length + 1,
+      }));
+    } else {
+      setSelectedFields(selectedFields.filter((selected) => selected.value !== field.value));
+      setSelectionOrder((prevOrder) => {
+        const newOrder = { ...prevOrder };
+        delete newOrder[field.value];
+        const remainingFields = selectedFields.filter((selected) => selected.value !== field.value);
+        remainingFields.forEach((field, index) => {
+          newOrder[field.value] = index + 1;
+        });
+        return newOrder;
+      });
+    }
+  };
+
+  const handleSortOrderChange = (fieldValue, order) => {
+    setSortOrders({
+      ...sortOrders,
+      [fieldValue]: order,
+    });
+  };
+
+  const handleApplySorting = () => {
+    const sortingConfig = selectedFields.map((field) => ({
+      key: field.value,
+      direction: sortOrders[field.value] || 'asc',
+    }));
+    setSortConfig(sortingConfig)
+    GetFileList(currentPage, sortingConfig);
+    handleSortingPopupClose();
+  };
 
   return (
     <Fragment>
@@ -393,7 +369,7 @@ const File = () => {
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
-                            onClick={HandleSortDetailClick}
+                            onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
@@ -413,11 +389,11 @@ const File = () => {
                           <Button
                             className="btn-sm me-1"
                             variant="secondary"
-                            onClick={HandleSortDetailClick}
+                            onClick={HandleSortingPopupDetailClick}
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              <i class="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
@@ -530,15 +506,20 @@ const File = () => {
                               <strong>No.</strong>
                             </th>
                             {columns.map((column) => (
-                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id} onClick={() => column.id == "title" ? requestSort("name") : ""}>
+                              <th style={{ textAlign: "center", cursor: "pointer" }} key={column.id}>
                                 <strong>
                                   {column.label}
-                                  {column.id == "title" && sortConfigKey !== "name" ? "↑↓" : ""}
-                                  {column.id == "title" && sortConfigKey === "name" && (
+                                  {column.id != "action" && sortConfig.some(
+                                    (item) => item.key === (
+                                      column.id == "title" ? "name" : column.id
+                                    )
+                                  ) && (
                                     <span>
-                                      {sortConfigDirection === "asc"
-                                        ? "↑"
-                                        : "↓"}
+                                      {column.id != "action" && sortConfig.find(
+                                        (item) => item.key === (
+                                          column.id == "title" ? "name" : column.id
+                                        )
+                                      ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   )}
                                 </strong>
@@ -547,8 +528,8 @@ const File = () => {
                           </tr>
                         </thead>
                         <tbody style={{ textAlign: "center" }}>
-                          {productList !== null && productList.length > 0 ? (
-                            productList.map((element, index) => (
+                          {fileList !== null && fileList.length > 0 ? (
+                            fileList.map((element, index) => (
                               <tr style={{ textAlign: "center" }}>
                                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                                 {columns.map((column) => (
@@ -762,46 +743,104 @@ const File = () => {
           </div>
         </div>
       </Offcanvas>
-      <Modal show={showSort} onHide={HandleSortDetailClick}>
-        <Modal.Header handleSortClose>
-          <Modal.Title>Sorted Fields</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {sortConfig.length > 0 ? (
-            sortConfig.map((col) => (
-              <div className="row" key={col.key}>
-                <div className="col-md-6">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      name={col.key}
-                      defaultChecked={true}
-                      id={`checkbox-${col.key}`}
-                      onChange={(e) => handleSortCheckboxChange(e, col.key)}
-                    />
-                    <label className="form-check-label" htmlFor={`checkbox-${col.key}`}>
-                      <span>{col.key}</span>:<span>{col.direction}</span>
 
+      {/* Sorting */}
+      <Modal show={showSortingPopup} onHide={HandleSortingPopupDetailClick}>
+        <Modal.Header handleSortingPopupClose>
+          <Modal.Title>Sorted Fields</Modal.Title>
+          <button
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => handleSortingPopupClose()}
+          ></button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div className="row">
+            <div style={{ marginTop: "-15px" }}>
+              <label className="form-label" style={{ fontWeight: "bold", fontSize: "15px" }}>List of Fields:</label>
+              <div className="field-checkbox-list">
+                {/* <div className="form-check d-flex align-items-center mb-2" style={{ width: '100%' }}>
+                  <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="select-all-fields"
+                      checked={selectedFields.length === fieldOptions.length}
+                      onChange={handleSelectAllChange}
+                      style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                    />
+                    <label className="form-check-label mb-0" htmlFor="select-all-fields" style={{ width: "150px", cursor: "pointer" }}>
+                      Select All
                     </label>
                   </div>
-                </div>
+                </div> */}
+
+                {fieldOptions.map((field, index) => {
+                  const isChecked = selectedFields.some(selected => selected.value === field.value);
+                  const fieldOrder = selectionOrder[field.value];
+
+                  return (
+                    <div key={index} className="form-check d-flex align-items-center mb-2" style={{ width: '100%', height: "20px" }}>
+                      <div className="d-flex align-items-center" style={{ flex: '0 0 40%' }}>
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={`field-checkbox-${index}`}
+                          value={field.value}
+                          checked={isChecked}
+                          onChange={(e) => handleSortingCheckboxChange(e, field)}
+                          style={{ marginRight: '0.2rem', cursor: "pointer" }}
+                        />
+                        <label className="form-check-label mb-0" htmlFor={`field-checkbox-${index}`} style={{ width: "150px", cursor: "pointer" }}>
+                          {isChecked && <span>{fieldOrder}. </span>}
+                          {field.label}
+                        </label>
+                      </div>
+
+                      {isChecked && (
+                        <div className="radio-group d-flex" style={{ flex: '0 0 60%', paddingTop: "5px" }}>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`asc-${field.value}`}
+                              value="asc"
+                              checked={sortOrders[field.value] === 'asc' || !sortOrders[field.value]}
+                              onChange={() => handleSortOrderChange(field.value, 'asc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`asc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-40px" }}>
+                              Ascending
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline" style={{ flex: '0 0 50%' }}>
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              name={`sortOrder-${field.value}`}
+                              id={`desc-${field.value}`}
+                              value="desc"
+                              checked={sortOrders[field.value] === 'desc'}
+                              onChange={() => handleSortOrderChange(field.value, 'desc')}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <label className="form-check-label mb-0" htmlFor={`desc-${field.value}`} style={{ cursor: "pointer", marginLeft: "-30px" }}>
+                              Descending
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))
-          ) : (
-            <p>N/A</p>
-          )}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSortClose}>
-            cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleRemoveSelected}
-          >
-            Clear Sort
-          </Button>
+          <Button variant="secondary" onClick={handleSortingPopupClose} style={{ marginRight: "10px" }}>Close</Button>
+          <Button variant="success" onClick={() => handleApplySorting(selectedFields, sortOrders)}>Apply</Button>
         </Modal.Footer>
       </Modal>
 
