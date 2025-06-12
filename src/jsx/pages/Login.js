@@ -30,13 +30,14 @@ const [rememberMe, setRememberMe] = useState(() =>
 
   const onLogin = async (e) => {
     e.preventDefault();
-      if (rememberMe) {
-                localStorage.setItem('rememberEmail', email);
-                localStorage.setItem('rememberPassword', password);
-              } else {
-                localStorage.removeItem('rememberEmail');
-                localStorage.removeItem('rememberPassword');
-              }
+    localStorage.clear();
+    if (rememberMe) {
+      localStorage.setItem('rememberEmail', email);
+      localStorage.setItem('rememberPassword', password);
+    } else {
+      localStorage.removeItem('rememberEmail');
+      localStorage.removeItem('rememberPassword');
+    }
     let error = false;
     const errorObj = { ...errorsObj };
     if (email === "") {
@@ -53,7 +54,6 @@ const [rememberMe, setRememberMe] = useState(() =>
     } else {
       try {
         const data = await AdminUserService.login(email, password, rememberMe).json();
-        console.log(data,'login data');
         localStorage.setItem("user", JSON.stringify(data));
         localStorage.setItem("usertoken", JSON.stringify(data.idToken));
         localStorage.setItem("is_subscribed", JSON.stringify(data.is_subscribed));

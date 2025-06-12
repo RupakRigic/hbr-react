@@ -49,13 +49,34 @@ const CCAPNList = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const HandleSortingPopupShow = () => setShowSortingPopup(true);
   const handleSortingPopupClose = () => setShowSortingPopup(false);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsCCAPNs");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderCCAPNs");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersCCAPNs");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [sortConfig, setSortConfig] = useState([]);
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [builderDropDown, setBuilderDropDown] = useState([]);
   const [subdivisionDropDown, setSubdivisionDropDown] = useState([]);
+
+  useEffect(() => {
+    if(selectedFields){
+      localStorage.setItem("selectedFieldsCCAPNs", JSON.stringify(selectedFields));
+    }
+    if(selectionOrder){
+      localStorage.setItem("selectionOrderCCAPNs", JSON.stringify(selectionOrder));
+    }
+    if(sortOrders){
+      localStorage.setItem("sortOrdersCCAPNs", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     setSearchQuery(filterString());

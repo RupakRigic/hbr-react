@@ -44,12 +44,33 @@ const File = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [fieldOptions, setFieldOptions] = useState([]);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
-  const [sortOrders, setSortOrders] = useState({});
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsFiles");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderFiles");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersFiles");
+    return saved ? JSON.parse(saved) : {};
+  });
   const HandleSortingPopupDetailClick = (e) => {
     setShowSortingPopup(true);
   };
+
+  useEffect(() => {
+    if(selectedFields){
+      localStorage.setItem("selectedFieldsFiles", JSON.stringify(selectedFields));
+    }
+    if(selectionOrder){
+      localStorage.setItem("selectionOrderFiles", JSON.stringify(selectionOrder));
+    }
+    if(sortOrders){
+      localStorage.setItem("sortOrdersFiles", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     const fieldOptions = fieldList

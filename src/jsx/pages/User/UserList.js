@@ -69,10 +69,19 @@ const UserList = () => {
   const [fieldOptions, setFieldOptions] = useState([]);
   const handleSortingPopupClose = () => setShowSortingPopup(false);
   const [showSortingPopup, setShowSortingPopup] = useState(false);
-  const [selectedFields, setSelectedFields] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState({});
+  const [selectedFields, setSelectedFields] = useState(() => {
+    const saved = localStorage.getItem("selectedFieldsUsers");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectionOrder, setSelectionOrder] = useState(() => {
+    const saved = localStorage.getItem("selectionOrderUsers");
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [sortOrders, setSortOrders] = useState(() => {
+    const saved = localStorage.getItem("sortOrdersUsers");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [selectedCheckboxes, setSelectedCheckboxes] = useState(sortConfig.map(col => col.key));
-  const [sortOrders, setSortOrders] = useState({});
 
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -83,6 +92,18 @@ const UserList = () => {
   const [manageFilterOffcanvas, setManageFilterOffcanvas] = useState(false);
   const [exportmodelshow, setExportModelShow] = useState(false);
   const [excelDownload, setExcelDownload] = useState(false);
+
+  useEffect(() => {
+    if (selectedFields) {
+      localStorage.setItem("selectedFieldsUsers", JSON.stringify(selectedFields));
+    }
+    if (selectionOrder) {
+      localStorage.setItem("selectionOrderUsers", JSON.stringify(selectionOrder));
+    }
+    if (sortOrders) {
+      localStorage.setItem("sortOrdersUsers", JSON.stringify(sortOrders));
+    }
+  }, [selectedFields, selectionOrder, sortOrders]);
 
   useEffect(() => {
     if (localStorage.getItem("role_name_User") || localStorage.getItem("company_User")) {
