@@ -244,7 +244,7 @@ const allroutes = [
     component: <FilterBasePrice />,
     allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
   },
-   {
+  {
     url: "/scrapepricelist",
     component: <ScrapPriceList />,
     allowedRoles: ["Admin", "User","Standard User",'Account Admin'],

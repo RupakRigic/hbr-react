@@ -2036,7 +2036,7 @@ const BuilderTable = () => {
                                       column.id == "corporate Office ZIP" ? "coporate_officeaddress_zipcode" :
                                       column.id == "icon Url" ? "icon_url":
                                       column.id == "email Address" ? "email_address" : toCamelCase(column.id))
-                                  ) && (
+                                    ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
                                           (item) => item.key === (
@@ -2058,8 +2058,6 @@ const BuilderTable = () => {
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )
-                                    //   : ((column.id == "action" || column.id == "logo") ? "" : <span>↑↓</span>
-                                    // )
                                   }
                                 </strong>
                                 {(!excelLoading) && (column.id !== "action" && column.id !== "email Address" && column.id !== "__pkBuilderID" && column.id !== "name" && column.id !== "logo" && column.id !== "website" && column.id !== "phone" &&

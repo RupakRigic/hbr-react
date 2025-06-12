@@ -789,7 +789,7 @@ const UserList = () => {
                                       column.id == "first Name" ? "name" :
                                       column.id == "last Name" ? "last_name" : column.id
                                     )
-                                  ) ? (
+                                  ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
@@ -797,11 +797,8 @@ const UserList = () => {
                                           column.id == "first Name" ? "name" :
                                           column.id == "last Name" ? "last_name" : column.id
                                         )
-                                      ).direction === "asc" ? "↑" : "↓"
-                                      }
+                                      ).direction === "asc" ? "↑" : "↓"}
                                     </span>
-                                  ) : (
-                                    column.id != "action" && <span>↑↓</span>
                                   )}
                                 </strong>
                               </th>

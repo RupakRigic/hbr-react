@@ -48,7 +48,7 @@ export const MenuList = [
         to: '/filterbaseprice',
 
     },
-     {
+    {
         title: 'Scrap Price List',
         iconStyle: SVGICON.Pages,
         to: '/scrapepricelist',

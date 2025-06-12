@@ -3250,7 +3250,7 @@ const SubdivisionList = () => {
                                     column.id == "__pkSubID" ? "subdivision_code" :
                                     column.id == "_fkBuilderID" ? "builder_code" :
                                     column.id == "open Since" ? "opensince" : toCamelCase(column.id))
-                                ) && (
+                                  ) && (
                                     <span>
                                       {column.id != "action" && sortConfig.find(
                                         (item) => item.key === (
@@ -3278,8 +3278,6 @@ const SubdivisionList = () => {
                                       ).direction === "asc" ? "↑" : "↓"}
                                     </span>
                                   )
-                                  //   : ((column.id == "action" || column.id == "cross Streets" || column.id == "website") ? "" : <span>↑↓</span>
-                                  // )
                                 }
                               </strong>
 
