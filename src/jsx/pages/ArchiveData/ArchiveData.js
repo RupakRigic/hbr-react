@@ -85,10 +85,14 @@ const ArchiveData = () => {
         try {
             const response = await AdminBuilderService.getArchiveList();
             const responseData = await response.json();
-            setArchiveList(responseData);
-            setNpage(Math.ceil(responseData.length / recordsPage));
-            setArchiveListCount(responseData.length);
-            setIsLoading(false);
+            if (responseData?.status == false) {
+                setIsLoading(false);
+            } else {
+                setArchiveList(responseData);
+                setNpage(Math.ceil(responseData.length / recordsPage));
+                setArchiveListCount(responseData.length);
+                setIsLoading(false);
+            }
         } catch (error) {
             console.log(error);
             setIsLoading(false);
