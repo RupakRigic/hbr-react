@@ -319,6 +319,7 @@ const CCAPNList = () => {
     if (file && file.type === "text/csv") {
       setIsLoading(true);
       setSelectedFileError("");
+      setError("");
 
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
       let currentChunk = 0;
@@ -378,6 +379,7 @@ const CCAPNList = () => {
         }
       };
       setSelectedFileError("");
+      setError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");

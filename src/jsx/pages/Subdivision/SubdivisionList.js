@@ -1499,6 +1499,8 @@ const SubdivisionList = () => {
 
     if (file && file.type === "text/csv") {
       setLoading(true);
+      setSelectedFileError("");
+      setError("");
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.onload = async () => {
@@ -1559,6 +1561,7 @@ const SubdivisionList = () => {
         }
       };
       setSelectedFileError("");
+      setError("");
     } else {
       setSelectedFile("");
       setSelectedFileError("Please select a CSV file.");
@@ -3939,7 +3942,7 @@ const SubdivisionList = () => {
             <input type="file" id="fileInput" onChange={handleFileChange} />
           </div>
           <p className="text-danger d-flex justify-content-center align-item-center mt-1">
-            {selectedFileError}
+            {selectedFileError || Error}
           </p>
         </Modal.Body>
         <Modal.Footer>

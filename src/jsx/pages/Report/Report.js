@@ -695,7 +695,8 @@ const BuilderTable = () => {
         setSelectedFile(image);
       }
 
-      setSelectedFileError("")
+      setSelectedFileError("");
+      setError("");
     } else {
       setSelectedFile('');
       setSelectedFileError("Please select a PDF file.");
@@ -1050,7 +1051,7 @@ const BuilderTable = () => {
                               className="
                                 d-flex justify-content-center align-item-center text-danger"
                             >
-                              <p>{selectedFileError}</p>
+                              <p>{selectedFileError || Error}</p>
                             </div>
                             <div
                               className="

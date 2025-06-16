@@ -834,8 +834,12 @@ const PermitList = () => {
   };
 
   const handleUploadClick = async () => {
-    if (selectedFile && selectedFile.type === "text/csv") {
+    const file = selectedFile;
+
+    if (file && file.type === "text/csv") {
       setLoading(true);
+      setSelectedFileError("");
+      setError("");
       const formData = new FormData();
       formData.append("csv", selectedFile);
 
@@ -886,18 +890,19 @@ const PermitList = () => {
           }
         }
       } catch (error) {
-        let errorMessage = "An error occurred. Please try again.";
-        if (error.response && error.response.data) {
-          errorMessage = error.response.data.message;
+        if (error.name === "HTTPError") {
+          const errorJson = error.response.json();
+          setSelectedFile("");
+          setError(errorJson.message);
+          document.getElementById("fileInput").value = null;
+          setLoading(false);
         }
-        setSelectedFile(null);
-        setError(errorMessage);
-        document.getElementById("fileInput").value = null;
-        setLoading(false);
-      }
+      };
+      setSelectedFileError("");
+      setError("");
     } else {
       setSelectedFile(null);
-      setError("Please select a CSV file.");
+      setSelectedFileError("Please select a CSV file.");
     }
   };
 
@@ -2234,7 +2239,7 @@ const PermitList = () => {
             <input type="file" id="fileInput" onChange={handleFileChange} />
           </div>
           <p className="text-danger d-flex justify-content-center align-item-center mt-1">
-            {selectedFileError}
+            {selectedFileError || Error}
           </p>
         </Modal.Body>
         <Modal.Footer>
