@@ -1245,7 +1245,6 @@ const SubdivisionList = () => {
     localStorage.setItem("searchQueryBySubdivisionFilter_Subdivision", JSON.stringify(searchQuery));
   };
  
-  console.log(SubdivisionDetails)
   const HandleFilter = (e) => {
     const { name, value } = e.target;
     setFilterQuery((prevFilterQuery) => ({

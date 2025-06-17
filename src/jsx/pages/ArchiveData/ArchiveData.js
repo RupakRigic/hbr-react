@@ -636,13 +636,6 @@ const ArchiveData = () => {
         localStorage.setItem("selectedMonth", JSON.stringify(selectedOption));
     };
 
-    function snakeToFirstUpperCase(str) {
-        return str
-            .split('_') // Split the string by underscores
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
-            .join(' '); // Join the words with spaces
-    }
-
     return (
         <Fragment>
             <MainPagetitle mainTitle="Archive Data" pageTitle="Archive Data" parentTitle="Home" />
@@ -765,7 +758,15 @@ const ArchiveData = () => {
                                                         archiveList.map((element, index) => (
                                                             <tr style={{ textAlign: "center" }}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{snakeToFirstUpperCase(element.type)}</td>
+                                                                <td>
+                                                                    {
+                                                                        element.type == "permits" ? "Permits" :
+                                                                        element.type == "traffic" ? "Traffic Sales" : 
+                                                                        element.type == "prices" ? "Product Prices" : 
+                                                                        element.type == "closing" ? "Closings" : 
+                                                                        element.type == "landsale" ? "Land Sales" : "-"
+                                                                    }
+                                                                </td>
                                                                 <td>{element.start_date}</td>
                                                                 <td>{element.end_date}</td>
                                                                 <td style={{ textAlign: "center" }}>{element.filename}</td>
