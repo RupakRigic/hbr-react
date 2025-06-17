@@ -331,13 +331,13 @@ const ArchiveData = () => {
         }
     };
 
-    const handleDownload = async (e, filepath) => {
+    const handleDownload = async (e, filepath, filename) => {
         e.preventDefault();
         try {
-            const fileUrl = `${process.env.REACT_APP_IMAGE_URL}/${filepath}`;
+            const fileUrl = `${process.env.REACT_APP_IMAGE_URL}${filepath}`;
             const link = document.createElement('a');
             link.href = fileUrl;
-            link.download = filepath;
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -781,7 +781,7 @@ const ArchiveData = () => {
                                                                                         dangerMode: false,
                                                                                     }).then((willDelete) => {
                                                                                         if (willDelete) {
-                                                                                            handleDownload(e, element.filepath);
+                                                                                            handleDownload(e, element.filepath, element.filename);
                                                                                         }
                                                                                     })
                                                                                 } else {
