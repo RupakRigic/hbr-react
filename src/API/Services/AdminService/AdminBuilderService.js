@@ -16,7 +16,7 @@ export default {
     masterPlanDropDown:()=> clientAuth.get(`admin/trafficsale/get-masterplan-list`),
     bulkupdate: (id, userData) => clientAuth.put(`admin/builder/bulkupdate/${id}`, { json: userData }),
     bulkdestroy: (id) => clientAuth.delete(`admin/builder/bulkdestroy/${id}`),
-    archiveDownloadData: (userData) => clientAuth.post(`admin/archive/download-data`, { json: userData }),
+    archiveDownloadData: (searchQuery = '', userData) => clientAuth.post(`admin/archive/download-data?${searchQuery}`, { json: userData }),
     getArchiveFieldList:(tableName)=> clientAuth.get(`admin/archive/get-fields/${tableName}`),
     getArchiveList:()=> clientAuth.get(`admin/archive/archive-data-list`),
     archive_data_date_range:(id)=> clientAuth.get(`admin/archive/archive-data-date-range/${id}`),
