@@ -18,6 +18,7 @@ const ClosingUpdate = () => {
     const [SubdivisionList, SetSubdivisionList] = useState([]);
     const [ClosingsaleList, SetClosingsaleList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedClosingType, setSelectedClosingType] = useState([]);
 
     const params = useParams();
     const navigate = useNavigate();
@@ -32,12 +33,24 @@ const ClosingUpdate = () => {
         }
     }, []);
 
+    const closingType = [
+        { value: "NEW", label: "NEW" },
+        { value: "RESALES", label: "RESALES" },
+    ];
+
     useEffect(() => {
         if (ClosingsaleList?.subdivision_id && SubdivisionList?.length > 0) {
             const filter = SubdivisionList?.filter(data => data.value === ClosingsaleList?.subdivision_id);
             handleSubdivisionCode(filter);
         }
     }, [ClosingsaleList, SubdivisionList]);
+
+    useEffect(() => {
+        if(ClosingsaleList?.closing_type) {
+            let ClosingType = closingType?.filter(data => data.value === ClosingsaleList?.closing_type);
+            handleSelectClosingTypeChange(ClosingType);
+        }
+    }, [ClosingsaleList]);
 
     const ShowClosings = async (id) => {
         setIsLoading(true);
@@ -89,6 +102,7 @@ const ClosingUpdate = () => {
                 "closingprice": event.target.closingprice.value,
                 "loanamount": event.target.loanamount.value,
                 "document": event.target.document.value,
+                "closing_type": selectedClosingType?.value,
                 "parcel": event.target.parcel.value
             }
             const data = await AdminClosingService.update(params.id, userData).json();
@@ -106,6 +120,10 @@ const ClosingUpdate = () => {
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
+    };
+
+    const handleSelectClosingTypeChange = (selectedOption) => {
+        setSelectedClosingType(selectedOption);
     };
 
     return (
@@ -189,6 +207,31 @@ const ClosingUpdate = () => {
                                                 <div className="col-xl-6 mb-3">
                                                     <label htmlFor="exampleFormControlInput10" className="form-label">Document</label>
                                                     <input type="text" defaultValue={ClosingsaleList.document || "NA"} name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
+                                                </div>
+
+                                                <div className="col-xl-6 mb-3">
+                                                    <label htmlFor="exampleFormControlInput10" className="form-label">Closing Type</label>
+                                                    <Form.Group controlId="tournamentList">
+                                                        <Select
+                                                            name="closing_type"
+                                                            options={closingType}
+                                                            value={selectedClosingType}
+                                                            placeholder={"Select Closing Type"}
+                                                            onChange={(selectedOption) => handleSelectClosingTypeChange(selectedOption)}
+                                                            styles={{
+                                                                container: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                                menu: (provided) => ({
+                                                                    ...provided,
+                                                                    width: '100%',
+                                                                    color: 'black'
+                                                                }),
+                                                            }}
+                                                        />
+                                                    </Form.Group>
                                                 </div>
 
                                                 <div className="col-xl-6 mb-3">

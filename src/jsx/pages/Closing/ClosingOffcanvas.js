@@ -12,6 +12,12 @@ const ClosingOffcanvas = forwardRef((props) => {
     const [Error, setError] = useState('');
     const [subdivisionCode, setSubdivisionCode] = useState([]);
     const [subdivisionList, setSubdivisionList] = useState([]);
+    const [selectedClosingType, setSelectedClosingType] = useState([]);
+
+    const closingType = [
+        { value: "NEW", label: "NEW" },
+        { value: "RESALES", label: "RESALES" },
+    ];
 
     useEffect(() => {
         if (canvasShowAdd) {
@@ -54,6 +60,7 @@ const ClosingOffcanvas = forwardRef((props) => {
                 "closingprice": event.target.closingprice.value ? event.target.closingprice.value : 0,
                 "loanamount": event.target.loanamount.value ? event.target.loanamount.value : 0,
                 "document": event.target.document.value,
+                "closing_type": selectedClosingType?.value,
                 "parcel": event.target.parcel.value
             }
             const data = await AdminClosingService.store(userData).json();
@@ -72,6 +79,10 @@ const ClosingOffcanvas = forwardRef((props) => {
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }
+    };
+
+    const handleSelectClosingTypeChange = (selectedOption) => {
+        setSelectedClosingType(selectedOption);
     };
 
     return (
@@ -148,6 +159,31 @@ const ClosingOffcanvas = forwardRef((props) => {
                                 <div className="col-xl-6 mb-3">
                                     <label htmlFor="exampleFormControlInput10" className="form-label">Document</label>
                                     <input type="text" name='document' className="form-control" id="exampleFormControlInput10" placeholder="" />
+                                </div>
+
+                                <div className="col-xl-6 mb-3">
+                                    <label htmlFor="exampleFormControlInput10" className="form-label">Closing Type</label>
+                                    <Form.Group controlId="tournamentList">
+                                        <Select
+                                            name="closing_type"
+                                            options={closingType}
+                                            value={selectedClosingType}
+                                            placeholder={"Select Closing Type"}
+                                            onChange={(selectedOption) => handleSelectClosingTypeChange(selectedOption)}
+                                            styles={{
+                                                container: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                                menu: (provided) => ({
+                                                    ...provided,
+                                                    width: '100%',
+                                                    color: 'black'
+                                                }),
+                                            }}
+                                        />
+                                    </Form.Group>
                                 </div>
 
                                 <div className="col-xl-6 mb-3">

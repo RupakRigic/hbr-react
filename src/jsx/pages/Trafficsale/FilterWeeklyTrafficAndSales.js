@@ -421,7 +421,7 @@ const FilterWeeklyTrafficAndSales = () => {
         { value: "E", label: "E" },
         { value: "H", label: "H" },
         { value: "IS", label: "IS" },
-        { value: "L", label: "DET" },
+        { value: "L", label: "L" },
         { value: "MSQ", label: "MSQ" },
         { value: "MV", label: "MV" },
         { value: "NLV", label: "NLV" },
