@@ -532,7 +532,7 @@ const ArchiveData = () => {
                         {renderInput("parcel", "Parcel Number")}
                         {renderInput("sellerleagal", "Seller Legal Name")}
                         {renderInput("buyer", "Buyer")}
-                        {renderSelect("lender_name", "Lender", dropdowns.lender, "lender_name")}
+                        {renderSelect("lender", "Lender", dropdowns.lender, "lender")}
                         {renderInput("loanamount", "Loan Amount")}
                     </>
                 );
