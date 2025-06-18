@@ -611,10 +611,12 @@ const ArchiveData = () => {
         { value: 'landsale', label: 'Land Sales' }
     ];
 
-    const fieldsOptions = fieldList?.map(element => ({
-        value: element,
-        label: element
-    }));
+    const fieldsOptions = fieldList
+        ?.filter(element => element !== "Action")
+        .map(element => ({
+            value: element,
+            label: element
+        }));
 
     const yearsOptions = yearData?.map(element => ({
         value: element,
