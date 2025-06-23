@@ -278,7 +278,7 @@ const BuilderTable = () => {
 
   const handlePreview = async (e) => {
     setIsButtonDisabled(true);
-    if (reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") {
+    if (reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") {
       let start_Date = moment(startDate);
       let end_Date = moment(endDate);
       let days = end_Date.diff(start_Date, 'days', true);
@@ -323,6 +323,69 @@ const BuilderTable = () => {
               }
             });
           }
+        } catch (error) {
+          setIsLoading(false);
+          if (error.name === "HTTPError") {
+            const errorJson = await error.response.json();
+            setError(errorJson.message);
+          }
+          setError("Something went wrong");
+          setIsButtonDisabled(false);
+          setIsSavingReport(false);
+        }
+      } else {
+        setAlert(true);
+        setIsButtonDisabled(false);
+        setIsSavingReport(false);
+        setAlertMessage("Please select 12 month Period for your report.");
+        return;
+      }
+    } else if (reportType == "Closing Report(XLS)") {
+      let start_Date = moment(startDate);
+      let end_Date = moment(endDate);
+      let days = end_Date.diff(start_Date, 'days', true);
+      let totaldays = Math.ceil(days) + 1;
+
+      if (totaldays < 367) {
+        setAlert(false);
+        setIsLoading(true);
+        localStorage.setItem("start_date", startDate);
+        localStorage.setItem("end_date", endDate);
+        localStorage.setItem("report_type", reportType);
+
+        const reportdata = {
+          type: reportType,
+          start_date: startDate,
+          end_date: endDate,
+        };
+
+        const bearerToken = JSON.parse(localStorage.getItem("usertoken"));
+
+        try {
+          const response = await axios.post(
+            `${process.env.REACT_APP_IMAGE_URL}api/admin/report/export-reports`,
+            reportdata,
+            {
+              responseType: "arraybuffer",
+              headers: {
+                Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                Authorization: `Bearer ${bearerToken}`,
+              },
+            }
+          );
+
+          setIsLoading(false);
+          setIsButtonDisabled(false);
+          // Create a new Blob for XLS file
+          const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+          // Create a link to download the file
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `Closing ${startDate} to ${endDate}.xlsx`; // Save the file with .xlsx extension
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         } catch (error) {
           setIsLoading(false);
           if (error.name === "HTTPError") {
@@ -741,7 +804,7 @@ const BuilderTable = () => {
   const handleReportType = (e) => {
     setReportType(e.target.value);
     setAlert(false);
-    if (e.target.value == "Closing Report(PDF)" || e.target.value == "Market Share Analysis Report") {
+    if (e.target.value == "Closing Report(PDF)" || e.target.value == "Closing Report(XLS)" || e.target.value == "Market Share Analysis Report") {
       setMessage("Choose a 12 month Period for your report.");
     }
   }
@@ -1115,7 +1178,7 @@ const BuilderTable = () => {
                             <div className="col-md-12" style={{ marginTop: "10px" }}>
                               <div className="d-flex">
                                 <p className="text-center ms-4">
-                                  {(reportType == "Closing Report(PDF)" || reportType == "Market Share Analysis Report") ? message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
+                                  {(reportType == "Closing Report(PDF)" || reportType == "Closing Report(XLS)" || reportType == "Market Share Analysis Report") ? message : reportType == "LV Quartley Traffic and Sales Summary" ? "Select Year and Quarter" : reportType == "Subdivision Analysis Report" ? "Select builder and subdivision" : reportType == "List of Active New Home Builders" ? "" : "Select week ending date and click save"}
                                 </p>
                               </div>
                             </div>
