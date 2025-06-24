@@ -1,5 +1,6 @@
 import { SVGICON } from "../../constant/theme";
 
+const userRole = JSON.parse(localStorage.getItem("user")).role;
 export const MenuList = [
     //Content
 
@@ -95,11 +96,13 @@ export const MenuList = [
         iconStyle: SVGICON.GridDots,
         to: '/ccapn',
     },
-    {
+    ...(userRole === "Tester"
+    ? []
+    : [{
         title: 'Archive Data',
         iconStyle: SVGICON.ArchiveData,
         to: '/downloading-archive-data',
-    },
+    }]),
     {
         title: 'Subscribers',
         iconStyle: SVGICON.SubscribeData,

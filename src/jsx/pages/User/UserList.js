@@ -469,7 +469,9 @@ const UserList = () => {
     { value: "Account Admin	", label: "Account Admin	" },
     { value: "Data Uploader", label: "Data Uploader" },
     { value: "Admin", label: "Admin" },
-    { value: "Staff", label: "Staff" }
+    { value: "Staff", label: "Staff" },
+    { value: "Tester", label: "Tester" }
+
   ];
 
   const handleSelectRoleChange = (selectedItems) => {
