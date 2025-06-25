@@ -4,6 +4,7 @@ import Collapse from 'react-bootstrap/Collapse';
 /// Link
 import { Link } from "react-router-dom";
 import { MenuList } from './Menu';
+import { TesterMenuList} from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { StaffMenuList } from "./StaffMenu";
@@ -28,6 +29,8 @@ const SideBar = () => {
   } = useContext(ThemeContext);
 
   const [state, setState] = useReducer(reducer, initialState);
+  const [menuItems, setMenuItems] = useState([]);
+
 
   //For scroll
   const [hideOnScroll, setHideOnScroll] = useState(true)
@@ -55,14 +58,22 @@ const SideBar = () => {
   };
 
   useEffect(() => {
-    const userRole = JSON.parse(localStorage.getItem("user")).role;
-    setUserRole(userRole);
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const role = user?.role || "";
+    setUserRole(role);
+
+    const list = role.toLowerCase() === 'tester' ? TesterMenuList : MenuList;
+    setMenuItems(list);
+
   }, []);
 
   /// Path
   let path = window.location.pathname;
   path = path.split("/");
   path = path[path.length - 1];
+
+
   return (
     <div
       className={`deznav  border-right ${iconHover} ${sidebarposition.value === "fixed" &&
@@ -170,7 +181,7 @@ const SideBar = () => {
         : (
           <div className="deznav-scroll">
             <ul className="metismenu" id="menu">
-              {MenuList.map((data, index) => {
+              {menuItems.map((data, index) => {
             let menuClass = data.classsChange;
                 if (menuClass === "menu-title") {
                   return (
