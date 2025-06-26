@@ -664,6 +664,7 @@ const PriceList = () => {
             if (operator === '>=') return itemValue >= numberValue;
             if (operator === '<=') return itemValue <= numberValue;
             if (operator === '!=') return itemValue != numberValue;
+            if (operator === '=') return itemValue == numberValue;
 
             return itemValue === numberValue;
           });
