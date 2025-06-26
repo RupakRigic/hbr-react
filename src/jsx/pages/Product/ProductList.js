@@ -1140,34 +1140,54 @@ const ProductList = () => {
     let filtered = AllProductListExport;
 
     const applyNumberFilter = (items, query, key) => {
-      if (query) {
-        let operator = '=';
-        let value = query;
+  if (!query) return items;
 
-      const match = query.match(/^(>=|<=|!=|>|<|=)(.*)$/);
+  let operator = '=';
+  let value = query.trim();
 
-          if (match) {
-            operator = match[1]; // the operator (>=, <=, >, <, =, !=)
-            value = match[2].trim(); // the numeric or string value
-          }
+  // 1. Handle empty/null check first
+  if (value === '!') {
+    return items.filter(item => {
+      const val = item[key];
+      return val === null || val === '';
+    });
+  }
 
-        const numberValue = parseFloat(value);
-        if (!isNaN(numberValue)) {
-          return items.filter(item => {
-            const itemValue = parseFloat(item[key]);
-            if (operator === '>') return itemValue > numberValue;
-            if (operator === '<') return itemValue < numberValue;
-            if (operator === '>=') return itemValue >= numberValue;
-            if (operator === '<=') return itemValue <= numberValue;
-            if (operator === '!=') return itemValue != numberValue;
-            if (operator === '=') return itemValue == numberValue;
+  // 2. Handle range (e.g., "209#300")
+  if (value.includes('#')) {
+    const [min, max] = value.split('#').map(v => parseFloat(v.trim()));
+    return items.filter(item => {
+      const val = parseFloat(item[key]);
+      return !isNaN(val) && val >= min && val <= max;
+    });
+  }
 
-            return itemValue === numberValue;
-          });
-        }
-      }
-      return items;
-    };
+  // 3. Detect standard comparison operator
+  const match = query.match(/^(>=|<=|!=|>|<|=)(.*)$/);
+  if (match) {
+    operator = match[1];
+    value = match[2].trim();
+  }
+
+  const numberValue = parseFloat(value);
+  if (!isNaN(numberValue)) {
+    return items.filter(item => {
+      const val = parseFloat(item[key]);
+      if (isNaN(val)) return false;
+
+      if (operator === '>') return val > numberValue;
+      if (operator === '<') return val < numberValue;
+      if (operator === '>=') return val >= numberValue;
+      if (operator === '<=') return val <= numberValue;
+      if (operator === '!=') return val != numberValue;
+      if (operator === '=' || operator === '==') return val == numberValue;
+
+      return false;
+    });
+  }
+
+  return items;
+};
 
     filtered = applyNumberFilter(filtered, filterQueryCalculation.recentpricesqft, 'recentpricesqft');
     filtered = applyNumberFilter(filtered, filterQueryCalculation.price_changes_since_open, 'price_changes_since_open');
