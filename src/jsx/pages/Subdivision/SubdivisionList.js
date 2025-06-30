@@ -3452,7 +3452,7 @@ const SubdivisionList = () => {
                                 {column.id == "longitude" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
-                                {column.id == "gas Provider" &&
+                                 {column.id == "gas Provider" &&
                                   <td key={column.id} style={{ textAlign: "center" }}></td>
                                 }
                                 {column.id == "hOA Fee" &&
@@ -4283,7 +4283,7 @@ const SubdivisionList = () => {
                             <label className="fs-20" style={{ marginBottom: "0px" }}><b>THIS YEAR:</b></label><br />
                             <label style={{ marginLeft: "15px" }}>NET SALES:&nbsp;{SubdivisionDetails.year_net_sold || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>PERMITS:&nbsp;{SubdivisionDetails.permit_this_year || "NA"}</label><br />
-                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;{SubdivisionDetails?.builder?.closing_this_year || "NA"}</label><br />
+                            <label style={{ marginLeft: "15px" }}>CLOSINGS:&nbsp;{SubdivisionDetails?.closing_this_year || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>NET SALES PER MO:&nbsp;{SubdivisionDetails.avg_net_sales_per_month_this_year || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>CLOSINGS PER MO:&nbsp;{SubdivisionDetails.avg_closings_per_month_this_year || "NA"}</label><br />
                             <label style={{ marginLeft: "15px" }}>MED. CLOSINGS $:&nbsp;{<PriceComponent price={SubdivisionDetails.median_closing_price_this_year} /> || "NA"}</label><br />

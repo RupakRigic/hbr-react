@@ -128,6 +128,7 @@ const PermitList = () => {
     permitnumber: "",
     address1: "",
     address2: "",
+    gasprovider:"",
   });
   const [manageAccessOffcanvas, setManageAccessOffcanvas] = useState(false);
   const [accessList, setAccessList] = useState({});
@@ -425,6 +426,7 @@ const PermitList = () => {
       permitnumber: "",
       address1: "",
       address2: "",
+      gasprovider:"",
     });
   };
 
@@ -531,6 +533,9 @@ const PermitList = () => {
     { label: "All Single Story", key: "AllSingleStory" },
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
+    { label: "Description", key: "description" },
+    { label: "Gas Provider", key: "gasprovider" },
+
   ];
 
   const exportColumns = [
@@ -559,6 +564,8 @@ const PermitList = () => {
     { label: "All Single Story", key: "AllSingleStory" },
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
+        { label: "Description", key: "description" },
+    { label: "Gas Provider", key: "gasprovider" },
   ];
 
   const handleSelectAllToggle = () => {
@@ -1271,6 +1278,12 @@ const PermitList = () => {
         if (value === '_fkSubID') {
           value = 'subdivision_code';
         }
+        if (value === 'description') {
+          value = 'description';
+        }
+        if (value === 'gasprovider') {
+          value = 'gasprovider';
+        }
         return {
           value: value,
           label: field,
@@ -1723,7 +1736,9 @@ const PermitList = () => {
                                       column.id == "all Single Story" ? "single" :
                                       column.id == "date Added" ? "created_at" :
                                       column.id == "__pkPermitID" ? "id" :
-                                      column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                      column.id == "_fkSubID" ? "subdivision_code" : 
+                                      column.id == "description" ? "description" : 
+                                      column.id == "gasprovider" ? "gasprovider" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
@@ -1744,7 +1759,9 @@ const PermitList = () => {
                                             column.id == "all Single Story" ? "single" :
                                             column.id == "date Added" ? "created_at" :
                                             column.id == "__pkPermitID" ? "id" :
-                                            column.id == "_fkSubID" ? "subdivision_code" : toCamelCase(column.id))
+                                            column.id == "_fkSubID" ? "subdivision_code" : 
+                                            column.id == "description" ? "description" : 
+                                            column.id == "gasprovider" ? "gasprovider" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1754,7 +1771,7 @@ const PermitList = () => {
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "lot Number" && column.id !== "permit Number" && column.id !== "plan" && column.id !== "sub Legal Name" && column.id !== "product Type" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
-                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "action"
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "description" && column.id !== "gasprovider" && column.id !== "action"
                                 ) &&
                                   (
                                     <>
@@ -1878,6 +1895,12 @@ const PermitList = () => {
                                   {column.id == "_fkSubID" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
+                                  {column.id == "description" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "gasprovider" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
@@ -1998,6 +2021,12 @@ const PermitList = () => {
                                     }
                                     {column.id == "_fkSubID" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.subdivision_code}</td>
+                                    }
+                                    {column.id == "description" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.description}</td>
+                                    }
+                                    {column.id == "gas Provider" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.gasprovider}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>

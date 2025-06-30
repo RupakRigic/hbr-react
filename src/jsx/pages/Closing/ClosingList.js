@@ -364,7 +364,8 @@ const ClosingList = () => {
       lotwidth: "",
       lotsize: "",
       age: "",
-      single: ""
+      single: "",
+      gasprovider: "",
     });
     setSelectedClosingType([]);
     setSelectedBuilderName([]);
@@ -486,6 +487,7 @@ const ClosingList = () => {
     { label: 'Age Restricted', key: 'Age_Restricted' },
     { label: 'All Single Story', key: 'All_Single_Story' },
     { label: 'Fk Sub Id', key: 'fkSubID' },
+    { label: 'Gas Provider', key: 'gasprovider' },
   ];
 
   const exportColumns = [
@@ -513,6 +515,8 @@ const ClosingList = () => {
     { label: 'Age Restricted', key: 'Age_Restricted' },
     { label: 'All Single Story', key: 'All_Single_Story' },
     { label: 'Fk Sub Id', key: 'fkSubID' },
+    { label: 'Gas Provider', key: 'gasprovider' },
+
   ];
 
   const handleSelectAllToggle = () => {
@@ -1404,6 +1408,9 @@ const ClosingList = () => {
         if (value === '_fkSubID') {
           value = 'subdivision_code';
         }
+         if (value === 'gasprovider') {
+          value = 'gasprovider';
+        }
         if (value === 'loanAmount') {
           value = 'loanamount';
         }
@@ -1776,6 +1783,7 @@ const ClosingList = () => {
                                       column.id == "date Added" ? "dateadded" :
                                       column.id == "__pkRecordID" ? "id" :
                                       column.id == "_fkSubID" ? "subdivision_code" :
+                                      column.id == "gas Provider" ? "gasprovider" :
                                       column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                   ) && (
                                       <span>
@@ -1798,6 +1806,7 @@ const ClosingList = () => {
                                             column.id == "date Added" ? "dateadded" :
                                             column.id == "__pkRecordID" ? "id" :
                                             column.id == "_fkSubID" ? "subdivision_code" :
+                                            column.id == "gas Provider" ? "gasprovider" :
                                             column.id == "loan Amount" ? "loanamount" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
@@ -1808,7 +1817,7 @@ const ClosingList = () => {
                                   column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "address" && column.id !== "parcel Number" &&
                                   column.id !== "sub Legal Name" && column.id !== "seller Legal Name" && column.id !== "buyer Name" && column.id !== "lender" && column.id !== "type" &&
                                   column.id !== "product Type" && column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
-                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action"
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "gas Provider" && column.id !== "action"
                                 ) &&
                                   (
                                     <>
@@ -1932,6 +1941,9 @@ const ClosingList = () => {
                                   {column.id == "_fkSubID" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
+                                  {column.id == "gas Provider" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
@@ -2048,6 +2060,9 @@ const ClosingList = () => {
                                     }
                                     {column.id == "_fkSubID" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.subdivision_code}</td>
+                                    }
+                                    {column.id == "gas Provider" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.gasprovider}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
