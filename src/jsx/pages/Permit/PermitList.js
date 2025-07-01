@@ -534,7 +534,7 @@ const PermitList = () => {
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
     { label: "Description", key: "description" },
-    { label: "Gas Provider", key: "gasprovider" },
+    { label: "Gas Provider", key: "gas Provider" },
 
   ];
 
@@ -565,7 +565,7 @@ const PermitList = () => {
     { label: "Permit id", key: "PermitID" },
     { label: "Fk sub id", key: "fkSubID" },
         { label: "Description", key: "description" },
-    { label: "Gas Provider", key: "gasprovider" },
+    { label: "Gas Provider", key: "gas Provider" },
   ];
 
   const handleSelectAllToggle = () => {
@@ -1281,7 +1281,7 @@ const PermitList = () => {
         if (value === 'description') {
           value = 'description';
         }
-        if (value === 'gasprovider') {
+        if (value === 'gas Provider') {
           value = 'gasprovider';
         }
         return {
@@ -1738,7 +1738,7 @@ const PermitList = () => {
                                       column.id == "__pkPermitID" ? "id" :
                                       column.id == "_fkSubID" ? "subdivision_code" : 
                                       column.id == "description" ? "description" : 
-                                      column.id == "gasprovider" ? "gasprovider" : toCamelCase(column.id))
+                                      column.id == "gas Provider" ? "gasprovider" : toCamelCase(column.id))
                                   ) && (
                                       <span>
                                         {column.id != "action" && sortConfig.find(
@@ -1761,7 +1761,7 @@ const PermitList = () => {
                                             column.id == "__pkPermitID" ? "id" :
                                             column.id == "_fkSubID" ? "subdivision_code" : 
                                             column.id == "description" ? "description" : 
-                                            column.id == "gasprovider" ? "gasprovider" : toCamelCase(column.id))
+                                            column.id == "gas Provider" ? "gasprovider" : toCamelCase(column.id))
                                         ).direction === "asc" ? "↑" : "↓"}
                                       </span>
                                     )}
@@ -1771,7 +1771,7 @@ const PermitList = () => {
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "lot Number" && column.id !== "permit Number" && column.id !== "plan" && column.id !== "sub Legal Name" && column.id !== "product Type" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
-                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "description" && column.id !== "gasprovider" && column.id !== "action"
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "description" && column.id !== "gas Provider" && column.id !== "action"
                                 ) &&
                                   (
                                     <>
@@ -1898,7 +1898,7 @@ const PermitList = () => {
                                   {column.id == "description" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "gasprovider" &&
+                                  {column.id == "gas Provider" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "action" &&
