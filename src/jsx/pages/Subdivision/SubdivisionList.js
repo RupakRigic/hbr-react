@@ -2977,6 +2977,17 @@ const SubdivisionList = () => {
     }
   };
 
+    const getStatusLabel = (status) => {
+    const statusMap = {
+      0: "Sold Out",
+      1: "Active",
+      2: "Future",
+      3: "Close",
+    };
+
+    return statusMap[status] || "Unknown";
+  };
+
   return (
     <Fragment>
       <MainPagetitle
@@ -4312,6 +4323,7 @@ const SubdivisionList = () => {
                                 <tr style={{ textAlign: "center" }}>
                                   <th><strong>No.</strong></th>
                                   <th><strong>Name</strong></th>
+                                  <th><strong>Status</strong></th>
                                   <th><strong>SqFt</strong></th>
                                   <th><strong>Stories</strong></th>
                                   <th><strong>Bedrooms</strong></th>
@@ -4337,6 +4349,7 @@ const SubdivisionList = () => {
                                       >
                                         <td>{index + 1}</td>
                                         <td>{element.name}</td>
+                                        <td>{getStatusLabel(element.status)}</td>
                                         <td>{element.sqft}</td>
                                         <td>{element.stories}</td>
                                         <td>{element.bedroom}</td>
