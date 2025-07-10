@@ -127,11 +127,6 @@ export const TesterMenuList = [
         to: '/filterbaseprice',
     },
     {
-        title: 'Scrap Price List',
-        iconStyle: SVGICON.Pages,
-        to: '/scrapepricelist',
-    },
-    {
         title: 'Closings',
         iconStyle: SVGICON.CoreHr,
         to: '/filterclosings',
