@@ -23,6 +23,15 @@ const [rememberMe, setRememberMe] = useState(() =>
   var d = new Date();
   const [forgotModelShow, setForgotModelShow] = useState(false);
 
+  useEffect(() => {
+    if (localStorage.getItem("usertoken")) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+      localStorage.clear();
+    }
+  }, []);
+
 
   const handleRememberMeChange = () => {
     setRememberMe((prevValue) => !prevValue); // Toggle the remember me value

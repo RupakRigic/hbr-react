@@ -111,20 +111,20 @@ const allroutes = [
   },
   { url: "/userlist", 
     component: <UserListList />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"] 
   },
   { url: "/userlist/accountAdmin", 
     component: <AccountAdminUser />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"] 
   },
   { url: "/useranalytics/:id", 
     component: <UserAnalyticsList />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"] 
   },
   {
     url: "/userupdate/:id",
     component: <UserUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
   },
   { url: "/permitlist", 
     component: <PermitList />, 
@@ -169,25 +169,25 @@ const allroutes = [
   {
     url: "/weekly-data",
     component: <WeeklyData />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
   },
   {
     url: "/weekly-data-index",
     component: <WeeklyDataIndex />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
   },
   { url: "/files", 
     component: <File />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"] 
   },
   { url: "/report", 
     component: <Report />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"] 
   },
   {
     url: "/report-list",
     component: <ReportList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
   },
   {
     url: "/google-map-locator",
@@ -197,7 +197,7 @@ const allroutes = [
   {
     url: "/ccapn",
     component: <CCAPNList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin"],
   },
   {
     url: "/downloading-archive-data",
@@ -217,12 +217,12 @@ const allroutes = [
   {
     url: "/subscriptionplan",
     component: <SubscriptionPlan />,
-    allowedRoles: ["Standard User", "Data Uploader", "Account Admin","Tester"],
+    allowedRoles: ["Standard User", "Data Uploader", "Account Admin"],
   },
   {
     url: "/subscriptionlist",
     component: <SubscriptionList />,
-    allowedRoles: ["Standard User", "Data Uploader", "Account Admin","Tester"],
+    allowedRoles: ["Standard User", "Data Uploader", "Account Admin"],
   },
   {
     url: "/filterbuilder",
@@ -272,7 +272,7 @@ const allroutes = [
   {
     url: "/notifyuserlist",
     component: <NotifyAdminList />,
-    allowedRoles: ["Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Staff"],
   },
   // {
   //   url: "/thank-you",
