@@ -476,7 +476,7 @@ const UserUpdate = () => {
                           </div>
                         }
 
-                        {companies.map((company, index) => (
+                        {companies?.map((company, index) => (
                           <>
                             <div className="col-xl-6 mb-3" key={index}>
                               <label htmlFor={getFieldName(index)} className="form-label">

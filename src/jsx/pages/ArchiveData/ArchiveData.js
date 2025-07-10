@@ -651,7 +651,7 @@ const ArchiveData = () => {
                                         <div className="d-flex text-nowrap justify-content-between align-items-center">
                                             <h4 className="heading mb-0">Archive Data List</h4>
                                         </div>
-                                        {SyestemUserRole == "Data Uploader" || SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? ("") : (
+                                        {SyestemUserRole == "Data Uploader" || SyestemUserRole == "User" || SyestemUserRole == "Tester" || SyestemUserRole == "Standard User" ? ("") : (
                                             <div className="d-flex justify-content-between">
                                                 <div>
                                                     <Button

@@ -571,6 +571,7 @@ const CCAPNList = () => {
                     <div className="mt-2">
                       {SyestemUserRole == "Data Uploader" ||
                         SyestemUserRole == "User" ||
+                        SyestemUserRole == "Tester" ||
                         SyestemUserRole == "Standard User" ? (
                         ""
                       ) : (

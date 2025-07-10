@@ -1524,7 +1524,7 @@ const ClosingList = () => {
                     </div>
 
                     <div className="mt-2" style={{width: "100%"}}>
-                      {SyestemUserRole == "Data Uploader" ||
+                      {SyestemUserRole == "Data Uploader" || SyestemUserRole == "Tester" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div className="d-flex" style={{ marginTop: "10px" }}>
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
@@ -1544,18 +1544,35 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                          <button disabled={excelDownload || ClosingList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
-                            <div style={{ fontSize: "11px" }}>
-                              <i class="fas fa-file-export" />&nbsp;
-                              {excelDownload ? "Downloading..." : "Export"}
-                            </div>
-                          </button>
+                          {SyestemUserRole != "Tester" &&
+                            <button disabled={excelDownload || ClosingList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
+                              <div style={{ fontSize: "11px" }}>
+                                <i class="fas fa-file-export" />&nbsp;
+                                {excelDownload ? "Downloading..." : "Export"}
+                              </div>
+                            </button>
+                          }
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;
                               Filter
                             </div>
                           </button>
+                          {SyestemUserRole == "Tester" &&
+                            <Button
+                              className="btn btn-primary btn-sm me-1"
+                              onClick={() => !excelLoading ? addToBuilderList() : ""}
+                            >
+                              {excelLoading ?
+                                <div class="spinner-border spinner-border-sm" role="status" />
+                                :
+                                <div style={{ fontSize: "11px" }}>
+                                  <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
+                                  Map
+                                </div>
+                              }
+                            </Button>
+                          }
                         </div>
                       ) : (
                         <div className="d-flex">
@@ -1576,13 +1593,12 @@ const ClosingList = () => {
                               Sort
                             </div>
                           </Button>
-                                                    {SyestemUserRole != 'Tester' && (
                           <button disabled={excelDownload || ClosingList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
                               <i class="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
-                          </button>)}
+                          </button>
                           <button className="btn btn-success btn-sm me-1" onClick={() => setManageFilterOffcanvas(true)} title="Filter">
                             <div style={{ fontSize: "11px" }}>
                               <i className="fa fa-filter" />&nbsp;

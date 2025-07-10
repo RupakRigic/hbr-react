@@ -378,7 +378,7 @@ const File = () => {
                     </div>
 
                     <div className="mt-2" style={{ width: "100%" }}>
-                      {SyestemUserRole == "Data Uploader" ||
+                      {SyestemUserRole == "Data Uploader" || SyestemUserRole == "Tester" ||
                         SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
                         <div>
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">

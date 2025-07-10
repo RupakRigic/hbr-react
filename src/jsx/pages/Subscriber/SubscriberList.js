@@ -78,7 +78,7 @@ const SubscriberList = () => {
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Subscribers List</h4>
                     </div>
-                    {SyestemUserRole == "Data Uploader" || SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? ("") : (
+                    {SyestemUserRole == "Data Uploader" || SyestemUserRole == "Tester" || SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? ("") : (
                       <div className="d-flex justify-content-between">
                         {/* Button place */}
                       </div>

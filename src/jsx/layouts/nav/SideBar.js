@@ -4,7 +4,7 @@ import Collapse from 'react-bootstrap/Collapse';
 /// Link
 import { Link } from "react-router-dom";
 import { MenuList } from './Menu';
-import { TesterMenuList} from './Menu';
+import { TesterMenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { StaffMenuList } from "./StaffMenu";
@@ -58,21 +58,17 @@ const SideBar = () => {
   };
 
   useEffect(() => {
-
     const user = JSON.parse(localStorage.getItem("user"));
     const role = user?.role || "";
-    setUserRole(role);
-
     const list = role.toLowerCase() === 'tester' ? TesterMenuList : MenuList;
+    setUserRole(role);
     setMenuItems(list);
-
   }, []);
 
   /// Path
   let path = window.location.pathname;
   path = path.split("/");
   path = path[path.length - 1];
-
 
   return (
     <div
@@ -88,7 +84,7 @@ const SideBar = () => {
       {userRole == "Staff" ?
         <div className="deznav-scroll">
           <ul className="metismenu" id="menu">
-            {StaffMenuList.map((data, index) => {
+            {StaffMenuList?.map((data, index) => {
               let menuClass = data.classsChange;
               if (menuClass === "menu-title") {
                 return (
@@ -181,8 +177,8 @@ const SideBar = () => {
         : (
           <div className="deznav-scroll">
             <ul className="metismenu" id="menu">
-              {menuItems.map((data, index) => {
-            let menuClass = data.classsChange;
+              {menuItems?.map((data, index) => {
+                let menuClass = data.classsChange;
                 if (menuClass === "menu-title") {
                   return (
                     <li className={menuClass} key={index} >{data.title}</li>
@@ -264,7 +260,6 @@ const SideBar = () => {
                           }
                         </Link>
                       }
-
                     </li>
                   )
                 }
@@ -272,7 +267,7 @@ const SideBar = () => {
             </ul>
           </div>
         )
-      } 
+      }
     </div>
   );
 };
