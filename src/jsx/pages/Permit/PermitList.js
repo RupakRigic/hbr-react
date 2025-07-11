@@ -1975,25 +1975,25 @@ const PermitList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.contractor}</td>
                                     }
                                     {column.id == "square Footage" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sqft}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.sqft == 0 ? "" : element.sqft}</td>
                                     }
                                     {column.id == "owner" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.owner}</td>
                                     }
                                     {column.id == "lot Number" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotnumber}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.lotnumber == 0 ? "" : element.lotnumber}</td>
                                     }
                                     {column.id == "permit Number" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.permitnumber}</td>
                                     }
                                     {column.id == "plan" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.plan === "" || element.plan === null ? "NA" : element.plan}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.plan == "" || element.plan == null ? "NA" : element.plan}</td>
                                     }
                                     {column.id == "sub Legal Name" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.sublegal_name}</td>
                                     }
                                     {column.id == "value" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.value}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.value == 0 ? "" : element.value}</td>
                                     }
                                     {column.id == "product Type" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.product_type}</td>
@@ -2008,24 +2008,24 @@ const PermitList = () => {
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zipcode}</td>
                                     }
                                     {column.id == "lot Width" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotwidth == 0 ? "" : element.subdivision?.lotwidth}</td>
                                     }
                                     {column.id == "lot Size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize}</td>
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.lotsize == 0 ? "" : element.subdivision?.lotsize}</td>
                                     }
                                     {column.id == "zoning" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.zoning}</td>
                                     }
                                     {column.id == "age Restricted" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision && element.subdivision.age === 1 && "Yes"}
-                                        {element.subdivision && element.subdivision.age === 0 && "No"}
+                                        {element.subdivision && element.subdivision.age == 1 && "Yes"}
+                                        {element.subdivision && element.subdivision.age == 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "all Single Story" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
-                                        {element.subdivision && element.subdivision.single === 1 && "Yes"}
-                                        {element.subdivision && element.subdivision.single === 0 && "No"}
+                                        {element.subdivision && element.subdivision.single == 1 && "Yes"}
+                                        {element.subdivision && element.subdivision.single == 0 && "No"}
                                       </td>
                                     }
                                     {column.id == "date Added" &&
