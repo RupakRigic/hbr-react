@@ -584,7 +584,7 @@ const CCAPNList = () => {
                               title="Sorted Fields"
                             >
                               <div style={{ fontSize: "11px" }}>
-                                <i class="fa-solid fa-sort" />&nbsp;
+                                <i className="fa-solid fa-sort" />&nbsp;
                                 Sort
                               </div>
                             </Button>
@@ -758,7 +758,7 @@ const CCAPNList = () => {
                         <tbody style={{ textAlign: "center" }}>
                           {ccapnList !== null && ccapnList.length > 0 ? (
                             ccapnList.map((element, index) => (
-                              <tr style={{ textAlign: "center" }}>
+                              <tr key={index} style={{ textAlign: "center" }}>
                                 <td>
                                   <input
                                     type="checkbox"

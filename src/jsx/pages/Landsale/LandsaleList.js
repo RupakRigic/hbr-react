@@ -1163,7 +1163,7 @@ const LandsaleList = () => {
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Land Sale List</h4>
                       <div
-                        class="btn-group mx-5"
+                        className="btn-group mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
@@ -1195,14 +1195,14 @@ const LandsaleList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
                           {SyestemUserRole != "Tester" &&
                             <button disabled={excelDownload || LandsaleList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                               <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
+                                <i className="fas fa-file-export" />&nbsp;
                                 {excelDownload ? "Downloading..." : "Export"}
                               </div>
                             </button>
@@ -1219,7 +1219,7 @@ const LandsaleList = () => {
                               onClick={() => !excelLoading ? addToBuilderList() : ""}
                             >
                               {excelLoading ?
-                                <div class="spinner-border spinner-border-sm" role="status" />
+                                <div className="spinner-border spinner-border-sm" role="status" />
                                 :
                                 <div style={{ fontSize: "11px" }}>
                                   <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
@@ -1244,13 +1244,13 @@ const LandsaleList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              <i className="fa-solid fa-sort"></i>&nbsp;
                               Sort
                             </div>
                           </Button>
                           <button disabled={excelDownload || LandsaleList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fas fa-file-export" />&nbsp;
+                              <i className="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
@@ -1265,7 +1265,7 @@ const LandsaleList = () => {
                             onClick={() => !excelLoading ? addToBuilderList : ""}
                           >
                             {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
+                              <div className="spinner-border spinner-border-sm" role="status" />
                               :
                               <div style={{ fontSize: "11px" }}>
                                 <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
@@ -2136,7 +2136,7 @@ const LandsaleList = () => {
           <Modal.Footer>
             <button
               varient="primary"
-              class="btn btn-primary"
+              className="btn btn-primary"
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >

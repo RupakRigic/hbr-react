@@ -8,7 +8,7 @@ import Select from "react-select";
 import ClipLoader from 'react-spinners/ClipLoader';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
-const LandsaleOffcanvas = forwardRef((props) => {
+const LandsaleOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [error, setError] = useState('');

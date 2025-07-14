@@ -6,7 +6,7 @@ import AdminProductService from '../../../API/Services/AdminService/AdminProduct
 import Select from "react-select";
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
   const [SubdivisionCode, setSubdivisionCode] = useState([]);

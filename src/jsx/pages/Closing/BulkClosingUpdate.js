@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import Select from "react-select";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [Error, setError] = useState('');

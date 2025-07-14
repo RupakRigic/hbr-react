@@ -4,7 +4,7 @@ import { Offcanvas } from 'react-bootstrap';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import swal from "sweetalert";
 
-const BuilderOffcanvas = forwardRef((props) => {
+const BuilderOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [file, setFile] = useState('');

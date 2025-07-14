@@ -8,7 +8,7 @@ import AdminLandsaleService from "../../../API/Services/AdminService/AdminLandsa
 import ClipLoader from 'react-spinners/ClipLoader';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [SubdivisionCode, setSubdivisionCode] = useState([]);

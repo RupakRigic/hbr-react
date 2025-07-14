@@ -7,7 +7,7 @@ import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTra
 import Select from "react-select";
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const TrafficsaleOffcanvas = forwardRef((props) => {
+const TrafficsaleOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [Error, setError] = useState('');

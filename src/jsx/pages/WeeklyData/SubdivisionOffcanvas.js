@@ -6,7 +6,7 @@ import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilder
 import Select from "react-select";
 import swal from "sweetalert";
 
-const SubdivisionOffcanvas = forwardRef((props) => {
+const SubdivisionOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [BuilderCode, setBuilderCode] = useState(null);

@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import AdminPermitService from "../../../API/Services/AdminService/AdminPermitService";
 import Select from "react-select";
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [SubdivisionCode, setSubdivisionCode] = useState([]);

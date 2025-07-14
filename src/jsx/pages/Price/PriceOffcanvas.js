@@ -9,7 +9,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
-const ProductOffcanvas = forwardRef((props) => {
+const ProductOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [error, setError] = useState('');

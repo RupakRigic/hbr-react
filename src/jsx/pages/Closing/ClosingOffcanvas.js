@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import AdminClosingService from "../../../API/Services/AdminService/AdminClosingService";
 import Select from "react-select";
 
-const ClosingOffcanvas = forwardRef((props) => {
+const ClosingOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [Error, setError] = useState('');

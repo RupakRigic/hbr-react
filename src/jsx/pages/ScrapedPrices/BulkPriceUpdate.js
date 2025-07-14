@@ -9,7 +9,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import AdminSubdevisionService from '../../../API/Services/AdminService/AdminSubdevisionService';
 
-const BulkPriceUpdate = forwardRef((props) => {
+const BulkPriceUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [error, setError] = useState('');

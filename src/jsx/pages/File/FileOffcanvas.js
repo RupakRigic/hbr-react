@@ -4,7 +4,7 @@ import { Offcanvas } from 'react-bootstrap';
 import AdminCSVFileService from "../../../API/Services/AdminService/AdminCSVFileService";
 import swal from "sweetalert";
 
-const ProductOffcanvas = forwardRef((props) => {
+const ProductOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAddFile, seCanvasShowAddFile } = props;
 
     const [Error, setError] = useState('');

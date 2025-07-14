@@ -454,8 +454,8 @@ const GoogleMapLocator = () => {
                   <i className="fa fa-arrow-left" aria-hidden="true" style={{ marginRight: "10px" }}></i>
                   Go Back
                </Button>
-               {drawing && <Button className="btn btn-primary btn-sm me-1" title="Undo" style={{ marginTop: "5px", marginLeft: "5px" }} onClick={handleUndo}><i class="fa fa-undo" aria-hidden="true"></i></Button>}
-               {drawing && <Button className="btn btn-primary btn-sm me-1" title="Redo" style={{ marginTop: "5px", marginLeft: "5px" }} onClick={handleRedo}><i class="fa fa-redo" aria-hidden="true"></i></Button>}
+               {drawing && <Button className="btn btn-primary btn-sm me-1" title="Undo" style={{ marginTop: "5px", marginLeft: "5px" }} onClick={handleUndo}><i className="fa fa-undo" aria-hidden="true"></i></Button>}
+               {drawing && <Button className="btn btn-primary btn-sm me-1" title="Redo" style={{ marginTop: "5px", marginLeft: "5px" }} onClick={handleRedo}><i className="fa fa-redo" aria-hidden="true"></i></Button>}
             </div>
             <GoogleMap
                mapContainerStyle={containerStyle}

@@ -1348,7 +1348,7 @@ const BuilderTable = () => {
               </div>
             ) : (Error != "" && pdfUrl == "" ? (
               <div style={{ textAlign: "center", marginTop: "30%", fontSize: "60px", color: "black" }}>
-                <i class="bi bi-exclamation-octagon" />
+                <i className="bi bi-exclamation-octagon" />
               </div>
             ) : (
               <embed

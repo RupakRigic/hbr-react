@@ -7,7 +7,7 @@ import AdminTrafficsaleService from "../../../API/Services/AdminService/AdminTra
 import Select from "react-select";
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const BulkTrafficUpdate = forwardRef((props) => {
+const BulkTrafficUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [SubdivisionCode, setSubdivisionCode] = useState([]);

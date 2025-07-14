@@ -7,7 +7,7 @@ import Select from "react-select";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
   const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
   const [isLoading, setIsLoading] = useState(false);

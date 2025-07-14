@@ -753,7 +753,7 @@ const UserList = () => {
                                             to={`/useranalytics/${element.id}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
-                                            <i class="fa-regular fa-eye"></i>
+                                            <i className="fa-regular fa-eye"></i>
                                           </Link>
                                           <Link
                                             onClick={() =>

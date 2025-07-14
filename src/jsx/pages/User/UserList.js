@@ -570,7 +570,7 @@ const UserList = () => {
                   <div className="tbl-caption d-flex justify-content-between text-wrap align-items-center pb-0">
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">User List</h4>
-                      <div class="btn-group mx-5" role="group" aria-label="Basic example"></div>
+                      <div className="btn-group mx-5" role="group" aria-label="Basic example"></div>
                       <ColumnReOrderPopup
                         open={openDialog}
                         fieldList={fieldList}
@@ -597,14 +597,14 @@ const UserList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
                           {SyestemUserRole != "Tester" &&
                             <button disabled={excelDownload || userList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                               <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
+                                <i className="fas fa-file-export" />&nbsp;
                                 {excelDownload ? "Downloading..." : "Export"}
                               </div>
                             </button>
@@ -631,13 +631,13 @@ const UserList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              <i className="fa-solid fa-sort"></i>&nbsp;
                               Sort
                             </div>
                           </Button>
                           <button disabled={excelDownload || userList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fas fa-file-export" />&nbsp;
+                              <i className="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
@@ -904,7 +904,7 @@ const UserList = () => {
                                             to={`/useranalytics/${element.id}?page=${currentPage}`}
                                             className="btn btn-primary shadow btn-xs sharp me-1"
                                           >
-                                            <i class="fa-regular fa-eye"></i>
+                                            <i className="fa-regular fa-eye"></i>
                                           </Link>
                                           <Link
                                             onClick={() =>
@@ -1382,7 +1382,7 @@ const UserList = () => {
           <Modal.Footer>
             <button
               varient="primary"
-              class="btn btn-primary"
+              className="btn btn-primary"
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >

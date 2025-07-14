@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import AdminPermitService from '../../../API/Services/AdminService/AdminPermitService';
 import Select from "react-select";
 
-const PermitOffcanvas = forwardRef((props) => {
+const PermitOffcanvas = forwardRef((props, ref) => {
     const { canvasShowAdd, seCanvasShowAdd } = props;
 
     const [Error, setError] = useState('');

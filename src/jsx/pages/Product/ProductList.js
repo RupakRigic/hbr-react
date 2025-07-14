@@ -1759,7 +1759,7 @@ const ProductList = () => {
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">Product List</h4>
                       <div
-                        class="btn-group mx-5"
+                        className="btn-group mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
@@ -1791,14 +1791,14 @@ const ProductList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
                           {SyestemUserRole != "Tester" &&
                             <button disabled={excelDownload || productList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                               <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
+                                <i className="fas fa-file-export" />&nbsp;
                                 {excelDownload ? "Downloading..." : "Export"}
                               </div>
                             </button>
@@ -1815,7 +1815,7 @@ const ProductList = () => {
                                 onClick={() => !excelLoading ? addToBuilderList() : ""}
                               >
                                 {excelLoading ?
-                                  <div class="spinner-border spinner-border-sm" role="status" />
+                                  <div className="spinner-border spinner-border-sm" role="status" />
                                   :
                                   <div style={{ fontSize: "11px" }}>
                                     <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
@@ -1840,13 +1840,13 @@ const ProductList = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
                           <button disabled={excelDownload || productList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fas fa-file-export" />&nbsp;
+                              <i className="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
@@ -1862,7 +1862,7 @@ const ProductList = () => {
                             title="Map"
                           >
                             {excelLoading ?
-                              <div class="spinner-border spinner-border-sm" role="status" />
+                              <div className="spinner-border spinner-border-sm" role="status" />
                               :
                               <div style={{ fontSize: "11px" }}>
                                 <i className="fa fa-map-marker" aria-hidden="true" />&nbsp;
@@ -2989,7 +2989,7 @@ const ProductList = () => {
           <Modal.Footer>
             <button 
               varient="primary" 
-              class="btn btn-primary" 
+              className="btn btn-primary" 
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >

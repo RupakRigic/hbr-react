@@ -642,7 +642,7 @@ const ArchiveData = () => {
                                                         variant="primary"
                                                         onClick={() => HandlePopupShow()}
                                                     >
-                                                        <i class="bi bi-plus"></i> Add Download Request
+                                                        <i className="bi bi-plus"></i> Add Download Request
                                                     </Button>
                                                 </div>
                                             </div>

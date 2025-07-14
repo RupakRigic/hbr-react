@@ -1786,7 +1786,7 @@ const BuilderTable = () => {
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0-imp">Builder List</h4>
                       <div
-                        class="btn-group mx-5"
+                        className="btn-group mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
@@ -1818,14 +1818,14 @@ const BuilderTable = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
                           {SyestemUserRole != "Tester" &&
                             <button disabled={excelDownload || BuilderList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                               <div style={{ fontSize: "11px" }}>
-                                <i class="fas fa-file-export" />&nbsp;
+                                <i className="fas fa-file-export" />&nbsp;
                                 {excelDownload ? "Downloading..." : "Export"}
                               </div>
                             </button>
@@ -1852,13 +1852,13 @@ const BuilderTable = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort"></i>&nbsp;
+                              <i className="fa-solid fa-sort"></i>&nbsp;
                               Sort
                             </div>
                           </Button>
                           <button disabled={excelDownload || BuilderList?.length === 0} onClick={() => setExportModelShow(true)} className="btn btn-primary btn-sm me-1" title="Export .csv">
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fas fa-file-export" />&nbsp;
+                              <i className="fas fa-file-export" />&nbsp;
                               {excelDownload ? "Downloading..." : "Export"}
                             </div>
                           </button>
@@ -3198,7 +3198,7 @@ const BuilderTable = () => {
           <Modal.Footer>
             <button
               varient="primary"
-              class="btn btn-primary"
+              className="btn btn-primary"
               disabled={excelDownload}
               onClick={handleDownloadExcel}
             >

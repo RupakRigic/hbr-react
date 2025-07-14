@@ -11,7 +11,7 @@ import swal from "sweetalert";
 import Select from "react-select";
 import AdminSubdevisionService from "../../../API/Services/AdminService/AdminSubdevisionService";
 
-const ProductOffcanvas = forwardRef((props) => {
+const ProductOffcanvas = forwardRef((props, ref) => {
   const { canvasShowAdd, seCanvasShowAdd } = props;
   const navigate = useNavigate();
   const [Error, setError] = useState("");

@@ -346,13 +346,13 @@ const File = () => {
                     <div className="d-flex text-nowrap justify-content-between align-items-center">
                       <h4 className="heading mb-0">File List</h4>
                       <div
-                        class="btn-group mx-5"
+                        className="btn-group mx-5"
                         role="group"
                         aria-label="Basic example"
                       >
-                        {/* <button class="btn btn-secondary cursor-none">
+                        {/* <button className="btn btn-secondary cursor-none">
                           {" "}
-                          <i class="fas fa-search"></i>{" "}
+                          <i className="fas fa-search"></i>{" "}
                         </button> */}
                         {/* <Form.Control
                           type="text"
@@ -391,7 +391,7 @@ const File = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>
@@ -411,7 +411,7 @@ const File = () => {
                             title="Sorted Fields"
                           >
                             <div style={{ fontSize: "11px" }}>
-                              <i class="fa-solid fa-sort" />&nbsp;
+                              <i className="fa-solid fa-sort" />&nbsp;
                               Sort
                             </div>
                           </Button>

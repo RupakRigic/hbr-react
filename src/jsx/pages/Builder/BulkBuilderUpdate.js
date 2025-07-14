@@ -5,7 +5,7 @@ import swal from "sweetalert";
 import Select from "react-select";
 import AdminBuilderService from '../../../API/Services/AdminService/AdminBuilderService';
 
-const BulkLandsaleUpdate = forwardRef((props) => {
+const BulkLandsaleUpdate = forwardRef((props, ref) => {
     const { selectedLandSales, canvasShowEdit, seCanvasShowEdit } = props;
 
     const [file, setFile] = useState('');
