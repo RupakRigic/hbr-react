@@ -29,7 +29,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
       }));
       SetSubdivisionList(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);

@@ -155,9 +155,7 @@ const File = () => {
       const response = await AdminCSVFileService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -194,7 +192,6 @@ const File = () => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log(error)
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -738,8 +735,6 @@ const File = () => {
                             type="checkbox"
                             // defaultChecked={(() => {
                             //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
                             //   return isChecked;
                             // })()}
                             checked={checkedItems[element.field_name]}

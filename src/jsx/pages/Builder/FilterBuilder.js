@@ -67,7 +67,6 @@ const FilterBuilder = () => {
             }));
             setBuilderListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
             }

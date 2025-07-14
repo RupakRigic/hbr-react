@@ -67,9 +67,7 @@ const GoogleMapLocator = () => {
    const [selectedMarker, setSelectedMarker] = useState(null);
    const [drawing, setDrawing] = useState(false);
    const [shapes, setShapes] = useState([]);
-   console.log(shapes);
    const [redoStack, setRedoStack] = useState([]);
-   console.log(redoStack);
    const mapRef = useRef(null);
    const [defaultCenter, setDefaultCenter] = useState({ lat: 0, lng: 0 });
    const [zoomLevel, setZoomLevel] = useState(8);
@@ -116,9 +114,6 @@ const GoogleMapLocator = () => {
          }
 
          const radiusInKm = findMaxDistance(subdivisionList, centroid).toFixed(0);
-
-         console.log('Centroid:', centroid);
-         console.log('Radius (in kilometers):', radiusInKm);
 
          if (!isNaN(centroid.lat) && !isNaN(centroid.lng)) {
             if (radiusInKm < 5) {

@@ -400,9 +400,7 @@ const TrafficsaleList = () => {
   ];
 
   const handleSelectAreaChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedArea(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -429,9 +427,7 @@ const TrafficsaleList = () => {
   }
 
   const handleSelectMasterPlanChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedMasterPlan(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -514,7 +510,6 @@ const TrafficsaleList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -653,7 +648,6 @@ const TrafficsaleList = () => {
           }
         });
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -724,9 +718,7 @@ const TrafficsaleList = () => {
       const response = await AdminTrafficsaleService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -880,7 +872,6 @@ const TrafficsaleList = () => {
       let responseData = await AdminTrafficsaleService.show(id).json();
       setTrafficDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
@@ -1133,10 +1124,8 @@ const applyNumberFilter = (items, query, key) => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1157,10 +1146,8 @@ const applyNumberFilter = (items, query, key) => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1175,10 +1162,8 @@ const applyNumberFilter = (items, query, key) => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1238,7 +1223,6 @@ const applyNumberFilter = (items, query, key) => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
@@ -1246,7 +1230,6 @@ const applyNumberFilter = (items, query, key) => {
           let responseData = await AdminTrafficsaleService.import(inputData).json();
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
-          console.log(responseData);
           setLoading(false);
           if (responseData.failed_records > 0) {
             let message = [];
@@ -1309,7 +1292,6 @@ const applyNumberFilter = (items, query, key) => {
     setNormalFilter(true);
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -1327,7 +1309,6 @@ const applyNumberFilter = (items, query, key) => {
     setNormalFilter(true);
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,

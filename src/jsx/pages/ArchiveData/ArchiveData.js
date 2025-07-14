@@ -162,10 +162,8 @@ const ArchiveData = () => {
                 builder: formattedData,
             }));
         } catch (error) {
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -186,10 +184,8 @@ const ArchiveData = () => {
                 subdivision: formattedData,
             }));
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -207,10 +203,8 @@ const ArchiveData = () => {
                 masterPlan: formattedData,
             }));
         } catch (error) {
-            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -230,7 +224,6 @@ const ArchiveData = () => {
         } catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-                console.log(errorJson.message);
             }
         }
     };
@@ -249,10 +242,8 @@ const ArchiveData = () => {
                 setIsLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -269,10 +260,8 @@ const ArchiveData = () => {
                 setShowFilterPopupLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setShowFilterPopupLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -323,10 +312,8 @@ const ArchiveData = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -347,7 +334,6 @@ const ArchiveData = () => {
     };
 
     const handleDelete = async (e) => {
-        console.log(e);
         try {
             let responseData = await AdminBuilderService.destroyArchive(e).json();
             if (responseData.status === true) {
@@ -360,7 +346,6 @@ const ArchiveData = () => {
         } catch (error) {
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -387,9 +372,7 @@ const ArchiveData = () => {
             const responseData = await response.json();
             setFieldList(responseData);
         } catch (error) {
-            console.log(error);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };

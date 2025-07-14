@@ -74,7 +74,6 @@ const PriceList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -304,7 +303,6 @@ const PriceList = () => {
           }
         });
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -583,7 +581,6 @@ const PriceList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -607,10 +604,8 @@ const PriceList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -625,10 +620,8 @@ const PriceList = () => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -763,9 +756,7 @@ const applyNumberFilter = (items, query, key) => {
       const response = await AdminPriceService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -1052,7 +1043,6 @@ const applyNumberFilter = (items, query, key) => {
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -1070,7 +1060,6 @@ const applyNumberFilter = (items, query, key) => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -1109,11 +1098,9 @@ const applyNumberFilter = (items, query, key) => {
         const inputData = {
           csv: iFile,
         };
-        console.log(inputData);
         try {
           let responseData = await AdminPriceService.import(inputData).json();
           setSelectedFile("");
-          console.log(responseData)
           document.getElementById("fileInput").value = null;
           setLoading(false);
 
@@ -1335,9 +1322,7 @@ const applyNumberFilter = (items, query, key) => {
   ];
 
   const handleSelectAreaChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedArea(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1363,9 +1348,7 @@ const applyNumberFilter = (items, query, key) => {
   }
 
   const handleSelectMasterPlanChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedMasterPlan(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,

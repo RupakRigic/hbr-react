@@ -63,8 +63,6 @@ const ArchiveDataUpdate = () => {
         } catch (error) {
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
-                
             }
         }
     };
@@ -98,10 +96,8 @@ const ArchiveDataUpdate = () => {
                 setIsLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -127,7 +123,6 @@ const ArchiveDataUpdate = () => {
             } catch (error) {
                 if (error.name === "HTTPError") {
                     const errorJson = await error.response.json();
-                    console.log(errorJson);
                 }
             }
         }

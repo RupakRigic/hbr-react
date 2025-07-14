@@ -234,7 +234,6 @@ const LogoutPage = () => {
         localStorage.clear();
         navigate('/');
       } else {
-        console.log(data.message);
         localStorage.clear();
       }
     } catch (error) {

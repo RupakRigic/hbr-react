@@ -23,10 +23,8 @@ const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
         try {
             const response = await AdminSubdevisionService.getByBuilderId(localStorage.getItem('builderId'));
             const responseData = await response.json();
-            console.log(responseData);
             setBuilderList(responseData);
         } catch (error) {
-            console.log(error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -35,7 +33,6 @@ const FutureSubdivisionPopup = ({ show, handleClose, getWeeklyList }) => {
     };
 
     const HandleSelectChange = (e) => {
-        console.log(e);
         setBuilderId(e.id);
     };
 

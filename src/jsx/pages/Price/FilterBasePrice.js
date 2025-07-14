@@ -138,10 +138,8 @@ const FilterBasePrice = () => {
             }));
             setBuilderListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -161,10 +159,8 @@ const FilterBasePrice = () => {
             setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -179,10 +175,8 @@ const FilterBasePrice = () => {
             }));
             setMasterPlanDropDownList(formattedData);
         } catch (error) {
-            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -314,7 +308,6 @@ const FilterBasePrice = () => {
     const handleFilterDateFrom = (date) => {
         if (date) {
             const formattedDate = date.toLocaleDateString('en-US');
-            console.log(formattedDate)
             setFilterQuery((prevFilterQuery) => ({
                 ...prevFilterQuery,
                 from: formattedDate,
@@ -330,7 +323,6 @@ const FilterBasePrice = () => {
     const handleFilterDateTo = (date) => {
         if (date) {
             const formattedDate = date.toLocaleDateString('en-US');
-            console.log(formattedDate)
             setFilterQuery((prevFilterQuery) => ({
                 ...prevFilterQuery,
                 to: formattedDate,

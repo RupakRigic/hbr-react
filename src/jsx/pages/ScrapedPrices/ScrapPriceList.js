@@ -272,7 +272,6 @@ const ScrapPriceList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -296,10 +295,8 @@ const ScrapPriceList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -316,7 +313,6 @@ const ScrapPriceList = () => {
   //     // handleProductCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
   //     setProductListDropDown(formattedData);
   //   } catch (error) {
-  //     console.log("Error fetching builder list:", error);
   //     if (error.name === "HTTPError") {
   //       const errorJson = await error.response.json();
   //       setError(errorJson.message);
@@ -358,9 +354,7 @@ const ScrapPriceList = () => {
       const response = await AdminScrapPriceService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -782,7 +776,6 @@ const ScrapPriceList = () => {
             item.id === rowId ? { ...item, scraped_price: cleanValue } : item
           )
         );
-        console.log("Saved successfully");
       } else {
         console.error("Save failed: ", data);
       }

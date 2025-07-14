@@ -59,7 +59,6 @@ const ProductOffcanvas = forwardRef((props) => {
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError("Something went wrong!");
@@ -101,7 +100,6 @@ const ProductOffcanvas = forwardRef((props) => {
             handleProductCode(filter?.length > 0 ? filter[0] : filter?.length == 0 ? [] : formattedData[0]);
             setProductList(formattedData);
         } catch (error) {
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);

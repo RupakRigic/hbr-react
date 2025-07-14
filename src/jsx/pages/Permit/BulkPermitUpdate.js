@@ -29,7 +29,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             }));
             SetSubdivisionList(formattedData);
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -70,7 +69,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
                         "address1": event.target.address1.value,
                         "address2": event.target.address2.value
                     }
-                    console.log(userData);
                     const data = await AdminPermitService.bulkupdate(selectedLandSales, userData).json();
                     if (data.status === true) {
                         swal("Records Updated Successfully").then((willDelete) => {

@@ -72,7 +72,6 @@ const BuilderTable = () => {
             setIsLoading(false);
             setBuilderList(responseData);
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();

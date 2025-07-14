@@ -326,7 +326,6 @@ const [rememberMe, setRememberMe] = useState(() =>
         }
       } catch (error) {
         setErrors(error);
-        console.log(error);
       }
     }
   };

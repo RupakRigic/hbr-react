@@ -89,7 +89,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
       setOptions(options);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       if (error.name === 'HTTPError') {
         const errorJson = await error.response.json();
@@ -108,10 +107,8 @@ const BulkLandsaleUpdate = forwardRef((props) => {
       }));
       setOptionsMasterPlan(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -160,7 +157,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             gasprovider: event.target.gasprovider.value,
             website: event.target.website.value,
           };
-          console.log(userData);
           const data = await AdminSubdevisionService.bulkupdate(selectedLandSales, userData).json();
           if (data.status === true) {
             swal("Records Updated Successfully").then((willDelete) => {

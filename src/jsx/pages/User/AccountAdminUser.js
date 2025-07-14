@@ -45,7 +45,6 @@ const UserList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
-  console.log("userList", userList);
   const [userListCount, setUserCount] = useState('');
   const [TotaluserListCount, setTotalUserCount] = useState('');
 
@@ -86,15 +85,9 @@ const UserList = () => {
   const [columns, setColumns] = useState([]);
   const [draggedColumns, setDraggedColumns] = useState(columns);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  console.log("userselect", selectedUsers);
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
-
-
-  useEffect(() => {
-    console.log(fieldList); // You can now use fieldList in this component
-  }, [fieldList]);
 
   const checkFieldExist = (fieldName) => {
     return fieldList.includes(fieldName.trim());
@@ -166,9 +159,7 @@ const UserList = () => {
       const response = await AdminUserRoleService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -220,8 +211,6 @@ const UserList = () => {
     setIsLoading(true);
     try {
       let sortConfigString = "";
-      console.log(sortConfigString);
-      console.log(sortConfig);
 
       if (sortConfig !== null) {
         sortConfigString = "&sortConfig=" + stringifySortConfig(sortConfig);
@@ -241,7 +230,6 @@ const UserList = () => {
     }
     setIsLoading(false);
   };
-console.log(userList)
   const handleDelete = async (e) => {
     try {
       let responseData = await AdminUserRoleService.destroy(e).json();
@@ -280,7 +268,6 @@ console.log(userList)
       let responseData = await AdminUserRoleService.show(id).json();
       setUserDetails(responseData.data);
       setIsFormLoading(false);
-      console.log(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
@@ -515,11 +502,9 @@ console.log(userList)
       direction: sortOrders[field.value] || 'asc',
     }));
     setSortConfig(sortingConfig)
-    console.log(sortingConfig);
     getuserList(currentPage, sortingConfig, searchQuery);
     handleSortingPopupClose();
   };
-  console.log(sortConfig);
 
   return (
     <Fragment>
@@ -1028,8 +1013,6 @@ console.log(userList)
                             type="checkbox"
                             // defaultChecked={(() => {
                             //   const isChecked = element.role_name.includes(accessRole);
-                            //   console.log(accessRole);
-                            //   console.log(isChecked);
                             //   return isChecked;
                             // })()}
                             checked={checkedItems[element.field_name]}

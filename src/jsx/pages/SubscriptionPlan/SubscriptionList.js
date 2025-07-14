@@ -70,10 +70,8 @@ const SubscriptionList = () => {
                 setIsLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -99,10 +97,8 @@ const SubscriptionList = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };

@@ -47,7 +47,6 @@ const ProductUpdate = () => {
       SetProductList(responseData);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
@@ -66,10 +65,8 @@ const ProductUpdate = () => {
       }));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };

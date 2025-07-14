@@ -38,7 +38,6 @@ const LandsaleList = () => {
   const [Error, setError] = useState("");
   const navigate = useNavigate();
   const [LandsaleList, setLandsaleList] = useState([]);
-  console.log("LandsaleList", LandsaleList);
   const [landSaleListCount, setlandSaleListCount] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -122,7 +121,6 @@ const LandsaleList = () => {
   const [showSortingPopup, setShowSortingPopup] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([]);
   const [selectedLandSales, setSelectedLandSales] = useState([]);
-  console.log("selectedLandSales", selectedLandSales);
 
   useEffect(() => {
     if (handleCallBack && calculationData) {
@@ -234,7 +232,6 @@ const LandsaleList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        console.log(555);
         getLandsaleList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("selectedBuilderNameByFilter_LandSale", JSON.stringify(selectedBuilderName));
@@ -265,7 +262,6 @@ const LandsaleList = () => {
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -282,7 +278,6 @@ const LandsaleList = () => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -397,7 +392,6 @@ const LandsaleList = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
-  console.log("columns", columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
   const checkFieldExist = (fieldName) => {
@@ -444,7 +438,6 @@ const LandsaleList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log("load upadate:  ", updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -478,7 +471,6 @@ const LandsaleList = () => {
         }
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -523,7 +515,6 @@ const LandsaleList = () => {
       }));
       setBuilderListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
       }
@@ -546,10 +537,8 @@ const LandsaleList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -595,9 +584,7 @@ const LandsaleList = () => {
       const response = await AdminLandsaleService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -811,7 +798,6 @@ const LandsaleList = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
@@ -877,8 +863,6 @@ const LandsaleList = () => {
   const handlBuilderClick = (e) => {
     setShow(true);
   };
-
-  console.log(sortConfig);
 
   const handleOpenDialog = () => {
     setDraggedColumns(columns);

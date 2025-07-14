@@ -12,7 +12,6 @@ const AdminAuth = ky.extend({
         const localHeaders = JSON.parse(localStorage.getItem('admintoken'));
 
         if (localHeaders) {
-          // console.log("token work",localHeaders);
           options.headers.set('Authorization', `Bearer ${localHeaders}`);
         }
       },

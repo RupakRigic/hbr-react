@@ -152,10 +152,8 @@ const FilterSubdivision = () => {
             }));
             setBuilderListDropDown(formattedData);
         } catch (error) {
-            console.log(error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -171,7 +169,6 @@ const FilterSubdivision = () => {
         } catch (error) {
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -191,10 +188,8 @@ const FilterSubdivision = () => {
             setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -209,10 +204,8 @@ const FilterSubdivision = () => {
             }));
             setMasterPlanDropDownList(formattedData);
         } catch (error) {
-            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };

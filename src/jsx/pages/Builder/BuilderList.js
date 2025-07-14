@@ -111,7 +111,6 @@ const BuilderTable = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [columns, setColumns] = useState([]);
-  console.log("columns", columns);
   const [draggedColumns, setDraggedColumns] = useState(columns);
 
   const [calculationData, setCalculationData] = useState({});
@@ -304,7 +303,6 @@ const BuilderTable = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -494,7 +492,6 @@ const BuilderTable = () => {
           }
         });
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -612,7 +609,6 @@ const BuilderTable = () => {
         }
       }
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         setIsLoading(false);
         setExcelLoading(false);
@@ -744,9 +740,7 @@ const BuilderTable = () => {
       const response = await AdminBuilderService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -764,7 +758,6 @@ const BuilderTable = () => {
       }));
       setBuilderListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
     }
   };
 
@@ -789,7 +782,6 @@ const BuilderTable = () => {
         if (id) {
           const selectedBuilderName = JSON.parse(localStorage.getItem("selectedBuilderNameByFilterBuilder"));
           const ID = Array.isArray(id) ? id : [id];
-          console.log(ID);
 
           handleSelectBuilderNameChange(selectedBuilderName, ID);
         }
@@ -836,7 +828,6 @@ const BuilderTable = () => {
       let responseData = await AdminBuilderService.show(id).json();
       SetBuilderDetails(responseData);
       setIsFormLoading(false);
-      console.log(responseData);
     } catch (error) {
       if (error.name === "HTTPError") {
         setIsFormLoading(false);
@@ -1034,7 +1025,6 @@ const BuilderTable = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
@@ -1258,7 +1248,6 @@ const BuilderTable = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(value);
     setFilterQueryCalculation(prevFilterQuery => ({
       ...prevFilterQuery,
       [name]: value
@@ -1564,7 +1553,6 @@ const BuilderTable = () => {
         return item;
       });
 
-      console.log("updatedItems", updatedItems);
       localStorage.setItem("selectedBuilderNameByFilterBuilder", JSON.stringify(updatedItems));
 
       const selectedValues = updatedItems.map(item => item.value);
@@ -1615,7 +1603,6 @@ const BuilderTable = () => {
 
   const handleSelectCompanyTypeChange = (selectedItems) => {
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedCompanyType(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,

@@ -93,7 +93,6 @@ const SubdivisionOffcanvas = forwardRef((props) => {
                 }
             }
         } catch (error) {
-            console.log(error)
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
                 setError(errorJson.message);
@@ -111,10 +110,8 @@ const SubdivisionOffcanvas = forwardRef((props) => {
             }));
             setMasterPlanDropDownList(formattedData);
         } catch (error) {
-            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -171,7 +168,6 @@ const SubdivisionOffcanvas = forwardRef((props) => {
             }
         }
         catch (error) {
-            console.log(error);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));

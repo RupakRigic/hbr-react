@@ -470,9 +470,7 @@ const PermitList = () => {
   ];
 
   const handleSelectAreaChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedArea(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -497,9 +495,7 @@ const PermitList = () => {
   }
 
   const handleSelectMasterPlanChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedMasterPlan(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -582,7 +578,6 @@ const PermitList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -616,7 +611,6 @@ const PermitList = () => {
         }
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -687,7 +681,6 @@ const PermitList = () => {
       const responseData = await response.json();
       setAccessList(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -946,7 +939,6 @@ const PermitList = () => {
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -963,7 +955,6 @@ const PermitList = () => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -1079,10 +1070,8 @@ const PermitList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1103,10 +1092,8 @@ const PermitList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1121,10 +1108,8 @@ const PermitList = () => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1425,7 +1410,6 @@ const PermitList = () => {
       }
     } catch (error) {
       setUpdateCCAPN(false);
-      console.log(error);
       if (error.name === "HTTPError") {
         Swal.fire({
           icon: 'error',

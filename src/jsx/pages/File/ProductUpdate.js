@@ -20,7 +20,6 @@ const ProductUpdate = () => {
             SetProductList(responseData1);
             const response = await AdminSubdevisionService.index()
             const responseData = await response.json()
-            console.log(responseData);
 
             let getdata = responseData.filter(function (item) {
                     
@@ -32,7 +31,6 @@ const ProductUpdate = () => {
             SetSubdivisionList(responseData);
 
         } catch (error) {
-            console.log(error)
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
 

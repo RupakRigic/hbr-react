@@ -85,7 +85,6 @@ const LandsaleUpdate = () => {
             setBuilderListDropDown(formattedData);
         } catch (error) {
             setIsLoadingBuilder(false);
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError("Something went wrong!");

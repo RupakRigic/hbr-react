@@ -14,7 +14,6 @@ const client = ky.extend({
 			// Or retry with a fresh token on a 403 error
 			async (request, options, response) => {
 				if (response.status === 401) {
-          console.log("client",response);
           const body = await response.json()
           throw new HTTPError(body.message);
 				}

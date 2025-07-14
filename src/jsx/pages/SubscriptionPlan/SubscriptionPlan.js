@@ -50,10 +50,8 @@ const SubscriptionPlan = () => {
                 setIsLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -71,10 +69,8 @@ const SubscriptionPlan = () => {
                 setIsLoading(false);
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -109,10 +105,8 @@ const SubscriptionPlan = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -134,7 +128,6 @@ const SubscriptionPlan = () => {
                 seats: numberOfSeat,
                 data_types: DataType
             }
-            console.log(userData);
 
             const responseData = await AdminSubscriberService.subscribPaln(userData).json();
             if (responseData.status === true) {
@@ -149,10 +142,8 @@ const SubscriptionPlan = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -182,10 +173,8 @@ const SubscriptionPlan = () => {
                 });
             }
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
             if (error.name === "HTTPError") {
-                console.log(error.name);
             }
         }
     };
@@ -206,7 +195,6 @@ const SubscriptionPlan = () => {
 
     const [planFrequency, setPlanFreQuency] = useState('monthly');
     const handleFrequencyChange=(e)=>{
-        console.log(e.target.value);
         setPlanFreQuency(e.target.value);
     }
 

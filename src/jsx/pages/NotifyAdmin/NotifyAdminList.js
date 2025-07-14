@@ -76,7 +76,6 @@ const NotifyAdminList = () => {
       setIsLoading(false);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson.message);
       }
     }
   };

@@ -93,7 +93,6 @@ const ReportList = () => {
             end_date: endDate,
         };
         const bearerToken =  JSON.parse(localStorage.getItem('usertoken'));
-        console.log(bearerToken)
         try {
 
             const response = await axios.post(
@@ -109,7 +108,6 @@ const ReportList = () => {
               });
               handlePdfResponse(response);
         } catch (error) {
-            console.log(error);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
                 setError(errorJson.message)
@@ -118,7 +116,6 @@ const ReportList = () => {
     }
 
     const handlePdfResponse = (response) => {
-        console.log(response.data);
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         window.open(url);

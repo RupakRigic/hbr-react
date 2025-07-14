@@ -73,13 +73,9 @@ const BuilderTable = () => {
     setEndDate(formatDate(currentDate)); // Set endDate to current date
   }, [reportType]);
 
-  console.log(startDate);
-  console.log(endDate);
-
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setStartDate(formattedDate)
 
@@ -92,7 +88,6 @@ const BuilderTable = () => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US');
-      console.log(formattedDate)
       setEndDate(formattedDate)
 
     } else {
@@ -121,7 +116,6 @@ const BuilderTable = () => {
   const [selectYear, setSelectYear] = useState("");
   const [selectQuarter, setSelectQuarter] = useState("");
   const [uploadReportType, setUploadReportType] = useState("List of Active New Home Builders");
-  console.log("SelectedReport:", uploadReportType);
   const [pdfData, setPdfData] = useState();
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -241,7 +235,6 @@ const BuilderTable = () => {
       const responseData = await response.json();
       setReportList(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -257,7 +250,6 @@ const BuilderTable = () => {
       const responseData = await response.json();
       setWeekEndingDateList(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -790,7 +782,6 @@ const BuilderTable = () => {
       });
       getreportlist();
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = error.response.json();
         setError(errorJson.message);
@@ -827,7 +818,6 @@ const BuilderTable = () => {
       setBuilderList(responseData);
 
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       if (error.name === 'HTTPError') {
         const errorJson = await error.response.json();
@@ -852,7 +842,6 @@ const BuilderTable = () => {
       setSubdivisionList(formattedData);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);

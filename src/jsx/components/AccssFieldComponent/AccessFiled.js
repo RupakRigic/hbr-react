@@ -21,7 +21,6 @@ export const AccessField = (props) => {
             setFieldList(responseData);
             setManageAccessField(false);
         } catch (error) {
-            console.log(error);
             if (error.name === "HTTPError") {
                 // Handle error
             }

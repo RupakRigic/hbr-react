@@ -256,7 +256,6 @@ const UserList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -293,7 +292,6 @@ const UserList = () => {
         }
       });
     } catch (error) {
-      console.log(error);
     }
   };
 

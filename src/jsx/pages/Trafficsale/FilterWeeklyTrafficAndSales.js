@@ -126,10 +126,8 @@ const FilterWeeklyTrafficAndSales = () => {
             }));
             setBuilderListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -149,10 +147,8 @@ const FilterWeeklyTrafficAndSales = () => {
             setSelectedSubdivisionNameByFilter(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
             setSubdivisionListDropDown(formattedData);
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -167,10 +163,8 @@ const FilterWeeklyTrafficAndSales = () => {
             }));
             setMasterPlanDropDownList(formattedData);
         } catch (error) {
-            console.log("Error fetching master plan list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
             }
         }
     };
@@ -294,7 +288,6 @@ const FilterWeeklyTrafficAndSales = () => {
     const handleFilterDateFrom = (date) => {
         if (date) {
             const formattedDate = date.toLocaleDateString('en-US');
-            console.log(formattedDate)
 
             setFilterQuery((prevFilterQuery) => ({
                 ...prevFilterQuery,
@@ -311,7 +304,6 @@ const FilterWeeklyTrafficAndSales = () => {
     const handleFilterDateTo = (date) => {
         if (date) {
             const formattedDate = date.toLocaleDateString('en-US');
-            console.log(formattedDate)
 
             setFilterQuery((prevFilterQuery) => ({
                 ...prevFilterQuery,

@@ -48,7 +48,6 @@ const BulkLandsaleUpdate = forwardRef((props) => {
             setBuilderListDropDown(formattedData);
         } catch (error) {
             setIsLoading(false);
-            console.log("Error fetching builder list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError("Something went wrong!");

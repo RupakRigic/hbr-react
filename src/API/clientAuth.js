@@ -13,7 +13,6 @@ const clientAuth = ky.extend({
         const localHeaders = JSON.parse(localStorage.getItem('usertoken'));
 
         if (localHeaders) {
-          // console.log("token work",localHeaders);
           options.headers.set('Authorization', `Bearer ${localHeaders}`);
         }
       },

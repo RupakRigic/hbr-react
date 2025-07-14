@@ -393,7 +393,6 @@ const RechartJs = () => {
     const formattedEndDate = formatDate(endDate);
     try {
       let responseData = await AdminWeeklyDataService.getstatistics(type, formattedStartDate, formattedEndDate).json();
-      console.log(responseData);
       const filteredBuyerData = Object.entries(
         responseData["buyer_traffic"]
       ).filter(([key, value]) => key !== "status");
@@ -404,7 +403,6 @@ const RechartJs = () => {
       const suggestedBuyerMax = maxBuyerValue * 1.2;
       const adjustedMinBuyerValue = minBuyerValue === 0 ? Math.min(...buyerValue.filter(value => value > 0)) : minBuyerValue;
 
-      console.log(buyerValue);
       setBuyerTrafficdata({
         defaultFontFamily: "Poppins",
         labels: BuyerDate,
@@ -459,8 +457,6 @@ const RechartJs = () => {
       const suggestedNetSaleMax = maxNetSaleValue * 1.2;
       const minNetSaleValue = Math.min(...netSaleValue);
       const adjustedMinNetSaleValue = minNetSaleValue === 0 ? Math.min(...netSaleValue.filter(value => value > 0)) : minNetSaleValue;
-      console.log(netSaleWeekDate);
-      console.log(netSaleWeekDate);
 
       setNetSaleData({
         defaultFontFamily: "Poppins",
@@ -625,7 +621,6 @@ const RechartJs = () => {
       });
 
       // prepare net sale sub division wise chart data
-      console.log(responseData["net_sales_per_subdivsion"]);
       const filteredNetSaleSubWiseData = Object.entries(
         responseData["net_sales_per_subdivsion"]
       ).filter(([key, value]) => key !== "status");

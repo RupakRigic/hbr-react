@@ -669,7 +669,6 @@ const SubdivisionList = () => {
           }
         });
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -845,7 +844,6 @@ const SubdivisionList = () => {
         }
       }
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       setExcelLoading(false);
       if (error.name === "HTTPError") {
@@ -1074,7 +1072,6 @@ const SubdivisionList = () => {
       }));
       setBuilderListDropDown(formattedData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
 
@@ -1094,7 +1091,6 @@ const SubdivisionList = () => {
     } catch (error) {
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1115,10 +1111,8 @@ const SubdivisionList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1133,10 +1127,8 @@ const SubdivisionList = () => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -2692,7 +2684,6 @@ const SubdivisionList = () => {
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US');
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -2710,7 +2701,6 @@ const SubdivisionList = () => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US');
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,

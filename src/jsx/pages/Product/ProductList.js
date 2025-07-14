@@ -173,7 +173,6 @@ const ProductList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -335,7 +334,6 @@ const ProductList = () => {
           }
         });
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -604,7 +602,6 @@ const ProductList = () => {
     } catch (error) {
       setIsLoading(false);
       setExcelLoading(false);
-      console.log(error);
       if (error.name === "HTTPError") {
         setIsLoading(false);
         const errorJson = await error.response.json();
@@ -676,7 +673,6 @@ const ProductList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -700,10 +696,8 @@ const ProductList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -718,10 +712,8 @@ const ProductList = () => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -831,9 +823,7 @@ const ProductList = () => {
       const response = await AdminProductService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -979,13 +969,11 @@ const ProductList = () => {
         const inputData = {
           csv: iFile,
         };
-        console.log(inputData);
         try {
           let responseData = await AdminProductService.import(inputData).json();
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
           setLoading(false);
-          console.log(responseData);
           if (responseData.failed_records > 0) {
             let message = [];
             const problematicRows = responseData.failed_records_details.map(detail => detail.row).join(', ');
@@ -1649,7 +1637,6 @@ const ProductList = () => {
   }, [showPopup]);
 
   const HandleSortingPopupDetailClick = (e) => {
-    console.log(5555);
     setShowSortingPopup(true);
   };
 

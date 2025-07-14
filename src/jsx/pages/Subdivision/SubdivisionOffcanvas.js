@@ -68,7 +68,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
                 }));
             setOptions(formattedOptions);
         } catch (error) {
-            console.log(error)
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
 
@@ -150,7 +149,6 @@ const SubdivisionOffcanvas = forwardRef((props, ref) => {
             }
         }
         catch (error) {
-            console.log(error);
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));

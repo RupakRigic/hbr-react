@@ -300,7 +300,6 @@ const ClosingList = () => {
       let totaldays = Math.ceil(days) + 1;
       if (totaldays < 367) {
         e.preventDefault();
-        console.log(555);
         getClosingList(1, sortConfig, searchQuery);
         setManageFilterOffcanvas(false);
         localStorage.setItem("seletctedClosingTypeByFilter_Closing", JSON.stringify(seletctedClosingType));
@@ -450,7 +449,6 @@ const ClosingList = () => {
       }
     } catch (error) {
       setUpdateCCAPN(false);
-      console.log(error);
       if (error.name === "HTTPError") {
         Swal.fire({
           icon: 'error',
@@ -533,7 +531,6 @@ const ClosingList = () => {
     const updatedColumns = selectedColumns.includes(column)
       ? selectedColumns.filter((col) => col !== column)
       : [...selectedColumns, column];
-    console.log(updatedColumns);
     setSelectedColumns(updatedColumns);
     setSelectAll(updatedColumns.length === exportColumns.length);
   };
@@ -567,7 +564,6 @@ const ClosingList = () => {
         }
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -637,9 +633,7 @@ const ClosingList = () => {
       const response = await AdminClosingService.accessField();
       const responseData = await response.json();
       setAccessList(responseData);
-      console.log(responseData);
     } catch (error) {
-      console.log(error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
         setError(errorJson.message);
@@ -791,7 +785,6 @@ const ClosingList = () => {
 
   const handleUploadClick = async () => {
     const file = selectedFile;
-    console.log(file);
     if (file && file.type === "text/csv") {
       setLoading(true);
       setSelectedFileError("");
@@ -801,7 +794,6 @@ const ClosingList = () => {
       fileReader.onload = async () => {
         var iFile = fileReader.result;
         setSelectedFile(iFile);
-        console.log(iFile);
         const inputData = {
           csv: iFile,
         };
@@ -809,7 +801,6 @@ const ClosingList = () => {
           let responseData = await AdminClosingService.import(inputData).json();
           setSelectedFile("");
           document.getElementById("fileInput").value = null;
-          console.log(responseData);
           setLoading(false);
 
           if (responseData.failed_records > 0) {
@@ -906,7 +897,6 @@ const ClosingList = () => {
   const handleFilterDateFrom = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -923,7 +913,6 @@ const ClosingList = () => {
   const handleFilterDateTo = (date) => {
     if (date) {
       const formattedDate = date.toLocaleDateString('en-US'); // Formats date to "MM/DD/YYYY"
-      console.log(formattedDate)
 
       setFilterQuery((prevFilterQuery) => ({
         ...prevFilterQuery,
@@ -1012,10 +1001,8 @@ const ClosingList = () => {
       }));
       setBuilderDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching builder list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1036,10 +1023,8 @@ const ClosingList = () => {
       setSelectedSubdivisionName(prevSelected => prevSelected.filter(selected => validSubdivisionIds.includes(selected.value)));
       setSubdivisionListDropDown(formattedData);
     } catch (error) {
-      console.log("Error fetching subdivision list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1054,10 +1039,8 @@ const ClosingList = () => {
       }));
       setMasterPlanDropDownList(formattedData);
     } catch (error) {
-      console.log("Error fetching master plan list:", error);
       if (error.name === "HTTPError") {
         const errorJson = await error.response.json();
-        console.log(errorJson);
       }
     }
   };
@@ -1074,7 +1057,6 @@ const ClosingList = () => {
     } catch (error) {
       if (error.name === 'HTTPError') {
         const errorJson = await error.response.json();
-        console.log(errorJson.message);
       }
     }
   };
@@ -1151,9 +1133,7 @@ const ClosingList = () => {
   ];
 
   const handleSelectAreaChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedArea(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1178,9 +1158,7 @@ const ClosingList = () => {
   };
 
   const handleSelectMasterPlanChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedMasterPlan(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,
@@ -1189,9 +1167,7 @@ const ClosingList = () => {
   };
 
   const handleSelectLenderChange = (selectedItems) => {
-    console.log(selectedItems);
     const selectedValues = selectedItems.map(item => item.value).join(', ');
-    console.log(selectedValues);
     setSelectedLender(selectedItems);
     setFilterQuery(prevState => ({
       ...prevState,

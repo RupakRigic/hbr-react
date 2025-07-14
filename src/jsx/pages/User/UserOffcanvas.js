@@ -165,7 +165,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
                     setSaveBtn(true);
                     setShowPopup(true);
                 } else {
-                    console.log(data.message);
                     setMessage(data.message);
                     setShowPopup(true);
                 }
@@ -199,7 +198,6 @@ const UserOffcanvas = forwardRef((props, ref) => {
         catch (error) {
             if (error.name === 'HTTPError') {
                 const errorJson = await error.response.json();
-                console.log(errorJson);
                 setError(errorJson.message.substr(0, errorJson.message.lastIndexOf(".")));
             }
         }

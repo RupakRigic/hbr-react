@@ -56,21 +56,14 @@ const UserSideBar = () => {
 
   useEffect(() => {
     if (subscriptionDataTypes?.length > 0) {
-      console.log(subscriptionDataTypes)
       const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
       const subscription_end_at = JSON.parse(localStorage.getItem("subscription_end_at"));
-      console.log(subscription_end_at,'end_date')
       const subscriptionEndDate = new Date(subscription_end_at);
       const currentDate = new Date();
         
       const userRole = JSON.parse(localStorage.getItem("user")).role;
-      console.log(subscription == 1 && currentDate <= subscriptionEndDate);
-      console.log(subscription);
-      console.log(currentDate);
-      console.log(subscriptionEndDate);
 
       if (subscription == 1 && currentDate <= subscriptionEndDate) {
-
 
         const mergedMenuList = new Set(CommanDataType);
 

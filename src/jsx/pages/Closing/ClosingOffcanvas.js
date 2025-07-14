@@ -35,7 +35,6 @@ const ClosingOffcanvas = forwardRef((props) => {
             }));
             setSubdivisionList(formattedData);
         } catch (error) {
-            console.log("Error fetching subdivision list:", error);
             if (error.name === "HTTPError") {
                 const errorJson = await error.response.json();
                 setError(errorJson);
