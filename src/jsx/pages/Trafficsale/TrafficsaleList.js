@@ -2130,7 +2130,7 @@ const applyNumberFilter = (items, query, key) => {
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
                                   column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkRecordID" && column.id !== "_fkSubID" && column.id !== "action" &&
-                                  column.id !== "sqft Group" && column.id !== "price Group"
+                                  column.id !== "sqft Group" && column.id !== "jurisdiction" && column.id !== "price Group"
                                 ) &&
                                   (
                                     <>
@@ -2191,13 +2191,13 @@ const applyNumberFilter = (items, query, key) => {
                               <td></td>
                               {columns.map((column) => (
                                 <>
-                                  {column.id == "week Ending" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
-                                  }
                                   {column.id == "builder Name" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "subdivision Name" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "week Ending" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "weekly Traffic" &&
@@ -2273,6 +2273,9 @@ const applyNumberFilter = (items, query, key) => {
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "price Group" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "jurisdiction" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "action" &&
@@ -2407,6 +2410,9 @@ const applyNumberFilter = (items, query, key) => {
                                     }
                                     {column.id == "price Group" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision.price_group.group}</td>
+                                    }
+                                    {column.id == "jurisdiction" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.juridiction}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>

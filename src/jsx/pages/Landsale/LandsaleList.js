@@ -1454,7 +1454,7 @@ const LandsaleList = () => {
                                 {(!excelLoading) && (column.id !== "builder Name" && column.id !== "subdivision Name" && column.id !== "seller" &&
                                   column.id !== "buyer" && column.id !== "location" && column.id !== "notes" && column.id !== "date" &&
                                   column.id !== "action" && column.id !== "size MS" && column.id !== "doc" && column.id !== "parcel" && column.id !== "zIP Code" && 
-                                  column.id !== "latitude" && column.id !== "longitude" && column.id !== "area") &&
+                                  column.id !== "latitude" && column.id !== "longitude" && column.id !== "area" && column.id !== "jurisdiction") &&
                                   (
                                     <>
                                       <br />
@@ -1521,22 +1521,19 @@ const LandsaleList = () => {
                                   {column.id == "date" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "action" &&
+                                  {column.id == "price Per" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={pricePerResult} /></td>
+                                  }
+                                  {column.id == "parcel" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
-                                  {column.id == "size MS" &&
+                                  {column.id == "doc" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "size" &&
                                     <td key={column.id} style={{ textAlign: "center" }}>{sizeResult}</td>
                                   }
-                                  {column.id == "price Per" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={pricePerResult} /></td>
-                                  }
-                                  {column.id == "doc" &&
-                                    <td key={column.id} style={{ textAlign: "center" }}></td>
-                                  }
-                                  {column.id == "parcel" &&
+                                  {column.id == "size MS" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "zIP Code" &&
@@ -1549,6 +1546,12 @@ const LandsaleList = () => {
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                   {column.id == "area" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "jurisdiction" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
+                                  {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
                                 </>
@@ -1609,6 +1612,24 @@ const LandsaleList = () => {
                                     {column.id == "date" &&
                                       <td key={column.id} style={{ textAlign: "center" }}><DateComponent date={element.date} /></td>
                                     }
+                                    {column.id == "price Per" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per} /></td>
+                                    }
+                                    {column.id == "parcel" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
+                                    }
+                                    {column.id == "doc" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.doc}</td>
+                                    }
+                                    {column.id == "size" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit}</td>
+                                    }
+                                    {column.id == "size MS" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.typeofunit}</td>
+                                    }
+                                    {column.id == "zIP Code" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zip}</td>
+                                    }
                                     {column.id == "latitude" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.lat}</td>
                                     }
@@ -1617,6 +1638,9 @@ const LandsaleList = () => {
                                     }
                                     {column.id == "area" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.area}</td>
+                                    }
+                                    {column.id == "jurisdiction" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision.juridiction}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
@@ -1646,24 +1670,6 @@ const LandsaleList = () => {
                                           </Link>
                                         </div>
                                       </td>
-                                    }
-                                    {column.id == "size MS" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.typeofunit}</td>
-                                    }
-                                    {column.id == "size" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.noofunit}</td>
-                                    }
-                                    {column.id == "price Per" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}><PriceComponent price={element.price_per} /></td>
-                                    }
-                                    {column.id == "doc" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.doc}</td>
-                                    }
-                                    {column.id == "parcel" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.parcel}</td>
-                                    }
-                                    {column.id == "zIP Code" &&
-                                      <td key={column.id} style={{ textAlign: "center" }}>{element.zip}</td>
                                     }
                                   </>
                                 ))}

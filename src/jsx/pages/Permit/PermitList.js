@@ -1740,7 +1740,8 @@ const PermitList = () => {
                                   column.id !== "address Name" && column.id !== "parcel Number" && column.id !== "contractor" && column.id !== "owner" &&
                                   column.id !== "lot Number" && column.id !== "permit Number" && column.id !== "plan" && column.id !== "sub Legal Name" && column.id !== "product Type" &&
                                   column.id !== "area" && column.id !== "master Plan" && column.id !== "zIP Code" && column.id !== "zoning" && column.id !== "age Restricted" &&
-                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "description" && column.id !== "gas Provider" && column.id !== "action"
+                                  column.id !== "all Single Story" && column.id !== "date Added" && column.id !== "__pkPermitID" && column.id !== "_fkSubID" && column.id !== "description" && 
+                                  column.id !== "gas Provider" && column.id !== "jurisdiction" && column.id !== "action"
                                 ) &&
                                   (
                                     <>
@@ -1870,6 +1871,9 @@ const PermitList = () => {
                                   {column.id == "gas Provider" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
+                                  {column.id == "jurisdiction" &&
+                                    <td key={column.id} style={{ textAlign: "center" }}></td>
+                                  }
                                   {column.id == "action" &&
                                     <td key={column.id} style={{ textAlign: "center" }}></td>
                                   }
@@ -1996,6 +2000,9 @@ const PermitList = () => {
                                     }
                                     {column.id == "gas Provider" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.gasprovider}</td>
+                                    }
+                                    {column.id == "jurisdiction" &&
+                                      <td key={column.id} style={{ textAlign: "center" }}>{element.subdivision && element.subdivision?.juridiction}</td>
                                     }
                                     {column.id == "action" &&
                                       <td key={column.id} style={{ textAlign: "center" }}>
