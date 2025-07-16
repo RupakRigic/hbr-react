@@ -460,34 +460,6 @@ const ClosingList = () => {
     }
   }
 
-  const headers = [
-    { label: 'Closing Type', key: 'Closing_Type' },
-    { label: 'Closing Date', key: 'Closing_Date' },
-    { label: 'Doc', key: 'Doc' },
-    { label: 'Builder Name', key: 'Builder_Name' },
-    { label: 'Subdivision Name', key: 'Subdivision_Name' },
-    { label: 'Closing Price', key: 'Closing+Price' },
-    { label: 'Address', key: 'Address' },
-    { label: 'Parcel Number', key: 'Parcel_Number' },
-    { label: 'Sub Legal Name', key: 'Sub_Legal_Name' },
-    { label: 'Seller Legal Name', key: 'Seller_Legal Name' },
-    { label: 'Buyer Name', key: 'Buyer_Name' },
-    { label: 'Lender', key: 'Lender' },
-    { label: 'Loan Amount', key: 'Loan_Amount' },
-    { label: 'Type', key: 'Type' },
-    { label: 'Product Type', key: 'Product_Type' },
-    { label: 'Area', key: 'Area' },
-    { label: 'Master Plan', key: 'Master_Plan' },
-    { label: 'ZIP Code', key: 'Zip_Code' },
-    { label: 'Lot Width', key: 'Lot_Width' },
-    { label: 'Lot Size', key: 'Lot_Size' },
-    { label: 'Zoning', key: 'Zoning' },
-    { label: 'Age Restricted', key: 'Age_Restricted' },
-    { label: 'All Single Story', key: 'All_Single_Story' },
-    { label: 'Fk Sub Id', key: 'fkSubID' },
-    { label: 'Gas Provider', key: 'gasprovider' },
-  ];
-
   const exportColumns = [
     { label: 'Closing Type', key: 'Closing_Type' },
     { label: 'Closing Date', key: 'Closing_Date' },
@@ -514,7 +486,7 @@ const ClosingList = () => {
     { label: 'All Single Story', key: 'All_Single_Story' },
     { label: 'Fk Sub Id', key: 'fkSubID' },
     { label: 'Gas Provider', key: 'gasprovider' },
-
+    { label: 'Jurisdiction', key: 'juridiction' },
   ];
 
   const handleSelectAllToggle = () => {

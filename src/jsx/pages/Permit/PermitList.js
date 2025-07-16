@@ -503,7 +503,7 @@ const PermitList = () => {
     }));
   };
 
-  const headers = [
+  const exportColumns = [
     { label: "Date", key: "Date" },
     { label: "Builder Name", key: "BuilderName" },
     { label: "Subdivision Name", key: "SubdivisionName" },
@@ -531,37 +531,7 @@ const PermitList = () => {
     { label: "Fk sub id", key: "fkSubID" },
     { label: "Description", key: "description" },
     { label: "Gas Provider", key: "gas Provider" },
-
-  ];
-
-  const exportColumns = [
-    { label: "Date", key: "Date" },
-    { label: "Builder Name", key: "BuilderName" },
-    { label: "Subdivision Name", key: "SubdivisionName" },
-    { label: "Address Number", key: "AddressNumber" },
-    { label: "Address Name", key: "AddressName" },
-    { label: "Parcel Number", key: "ParcelNumber" },
-    { label: "Contractor", key: "Contractor" },
-    { label: "Square Footage", key: "SqureFootage" },
-    { label: "Owner", key: "Owner" },
-    { label: "Lot Number", key: "LotNumber" },
-    { label: "Permit Number", key: "PermitNumber" },
-    { label: "Plan", key: "Plan" },
-    { label: "Sub Legal Name", key: "SubLegalName" },
-    { label: "Value", key: "Value" },
-    { label: "Product Type", key: "ProductType" },
-    { label: "Area", key: "Area" },
-    { label: "Master Plan", key: "MasterPlan" },
-    { label: "ZIP Code", key: "ZipCode" },
-    { label: "Lot Width", key: "LotWidth" },
-    { label: "Lot Size", key: "LotSize" },
-    { label: "Zoning", key: "Zoning" },
-    { label: "Age Restricted", key: "AgeRestricted" },
-    { label: "All Single Story", key: "AllSingleStory" },
-    { label: "Permit id", key: "PermitID" },
-    { label: "Fk sub id", key: "fkSubID" },
-        { label: "Description", key: "description" },
-    { label: "Gas Provider", key: "gas Provider" },
+    { label: 'Jurisdiction', key: 'juridiction' },
   ];
 
   const handleSelectAllToggle = () => {

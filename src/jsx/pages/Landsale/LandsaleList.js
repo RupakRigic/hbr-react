@@ -398,15 +398,6 @@ const LandsaleList = () => {
     return fieldList.includes(fieldName.trim());
   };
 
-  const headers = [
-    { label: "Builder Name", key: "Builder_Name" },
-    { label: "Subdivision Name", key: "Subdivision_Name" },
-    { label: "Seller", key: "Seller" },
-    { label: "Buyer", key: "Buyer" },
-    { label: "Location", key: "Location" },
-    { label: "Notes", key: "Notes" },
-    { label: "Price", key: "Price" },
-  ];
   const exportColumns = [
     { label: "Builder Name", key: "Builder_Name" },
     { label: "Subdivision Name", key: "Subdivision_Name" },
@@ -422,6 +413,7 @@ const LandsaleList = () => {
     { label: "Latitude", key: "Latitude" },
     { label: "Longitude", key: "Longitude" },
     { label: "Area", key: "Area" },
+    { label: 'Jurisdiction', key: 'juridiction' },
   ];
 
   const handleSelectAllToggle = () => {

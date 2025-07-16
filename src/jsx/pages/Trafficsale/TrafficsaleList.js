@@ -464,6 +464,7 @@ const TrafficsaleList = () => {
     { label: 'Avg Sqft Active', key: 'avg_sqft_active' },
     { label: 'Sqft Group', key: 'sqft_group' },
     { label: 'Price Group', key: 'price_group' },
+    { label: 'Jurisdiction', key: 'juridiction' },
   ];
 
   const exportColumns = [
@@ -494,6 +495,7 @@ const TrafficsaleList = () => {
     { label: 'Avg Sqft Active', key: 'avg_sqft_active' },
     { label: 'Sqft Group', key: 'sqft_group' },
     { label: 'Price Group', key: 'price_group' },
+    { label: 'Jurisdiction', key: 'juridiction' },
   ];
 
   const handleSelectAllToggle = () => {
@@ -589,6 +591,8 @@ const TrafficsaleList = () => {
                 return row.subdivision?.sqft_group || '';
               case "Price Group":
                 return row.subdivision?.price_group?.group || '';
+              case "Jurisdiction":
+                return row.subdivision?.juridiction || '';
               default:
                 return '';
             }
