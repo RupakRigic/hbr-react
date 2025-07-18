@@ -87,6 +87,8 @@ const ArchiveData = () => {
         }
     };
 
+    const [showAlertPopup, setShowAlertPopup] = useState(false);
+
     const [showPopup, setShowPopup] = useState(false);
     const HandlePopupShow = () => {
         setShowPopup(true);
@@ -279,6 +281,7 @@ const ArchiveData = () => {
     const HandlePopupSave = async () => {
         if (selectedType == "" || filterQuery.from == "" || filterQuery.to == "" || selectedFields.length == 0) {
             setMessage("Please selecet required fields.");
+            HandlePopupDetailClick();
             return;
         }
         // setShowPopup(false);
@@ -368,7 +371,7 @@ const ArchiveData = () => {
         setSelectedType(tableName.value);
         setSelectedTypeName(tableName.label);
         try {
-            const response = await AdminBuilderService.getRoleFieldList(tableName.value);
+            const response = await AdminBuilderService.getRoleFieldList(tableName.value == "traffic" ? "traffic-sales" :tableName.value);
             const responseData = await response.json();
             setFieldList(responseData);
         } catch (error) {
@@ -620,6 +623,12 @@ const ArchiveData = () => {
         setSelectedMonth(selectedOption);
         localStorage.setItem("selectedMonth", JSON.stringify(selectedOption));
     };
+
+    const HandlePopupDetailClick = () => {
+        setShowAlertPopup(true);
+    };
+
+    const handlePopupClose = () => setShowAlertPopup(false);
 
     return (
         <Fragment>
@@ -1055,6 +1064,25 @@ const ArchiveData = () => {
                         Apply
                     </Button>
                     <Button variant="primary" onClick={HandleFilterPopupClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showAlertPopup} onHide={HandlePopupDetailClick}>
+                <Modal.Header handlePopupClose>
+                    <Modal.Title>Alert</Modal.Title>
+                    <button
+                        className="btn-close"
+                        aria-label="Close"
+                        onClick={() => handlePopupClose()}
+                    ></button>
+                </Modal.Header>
+                <Modal.Body>
+                    {message}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handlePopupClose}>
                         Close
                     </Button>
                 </Modal.Footer>
