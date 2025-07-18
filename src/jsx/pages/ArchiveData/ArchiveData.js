@@ -279,7 +279,7 @@ const ArchiveData = () => {
     };
 
     const HandlePopupSave = async () => {
-        if (selectedType == "" || filterQuery.from == "" || filterQuery.to == "" || selectedFields.length == 0) {
+        if (selectedType == "" || !filterQuery?.from || !filterQuery?.to || selectedFields.length == 0) {
             setMessage("Please selecet required fields.");
             HandlePopupDetailClick();
             return;
