@@ -270,7 +270,7 @@ const ArchiveData = () => {
 
     const ArchiveDataShow = async () => {
         if (selectedYear?.length === 0 || selectedMonth?.length === 0) {
-            setMessage("Please selecet required fields.");
+            setMessage("Please select required fields.");
             return;
         } else {
             navigate(`/archivedata-update/${archiveDataId}`);
@@ -280,7 +280,7 @@ const ArchiveData = () => {
 
     const HandlePopupSave = async () => {
         if (selectedType == "" || !filterQuery?.from || !filterQuery?.to || selectedFields.length == 0) {
-            setMessage("Please selecet required fields.");
+            setMessage("Please select required fields.");
             HandlePopupDetailClick();
             return;
         }
