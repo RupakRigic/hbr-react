@@ -136,9 +136,6 @@ export const TesterMenuList = [
         iconStyle: SVGICON.ProjectsSidbar,
         to: '/filterlandsales',
     },
-]
-
-export const TesterDataReportingMenuList = [
     {
         title: 'Data Reporting',
         iconStyle: SVGICON.GridDots,

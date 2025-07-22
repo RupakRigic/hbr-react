@@ -302,7 +302,7 @@ const Markup = () => {
 
   const finalRoutes = filteredRoutes.filter((route) => {
     // If not subscribed, only allow weekly-data
-    if (isSubscribed === "0" && !allowedRoles?.includes("Admin") && !allowedRoles?.includes("Staff")) {
+    if (isSubscribed === "0" && !allowedRoles?.includes("Admin") && !allowedRoles?.includes("Staff") && !allowedRoles?.includes("Tester") && !allowedRoles?.includes("Tester Account Admin") && !allowedRoles?.includes("Tester Data Uploader")) {
       return route.url === "/weekly-data" || route.url === "/weekly-data-index";
     }
     return true;

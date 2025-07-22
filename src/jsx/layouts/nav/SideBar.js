@@ -61,9 +61,8 @@ const SideBar = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const role = user?.role || "";
     const list = (role.toLowerCase() == 'tester' || role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterMenuList : MenuList;
-    const testerlist = (role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterDataReportingMenuList : MenuList;
     setUserRole(role);
-    setMenuItems([...list, ...testerlist]);
+    setMenuItems(list);
   }, []);
 
   /// Path
