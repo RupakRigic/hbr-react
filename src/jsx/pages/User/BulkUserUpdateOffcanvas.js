@@ -99,7 +99,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          if (!companies && RoleCode.includes(9) && RoleCode.includes(14)) {
+          if (!companies && RoleCode == 9 && RoleCode == 14) {
             setShowPopup(true);
             setMessage("Please enter valid company.");
             return;
@@ -141,7 +141,8 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
               swal("Records Updated Successfully").then((willDelete) => {
                 if (willDelete) {
                   HandleUpdateCanvasClose();
-                  setRoleCode();
+                  setRoleCode([]);
+                  setStandardRoleCode([]);
                   setFirstName("");
                   setLastName("");
                   setEmail("");
@@ -181,6 +182,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
         setShowPopup(false);
         setSaveBtn(false);
         setRoleCode([]);
+        setStandardRoleCode([]);
         setStandardUser([]);
         swal("Records Updated Successfully").then((willDelete) => {
           if (willDelete) {
@@ -209,7 +211,8 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
   const HandleUpdateCanvasClose = () => {
     setAddUser(false); 
     setError('');
-    setRoleCode([]); 
+    setRoleCode([]);
+    setStandardRoleCode([]);
     setBuilderCode("");  
     setStandardUser([]);
     setCompanies(['']);
@@ -322,7 +325,7 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   />
                 </div>
 
-                {(RoleCode.includes(9) || RoleCode.includes(14)) &&
+                {(RoleCode == 9 || RoleCode == 14) &&
                   <div className="col-xl-6 mb-3">
                     <label className="form-label">{RoleCode.includes(9) ? "Standard User" : RoleCode.includes(14) ? "Tester User" : ""}</label>
                     <MultiSelect

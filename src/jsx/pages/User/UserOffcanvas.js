@@ -370,7 +370,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                     />
                                 </div>
 
-                                {(RoleCode.includes(9) || RoleCode.includes(14)) && <div className="col-xl-6 mb-3">
+                                {(RoleCode == 9 || RoleCode == 14) && <div className="col-xl-6 mb-3">
                                     <label className="form-label">{RoleCode.includes(9) ? "Standard User" : RoleCode.includes(14) ? "Tester User" : ""}</label>
                                     <MultiSelect
                                         options={RoleCode.includes(9) ? StandardUserOptions : RoleCode.includes(14) ? TesterUserOptions : []}
