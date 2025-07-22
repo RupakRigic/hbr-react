@@ -51,10 +51,19 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     label: element.name
   }));
 
-  const StandardUserOptions = subRoleList.map(element => ({
-    value: element.id,
-    label: element.name
-  }));
+  const StandardUserOptions = subRoleList
+    ?.filter((data) => data.id != 15 && data.id != 16)
+    .map(element => ({
+      value: element.id,
+      label: element.name
+    }));
+
+  const TesterUserOptions = subRoleList
+    ?.filter((data) => data.id != 10 && data.id != 11)
+    .map(element => ({
+      value: element.id,
+      label: element.name
+    }));
 
   useImperativeHandle(ref, () => ({
     showEmployeModal() {
@@ -90,15 +99,15 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
     }).then(async (willDelete) => {
       if (willDelete) {
         try {
-          if (!companies && RoleCode == 9) {
+          if (!companies && RoleCode.includes(9) && RoleCode.includes(14)) {
             setShowPopup(true);
             setMessage("Please enter valid company.");
             return;
           }
 
-          const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
+          const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : RoleCode.includes(14) ? standardRoleCode.filter((id) => id === 15 || id === 16) : [];
 
-          if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
+          if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || FilterRoleCode.includes(15) || FilterRoleCode.includes(16) || RoleCode.includes(9) || RoleCode.includes(14)) {
             var userData = {
               "name": firstName,
               "company": companies,
@@ -313,11 +322,11 @@ const BulkUserUpdateOffcanvas = forwardRef((props, ref) => {
                   />
                 </div>
 
-                {RoleCode == 9 &&
+                {(RoleCode.includes(9) || RoleCode.includes(14)) &&
                   <div className="col-xl-6 mb-3">
-                    <label className="form-label">Standard User</label>
+                    <label className="form-label">{RoleCode.includes(9) ? "Standard User" : RoleCode.includes(14) ? "Tester User" : ""}</label>
                     <MultiSelect
-                      options={StandardUserOptions}
+                      options={RoleCode.includes(9) ? StandardUserOptions : RoleCode.includes(14) ? TesterUserOptions : []}
                       onChange={(selectedOption) => handleStandardUser(selectedOption)}
                       value={StandardUser}
                       placeholder="Select Role"

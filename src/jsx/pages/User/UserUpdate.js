@@ -70,6 +70,19 @@ const UserUpdate = () => {
         handleRoleCode(formattedRoles[0]);
         setStandardRoleCode(UserList?.roles?.map(role => role.id));
         setStandardUser(StandardUserOptions);
+      } else if (roleIds.includes(15) || roleIds.includes(16)) {
+        const StandardUserOptions = UserList?.roles?.map(role => ({
+          value: role.id,
+          label: role.name
+        }));
+        const filter = RoleList?.filter(data => data.id == 14)
+        const formattedRoles = [{
+          value: filter[0]?.id,
+          label: filter[0]?.name
+        }];
+        handleRoleCode(formattedRoles[0]);
+        setStandardRoleCode(UserList?.roles?.map(role => role.id));
+        setStandardUser(StandardUserOptions);
       } else {
         const filter = RoleList?.filter(data => data.id == UserList?.roles[0]?.id)
         const formattedRoles = [{
@@ -129,10 +142,19 @@ const UserUpdate = () => {
     label: element?.name
   }));
 
-  const StandardUserOptions = subRoleList?.map(element => ({
-    value: element?.id,
-    label: element?.name
-  }));
+  const StandardUserOptions = subRoleList
+    ?.filter((data) => data.id != 15 && data.id != 16)
+    .map(element => ({
+      value: element.id,
+      label: element.name
+    }));
+
+  const TesterUserOptions = subRoleList
+    ?.filter((data) => data.id != 10 && data.id != 11)
+    .map(element => ({
+      value: element.id,
+      label: element.name
+    }));
 
   const handleRoleCode = (code) => {
     const formattedRoles = [{
@@ -141,7 +163,7 @@ const UserUpdate = () => {
     }];
     const selectedValues = formattedRoles?.map(item => item.value);
 
-    if (!selectedValues.includes(9)) {
+    if (!selectedValues.includes(9) || !selectedValues.includes(14)) {
       setStandardRoleCode([]);
     }
     setRoleCode(selectedValues);
@@ -156,8 +178,8 @@ const UserUpdate = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
-      if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
+      const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : RoleCode.includes(14) ? standardRoleCode.filter((id) => id === 15 || id === 16) : [];
+      if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || FilterRoleCode.includes(15) || FilterRoleCode.includes(16) || RoleCode.includes(9) || RoleCode.includes(14)) {
         var userData = {
           "name": firstName,
           "company": companies,
@@ -452,11 +474,11 @@ const UserUpdate = () => {
                           />
                         </div>
 
-                        {RoleCode == 9 &&
+                        {(RoleCode.includes(9) || RoleCode.includes(14)) &&
                           <div className="col-xl-6 mb-3">
-                            <label className="form-label">Standard User</label>
+                            <label className="form-label">{RoleCode.includes(9) ? "Standard User" : RoleCode.includes(14) ? "Tester User" : ""}</label>
                             <MultiSelect
-                              options={StandardUserOptions}
+                              options={RoleCode.includes(9) ? StandardUserOptions : RoleCode.includes(14) ? TesterUserOptions : []}
                               onChange={(selectedOption) => handleStandardUser(selectedOption)}
                               value={StandardUser}
                               placeholder="Select Role"

@@ -99,7 +99,7 @@ const UserOffcanvas = forwardRef((props, ref) => {
 
     const GetRoleList = async () => {
         try {
-            let responseData = await AdminUserRoleService.roles().json()
+            let responseData = await AdminUserRoleService.roles().json();
             setRoleList(responseData.main_role);
             setSubRoleList(responseData.sub_role);
         } catch (error) {
@@ -115,10 +115,19 @@ const UserOffcanvas = forwardRef((props, ref) => {
         label: element.name
     }));
 
-    const StandardUserOptions = subRoleList.map(element => ({
-        value: element.id,
-        label: element.name
-    }));
+    const StandardUserOptions = subRoleList
+        ?.filter((data) => data.id != 15 && data.id != 16)
+        .map(element => ({
+            value: element.id,
+            label: element.name
+        }));
+
+    const TesterUserOptions = subRoleList
+        ?.filter((data) => data.id != 10 && data.id != 11)
+        .map(element => ({
+            value: element.id,
+            label: element.name
+        }));
 
     useImperativeHandle(ref, () => ({
         showEmployeModal() {
@@ -151,8 +160,8 @@ const UserOffcanvas = forwardRef((props, ref) => {
             setCompanies(userDetail.company);
         }
         try {
-            const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : [];
-            if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || RoleCode.includes(9)) {
+            const FilterRoleCode = RoleCode.includes(9) ? standardRoleCode.filter((id) => id === 11 || id === 10) : RoleCode.includes(14) ? standardRoleCode.filter((id) => id === 15 || id === 16) : [];
+            if (FilterRoleCode.includes(10) || FilterRoleCode.includes(11) || FilterRoleCode.includes(15) || FilterRoleCode.includes(16) || RoleCode.includes(9) || RoleCode.includes(14)) {
                 var userData = {
                     "name": firstName,
                     "company": companies,
@@ -361,10 +370,10 @@ const UserOffcanvas = forwardRef((props, ref) => {
                                     />
                                 </div>
 
-                                {RoleCode == 9 && userRole != 'Account Admin' && <div className="col-xl-6 mb-3">
-                                    <label className="form-label">Standard User</label>
+                                {(RoleCode.includes(9) || RoleCode.includes(14)) && <div className="col-xl-6 mb-3">
+                                    <label className="form-label">{RoleCode.includes(9) ? "Standard User" : RoleCode.includes(14) ? "Tester User" : ""}</label>
                                     <MultiSelect
-                                        options={StandardUserOptions}
+                                        options={RoleCode.includes(9) ? StandardUserOptions : RoleCode.includes(14) ? TesterUserOptions : []}
                                         onChange={(selectedOption) => handleStandardUser(selectedOption)}
                                         value={StandardUser}
                                         placeholder="Select Role"
