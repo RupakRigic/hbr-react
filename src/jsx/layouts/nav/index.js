@@ -10,7 +10,7 @@ const JobieNav = ({ title, onClick: ClickToAddEvent }) => {
   let sidebar = null;
   const loginRole = JSON.parse(localStorage.getItem('user')).role;
 
-  if (loginRole === "Admin" || loginRole == 'Staff'|| loginRole == 'Tester') {
+  if (loginRole === "Admin" || loginRole == 'Staff'|| loginRole == 'Tester' || loginRole == 'Tester Data Uploader' || loginRole == 'Tester Account Admin') {
     sidebar = <SideBar />;
   } if (loginRole === "Standard User" || loginRole == 'Data Uploader' || loginRole == 'Account Admin') {
     sidebar = <DataUploaderSideBar />;

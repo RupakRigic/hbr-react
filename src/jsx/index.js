@@ -68,46 +68,46 @@ const allroutes = [
     component: <Login /> 
   },
   { url: "dashboard", component: <Home />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"] 
   },
   { url: "/builderList", 
     component: <BuilderTable />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"] 
   },
   {
     url: "/subdivisionlist",
     component: <SubdivisionList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "subdivisionUpdate/:id",
     component: <SubdivisionUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "builderUpdate/:id",
     component: <BuilderUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/priceList",
     component: <PriceList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/priceupdate/:id",
     component: <PriceUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/productlist",
     component: <ProductListList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/productupdate/:id",
     component: <ProductUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   { url: "/userlist", 
     component: <UserListList />, 
@@ -128,48 +128,48 @@ const allroutes = [
   },
   { url: "/permitlist", 
     component: <PermitList />, 
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"] 
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"] 
   },
   {
     url: "/permitupdate/:id",
     component: <PermitUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/landsalelist",
     component: <LandsaleList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/landsaleupdate/:id",
     component: <LandsaleUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/trafficsalelist",
     component: <TrafficsaleList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/trafficsaleupdate/:id",
     component: <TrafficsaleUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/closingsalelist",
     component: <ClosingList />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/closingsaleupdate/:id",
     component: <ClosingUpdate />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   // { url: "/statistics", component: <Statistics />, allowedRoles: ["Admin"] },
   {
     url: "/weekly-data",
     component: <WeeklyData />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/weekly-data-index",
@@ -192,7 +192,7 @@ const allroutes = [
   {
     url: "/google-map-locator",
     component: <GoogleMapLocator />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/ccapn",
@@ -212,7 +212,7 @@ const allroutes = [
   {
     url: "/subscriberlist",
     component: <SubscriberList />,
-    allowedRoles: ["Admin","Tester"],
+    allowedRoles: ["Admin", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/subscriptionplan",
@@ -227,22 +227,22 @@ const allroutes = [
   {
     url: "/filterbuilder",
     component: <FilterBuilder />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filtersubdivision",
     component: <FilterSubdivision />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filterlandsales",
     component: <FilterLandSales />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filterbaseprice",
     component: <FilterBasePrice />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/scrapepricelist",
@@ -252,22 +252,22 @@ const allroutes = [
   {
     url: "/filterproducts",
     component: <FilterProducts />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filterpermits",
     component: <FilterPermits />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filterweeklytrafficandsales",
     component: <FilterWeeklyTrafficAndSales />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/filterclosings",
     component: <FilterClosings />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff","Tester"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester", "Tester Account Admin", "Tester Data Uploader"],
   },
   {
     url: "/notifyuserlist",
@@ -302,7 +302,7 @@ const Markup = () => {
 
   const finalRoutes = filteredRoutes.filter((route) => {
     // If not subscribed, only allow weekly-data
-    if (isSubscribed === "0" && !allowedRoles?.includes("Admin") && !allowedRoles?.includes("Staff")&& !allowedRoles?.includes("Tester")) {
+    if (isSubscribed === "0" && !allowedRoles?.includes("Admin") && !allowedRoles?.includes("Staff")) {
       return route.url === "/weekly-data" || route.url === "/weekly-data-index";
     }
     return true;

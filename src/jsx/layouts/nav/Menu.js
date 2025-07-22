@@ -137,3 +137,11 @@ export const TesterMenuList = [
         to: '/filterlandsales',
     },
 ]
+
+export const TesterDataReportingMenuList = [
+    {
+        title: 'Data Reporting',
+        iconStyle: SVGICON.GridDots,
+        to: '/weekly-data',
+    }
+]

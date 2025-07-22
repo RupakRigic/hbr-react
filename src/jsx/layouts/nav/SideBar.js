@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useReducer, useState } from "react";
 import Collapse from 'react-bootstrap/Collapse';
 /// Link
 import { Link } from "react-router-dom";
-import { MenuList } from './Menu';
+import { MenuList, TesterDataReportingMenuList } from './Menu';
 import { TesterMenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
@@ -60,9 +60,10 @@ const SideBar = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     const role = user?.role || "";
-    const list = role.toLowerCase() === 'tester' ? TesterMenuList : MenuList;
+    const list = (role.toLowerCase() == 'tester' || role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterMenuList : MenuList;
+    const testerlist = (role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterDataReportingMenuList : MenuList;
     setUserRole(role);
-    setMenuItems(list);
+    setMenuItems([...list, ...testerlist]);
   }, []);
 
   /// Path
