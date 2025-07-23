@@ -343,7 +343,6 @@ const PermitList = () => {
   };
 
   useEffect(() => {
-    debugger
     if (localStorage.getItem("usertoken")) {
       if(page === currentPage){
         return;
