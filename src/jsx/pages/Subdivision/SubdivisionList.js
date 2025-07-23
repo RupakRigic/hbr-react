@@ -1138,7 +1138,8 @@ const SubdivisionList = () => {
     setShowPopup(true);
   };
   
-    const handlePopupClose = () => setShowPopup(false);
+  const handlePopupClose = () => setShowPopup(false);
+
   const HandleFilterForm = (e) => {
 
         if (filterQuery.status == "") {

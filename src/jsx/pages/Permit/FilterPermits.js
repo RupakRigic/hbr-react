@@ -22,6 +22,7 @@ const FilterPermits = () => {
     const [selectedMasterPlanByFilter, setSelectedMasterPlanByFilter] = useState([]);
     const [selectedAgeByFilter, setSelectedAgeByFilter] = useState([]);
     const [selectedSingleByFilter, setSelectedSingleByFilter] = useState([]);
+    const [selectedJurisdicitionByFilter, setSelectedJurisdictionByFilter] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState(false);
@@ -46,6 +47,7 @@ const FilterPermits = () => {
         lotsize: localStorage.getItem("lotsize_Permit") ? JSON.parse(localStorage.getItem("lotsize_Permit")) : "",
         age: localStorage.getItem("age_Permit") ? JSON.parse(localStorage.getItem("age_Permit")) : "",
         single: localStorage.getItem("single_Permit") ? JSON.parse(localStorage.getItem("single_Permit")) : "",
+        juridiction: localStorage.getItem("juridiction_Permit") ? JSON.parse(localStorage.getItem("juridiction_Permit")) : "",
     });
 
     useEffect(() => {
@@ -76,6 +78,10 @@ const FilterPermits = () => {
         if(localStorage.getItem("selectedSingleByFilter_Permit")) {
           const selectedSingle = JSON.parse(localStorage.getItem("selectedSingleByFilter_Permit"));
           handleSelectSingleChange(selectedSingle);
+        }
+        if (localStorage.getItem("selectedJurisdicitionByFilter_Permit")) {
+            const selectedJurisdicition = JSON.parse(localStorage.getItem("selectedJurisdicitionByFilter_Permit"));
+            handleSelectJurisdictionChange(selectedJurisdicition);
         }
     }, []);
 
@@ -199,6 +205,7 @@ const FilterPermits = () => {
                         localStorage.setItem("selectedMasterPlanByFilter_Permit", JSON.stringify(selectedMasterPlanByFilter));
                         localStorage.setItem("selectedAgeByFilter_Permit", JSON.stringify(selectedAgeByFilter));
                         localStorage.setItem("selectedSingleByFilter_Permit", JSON.stringify(selectedSingleByFilter));
+                        localStorage.setItem("selectedJurisdicitionByFilter_Permit", JSON.stringify(selectedJurisdicitionByFilter));
                         localStorage.setItem("from_Permit", JSON.stringify(filterQuery.from));
                         localStorage.setItem("to_Permit", JSON.stringify(filterQuery.to));
                         localStorage.setItem("builder_name_Permit", JSON.stringify(filterQuery.builder_name));
@@ -218,6 +225,7 @@ const FilterPermits = () => {
                         localStorage.setItem("lotsize_Permit", JSON.stringify(filterQuery.lotsize));
                         localStorage.setItem("age_Permit", JSON.stringify(filterQuery.age));
                         localStorage.setItem("single_Permit", JSON.stringify(filterQuery.single));
+                        localStorage.setItem("juridiction_Permit", JSON.stringify(filterQuery.juridiction));
                         localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
                     } else {
                         setShowPopup(true);
@@ -256,6 +264,7 @@ const FilterPermits = () => {
                 localStorage.setItem("selectedMasterPlanByFilter_Permit", JSON.stringify(selectedMasterPlanByFilter));
                 localStorage.setItem("selectedAgeByFilter_Permit", JSON.stringify(selectedAgeByFilter));
                 localStorage.setItem("selectedSingleByFilter_Permit", JSON.stringify(selectedSingleByFilter));
+                localStorage.setItem("selectedJurisdicitionByFilter_Permit", JSON.stringify(selectedJurisdicitionByFilter));
                 localStorage.setItem("from_Permit", JSON.stringify(filterQuery.from));
                 localStorage.setItem("to_Permit", JSON.stringify(filterQuery.to));
                 localStorage.setItem("builder_name_Permit", JSON.stringify(filterQuery.builder_name));
@@ -275,6 +284,7 @@ const FilterPermits = () => {
                 localStorage.setItem("lotsize_Permit", JSON.stringify(filterQuery.lotsize));
                 localStorage.setItem("age_Permit", JSON.stringify(filterQuery.age));
                 localStorage.setItem("single_Permit", JSON.stringify(filterQuery.single));
+                localStorage.setItem("juridiction_Permit", JSON.stringify(filterQuery.juridiction));
                 localStorage.setItem("searchQueryByPermitsFilter", JSON.stringify(searchQuery.replace(/^"",|,""$/g, '')));
                 localStorage.setItem("setPermitFilter", true);
             } else {
@@ -401,6 +411,40 @@ const FilterPermits = () => {
         }));
     };
 
+    const handleSelectJurisdictionChange = (selectedItems) => {
+        const selectedValues = selectedItems.map(item => item.value).join(', ');
+        setSelectedJurisdictionByFilter(selectedItems);
+        setFilterQuery(prevState => ({
+            ...prevState,
+            juridiction: selectedValues
+        }));
+    };
+
+    const jurisdictionOption = [
+        { value: "Boulder City", label: "Boulder City" },
+        { value: "CLV", label: "CLV" },
+        { value: "CC Enterprise", label: "CC Enterprise" },
+        { value: "CC Indian Springs", label: "CC Indian Springs" },
+        { value: "CC Laughlin", label: "CC Laughlin" },
+        { value: "Lone Mtn", label: "Lone Mtn" },
+        { value: "Lower Kyle Canyon", label: "Lower Kyle Canyon" },
+        { value: "CC Moapa Valley", label: "CC Moapa Valley" },
+        { value: "CC Mt Charleston", label: "CC Mt Charleston" },
+        { value: "CC Mtn Springs", label: "CC Mtn Springs" },
+        { value: "CC Paradise", label: "CC Paradise" },
+        { value: "CC Searchlight", label: "CC Searchlight" },
+        { value: "CC Spring Valley", label: "CC Spring Valley" },
+        { value: "CC Summerlin South", label: "CC Summerlin South" },
+        { value: "CC Sunrise Manor", label: "CC Sunrise Manor" },
+        { value: "CC Whiteney", label: "CC Whiteney" },
+        { value: "CC Winchester", label: "CC Winchester" },
+        { value: "CC Unincorporated", label: "CC Unincorporated" },
+        { value: "Henderson", label: "Henderson" },
+        { value: "Mesquite", label: "Mesquite" },
+        { value: "NLV", label: "NLV" },
+        { value: "NYE", label: "NYE" },
+    ];
+
     const productTypeOptions = [
         { value: "DET", label: "DET" },
         { value: "ATT", label: "ATT" },
@@ -453,7 +497,8 @@ const FilterPermits = () => {
             lotwidth: "",
             lotsize: "",
             age: "",
-            single: ""
+            single: "",
+            juridiction: "",
         });
         setSelectedBuilderNameByFilter([]);
         setSelectedSubdivisionNameByFilter([]);
@@ -462,6 +507,7 @@ const FilterPermits = () => {
         setSelectedMasterPlanByFilter([]);
         setSelectedAgeByFilter([]);
         setSelectedSingleByFilter([]);
+        setSelectedJurisdictionByFilter([]);
         setSelectedBuilderIDByFilter([]);
     };
 
@@ -619,6 +665,16 @@ const FilterPermits = () => {
                                 value={selectedSingleByFilter}
                                 onChange={handleSelectSingleChange}
                                 placeholder={"Select Single"}
+                            />
+                        </div>
+                        <div className="col-md-3 mt-3 mb-3">
+                            <label className="form-label">JURISDICTION:</label>
+                            <MultiSelect
+                                name="juridiction"
+                                options={jurisdictionOption}
+                                value={selectedJurisdicitionByFilter}
+                                onChange={handleSelectJurisdictionChange}
+                                placeholder="Select Juridiction"
                             />
                         </div>
                     </div>

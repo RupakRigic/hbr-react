@@ -8,7 +8,7 @@ const Error404 = () => {
 
    useEffect(() => {
       const token = localStorage.getItem("usertoken");
-      const userRole = JSON.parse(localStorage.getItem("user")).role;
+      const userRole = JSON.parse(localStorage.getItem("user"))?.role;
       setToken(token);
       setUserRole(userRole);
 
@@ -38,6 +38,9 @@ const Error404 = () => {
             navigate("/weekly-data");
             // navigate("/subscriptionlist");
          }
+      } else {
+         localStorage.clear();
+         navigate("/");
       }
    }, []);
 
