@@ -60,8 +60,11 @@ const SideBar = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     const role = user?.role || "";
-    const list = (role.toLowerCase() == 'tester' || role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterMenuList : MenuList;
+    let list = (role.toLowerCase() == 'tester' || role.toLowerCase() == 'tester data uploader & tester account admin' || role.toLowerCase() == 'tester account admin' || role.toLowerCase() == 'tester data uploader') ? TesterMenuList : MenuList;
     setUserRole(role);
+    if (role.toLowerCase() == 'tester' || role.toLowerCase() == 'tester account admin') {
+      list = list?.filter((item) => item.title != 'Data Reporting');
+    }
     setMenuItems(list);
   }, []);
 

@@ -298,7 +298,7 @@ const [rememberMe, setRememberMe] = useState(() =>
           localStorage.removeItem("typeofunit_LandSale");
           localStorage.removeItem("searchQueryByLandSalesFilter");
           localStorage.removeItem("setLansSaleFilter");
-          if (userRole == "Admin" || userRole == "Staff"|| userRole == "Tester" || userRole == "Tester Account Admin" || userRole == "Tester Data Uploader") {
+          if (userRole == "Admin" || userRole == "Staff"|| userRole == "Tester" || userRole == "Tester Account Admin" || userRole == "Tester Data Uploader" || userRole == "Tester Data Uploader & Tester Account Admin") {
             navigate("/dashboard");
           } else if ( userRole == "Data Uploader") {
             const subscription = JSON.parse(localStorage.getItem("is_subscribed"));
