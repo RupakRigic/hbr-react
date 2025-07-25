@@ -174,7 +174,7 @@ const allroutes = [
   {
     url: "/weekly-data-index",
     component: <WeeklyDataIndex />,
-    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff"],
+    allowedRoles: ["Admin", "Standard User", "Data Uploader", "Account Admin", "Staff", "Tester Data Uploader", "Tester Data Uploader & Tester Account Admin"],
   },
   { url: "/files", 
     component: <File />, 

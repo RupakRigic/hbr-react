@@ -1171,8 +1171,9 @@ const LandsaleList = () => {
                     </div>
 
                     <div className="mt-2" style={{width: "100%"}}>
-                      {SyestemUserRole == "Data Uploader" || SyestemUserRole == "Tester" ||
-                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" ? (
+                      {SyestemUserRole == "Data Uploader" || SyestemUserRole == "Tester" || SyestemUserRole == "Tester Data Uploader" ||
+                        SyestemUserRole == "User" || SyestemUserRole == "Standard User" || SyestemUserRole == "Tester Account Admin" 
+                        || SyestemUserRole == "Tester Data Uploader & Tester Account Admin" ? (
                         <div style={{ marginTop: "10px" }}>
                           <button className="btn btn-primary btn-sm me-1" onClick={handleOpenDialog} title="Column Order">
                             <div style={{ fontSize: "11px" }}>
