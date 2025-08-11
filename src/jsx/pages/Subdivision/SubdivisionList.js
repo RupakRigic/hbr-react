@@ -2751,7 +2751,8 @@ const SubdivisionList = () => {
       const blob = new Blob([response.data], { type: "application/pdf" });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = `SAR-${startDate}-${endDate}.pdf`;
+      // link.download = `SAR-${startDate}-${endDate}.pdf`;
+      link.download = `HBR-subdivision-report.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -4108,7 +4109,7 @@ const SubdivisionList = () => {
             Subdivision Details
             {!isFormLoading && <button
               className="btn btn-primary btn-sm me-1" 
-              title="Report"
+              title="Subdivision Analysis Report"
               style={{ marginLeft: "20px" }}
               onClick={() => handleDownloadReport()}
               key={subdivisionID}
@@ -4118,7 +4119,7 @@ const SubdivisionList = () => {
               ) : (
                 <div>
                   <i className="fa fa-file-text" aria-hidden="true" />&nbsp;
-                  Report
+                  Subdivision Analysis Report
                 </div>
               )}
             </button>}

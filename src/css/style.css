@@ -36558,3 +36558,19 @@ label{
   }
   
 }
+
+.btn-tooltip{
+  padding: 3px !important;
+  display:inline-block;
+  cursor: pointer;
+}
+.btn-tooltip svg {
+    width: 19px;
+    height: 19px;
+}
+
+body > * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(111, 133, 147, 0.5) #fff0;
+}
+

@@ -3,8 +3,8 @@ import ky from 'ky';
 let userData = localStorage.getItem('admintoken') ? localStorage.getItem('admintoken') : "";
 class HTTPError extends Error { }
 const AdminAuth = ky.extend({
-   prefixUrl: "http://localhost/hbr/public/api/",
-  // prefixUrl: "https://vegasdata.homes/portal/public/api/",
+  //  prefixUrl: "http://localhost/hbr/public/api/",
+  prefixUrl: "https://vegasdata.homes/portal/public/api/",
   
   hooks: {
     beforeRequest: [
